@@ -1,0 +1,22 @@
+.custom-box {
+    border: 2px solid #6666ff;
+    background-color: #e6e6ff;
+    border-radius: 3px;
+    padding: 20px;
+    padding-top: 30px; /* Extra padding for the label */
+    position: relative;
+    max-width: 10000px; /* Adjust the width as needed */
+}
+
+.custom-box .label {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background-color: #6666ff;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
