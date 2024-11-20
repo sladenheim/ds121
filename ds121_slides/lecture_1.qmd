@@ -9,7 +9,7 @@ format:
 
 ## Why Linear Algebra?
 
-::: {.center-image}
+::: {.antique-center-image}
 ![](/images/image1.jpeg)
 :::
 
@@ -63,14 +63,14 @@ It involves understanding and manipulating multi-dimensional data through concep
 ## Three Modes of Thinking
 :::{.incremental}
 
-- **Algebraic thinking**: how to correctly manipulate symbols in a consistent logical framework
+- **Algebraic thinking**: how to correctly manipulate symbols in a consistent logical framework.
 
-- **Geometric thinking**: learning to extend familiar two- and three-dimensional concepts to higher dimensions
+- **Geometric thinking**: learning to extend familiar two- and three-dimensional concepts to higher dimensions.
 
-- **Computational thinking**: understanding the relationship between abstract algebraic machinery and actual computations which efficiently arrive at the correct answer
+- **Computational thinking**: understanding the relationship between abstract algebraic machinery and actual computations which efficiently arrive at the correct answer.
 
 :::{.fragment}
-Integrating these three concepts is **_essential_** for using linear algebra in data science
+Integrating these three concepts is **_essential_** for using linear algebra in data science.
 
 :::
 
@@ -82,7 +82,7 @@ Integrating these three concepts is **_essential_** for using linear algebra in 
 :::
 
 ## Three Modes of Vector V
-- **_Algebraically:_** a vector $\mathbf{v}$ is an abstract object that permits addition ${\bf v} + {\bf w}$ and multiplication by a constant or *scalar* $c$ to form $c {\bf v}$
+- **_Algebraically:_** a vector $\mathbf{v}$ is an abstract object that permits addition ${\bf v} + {\bf w}$ and multiplication by a constant or *scalar* $c$ to form $c {\bf v}$.
 
 ## Three Modes of Vector V
 - **_Computationally:_** a vector is an ordered list of real numbers.
@@ -96,7 +96,7 @@ Integrating these three concepts is **_essential_** for using linear algebra in 
   $$
 
 ## Three Modes of Vector V
-- **_Geometrically:_** a vector is a point in $n$-dimensional space
+- **_Geometrically:_** a vector is a point in $n$-dimensional space.
 
 :::{.center-text}
 ```{python}
@@ -133,7 +133,7 @@ plt.show()
 :::
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
 :::{.center-text}
-**Let us consider the well known Iris Dataset**
+**Let us consider the well known Iris Dataset.**
 :::
 <!-- Make the image a little smaller and the code tab smaller -->
 ```{python}
@@ -175,7 +175,7 @@ print(A)
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
 
-<span style="font-size: .7em;">This dataset might look random to the human eye. _However,_ if we plot its attributes we can see that there is structure within the data</span>
+<span style="font-size: .7em;">This dataset might look random to the human eye. _However,_ if we plot its attributes we can see that there is structure within the data.</span>
 
 :::{.center-text}
 ```{python}
@@ -197,18 +197,18 @@ plt.ylabel(iris.feature_names[y_index]);
 We can make the following __observations__:
 
 :::{.incremental}
-- There are _correlations_ among the 150 rows of A
-  - Knowing the petal length of an iris tells you something about the petal width
-  - Knowing the petal length and width might give you a way to classify which type of iris you have
+- There are _correlations_ among the 150 rows of A.
+  - Knowing the petal length of an iris tells you something about the petal width.
+  - Knowing the petal length and width might give you a way to classify which type of iris you have.
 :::
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
 We can make the following __observations__:
 
 :::{.incremental}
-- The matrix is _compressible_
-  - The 150 rows of $A$ are all samples of the same underlying physical process
-  - We should be able to decompose this $150 \times 4$ matrice into simpler matrices
+- The matrix is _compressible_.
+  - The 150 rows of $A$ are all samples of the same underlying physical process.
+  - We should be able to decompose this $150 \times 4$ matrice into simpler matrices.
 :::
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
