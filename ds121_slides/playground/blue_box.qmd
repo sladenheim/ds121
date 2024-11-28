@@ -2,7 +2,7 @@
 title: "Presentation with LaTeX Boxes"
 format: 
     revealjs:
-        css: styles.css
+        css: stylesC.css
         code-fold: true
         code-summary: "Show the code"
 execute:

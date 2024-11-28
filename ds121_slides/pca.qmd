@@ -1,6 +1,6 @@
 ---
 title: "Principal Component Analysis"
-author: "Lisa Wobbes"
+author: "DS 121"
 format: 
     revealjs:
         css: styles.css
@@ -8,18 +8,19 @@ format:
 
 ## High Dimensional Data
 
+::: {style="font-size: 0.8em;"}
 :::{.columns}
 ::: {.column width="50%"}
 ![](/images/pca/Extended_Yale_B_DB_cropped.png)
 :::
-::: {.column width="50%" style="height: 80%; padding-top: 10vh;"}
+::: {.column width="50%" style="height: 80%; padding-top: 20vh;"}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return """
     <div class="blue-box">
-        <p>How are greyscale images typically fit in a computer?</p>
+        <p>How are greyscale images typically stored in a computer?</p>
     </div>
     """
 
@@ -28,28 +29,33 @@ display(HTML(html_content))
 ```
 :::
 :::
+:::
 
 ## High Dimensional Data
 
+::: {style="font-size: 0.8em;"}
 :::{.columns}
 ::: {.column width="50%"}
 ![](/images/pca/Extended_Yale_B_DB_cropped.png)
 :::
-::: {.column width="50%"}
+::: {.column width="50%" style="padding-top: 15vh;"}
 ::: {.incremental}
-- **Database:** 64 images for 38 people <br>$\Rightarrow 2432$ images
+- **Database:** $64$ images for $38$ people <br>$\Rightarrow 2432$ images
 - **Image size:** $192 \times 168$ pixels <br>$\Rightarrow 32256$ pixels
-- **Each Pixel:**<br>$0-255$
+- **Each Pixel:** $0-255$
 :::
 :::
 ::: {.incremental}
 ::: {.fragment .center-text}
-In **_matrix_** format: $2432$ rows $\times$ $32256$ columns
+In matrix format: $2432$ rows $\times$ $32256$ columns
+:::
 :::
 :::
 :::
 
 ## High Dimensional Data
+
+::: {style="font-size: 0.8em; "}
 
 High Dimensional Data contains a high number of features/columns for each observation. <br><br>
 
@@ -62,13 +68,14 @@ from IPython.core.display import HTML
 def generate_html():
     return """
     <div class="blue-box">
-        <p><b>What is problematic about high dimensional data?</b></p>
+        <p>What is problematic about high dimensional data?</p>
     </div>
     """
 
 html_content = generate_html()
 display(HTML(html_content))
 ```
+:::
 :::
 
 ## High Dimensional Data
@@ -81,34 +88,40 @@ Potential Challenges:
 :::{.incremental}
 - The curse of dimensionality
 - Overfitting
-- High Computational Complexity
+- High computational complexity
 - Difficulties with visualization and interpretation
 :::
 :::
 
 ## Dimensionality Reduction
 
-:::{.center-text }
-**PCA** allows to reduce the dimension of the data while preserving the most important information.
+::: {style="font-size: 0.8em;"}
+
+:::{.fragment }
+PCA allows to reduce the dimension of the data while preserving the most important information.
 :::
 
 :::{.incremental}
 
-:::{.fragment style="font-size: .8em"}
-Let us write this in a more mathematical way:<br>
+:::{.fragment }
+Let us write this in a more mathematical way:
+:::
 
-**Input:** $\bar{\mathbf{x}}_1,\ldots, \bar{\mathbf{x}}_m$ _with_  $\bar{\mathbf{x}}_i \in \mathbb{R}^n \: \: \forall \: i \in \{1, \ldots, n\}.$<br>
-**Output:** $\bar{\mathbf{y}}_1,\dots, \bar{\mathbf{y}}_m$  _with_  $\bar{\mathbf{y}}_i \in \mathbb{R}^d \: \: \forall \: i \in \{1, \dots, n\},$ _where_ $k \ll n$.<br><br>
+:::{.fragment }
+**Input:**  $\mathbf{x}_1,\ldots, \mathbf{x}_m$ _with_  $\mathbf{x}_i \in \mathbb{R}^n \: \: \forall \: i \in \{1, \ldots, n\}.$<br>
+**Output:** $\mathbf{y}_1,\dots, \mathbf{y}_m$  _with_  $\mathbf{y}_i \in \mathbb{R}^k \: \: \forall \: i \in \{1, \dots, n\},$ _where_ 
+[$k \ll n$]{style="color:red;"}.<br><br>
 :::
 
 :::{.fragment}
-Datapoints $\bar{\mathbf{y}}_i$ have a _lower dimension_, but preserve the _most information_ contained in in data points $\bar{\mathbf{x}}_i$.
+Data points $\mathbf{y}_i$ have a lower dimension, but preserve the most information contained in data points $\mathbf{x}_i$.
 :::
-
+:::
 :::
 
 ## Dimensionality Reduction
 
+::: {style="font-size: 0.8em; "}
 :::{.incremental}
 :::{.fragment}
 In matrix form we can denote this as:
@@ -117,26 +130,27 @@ In matrix form we can denote this as:
 $$
 X_0 =
 \begin{bmatrix}
-\text{—} & \bar{\mathbf{x}}_1 & \text{—} \\
-\text{—} & \bar{\mathbf{x}}_2 & \text{—} \\
+\text{—} & \mathbf{x}_1 & \text{—} \\
+\text{—} & \mathbf{x}_2 & \text{—} \\
 \text{—} & \vdots & \text{—} \\
-\text{—} & \bar{\mathbf{x}}_m & \text{—}
+\text{—} & \mathbf{x}_m & \text{—}
 \end{bmatrix}
 \:
-\xrightarrow[\text{PCA}]{} \:
+\rightarrow \:
 Y =
 \begin{bmatrix}
-\text{—} & \bar{\mathbf{y}}_1 & \text{—} \\
-\text{—} & \bar{\mathbf{y}}_2 & \text{—} \\
+\text{—} & \mathbf{y}_1 & \text{—} \\
+\text{—} & \mathbf{y}_2 & \text{—} \\
 \text{—} & \vdots & \text{—} \\
-\text{—} & \bar{\mathbf{y}}_m & \text{—}
-\end{bmatrix}
+\text{—} & \mathbf{y}_m & \text{—}
+\end{bmatrix}.
 $$
+:::
 :::
 :::
 
 :::{.fragment}
-_Equivalently_, we can write:
+Equivalently, we can write:
 
 :::{style="transform: scale(.8, 0.7); margin: -1.5em;"}
 $$
@@ -147,13 +161,13 @@ x_{21} & x_{22} & \dots & x_{2n} \\
 \vdots & \vdots & \ddots & \vdots \\
 x_{m1} & x_{m2} & \dots & x_{mn} 
 \end{bmatrix} \:
-\xrightarrow[\text{PCA}]{} \:
+\rightarrow \:
 Y = \begin{bmatrix} 
-y_{11} & y_{12} & \dots & y_{1d} \\
-y_{21} & y_{22} & \dots & y_{2d} \\
+y_{11} & y_{12} & \dots & y_{1k} \\
+y_{21} & y_{22} & \dots & y_{2k} \\
 \vdots & \vdots & \ddots & \vdots \\
-y_{m1} & y_{m2} & \dots & y_{md} 
-\end{bmatrix}
+y_{m1} & y_{m2} & \dots & y_{mk} 
+\end{bmatrix}.
 $$
 :::
 :::
@@ -161,9 +175,10 @@ $$
 
 ## PCA Application: Genes Mirror Geography
 
+::: {style="font-size: 0.8em; "}
 :::{.columns}
 
-:::{.column width="50%" style="font-size: 0.8em;"}
+:::{.column width="50%" style="font-size: 1em;"}
 _Single Nucleotide Polymorphism (SNP)_ describes the change in DNA from common base pairs (A,T,C,G).<br><br>
 **Data:** DNA material (SNP's) of 3000 Europeans.<br><br>
 **Dimensions:** $3000 \times 500k$.
@@ -172,15 +187,17 @@ _Single Nucleotide Polymorphism (SNP)_ describes the change in DNA from common b
 ![](/images/pca/PCA_genes_Europe.png)
 :::
 :::
+:::
 
 ## PCA Application: Genes Mirror Geography
 
-::: {style="font-size: .75em"}
+::: {style="font-size: 0.8em;"}
+::: {.fragment }
 Key Observations:
 
 :::{.incremental}
-- the _first principal components_ almost reproduce the map of Europe;
-- SNPs are similar geographically;
+- The first principal components almost reproduce the map of Europe.
+- SNPs are similar geographically.
 - DNA of an individual reveals their birthplace within a few hundred kilometers.
 :::
 
@@ -191,7 +208,7 @@ from IPython.core.display import HTML
 def generate_html():
     return """
     <div class="blue-box">
-        <p><b>Would a similar study in the USA be effective?</b></p>
+        <p>Would a similar study in the USA be effective?</p>
     </div>
     """
 
@@ -200,50 +217,53 @@ display(HTML(html_content))
 ```
 :::
 :::
+:::
 <!-- Had to do this slide a little janky. : - ( -->
 ## PCA Overview
-_Input_:  $\mathbf{x}_1,\dots,\mathbf{x}_n \in \mathbb{R}^D$ <br>
-_Output_: $\mathbf{y}_1,\dots,\mathbf{y}_n \in \mathbb{R}^d$ with $d << D$
+::: {style="font-size: 0.8em; "}
+Input:  $X_0 \in \mathbb{R}^{m \times n}$.<br>
+Output: $Y \in \mathbb{R}^{m \times k}$ with $k \ll n$.
 
-::::{style="font-size: .8em"}
+::::{style="font-size: 1em"}
 
 :::{.fragment}
-Step **1**: Center the data (i.e., subtract the mean across rows): $\mathbf{x}_1 \rightarrow \mathbf{x}$.
+Step **1**: Center the data (i.e., subtract the mean across rows): $X_0 \rightarrow X$.
 :::
 :::{.fragment}
-Step **2**: Find the direction of the largest variance: direction of PC 1.
+Step **2**: Find the direction of the largest variance: direction of the first principal component, PC 1.
 :::
 
 :::{.fragment}
-Step **3**: From the directions orthogonal to that of PC 1 find one with the largest variance: direction of PC 2.
+Step **3**: From the directions <br> orthogonal to that of PC 1 find <br> one with the largest variance:<br> direction of PC 2.
 :::
 :::{.fragment}
 Step **4**: ...
-![](/images/pca/PCs_variance.png){style="position: absolute; bottom: .2rem; right: 12rem; width: 40%; height: 40%;"}
+![](/images/pca/PCs_variance.png){style="position: absolute; bottom: .2rem; right: 6rem; width: 40%; height: 40%;"}
 :::
 :::{.fragment}
 Step **5**: Project the data into the <br>directions of the PCs.
+:::
 :::
 
 ::::
 
 ## Least Squares Interpretation
 
-::: {style="font-size: .75em"}
-Centered data often clusters along a line or other low-dimensional subspace of $\mathbb{R}^{n}$.
+::: {style="font-size: .8em"}
+Centered data often clusters along a line or other low-dimensional <br> subspace of $\mathbb{R}^{n}$.
 :::
 :::: {.columns}
 ::: {.column width="50%" style="text-align: center;"}
 ![](images/pca/PCA_residual.png){style="width: 60%; height: auto; margin: 0;"}
-<p style="text-align: left; font-size: .75em">
-Find a line <em>(or k-dimensional hyperplane)</em> that is closest to the points: <b>minimizes</b> the sum of squared distances from the points to the line.</p>
+<p style="text-align: left; font-size: .8em">
+Find a line (or k-dimensional hyperplane) that is closest to the points: <b>minimizes</b> the sum of squared distances from the points to the line.</p>
 :::
 
 ::: {.column width="50%" style="text-align: center;"}
-![](images/pca/PCA_variance.png){style="width: 60%; height: auto; margin: 0;"}
+![](images/pca/PCA_variance.png){style="width: 58%; height: auto; margin: 0;"}
 
-<p style="text-align: left; font-size: .75em">
-Find a line <em>(or k-dimensional hyperplane)</em> that captures the most variance in the data: <b>maximizes</b> the sum of squared distances to the mean.
+<p style="text-align: left; font-size: .8em">
+Find a line (or k-dimensional hyperplane) that captures the most variance in the data: <b>maximizes</b> the sum of squared distances to the mean.
 </p>
 
 :::
@@ -310,20 +330,20 @@ plt.plot(endpoints[:,0], endpoints[:,1], 'g-');
 ::::
 
 ## Covariance Matrix
-:::{style="font-size: .75em"}
+:::{style="font-size: 0.8em"}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return """
-    <div class="blue-box" style="background-color: #f3e6ff; padding: 10px; border-radius: 5px;">
+    <div class="purple-box" style="background-color: #f3e6ff; padding: 10px; border-radius: 5px;">
         <p>
             Let \\( X \\in \\mathbb{R}^{m \\times n} \\) contain the centered data.
             Then the sample covariance matrix is defined by:
         </p>
-        <p style="text-align: center; font-size: 1.2em;">
+        <p style="text-align: center; font-size: 1em;">
             \\[
-            S = \\frac{1}{m-1} X^T X
+            S = \\frac{1}{m-1} X^T X.
             \\]
         </p>
     </div>
@@ -335,20 +355,20 @@ display(HTML(html_content))
 $S$ is symmetric:
 
 $$
-S^T = \left( \frac{1}{m-1} X^T X \right)^T = \frac{1}{m-1} \left( X^T (X^T)^T \right) = \frac{1}{m-1} X^T X = S.
+S^T = \left( \frac{1}{m-1} X^T X \right)^T = \frac{1}{m-1}  X^T (X^T)^T  = \frac{1}{m-1} X^T X = S.
 $$
 
-Since $S$ is symmetric, we can apply the **Spectral Decomposition**.
+Since $S$ is symmetric, we can apply the **spectral decomposition**.
 :::
 
 ## Spectral Decomposition
-:::{style="font-size: .65em"}
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return """
-    <div class="blue-box" style="background-color: #f3e6ff; padding: 10px; border-radius: 5px;">
+    <div class="purple-box" style="background-color: #f3e6ff; padding: 2px; border-radius: 5px;">
         <p>
             Every symmetric matrix \( S \) has the factorization \(S = V \Lambda V^T,\) where \( \Lambda \) is a diagonal matrix that contains the eigenvalues of \( S \) and \( V \) is a matrix whose columns are orthogonal eigenvectors of \( S \).
         </p>
@@ -359,7 +379,7 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-That is, the covariance matrix $S \in \mathbb{R}^{n \times n}$ has the spectral decomposition $S = V \Lambda V^T,$ where
+The covariance matrix $S \in \mathbb{R}^{n \times n}$ is decomposed into $S = V \Lambda V^T,$ where
 
 $$
 \Lambda = 
@@ -386,7 +406,7 @@ with $\lambda_1\geq\lambda_2\geq\dots\geq\lambda_{n-1}\geq\lambda_n$ and $S\math
 
 ## Essentials of PCA
 
-:::{.incremental style="font-size: .9em"}
+:::{.incremental style="font-size: .8em"}
 - The columns of $V$ are the principal directions.
 - The principal components are the projection of the data into principal directions: $XV$.
 - The total variance $T$ in the data is the sum of all eigenvalues: $T=\lambda_1+\lambda_2+\cdots+\lambda_n$.
@@ -396,19 +416,19 @@ with $\lambda_1\geq\lambda_2\geq\dots\geq\lambda_{n-1}\geq\lambda_n$ and $S\math
 
 ## Example
 
-:::{style="font-size: .75em"}
+:::{style="font-size: .8em"}
 :::{.fragment}
-Consider the following dataset $\mathbf{x}_1 = \begin{bmatrix} 90 \\ 60 \\ 60 \end{bmatrix}$ and $\mathbf{x}_2 = \begin{bmatrix} 80 \\ 60 \\ 70 \end{bmatrix}$. Let us find its <br>**first principal component**.
+Consider the following dataset $\mathbf{x}_1 = \begin{bmatrix} 90 \\ 60 \\ 60 \end{bmatrix}$ and $\mathbf{x}_2 = \begin{bmatrix} 80 \\ 60 \\ 70 \end{bmatrix}$. <br>Let us find its **first principal component**.
 :::
 :::{.fragment}
-_First_, we construct $X_0$: $X_0 = \begin{bmatrix} 90 & 60 & 60 \\ 80 & 60 & 70 \end{bmatrix}$.
+First, we construct $X_0$: $X_0 = \begin{bmatrix} 90 & 60 & 60 \\ 80 & 60 & 70 \end{bmatrix}$.
 :::
 :::{.fragment}
 The mean across rows is: $\mu = \begin{bmatrix} 85 & 60 & 65 \end{bmatrix}$.
 :::
 :::{.fragment}
-:::{style="font-size: .90em"}
-We _center_ the data by subtracting each entry of $\mu$ from the corresponding column in $X_0$:
+:::{style="font-size: 1em"}
+We **center** the data by subtracting each entry of $\mu$ from the corresponding column in $X_0$:
 :::
 :::{.center-text}
 $X = \begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}$.
@@ -418,7 +438,7 @@ $X = \begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}$.
 
 ## Example
 
-::::{style="font-size: .7em"}
+::::{style="font-size: .8em"}
 Next, we compute the **covariance matrix:**
 
 $$
@@ -427,16 +447,20 @@ S = \frac{1}{2-1}X^TX = \begin{bmatrix} 5 & -5 \\ 0 & 0 \\ -5 & 5 \end{bmatrix}
 = \begin{bmatrix} 50 & 0 & -50 \\ 0 & 0 & 0 \\ -50 & 0 & 50 \end{bmatrix}.
 $$
 
-The _eigenvalues_ of $S$ are $\lambda_1=100$ and $\lambda_2=\lambda_3=0$.
+The eigenvalues of $S$ are $\lambda_1=100$ and $\lambda_2=\lambda_3=0$.
 
-The _eigenvectors_ of $S$ are:
+The eigenvectors of $S$ are:
 
 $$
 \mathbf{v}_1 = \begin{bmatrix} 0.7071 \\ 0 \\ -0.7071 \end{bmatrix},
 \mathbf{v}_2 = \begin{bmatrix} 0.7071 \\ 0 \\ 0.7071 \end{bmatrix},
 \mathbf{v}_3 = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}.
 $$
+:::
 
+## Example
+
+::::{style="font-size: .8em"}
 :::{.center-text style="font-size: 1em"}
 ```{python}
 from IPython.core.display import HTML
@@ -444,7 +468,7 @@ from IPython.core.display import HTML
 def generate_html():
     return """
     <div class="blue-box">
-        <p><b>What is the total <em>variance</em> in the data?</b></p>
+        <p>What is the total variance in the data?</p>
     </div>
     """
 
@@ -452,17 +476,16 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 :::
-:::
 
-## Example
-
+:::{.fragment}
 The **total variance** is $T=100$.
+:::
 
 :::{.fragment}
-This implies that the _first principal component_ accounts for all the variance in the dataset.
+This implies that the first principal component accounts for all the variance in the dataset.
 :::
 :::{.fragment}
-We can compute the _first principal component_ as:
+We can compute the first principal component as:
 
 $$
 Y = X\mathbf{v}_1 = \begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}
@@ -470,13 +493,14 @@ Y = X\mathbf{v}_1 = \begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}
 = \begin{bmatrix} 7.071 \\ -7.071 \end{bmatrix}.
 $$
 :::
+:::
 
 ## PCA Step by Step
-:::{style="font-size: .65em"}
-Input: $X_0 \in \mathbb{R}^{m \times n}$  
-Output: $Y \in \mathbb{R}^{m \times k}$ with $k \ll n$
+:::{style="font-size: .8em"}
+Input: $X_0 \in \mathbb{R}^{m \times n}$. Output: $Y \in \mathbb{R}^{m \times k}$ with $k \ll n.$
 
 :::{.fragment}
+
 1. Center the data: $X_0 \to X$.
 :::
 
@@ -493,7 +517,7 @@ Output: $Y \in \mathbb{R}^{m \times k}$ with $k \ll n$
 :::
 
 :::{.fragment}
-5. Assemble $V_k = \begin{bmatrix} | & | & \dots & | \\\mathbf{v}_1 & \mathbf{v}_2 & \dots & \mathbf{v}_k \\| & | &\dots & | \end{bmatrix}$.
+5. Assemble $V_k = \begin{bmatrix} | & | &  & | \\\mathbf{v}_1 & \mathbf{v}_2 & \dots & \mathbf{v}_k \\| & | & & | \end{bmatrix}$.
 :::
 
 :::{.fragment}
@@ -503,7 +527,7 @@ Output: $Y \in \mathbb{R}^{m \times k}$ with $k \ll n$
 
 ## Relationship to the SVD
 
-:::{style="font-size: .8em"}
+:::{style="font-size: .8em;"}
 The SVD of a mean-centered data matrix $X \in \mathbb{R}^{m \times n}$ is $X = U \Sigma V^T$.
 <!-- Had to use an image instead of python code because of whitespace created -->
 ![](/images/pca/UeV.png)
@@ -517,9 +541,7 @@ $$
 :::
 
 ## Relationship to the SVD
-
-:::{style="font-size: 1.15em"}
-
+:::{style="font-size: 0.8em;"}
 :::{.fragment}
 Recall that in PCA the covariance matrix $S$ is given by $\frac{1}{m-1} X^T X$.
 :::
@@ -531,19 +553,22 @@ Thus, $S = \frac{1}{m-1} V \Sigma^2 V^T$.
 <br>
 
 :::{.fragment}
-This tells us that the _eigenvalues_ $\lambda_i$ of $S$ are the **squares of the singular values** $\sigma_i^2$ of $\Sigma$, scaled by $\frac{1}{m-1}$.<br><br><br>
-:::
+This tells us that the eigenvalues $\lambda_i$ of $S$ are the squares of the singular values $\sigma_i^2$ of $\Sigma$, scaled by $\frac{1}{m-1}$.
 :::
 
-## Relationship to the SVD
-
+:::{.fragment}
 In practice, PCA is done by computing the SVD of your data matrix as opposed to forming the covariance matrix and computing the eigenvalues. 
+::: 
 
+:::{.fragment}
 The principal components are the right singular vectors $V$. The projected data is computed as $XV$. The eigenvalues of $S$ are obtained from squaring the entries of $\Sigma$ and scaling them by $\frac{1}{m-1}$.
+:::
+:::
+
 
 ## Case Study: Random Data
-
-Let's consider some randomly generated data consisting of 2 features.
+:::{style="font-size: 0.8em; "}
+Let us consider some randomly generated data consisting of 2 features.
 
 ```{python}
 #| fig-align: center
@@ -567,10 +592,12 @@ plt.scatter(X[:, 0], X[:, 1])
 plt.axis('equal')
 plt.show()
 ```
-
+:::
 ---
 
-Let's do PCA and plot the principle components over our dataset. As expected, the principal components are orthogonal and point in the directions of the maximum variance.
+## Case Study: Random Data
+:::{style="font-size: 0.8em; "}
+Let us do PCA and plot the principle components over our dataset. As expected, the principal components are orthogonal and point in the directions of the maximum variance.
 
 ```{python}
 #| fig-align: center
@@ -603,10 +630,11 @@ plt.title('Principal Components on Original Dataset')
 plt.axis('equal')
 plt.show()
 ```
+:::
 
 ## Case Study: Digits
-
-Let's consider another example using the MNIST dataset.
+:::{style="font-size: 0.8em; "}
+Let us consider another example using the MNIST dataset.
 
 ```{python}
 #| fig-align: center
@@ -621,12 +649,11 @@ for i in range(8):
 plt.tight_layout()
 plt.show()
 ```
-
+:::
 ---
-:::{style="font-size: .8em"}
-We first stack the columns of each digit on top of each other (this operation is called vectorizing) and perform PCA on the 64-D representation of the digits.
-
-We can plot the explained variance ratio and the total (cumulative) explained variance ratio.
+## Case Study: Digits
+:::{style="font-size: .8em; "}
+We first stack the columns of each digit on top of each other and perform PCA on the 64-D representation of the digits.
 :::
 ```{python}
 #| fig-align: center
@@ -662,8 +689,9 @@ plt.show()
 ```
 
 ---
+
 :::{style="font-size: .8em"}
-Let's plot the data in the first 2 principal component directions. We'll use the digit labels to color each digit in the reduced space.
+Let us plot the data in the first 2 principal component directions. We'll use the digit labels to color each digit in the reduced space.
 :::
 
 ```{python}
@@ -685,65 +713,96 @@ plt.show()
 
 ---
 
+## Case Study: Digits
+:::{style="font-size: .8em; padding-top: 10vh;"}
 We observe the following in our plot of the digits in the first two principal components:
 
 - There is a decent clustering of some of our digits, in particular 0, 2, 3, 4, and 6.
 - The numbers 0 and 6 seem to be relatively close to each other in this space.
 - There is not a very clear separation of the number 5 from some of the other points.
-
-## To Scale or Not to Scale
-:::{style="font-size: .9em"}
-Consider a situation where we have age and height data for 4 people.
 :::
 
-:::{.center-text style="max-width:60%;"}
-![](images/pca/scale_and_table_feet.png)
+## To Scale Or Not To Scale
+:::{style="font-size: .8em"}
+Consider a situation where we have age and height data for 4 people.
+
+:::{.center-text style="max-width:80%;"}
+:::: {.columns}
+::: {.column width="50%"}
+| Person | Age [years] | Height [feet] |
+|--------|-------------|---------------|
+| A      | 25          | 6.232         |
+| B      | 30          | 6.232         |
+| C      | 25          | 5.248         |
+| D      | 30          | 5.248         |
+
+:::
+::: {.column width="50%"}
+![](images/Scaling_feet.png)
+:::
+::::
 :::
 
 ::::{.fragment}
 :::{.center-text}
 Data varies most in the **horizontal direction.**
 :::
+:::
 ::::
 
-## To Scale or Not to Scale
-
+## To Scale Or Not To Scale
+:::{style="font-size: .8em"}
 What if the height is in cm?
 
-:::{.center-text style="max-width:70%;"}
-![](images/pca/scale_and_tablecm.png)
+:::{.center-text style="max-width:80%;"}
+:::: {.columns}
+::: {.column width="50%"}
+| Person | Age [years] | Height [cm] |
+|--------|-------------|-------------|
+| A      | 25          | 189.95      |
+| B      | 30          | 189.95      |
+| C      | 25          | 159.96      |
+| D      | 30          | 159.96      |
+
+:::
+::: {.column width="50%"}
+![](images/Scaling_cm.png)
+:::
+::::
 :::
 
 ::::{.fragment}
 :::{.center-text}
 Data varies most in the **vertical direction.**
 :::
+:::
 ::::
-## To Scale or Not to Scale
 
+## To Scale Or Not To Scale
+:::{style="font-size: .8em"}
 Let's standardize our data.
 
-:::{.center-text style="max-width:70%;"}
-![](images/pca/standardized_graph_and_table.png)
+:::{.center-text style="max-width:80%;"}
+:::: {.columns}
+::: {.column width="50%"}
+| Person | Age [years] | Height [cm] |
+|--------|-------------|-------------|
+| A      | -1          | 1           |
+| B      | 1           | 1           |
+| C      | -1          | -1          |
+| D      | 1           | -1          |
+
+:::
+::: {.column width="50%"}
+![](images/Scaling.png)
+:::
+::::
 :::
 
 ::::{.fragment}
 :::{.center-text}
 When we normalize our data, we observe an **equal distribution** of the variance.
 :::
+:::
 ::::
 
-
---- 
-
-What quantity is represented by $\frac{Cov(X, Y)}{\sigma_X\sigma_Y}$, where $X$ and $Y$ represent the random variables associated to sampling a person with that Age and Height?
-
-:::: {.fragment}
-This is the correlation matrix. When you standardize your data you are no longer working with the covariance matrix but the correlation matrix.
-::::
-
-:::: {.fragment}
-PCA on a standardized dataset and working with the correlation matrix is the best practice when your data has very different scales. 
-
-PCA identifies the directions with the maximum variance and large scale data can disproportionately influence the results of your PCA.
-::::

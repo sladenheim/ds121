@@ -72,9 +72,31 @@
   object-fit: contain;           /* Scales images to fit within the height */
 }
 
-.blue-box {
+.purple-box {
   border: 2px solid #6666ff;
   background-color: #e6e6ff;
+  border-radius: 3px;
+  padding: 20px;
+  padding-top: 30px; /* Extra padding for the label */
+  position: relative;
+  width: auto /* Adjust the width as needed */
+}
+
+.purple-box .label {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background-color: #6666ff;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.blue-box {
+  border: 2px solid #00ffff;
+  background-color: #e2f9f9;
   border-radius: 3px;
   padding: 20px;
   padding-top: 30px; /* Extra padding for the label */
@@ -86,7 +108,7 @@
   position: absolute;
   top: -10px;
   left: 10px;
-  background-color: #6666ff;
+  background-color: #00ffff;
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
