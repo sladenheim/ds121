@@ -1,0 +1,272 @@
+---
+title: "Vectors and Linear Combinations"
+author: "CDS DS 121<br>Boston University"
+format: 
+    revealjs:
+        css: 
+        - styles.css
+        - styles_fonts.css
+---
+
+## Learning Objectives
+<!-- Is it better to increment bullets one by one? Or is it better to reveal them together so it is easier to present? -->
+Today we will talk about vectors.
+
+We will discuss why we need vectors in the first place. We will look at vectors from three perspectives:
+
+:::{.fragment}
+- Algebraic,
+- Geometric, and
+- Computational.
+:::
+
+:::{.fragment}
+_In addition_, we will discuss how to compare and combine vectors.
+:::
+
+## Why Vectors?
+
+:::::{.columns}
+::::{.column width=50%"}
+![](/images/lecture_2/oranges_apples.jpg)
+
+:::{style="font-size: .8em;"}
+"You **can't** add _apples_ and _oranges_"
+:::
+::::
+::::{.column width="50%"}
+
+:::{style="font-size: 1.2em;"}
+
+Two seperate numbers $v_1$ and $v_2$ form a _two-dimensional_ vector: <br>
+
+:::{.center-text}
+
+:::{style="font-size: 1.5em;"}
+**$\begin{bmatrix} \mathit{v_1} \\ \mathit{v_2} \end{bmatrix}$**
+:::
+:::
+:::
+::::
+:::::
+
+<!-- :::{.text-center}
+You can't add apples and oranges
+::: -->
+
+## Algebraic Representation
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return """
+    <div class="purple-box">
+        <p>A list of real numbers with only one column is called a <b>column vector</b>, or simply a <b>vector</b>.
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<!-- Fun way to get a half line break : ) -->
+<div style="margin-bottom: 0.5em;"> </div> 
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>The set of all vectors with \( d \) is denoted by \( \mathbb{R^2}\).
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+::::{.fragment}
+Examples of vectors in $\mathbb{R^2}$:<br>
+
+:::{.center-text}
+$\bar{a}=\begin{bmatrix}3 \\ -1\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bar{b}=\begin{bmatrix}.2 \\ .3\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bar{c}=\begin{bmatrix}w_1 \\ w_2\end{bmatrix}$.
+:::
+::::
+
+## Algebraic Representation
+
+:::{.center-text style="font-size: .8em;"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>How do vectors in \( \mathbb{R^3}\) look like?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+:::{style="font-size: .8em;"}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Examples of vectors in $\mathbb{R^3}$:
+:::
+
+:::{.center-text style="font-size: .6em;"}
+**$\bar{d}=\begin{bmatrix}2 \\ 3 \\ 4\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bar{e}=\begin{bmatrix}-1 \\ 0 \\ 2\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bar{f}=\begin{bmatrix}w_1 \\ w_2 \\ w_3\end{bmatrix}$**
+:::
+:::{.center-text style="font-size: .8em;"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Are \(\small \begin{bmatrix}2 & 3 & 4\end{bmatrix}\) and \(\small \begin{bmatrix}2 \\ 3 \\ 4\end{bmatrix}\) the same vector?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Geometric Representation
+Geometrically, an ordered sequence of $d$ numbers can be thought of as a point in $\mathbb{R}^d$.<br>
+
+::::{.fragment}
+:::{style="font-size: .9em"}
+Both $\tiny \begin{bmatrix} -2 \\ -1 \end{bmatrix}$ and $\small \begin{bmatrix} -2 & -1 \end{bmatrix}$ can be viewed as a point on a plane.
+:::
+::::
+::::{.fragment}
+:::{.center-text}
+```{python}
+import laUtilities as ut
+
+ax = ut.plotSetup(size=(8,4))
+ut.centerAxes(ax)
+ut.plotPoint(ax, -2, -1)
+ut.plotPoint(ax, 2, 2)
+ut.plotPoint(ax, 3, -1)
+ax.plot(0, -2, '')
+ax.plot(-4, 0, '')
+```
+:::
+::::
+
+## Vector Manipulations
+
+```{python}
+#| echo: true
+import numpy as np
+
+u = np.array([[7],[4]])
+v = np.array([[4],[7]])
+
+print(np.array_equal(u,v))
+```
+
+```{python}
+#| echo: true
+print(np.array_equal(v,v))
+```
+:::{.center-text style="font-size: .65em"}
+$\bar{u} = \begin{bmatrix}7 \\ 4\end{bmatrix}$ does _not_ equal $\bar{v} = \begin{bmatrix}4 \\ 7\end{bmatrix}$
+:::
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>Two vectors of the same size are <b>equal</b>, if and only if their corresponding entries are equal.
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Vector Manipulations
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><b>Multiplying</b> a vector<b> by a scalar</b> is accomplished by multiplying each entry by the scalar.
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::{.fragment}
+:::{style="font-size: .8em"}
+
+For example:
+$$
+2 \begin{bmatrix} 7 \\ 4 \end{bmatrix} = \begin{bmatrix} 14 \\ 8 \end{bmatrix}.
+$$
+:::
+:::
+::::{.fragment}
+:::{style="font-size: .8em"}
+We can use `Python` to compute scalar-vector multiplication.
+:::
+:::{style="font-size: 1.2em"}
+```{python}
+#| echo: true
+print(2 * u)
+```
+:::
+::::
+
+## Vector Manipulations
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>If two vectors are the same size, then their <b>sum</b> is another vector whose entries are the corresponding sums.
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+<!-- questionable fragment -->
+::::{.fragment}
+For example:
+
+:::{style="font-size: .8em"}
+$$
+\left[\begin{array}{r}1\\-2\end{array}\right] + \left[\begin{array}{c}2\\-5\end{array}\right] = \left[\begin{array}{r}1 + 2\\-2 - 5\end{array}\right] = \left[\begin{array}{c}3\\-7\end{array}\right]
+$$
+
+:::
+
+:::{.fragment style="font-size: 1.1em"}
+```{python}
+#| echo: true
+s = np.array([[1],[-2]])
+t = np.array([[2],[-5]])
+
+print(s + t)
+```
+:::
