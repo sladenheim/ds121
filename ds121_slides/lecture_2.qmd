@@ -385,7 +385,105 @@ print('')
 
 ## Scalar Multiplication
 
-NEED FIGURE
+:::{.center-text style="font-size: .8em"}
+Multiplying a _vector_ by a _scalar_
+:::
+
+```{python}
+import plotly.graph_objects as go
+import numpy as np
+
+# Function to create edges of a cube
+def cube_edges(origin, size):
+    x0, y0, z0 = origin
+    return [
+        # bottom face
+        [(x0, y0, z0), (x0+size, y0, z0)],
+        [(x0, y0+size, z0), (x0+size, y0+size, z0)],
+        [(x0, y0, z0), (x0, y0+size, z0)],
+        [(x0+size, y0, z0), (x0+size, y0+size, z0)],
+
+        # top face
+        [(x0, y0, z0+size), (x0+size, y0, z0+size)],
+        [(x0, y0+size, z0+size), (x0+size, y0+size, z0+size)],
+        [(x0, y0, z0+size), (x0, y0+size, z0+size)],
+        [(x0+size, y0, z0+size), (x0+size, y0+size, z0+size)],
+
+        # vertical edges
+        [(x0, y0, z0), (x0, y0, z0+size)],
+        [(x0+size, y0, z0), (x0+size, y0, z0+size)],
+        [(x0, y0+size, z0), (x0, y0+size, z0+size)],
+        [(x0+size, y0+size, z0), (x0+size, y0+size, z0+size)]
+    ]
+
+# Create a 3D plot with two cubes and a line
+fig = go.Figure()
+
+# Add inner and outer cubes
+for edge in cube_edges((0,0,0), 1.0):
+    fig.add_trace(go.Scatter3d(
+        x=[edge[0][0], edge[1][0]],
+        y=[edge[0][1], edge[1][1]],
+        z=[edge[0][2], edge[1][2]],
+        mode='lines',
+        line=dict(color='blue'),
+        showlegend=False
+    ))
+
+for edge in cube_edges((0,0,0), 2.0):
+    fig.add_trace(go.Scatter3d(
+        x=[edge[0][0], edge[1][0]],
+        y=[edge[0][1], edge[1][1]],
+        z=[edge[0][2], edge[1][2]],
+        mode='lines',
+        line=dict(color='blue'),
+        showlegend=False
+    ))
+
+# Vector line from (0,0,0) to (3,3,3)
+# Vector line from (0,0,0) to (3,3,3)
+fig.add_trace(go.Scatter3d(
+    x=[0,3], y=[0,3], z=[0,3],
+    mode='lines',
+    line=dict(color='red', dash='dot'),
+    showlegend=False
+))
+
+# Add red dot at corner of first box (0,0,0)
+fig.add_trace(go.Scatter3d(
+    x=[1], y=[1], z=[1],
+    mode='markers+text',
+    marker=dict(color='red', size=5),
+    text=['v'],
+    textposition='top center',
+    showlegend=False
+))
+
+# Add red dot at corner of second box (2,2,2)
+fig.add_trace(go.Scatter3d(
+    x=[2], y=[2], z=[2],
+    mode='markers+text',
+    marker=dict(color='red', size=5),
+    text=['2v'],
+    textposition='top center',
+    showlegend=False
+))
+
+# Set up axes and initial camera position
+fig.update_layout(
+    title_text='example',  # Add a title
+    scene=dict(
+        xaxis=dict(range=[0,3], title='εX'),
+        yaxis=dict(range=[0,3], title='X2'),
+        zaxis=dict(range=[0,3], title='τX'),
+        camera=dict(eye=dict(x=1.5, y=-.8, z=.8))  # Adjust these values as needed
+    ),
+    margin=dict(l=0, r=0, b=0, t=0)
+)
+
+
+fig.show()
+```
 
 ## Linear Combinations
 
