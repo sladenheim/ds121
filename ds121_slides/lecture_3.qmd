@@ -1,0 +1,1190 @@
+---
+title: "Lengths and Inner Products"
+author: "CDS DS 121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+---
+
+## Learning Objectives
+::::{style="font-size: .8em"}
+Today we will continue talking about vectors. We will start by re-introducing the concept of a dot (or inner) product of two vectors. The inner product allows us to explore vector geometry, including
+
+:::{.incremental}
+
+- vector <span style="background-color: #ffa500; color:#000">length</span>
+- the <span style="background-color: #ffa500; color:#000">distance</span> between two vectors
+- the cosine of the <span style="background-color: #ffa500; color:#000">angle</span> between two vectors
+- vector <span style="background-color: #ffa500; color:#000">orthogonality.</span>
+:::
+::::
+
+## Inner Product
+
+::::{style="font-size: .6em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        Let \(\mathbf{\bar{u}}, \mathbf{\bar{v}} \in \mathbb{R}^n\) be n-dimensional column vectors. 
+        The inner product (or dot product) of \(\mathbf{\bar{u}}\) and \(\mathbf{\bar{v}}\) 
+        is the number \(\mathbf{\bar{u}}^T \mathbf{\bar{v}}\) such that:
+        </p>
+        <p>
+        \[
+          \mathbf{\bar{u}}^T \mathbf{\bar{v}} = 
+          [u_1, \, u_2, \, \ldots, \, u_n]
+          \begin{bmatrix}
+            v_1 \\
+            v_2 \\
+            \vdots \\
+            v_n
+          \end{bmatrix}
+          = u_1 v_1 + u_2 v_2 + \cdots + u_n v_n
+          = \sum_{i=1}^{n} u_i v_i
+        \]
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+The inner product is also denoted by $\mathbf{\bar{u}} \cdot \mathbf{\bar{v}}$.
+
+:::{.fragment}
+Let us look at some examples. The vectors 
+$\mathbf{\bar{u}} = \begin{bmatrix}4 \\ 2\end{bmatrix}$ 
+and 
+$\mathbf{\bar{v}} = \begin{bmatrix}-1 \\ 2\end{bmatrix}$ 
+have a zero dot product:
+:::
+:::{.fragment}
+$$\mathbf{\bar{u}} \cdot \mathbf{\bar{v}} 
+= \begin{bmatrix}4 \\ 2\end{bmatrix}
+\cdot
+\begin{bmatrix}-1 \\ 2\end{bmatrix}
+= -4 + 4 = 0.
+$$
+:::
+::::
+
+## Inner Product
+
+::::{style="font-size: .6em"}
+
+Dot products enter in economics and data science. Assume that we have three goods to buy and sell. Their prices are 
+$\tiny \mathbf{\begin{bmatrix} p_1 \\ p_2 \\ p_3 \end{bmatrix}}$ 
+for each unit — this is the price vector $\mathbf{\bar{p}}$. The quantities we buy or sell are 
+$\tiny \mathbf{\begin{bmatrix} q_1 \\ q_2 \\ q_3 \end{bmatrix}}$. 
+They are positive when we sell, negative when we buy. Selling $q_1$ units at the price $p_1$ brings $q_1 p_1$.
+
+The total income is the inner product of $\mathbf{q}$ and $\mathbf{p}$:
+
+$$
+\text{Income} = 
+\begin{bmatrix} q_1 & q_2 & q_3 \end{bmatrix}
+\begin{bmatrix} 
+p_1 \\ 
+p_2 \\ 
+p_3 
+\end{bmatrix}
+= q_1 p_1 + q_2 p_2 + q_3 p_3.
+$$
+
+::::
+
+::::{.fragment .center-text style="font-size: .75em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        If this inner product is equal to 0, what does that mean?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+::::
+
+## Properties
+
+::::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>Let \(\bar{u}\), \(\bar{v}\), and \(\bar{w}\) be vectors in \( \mathbb{R}^n \), and let \( c \) be a scalar. Then:</p>
+        <ul>
+            <li><b>\( \bar{u}^T \bar{v} = \bar{v}^T \bar{u} \)</b> <em>(symmetry)</em></li>
+            <li><b>\( (\bar{u} + \bar{v})^T \bar{w} = \bar{u}^T \bar{w} + \bar{v}^T \bar{w} \)</b> <em>(linearity)</em></li>
+            <li><b>\( (c \bar{u})^T \bar{v} = c (\bar{u}^T \bar{v}) = \bar{u}^T (c \bar{v}) \) </b><em>(linearity)</em></li>
+            <li><b>\( \bar{u}^T \bar{u} \geq 0 \)</b><em> (non-negativity)</em></li>
+        </ul>
+        <p><b>Note:</b> \( u^T u = 0 \) <b>if and only if</b> \( u = 0 \).</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+Armed with the inner product, let's start talking about vector geometry.
+::::
+
+## Vector Lengths
+
+::::{style="font-size: .8em"}
+
+How do we measure the length of a vector?
+
+:::{.center-text .fragment}
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Coordinates for the vector
+v1, v2 = 4, 3
+
+fig, ax = plt.subplots(figsize=(5, 5))
+
+# Draw the main vector from origin to (v1, v2)
+ax.plot([0, v1], [0, v2], 'b-')
+
+# Draw the horizontal leg from origin to (v1, 0)
+ax.plot([0, v1], [0, 0], 'b-')
+
+# Draw the vertical leg from (v1, 0) to (v1, v2)
+ax.plot([v1, v1], [0, v2], 'b-')
+
+# Red dot at the tip of the vector
+ax.plot(v1, v2, 'ro', markersize=5)
+
+# Label the vector
+ax.text(v1, v2, r'$\,\,\mathbf{v} = (v_1,\,v_2)$', 
+        ha='left', va='bottom', fontsize=12)
+
+# Label |v1| on the x-axis
+ax.text(v1/2, -0.4, r'$|v_1|$', ha='center', va='top', fontsize=12)
+
+# Label |v2| on the vertical segment
+ax.text(v1 + 0.1, v2/2, r'$|v_2|$', ha='left', va='center', fontsize=12)
+
+# Label the diagonal magnitude sqrt(v1^2 + v2^2), 
+# placing the equation slightly 'above' the hypotenuse
+mid_x = v1 / 2
+mid_y = v2 / 2
+label_offset = 0.2  # distance above the line
+theta = np.arctan2(v2, v1)  # angle of the line
+ax.text(mid_x + label_offset * np.cos(theta + np.pi/2),
+        mid_y + label_offset * np.sin(theta + np.pi/2),
+        r'$\sqrt{v_1^2 + v_2^2}$',
+        ha='center', va='bottom', fontsize=12,
+        rotation=np.degrees(theta))
+
+# Draw a small right-angle box at the corner (v1, 0)
+box_size = 0.2
+ax.plot([v1 - box_size, v1 - box_size], [0, box_size], 'k-')
+ax.plot([v1 - box_size, v1], [box_size, box_size], 'k-')
+
+# Set axis limits a bit beyond the vector
+ax.set_xlim(-1, 6)
+ax.set_ylim(-1, 4)
+
+# Move spines to make it look like axes through the origin
+ax.spines['left'].set_position('zero')
+ax.spines['bottom'].set_position('zero')
+ax.spines['right'].set_color('none')
+ax.spines['top'].set_color('none')
+
+# Ticks only on positive x and y
+ax.set_xticks(range(0, 7))
+ax.set_yticks(range(0, 5))
+ax.grid(False)
+
+plt.show()
+```
+
+In two dimensions the length is $\sqrt{v_1^2 + v_2^2}$.
+:::
+::::
+
+## Vector Lengths
+
+:::{style="font-size: .8em"}
+
+What happens in $\mathbb{R^3}$?
+
+:::{.center-text .fragment}
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Example vector components
+v1, v2, v3 = 5, 4, 7
+
+fig = plt.figure(figsize=(4, 4))
+ax = fig.add_subplot(111, projection='3d')
+
+#----------------------------------------------------------------
+#   1) Draw the parallelepiped edges in blue
+#----------------------------------------------------------------
+# Bottom face: (0,0,0) -> (v1,0,0) -> (v1,v2,0) -> (0,v2,0) -> (0,0,0)
+bottom_x = [0, v1, v1, 0, 0]
+bottom_y = [0, 0,   v2, v2, 0]
+bottom_z = [0, 0,   0,  0,  0]
+ax.plot(bottom_x, bottom_y, bottom_z, 'b-')
+
+# Top face: (0,0,v3) -> (v1,0,v3) -> (v1,v2,v3) -> (0,v2,v3) -> (0,0,v3)
+top_x = [0, v1, v1, 0, 0]
+top_y = [0, 0,   v2, v2, 0]
+top_z = [v3, v3, v3, v3, v3]
+ax.plot(top_x, top_y, top_z, 'b-')
+
+# Vertical edges
+# (0,0,0)->(0,0,v3), (v1,0,0)->(v1,0,v3), (v1,v2,0)->(v1,v2,v3), (0,v2,0)->(0,v2,v3)
+ax.plot([0, 0],   [0, 0],   [0, v3], 'b-')
+ax.plot([v1, v1], [0, 0],   [0, v3], 'b-')
+ax.plot([v1, v1], [v2, v2], [0, v3], 'b-')
+ax.plot([0, 0],   [v2, v2], [0, v3], 'b-')
+
+#----------------------------------------------------------------
+#   2) Draw diagonals
+#----------------------------------------------------------------
+# Red diagonal (main): from origin to (v1, v2, v3)
+ax.plot([0, v1], [0, v2], [0, v3], 'r--')
+
+# Green diagonal (floor): from origin to (v1, v2, 0)
+ax.plot([0, v1], [0, v2], [0, 0], 'g--')
+
+#----------------------------------------------------------------
+#   3) Plot points of interest
+#----------------------------------------------------------------
+# Black dot at origin
+ax.plot([0], [0], [0], 'ko', markersize=6)
+# Red dot at tip of the vector
+ax.plot([v1], [v2], [v3], 'ro', markersize=6)
+
+#----------------------------------------------------------------
+#   4) Labels
+#----------------------------------------------------------------
+# Vector label at (v1, v2, v3)
+ax.text(v1, v2, v3, r"$\mathbf{v} = (v_1,\,v_2,\,v_3)$",
+        fontsize=12, va='bottom', ha='left')
+
+# Label the diagonal sqrt(v1^2 + v2^2 + v3^2), in black + bold
+mx_d3 = v1/2
+my_d3 = v2/2
+mz_d3 = v3/2
+ax.text(mx_d3, my_d3, mz_d3,
+        r"$\mathbf{\sqrt{v_1^2 + v_2^2 + v_3^2}}$",
+        color='k', fontsize=12,
+        va='bottom', ha='left')
+
+# Label the floor diagonal sqrt(v1^2 + v2^2), in black + bold
+mx_d2 = v1/2
+my_d2 = v2/2
+mz_d2 = 0
+ax.text(mx_d2, my_d2, mz_d2,
+        r"$\mathbf{\sqrt{v_1^2 + v_2^2}}$",
+        color='k', fontsize=12,
+        va='bottom', ha='left')
+
+#----------------------------------------------------------------
+#   5) Right-angle marker in the floor plane (z=0) at the origin
+#      to emphasize the 90° between the x1 and x2 axes
+#----------------------------------------------------------------
+box_size = 0.5
+# We'll draw a small square near the origin in the x1-x2 plane
+# so it looks like a typical "right-angle" marker:
+ax.plot([0, 0],          [0, box_size],    [0, 0],         'k-')  # vertical up
+ax.plot([0, box_size],   [box_size, box_size], [0, 0],      'k-')  # top horizontal
+ax.plot([box_size, box_size], [box_size, 0],   [0, 0],      'k-')  # vertical down
+ax.plot([box_size, 0],   [0, 0],          [0, 0],         'k-')  # bottom horizontal
+
+#----------------------------------------------------------------
+#   6) Figure decorations
+#----------------------------------------------------------------
+ax.set_xlabel(r'$x_1$', labelpad=10, fontsize=12)
+ax.set_ylabel(r'$x_2$', labelpad=10, fontsize=12)
+ax.set_zlabel(r'$x_3$', labelpad=10, fontsize=12)
+
+# Set some bounds around the shape
+ax.set_xlim(-1, v1+2)
+ax.set_ylim(-1, v2+2)
+ax.set_zlim(0, v3+2)
+
+# Adjust view angle for a nicer perspective
+ax.view_init(elev=15, azim=-35)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+
+In $\mathbb{R}^3$ the length is $\sqrt{v_1^2 + v_2^2 + v_3^2}$.
+:::
+:::
+
+## Vector Lengths
+
+:::{style="font-size: .75em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        The length (or norm) of a vector \(\mathbf{v} = {\tiny \begin{bmatrix}v_1 \\v_2 \\\vdots \\v_n\end{bmatrix}} \in \mathbb{R}^n\) is the non-negative scalar \(\|\mathbf{\bar{v}}\|\), defined by: <br> 
+        \(\|\mathbf{\bar{v}}\| = \sqrt{\mathbf{\bar{v}} \cdot \mathbf{\bar{v}}} = \sqrt{\sum_{i=1}^{n} v_i^2} = \sqrt{v_1^2 + v_2^2 + \cdots + v_n^2}\).
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+
+:::{.fragment style="font-size: .8em" .center-text}
+We also refer to $\|\bar{v}\|$ as the magnitude of $\bar{v}$ 
+:::
+
+:::{.fragment style="font-size: .65em"}
+The length of a four-dimensional vector would be $\sqrt{v_1^2 + v_2^2 + v_3^2 + v_4^2}$. Thus, $\tiny\begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}$ has a length of $\sqrt{1^2 + 1^2 +1^2 +1^2}= 2$. This is the diagonal through a unit cube in four-dimensional space.
+:::
+
+## Normalization to Unit Length
+
+:::{style="font-size: .8em"}
+The word _"unit"_ is always indicating that some measurement equals _"one."_ The _unit_ price is the price for _one_ item. A _unit_ cube has rides of length _one._
+
+:::{.fragment style="font-size: 1em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A unit vector \(\bar{u}\) is a vector whose length equals one. That is, \(\|u\| = 1\)
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+
+:::{.fragment}
+For any scalar $c$, the length of $c\bar{v}$ is $|c|$ times the length of $\bar{v}$:  
+$$
+c\bar{v} = |c|\|\bar{v}\|
+$$
+:::
+<br>
+
+:::{.fragment}
+If we divide a non-zero vector $\bar{v}$ by its length, we obtain a unit vector:
+$$
+\bar{u} = \frac{1}{\|\bar{v}\|}\bar{v}.
+$$
+:::
+:::
+
+## Normalization to Unit Length
+
+::::{style="font-size: .8em"}
+**Example.** Let $\mathbf{v}= {\tiny\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}}$. Find the unit vector $\mathbf{u} \in \mathbb{R^3}$ in the **same direction** as $\mathbf{v}$
+
+:::{.fragment}
+**Solution.** _First,_ compute the length of $\mathbf{v}$:
+
+:::{.center-text}
+$\|\mathbf{v}\|^2 = \mathbf{v}^\top \mathbf{v} = (4)^2 + (-2)^2 + (2)^2 + (1)^2 = 25$
+
+$\|v\|^2 = \sqrt{25} = 5$
+:::
+:::
+
+:::{.fragment}
+_Then,_ multiply $\mathbf{v}$ by $1/\|v\|$ to obtain:
+
+:::{.center-text}
+$\mathbf{u} = \frac{1}{\|\mathbf{v}\|} \mathbf{v} = \frac{1}{5} \mathbf{v} = \frac{1}{5} \begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix} = \begin{bmatrix} \frac{4}{5} \\ \frac{-2}{5} \\ \frac{2}{5} \\ \frac{1}{5} \end{bmatrix}$
+:::
+:::
+::::
+
+## Distance
+::::{style="font-size: .8em"}
+In $\mathbb{R^\prime}$ the distance between two points a and b is equal to $|a - b|$
+<br>
+
+:::{.center-text}
+```{python}
+# Create the figure and axis
+fig, ax = plt.subplots(figsize=(10, 1.2))
+
+# Draw the number line
+ax.plot([0, 9], [0, 0], color='black', linewidth=1.5)  # Line from 0 to 9
+
+# Add ticks and labels
+for x in range(10):
+    ax.plot([x, x], [-0.1, 0.1], color='black', linewidth=1)  # Short tick marks
+    ax.text(x, -0.3, str(x), ha='center', va='center', fontsize=10)  # Add tick labels
+
+# Add blue dots for 'a' and 'b'
+ax.scatter([1, 7], [0, 0], color='blue', zorder=5)  # Points at 1 and 7
+
+# Annotate the points
+ax.text(1, 0.2, 'a', color='black', fontsize=15, ha='center')  # Label 'a'
+ax.text(7, 0.2, 'b', color='black', fontsize=15, ha='center')  # Label 'b'
+
+# Remove all extra elements
+ax.axis('off')  # Turn off the axes
+
+# Set the limits
+ax.set_xlim(-0.5, 9.5)
+ax.set_ylim(-1, 1)
+
+# Show the number line with points
+plt.show()
+```
+:::
+
+The same is true in $\mathbb{R^n}$.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        For <em>\(u\)</em> and <em>\(v\)</em> in \(\mathbb{R^n}\), the <b> distance between \(u\) and \(v\),</b> written as \(\text{dist(u,v)}\) is the length of the vector \(u-v\). That is,
+        <br><br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(\text{dist(u,v)} = \|u-v\|\)
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+::::
+
+## Distance 
+
+::::{style="font-size: .6em"}
+
+Consider $\bar{u} = \begin{bmatrix} 7 \\ 1 \end{bmatrix}$ and $\bar{v} = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$. The distance from $\bar{u}$ to $\bar{v}$ is the same as the length of $\bar{u} - \bar{v}$, $\begin{bmatrix} 4 \\ -1 \end{bmatrix}$.
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+u = np.array([6, 1])
+
+v = np.array([3, 2])
+
+origin = np.array([0, 0])
+
+# Calculate u-v
+
+u_minus_v = u - v
+
+# Add an additional label for ||u-v|| on the bottom line
+
+# Create figure and axis
+fig, ax = plt.subplots(figsize=(8, 8))
+
+# Plot the red lines (u and v)
+ax.plot([origin[0], v[0]], [origin[1], v[1]], color='red')  # From origin to v
+ax.plot([u_minus_v[0], u[0]], [u_minus_v[1], u[1]], color='red')  # From u-v to u
+
+# Plot the blue lines (parallelogram sides)
+ax.plot([v[0], u[0]], [v[1], u[1]], color='blue')  # From v to u
+ax.plot([origin[0], u_minus_v[0]], [origin[1], u_minus_v[1]], color='blue')  # From origin to u-v
+
+# Add points for u, v, and u-v
+ax.scatter(*u, color='red')
+ax.scatter(*v, color='red')
+ax.scatter(*u_minus_v, color='red')
+
+# Add labels for u, v, u-v, and ||u-v||
+ax.text(u[0] + 0.2, u[1], 'u', fontsize=14)
+ax.text(v[0] + 0.2, v[1], 'v', fontsize=14)
+ax.text(u_minus_v[0], u_minus_v[1] - 0.2, 'u - v', fontsize=12)
+ax.text((u[0] + v[0]) / 2 - 0.3, (u[1] + v[1]) / 2 + 0.2, r'$||u-v||$', fontsize=14)  
+# Top line
+ax.text((u_minus_v[0] + origin[0]) / 2 - 0.3, (u_minus_v[1] + origin[1]) / 2 - 0.4, r'$||u-v||$', fontsize=14)  # Bottom line
+
+# Move x and y axis labels to the axes
+ax.spines['left'].set_position('zero')
+ax.spines['left'].set_color('black')
+ax.spines['left'].set_linewidth(0.5)
+ax.spines['bottom'].set_position('zero')
+ax.spines['bottom'].set_color('black')
+ax.spines['bottom'].set_linewidth(0.5)
+
+# Hide the top and right spines
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+# Adjust tick positions to the axes
+ax.xaxis.set_ticks_position('bottom')
+ax.yaxis.set_ticks_position('left')
+
+# Set axis limits
+ax.set_xlim(-1, 8)
+ax.set_ylim(-1, 4)
+
+# Set grid and aspect ratio
+ax.grid(True, linestyle='--', linewidth=0.5)
+ax.set_aspect('equal', adjustable='box')
+
+# Show the plot
+plt.show()
+
+```
+:::
+
+_Geometrically,_ the distance between two vectors is the length of their difference.
+::::
+
+## Distance
+
+:::{style="font-size: .8em"}
+Algebraically, the distance between $\bar{u}$ and $\bar{v}$ in $\mathbb{r^n}$ follows the formula for Euclidian distance between two points.
+
+$$
+\text{dist(u,v)} = \sqrt{(v_1 - u_1)^2 + (v_2 - u_2)^2 + \dots + (v_n - u_n)^2}
+$$
+
+Which you can see is equal to:
+
+$$
+\|u - v\| = \sqrt{(u - v)^\top (u - v)} = \sqrt{\begin{bmatrix} u_1 - v_1 & u_2 - v_2 & \dots & u_n - v_n \end{bmatrix} \begin{bmatrix} u_1 - v_1 \\ u_2 - v_2 \\ \vdots \\ u_n - v_n \end{bmatrix}}
+$$
+
+:::
+
+## Orthogonality
+
+::::{style="font-size: .8em"}
+We say that two vectors $u$ and $v$ are perpendicular if and only if they form a right angle at the origin.
+
+:::{.center-text}
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+start_v = np.array([-1, 1])
+
+end_v = np.array([2, -2])
+
+point_v = np.array([1, -1])  # Point to mark on the blue line
+
+start_u = np.array([-1, -1])
+
+end_u = np.array([3, 3])
+
+point_u = np.array([2, 2])  # Point to mark on the line
+
+# Create figure and axis
+fig, ax = plt.subplots(figsize=(4, 4))  # Set the figure size to match the square aspect
+
+# Plot the green line u
+ax.plot([start_u[0], end_u[0]], [start_u[1], end_u[1]], color='green', label='u')
+
+# Add the green dot at (2, 2)
+ax.scatter(point_u[0], point_u[1], color='green')
+
+# Add bold label for the green dot
+ax.text(point_u[0] + 0.2, point_u[1], 'u', fontsize=12, fontweight='bold', color='green')
+
+# Plot the blue line v
+ax.plot([start_v[0], end_v[0]], [start_v[1], end_v[1]], color='blue', label='v')
+
+# Add the blue dot at (1, -1)
+ax.scatter(point_v[0], point_v[1], color='blue')
+
+#add black dot
+ax.scatter(0, 0, color='black')
+
+# Add bold label for the blue dot
+ax.text(point_v[0] + 0.2, point_v[1] - 0.2, 'v', fontsize=12, fontweight='bold', color='blue')
+
+# Draw the 90-degree angle marker (triangle formed by u and v)
+triangle_x = [.25, .5, .25]
+triangle_y = [.25, 0, -.25]
+ax.plot(triangle_x, triangle_y, color='black')
+ax.text(-.1, -.5, '0', fontsize=15, fontweight='bold')
+# Set axis limits to include both lines and the angle marker
+ax.set_xlim(-1, 3)
+ax.set_ylim(-2, 3)
+
+# Set grid and aspect ratio
+ax.set_aspect('equal', adjustable='box')
+
+# Show the plot
+plt.show()
+
+```
+:::
+
+Draw the line conneting $u$ and $v$. Then $u$ and $v$ are perpendicular **if and only if** this is a right triangle, meaning that the Pythagorean Theorum is satisfied.
+::::
+## Orthogonality
+
+:::{.center-text style="font-size: .8em"}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+start_v = np.array([-1, 1])
+
+end_v = np.array([2, -2])
+
+point_v = np.array([1, -1])  # Point to mark on the blue line
+
+start_u = np.array([-1, -1])
+
+end_u = np.array([3, 3])
+
+point_u = np.array([2, 2])  # Point to mark on the line
+
+# Create figure and axis
+fig, ax = plt.subplots(figsize=(4, 4))  # Set the figure size to match the square aspect
+
+# Plot the green line u
+ax.plot([start_u[0], end_u[0]], [start_u[1], end_u[1]], color='green', label='u')
+
+# Plot red line
+ax.plot([2, 1], [2, -1], color='red')
+
+# Add the green dot at (2, 2)
+ax.scatter(point_u[0], point_u[1], color='green')
+
+# Add bold label for the green dot
+ax.text(point_u[0] + 0.2, point_u[1], 'u', fontsize=12, fontweight='bold', color='green')
+
+# Plot the blue line v
+ax.plot([start_v[0], end_v[0]], [start_v[1], end_v[1]], color='blue', label='v')
+
+# Add the blue dot at (1, -1)
+ax.scatter(point_v[0], point_v[1], color='blue')
+
+ax.scatter(0, 0, color='black')
+
+# Add bold label for the blue dot
+ax.text(point_v[0] + 0.2, point_v[1] - 0.2, 'v', fontsize=12, fontweight='bold', color='blue')
+
+ax.text(-.1, -.5, '0', fontsize=15, fontweight='bold')
+# Set axis limits to include both lines and the angle marker
+ax.set_xlim(-1, 3)
+ax.set_ylim(-2, 3)
+
+# Set grid and aspect ratio
+ax.set_aspect('equal', adjustable='box')
+
+# Show the plot
+plt.show()
+```
+
+What is the length of the red side of the triangle?
+:::
+## Orthogonality
+:::{style="font-size: .8em"}
+
+According to the definitions we've developed today, it is $\|u - v\|$.
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+start_v = np.array([-1, 1])
+
+end_v = np.array([2, -2])
+
+point_v = np.array([1, -1])  # Point to mark on the blue line
+
+start_u = np.array([-1, -1])
+
+end_u = np.array([3, 3])
+
+point_u = np.array([2, 2])  # Point to mark on the line
+
+# Create figure and axis
+fig, ax = plt.subplots(figsize=(4, 4))  # Set the figure size to match the square aspect
+
+# Plot the green line u
+ax.plot([start_u[0], end_u[0]], [start_u[1], end_u[1]], color='green', label='u')
+
+# Plot red line
+ax.plot([2, 1], [2, -1], color='red')
+
+# Add the green dot at (2, 2)
+ax.scatter(point_u[0], point_u[1], color='green')
+
+# Plot the blue line v
+ax.plot([start_v[0], end_v[0]], [start_v[1], end_v[1]], color='blue', label='v')
+
+# Add the blue dot at (1, -1)
+ax.scatter(point_v[0], point_v[1], color='blue')
+
+# Add labels for sides
+ax.text(.5, 1.5, r'$\|u\|$', fontsize=15, fontweight='bold', color='green')
+ax.text(1.6, .5, r'$\|u-v\|$', fontsize=15, fontweight='bold', color='red')
+ax.text(0, -1, r'$\|v\|$', fontsize=15, fontweight='bold', color='blue')
+ax.scatter(0, 0, color='black')
+
+
+# Set axis limits to include both lines and the angle marker
+ax.set_xlim(-1, 3)
+ax.set_ylim(-2, 3)
+
+# Set grid and aspect ratio
+ax.set_aspect('equal', adjustable='box')
+
+# Show the plot
+plt.show()
+
+```
+:::
+
+So the blue and green lines are perpendicular if and only if:
+
+$$
+\|u-v\|^2 = \|u\|^2 + \|v\|^2
+$$
+:::
+
+## Orthogonality
+
+:::{style="font-size: .8em"}
+
+We can also calculate the squared distance from $\bar{u}$ to $\bar{v}$ using the properties of the inner product.
+
+:::
+
+$$
+\begin{aligned}
+\text{dist(u, v)}^2 &= \|\mathbf{u} - \mathbf{v}\|^2 \\
+&= (\mathbf{u} - \mathbf{v})^\top (\mathbf{u} - \mathbf{v}) \\
+&= (\mathbf{u}^\top - \mathbf{v}^\top)(\mathbf{u} - \mathbf{v}) \\
+&= \mathbf{u}^\top (\mathbf{u} - \mathbf{v}) - \mathbf{v}^\top (\mathbf{u} - \mathbf{v}) \\
+&= \mathbf{u}^\top \mathbf{u} - \mathbf{u}^\top \mathbf{v} - \mathbf{v}^\top \mathbf{u} + \mathbf{v}^\top \mathbf{v} \\
+&= \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2 - 2 \mathbf{u}^\top \mathbf{v}.
+\end{aligned}
+$$
+
+## Orthogonality
+<!-- Unable to get red color for latex expression -->
+:::{style="font-size: .8em"}
+
+We now have two equations for the square distance between $\bar{u}$ and $\bar{v}$.
+
+:::{.fragment}
+In general,
+
+$$
+\|\bar{u} - \bar{v} \|^2 = \|\bar{u}\|^2 + \|\bar{v}\|^2 - \mathbf{2 \bar{u}^\top \bar{v}}
+$$
+:::
+:::{.fragment}
+Assuming that $\bar{u}$ and $\bar{v}$ are orthogonal,
+
+$$
+\|\bar{u} - \bar{v}\|^2 = \|\bar{u}\|^2 + \|\bar{v}\|^2
+$$
+:::
+:::{.fragment}
+Thus, if $\bar{u}$ is orthogonal to $\bar{v}$, then $\bar{u}^\top \bar{v}$
+:::
+:::
+
+## Orthogonality
+
+::::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        Two vectors \(\bar{u}\) and \(\bar{v}\) in \(\mathbb{R^n}\) are orthogonal, if \(\bar{u}^\top \bar{v} = 0\).
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::{.fragment}
+The inner product of $\bar{u}$ and $\bar{v}$ is zero when the angle $\theta$ between them is $90^\circ$. Then $\cos\theta = 0$.
+:::
+
+:::{.fragment}
+The zero vector $\bar{0}$ is perpendicular to every vector $\bar{v}$ because **$\bar{0}^\top\bar{v}=0$ is always zero**.
+:::
+
+:::{.fragment}
+Now suppose $\bar{u}^\top\bar{v}$ is **not zero**. If $\bar{u}^\top\bar{v}$ is _positive_, the angle is less than $90^\circ$. If $\bar{u}^\top\bar{v}$ is _negative_, the angle is above $90^\circ$.
+:::
+::::
+
+## Angle Between Two Vectors
+
+:::{style="font-size: .8em"}
+Recall the law of cosines:
+
+$$
+c^2 = a^2 + b^2 - 2ab\cos\theta
+$$
+:::
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.patches import Arc
+
+# Define vectors u and v
+u = np.array([4, 1])
+v = np.array([-4, 3])
+origin = np.array([0, 0])  # Origin point
+
+# Calculate u-v
+
+# Create figure and axis
+# Create figure and axis
+fig, ax = plt.subplots(figsize=(10, 10))
+
+# Plot the lines
+ax.plot([origin[0], u[0]], [origin[1], u[1]], color='blue', label='$\|u\|$')  # Line for u
+ax.plot([origin[0], v[0]], [origin[1], v[1]], color='blue', label='$\|v\|$')  # Line for v
+ax.plot([u[0], v[0]], [u[1], v[1]], color='blue', label='$\|u-v\|$')  # Line for u-v
+
+# Add a b c labels
+ax.text(2, .1, 'a', fontsize=12, color='black')
+ax.text(-3, 1, 'b', fontsize=12, color='black')
+ax.text(.2, 2.1, 'c', fontsize=12, color='black')
+
+# Draw the curved arrow (arc) for theta
+arc = Arc(
+    (0, 0),  # Center of the arc
+    width=2, height=2,  # Dimensions of the arc
+    angle=0,  # Rotation angle of the arc
+    theta1=14, theta2=143.13,  # Start and end angles of the arc
+    color='black', linewidth=1.5
+)
+ax.add_patch(arc)
+
+# Add label for theta
+ax.text(0.8, 0.8, r'$\theta$', fontsize=12, color='black')
+
+# Set axis limits
+ax.set_xlim(-6, 6)
+ax.set_ylim(-1, 4)
+
+fig.patch.set_facecolor('none')
+# Make the axes background transparent
+ax.set_facecolor('none')
+
+# Turn off the axis borders and ticks
+ax.axis('off')
+# Set grid and aspect ratio
+ax.set_aspect('equal', adjustable='box')
+
+# Show the plot
+plt.show()
+```
+:::
+
+## Angle Between Two Vectors
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.patches import Arc
+
+# Define vectors u and v
+u = np.array([4, 1])
+v = np.array([-4, 3])
+origin = np.array([0, 0])  # Origin point
+
+# Calculate u-v
+
+# Create figure and axis
+# Create figure and axis
+fig, ax = plt.subplots(figsize=(8, 6))
+
+# Plot the lines
+ax.plot([origin[0], u[0]], [origin[1], u[1]], color='blue', label='$\|u\|$')  # Line for u
+ax.plot([origin[0], v[0]], [origin[1], v[1]], color='blue', label='$\|v\|$')  # Line for v
+ax.plot([u[0], v[0]], [u[1], v[1]], color='blue', label='$\|u-v\|$')  # Line for u-v
+
+ax.scatter(u[0], u[1], color="red")
+ax.scatter(v[0], v[1], color="red")
+
+# Add labels for the vectors
+ax.text(u[0] + 0.2, u[1], 'u', fontsize=12, color='black')
+ax.text(v[0] - 0.5, v[1] + 0.2, 'v', fontsize=12, color='black')
+ax.text(2, .1, '$\|u\|$', fontsize=12, color='black')
+ax.text(-3, 1, '$\|v\|$', fontsize=12, color='black')
+ax.text(.2, 2.1, '$\|u - v\|$', fontsize=12, color='black')
+
+# Draw the curved arrow (arc) for theta
+arc = Arc(
+    (0, 0),  # Center of the arc
+    width=2, height=2,  # Dimensions of the arc
+    angle=0,  # Rotation angle of the arc
+    theta1=14, theta2=143.13,  # Start and end angles of the arc
+    color='black', linewidth=1.5
+)
+ax.add_patch(arc)
+
+# Add label for theta
+ax.text(0.8, 0.8, r'$\theta$', fontsize=12, color='black')
+
+# Move spines (axes) to the origin
+ax.spines['left'].set_position('zero')
+ax.spines['left'].set_color('black')
+ax.spines['bottom'].set_position('zero')
+ax.spines['bottom'].set_color('black')
+
+# Hide the top and right spines
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+# Ensure ticks are only on the axes
+ax.xaxis.set_ticks_position('bottom')
+ax.yaxis.set_ticks_position('left')
+
+# Set axis limits
+ax.set_xlim(-6, 6)
+ax.set_ylim(-1, 4)
+
+# Set grid and aspect ratio
+ax.set_aspect('equal', adjustable='box')
+
+# Show the plot
+plt.show()
+```
+:::
+::::{style="font-size: .7em"}
+
+:::{.fragment}
+Applying the law of cosines we get:
+$$
+\|\mathbf{u} - \mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2 - 2\|\mathbf{u}\|\|\mathbf{v}\|\cos\theta
+$$
+:::
+
+:::{.fragment}
+Now, we previously calculated that:
+
+$$
+\|\mathbf{u} - \mathbf{v}\|^2 = (\mathbf{u} - \mathbf{v})^\top (\mathbf{u} - \mathbf{v}) 
+= \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2 - 2\mathbf{u}^\top \mathbf{v}.
+$$
+:::
+::::
+
+## Angle Between Two Vectors
+
+:::{style="font-size: .8em"}
+
+Hence, $\bar{u}^\top\bar{v}=\|\bar{u}\|\|\bar{v}\|\cos\theta$.
+
+:::{.fragment}
+From here it follows that
+$$
+\cos\theta=\frac{\bar{u}^\top\bar{v}}{\|\bar{u}\|\|\bar{v}\|}.
+$$
+:::
+
+:::{.fragment}
+Equivalently, 
+$$
+\cos\theta=\frac{\bar{u}^\top}{\|\bar{u}\|}\frac{\bar{v}}{\|\bar{v\|}}.
+$$
+
+
+**Note** that $\frac{\bar{u}^\top}{\|\bar{u}\|}$ and $\frac{\bar{v}}{\|\bar{v\|}}$ are unit vectors.
+:::
+:::
+
+## Angle Between Two Vectors
+
+::::{style="font-size: .7em"}
+**Example.** Consider $\mathbf{u}=\begin{bmatrix} .8 \\ .6 \end{bmatrix}$, and $\mathbf{v}=\begin{bmatrix} .28 \\ .96 \end{bmatrix}$
+
+:::{.fragment}
+They are both unit vectors: $0.8^2 + 0.6^2 = 1$ and $0.28^2 + 0.96^2 = 1.$
+:::
+
+:::{.fragment}
+So $\mathbf{u}^\top\mathbf{v} = (0.8\cdot.28) + (0.6\cdot.96)=0.8$
+:::
+
+:::{.fragment}
+So $\cos\theta = 0.8$, which we can use to find the angle $\theta$
+
+:::{.center-text}
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Arc
+
+# Points on the unit circle
+point1 = (0.28, 0.96)
+point2 = (0.80, 0.60)
+
+# Compute angles in degrees for the arc
+angle1 = np.degrees(np.arctan2(point1[1], point1[0]))
+angle2 = np.degrees(np.arctan2(point2[1], point2[0]))
+
+fig, ax = plt.subplots()
+
+# Draw the unit circle
+circle = plt.Circle((0, 0), 1, fill=False, color='red')
+ax.add_patch(circle)
+
+# Draw the x and y axes
+ax.axhline(0, color='black', linewidth=1)
+ax.axvline(0, color='black', linewidth=1)
+
+# Draw vectors as arrows
+ax.arrow(0, 0, point1[0], point1[1], 
+         length_includes_head=True, head_width=0.03, color='black')
+ax.arrow(0, 0, point2[0], point2[1], 
+         length_includes_head=True, head_width=0.03, color='black')
+
+# Place text near the end of each vector
+ax.text(point1[0], point1[1], f'({point1[0]}, {point1[1]})', 
+        fontsize=8, ha='left', va='bottom')
+ax.text(point2[0], point2[1], f'({point2[0]}, {point2[1]})', 
+        fontsize=8, ha='left', va='bottom')
+
+# Draw an arc between the two angles for theta
+theta1, theta2 = min(angle1, angle2), max(angle1, angle2)
+arc = Arc((0, 0), 0.5, 0.5, angle=0, theta1=theta1, theta2=theta2, 
+          color='black', linewidth=1)
+ax.add_patch(arc)
+
+# Label the angle theta somewhere in the middle of the arc
+# We'll just guess a position here
+mid_angle = np.radians((theta1 + theta2) / 2)
+ax.text(0.35*np.cos(mid_angle), 0.35*np.sin(mid_angle), r'$\theta$', 
+        fontsize=10, ha='center', va='center')
+
+# Move spines (axes) to the origin
+ax.spines['left'].set_position('zero')
+ax.spines['left'].set_color('black')
+ax.spines['bottom'].set_position('zero')
+ax.spines['bottom'].set_color('black')
+
+# Hide the top and right spines
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+# Ensure ticks are only on the axes
+ax.xaxis.set_ticks_position('bottom')
+ax.yaxis.set_ticks_position('left')
+
+# Set the axis limits to match your picture (about -2 to 2)
+ax.set_xlim(-3, 3)
+ax.set_ylim(-1.5, 1.5)
+
+ax.set_xticks([-2, -1, 0, 1, 2])
+ax.set_yticks([-1, 0, 1])
+# Equal aspect ratio so the circle is not distorted
+ax.set_aspect('equal', 'box')
+
+plt.show()
+
+```
+:::
+:::
+::::
+
+## Angle Between Two Vectors
+
+:::{style="font-size: .8em"}
+We can also compute this angle using `Python` and `numpy`.
+:::
+
+:::{.fragment}
+```{python}
+#|echo: true
+import numpy as np
+
+u = np.array([0.8, 0.6])
+v = np.array([0.28, 0.96])
+
+# check that the norm of each vectors is 1 (up to rounding errors)
+if np.isclose(np.linalg.norm(u), 1) and np.isclose(np.linalg.norm(v), 1):
+    print("u and v are unit vectors")
+```
+:::
+
+:::{.fragment}
+```{python}
+#|echo: true
+# compute inner product
+innerProduct = u.dot(v)
+print("Inner product =", innerProduct)
+```
+:::
+
+:::{.fragment}
+```{python}
+#|echo: true
+# find angle, convert from radians to degrees
+theta_degrees = np.arccos(innerProduct) * 180 / np.pi
+print("Angle theta =", theta_degrees)
+```
+:::
+
+## Key Ideas
+
+:::{.incremental style="font-size: .8em"}
+- The _inner product_ $\bar{u}^\top \bar{v}$ _multiplies_ each component $u_i$ by $v_i$ and _sums_ all $u_i v_i$.
+- The _length_ $\mathbf{\|\bar{v}\|}$ is the _square root_ of $\bar{v}^\top \bar{v}$.
+- The vector $\mathbf{\frac{\bar{v}}{\|\bar{v}\|}}$ is a unit vector; its length is 1.
+- The inner product $\mathbf{\bar{u}^\top \bar{v}}$ is _zero_ when $\bar{u}$ and $\bar{v}$ are **_orthogonal_**.
+- The cosine of $\theta$, the angle between $\bar{u}$ and $\bar{v}$, is given by $\cos\theta = \mathbf{\frac{\bar{u}^\top \bar{v}}{\|\bar{u}\|\|\bar{v}\|}}$.
+:::
