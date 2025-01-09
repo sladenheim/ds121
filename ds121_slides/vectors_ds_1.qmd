@@ -1,0 +1,856 @@
+---
+title: "Supervised Learning"
+author: "CDS DS 121<br>Boston University"
+format: 
+    revealjs:
+        css: 
+        - styles.css
+---
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib as mp
+import matplotlib.pyplot as plt
+from numpy.random import default_rng
+import sklearn.datasets as datasets
+from sklearn.neighbors import KNeighborsClassifier
+import sklearn.metrics as metrics
+import sklearn.model_selection as model_selection
+
+```
+
+## Learning Objectives
+
+::::{style="font-size: .8em;"}
+In today’s lecture we will cover several topics essential for applying machine learning models.
+
+:::{.fragment}
+We will begin by discussing model selection, emphasizing the importance of a model’s generalization ability.
+:::
+
+:::{.fragment}
+We will also learn to differentiate between parameters and hyperparameters.
+:::
+
+:::{.fragment}
+We will then move on to the concept of holding out data for model validation, examining strategies like random subsampling and cross validation.
+:::
+
+:::{.fragment}
+Finally, we will discuss the evaluation of a binary classifier and learn several key metrics such as accuracy, precision, and recall.
+:::
+::::
+## Synthetic Data for Regression
+::::{style="font-size: .8em;"}
+
+Suppose were are given a training set comprising $N$ observations of a scalar value $x_i$ (i.e., a 1-dimensional vector).
+
+For each input variable $x_i$, we have a correspoinding numeric value $y_i$ that we believe **depends** on $x_i$ in some way. The goal of our regression algorithm is to learn some simple 'rule' that models the relationship.
+
+:::{.fragment}
+Here is a plot of the 10 training points
+
+:::{.center-text}
+```{python}
+N = 10
+x = np.linspace(0, 1, N)
+y = np.sin(2 * np.pi * x) + default_rng(2).normal(size = N, scale = 0.20)
+plt.figure(figsize = (8, 3))
+plt.plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+plt.xlabel('x', size = 16)
+plt.ylabel('y', size = 16);
+```
+:::
+:::
+
+::::
+
+## Synthetic Data for Regression
+
+::::{style="font-size: .8em;"}
+This is a synthetic dataset that was generated in the following way:
+
+- choose $x_i$ as equal spaced points no the range 0 to 1, and
+- for each choice of $x_i$, we then calculated $y_i=\sin(2\pi x_i)$ **plus** a sample of Gaussian random variable.
+
+:::{.fragment}
+```{python}
+import numpy as np
+```
+```{python}
+#| echo: true
+N = 20
+x = np.linspace(0, 1, N)
+y = np.sin(2 * np.pi * x) + default_rng(2).normal(size = N, scale = .20)
+```
+
+:::{.center-text}
+```{python}
+cx = np.linspace(0, 1, 1000)
+cy = np.sin(2 * np.pi * cx)
+
+plt.figure(figsize = (8, 3))
+plt.plot(cx, cy, lw = 2)
+plt.plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+plt.xlabel('x', size = 16)
+plt.ylabel('y', size = 16);
+```
+:::
+:::
+::::
+
+
+## Synthetic Data for Regression
+
+::::{style="font-size: .8em;"}
+In a real dataset, the "noise" component might not be _actually_ random, but rather it sometimes depends on features that we cannot see. For instance, in the housing example from earlier, the price of a house might depend on **more features** besides the lot size, square footage, and number of bathrooms.
+
+:::{.fragment}
+One of the advantages of a synthetic dataset is that we know the exact rule that can be used for prediction. In this case, it is
+$$y
+=\sin(2\pi x).
+$$
+:::
+::::
+
+## Synthetic Data for Regression
+::::{style="font-size: .8em"}
+Let's _learn_ from this data.
+
+:::{.fragment}
+The class of models we will consider are polynomials. They are of the form:
+$$
+y(x, \mathbf{w})=w_0 + w_1x + w_2x^2 + \dots + w_kx^k = \sum_{j=0}^{k} w_j x^j
+$$
+
+where $k$ is the order (or degree) of the polynomial.
+:::
+
+:::{.fragment}
+If we are given some k, then we want to learn the scalars $w_i.$
+
+That is; $k$ is a **hyperparameter** of the model, and the $w_i$ values are the parameters of the model.
+:::
+
+:::{.fragment}
+Once a choice $k$ is fixed, there is an algorithm called _linear regression_ that will solve for the best model parameters $\mathbf{w}.$
+:::
+::::
+
+## Model Selection
+
+::::{style="font-size: .8em"}
+The problem of choosing the hyperparameter $k$ is called model selection.
+
+:::{.fragment}
+Let's see what happens when we apply regression to build the best possible constant (order 0), linear (order 1), and cubic (order 3) models.
+```{python}
+# y = Aw, A is design matrix 1, [1, x^T], [1, x^T, x^T^2], etc, and w-hat = (A^TA)^-1 A^Ty
+def design_matrix(x, k):
+    N = len(x)
+    A = np.ones(N)
+    for i in range(1, k+1):
+        A = np.column_stack([A, (x.T)**i])
+    return A
+
+def fit_poly(x, y, k):
+    A = design_matrix(x, k)
+    w_hat = np.linalg.inv(A.T @ A) @ A.T @ y
+    return w_hat
+
+w_hat_0 = 1/N * np.sum(y)
+w_hat_1 = fit_poly(x, y, 1)
+w_hat_3 = fit_poly(x, y, 3)
+fig, axs = plt.subplots(1, 3, sharey = True, figsize = (12, 3.5))
+#
+cy = 1000 * [w_hat_0]
+pred_y = N * [w_hat_0]
+axs[0].plot(cx, cy, lw = 2, label = r'$k$ = 0')
+axs[0].plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+axs[0].set_xlabel('x', size = 16)
+axs[0].set_ylabel('y', size = 16)
+axs[0].set_title(r'$k$ = 0, constant' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y - pred_y)))
+#axs[0].legend(loc = 'best', fontsize = 16)
+#
+cy = design_matrix(cx, 1) @ w_hat_1
+pred_y = design_matrix(x, 1) @ w_hat_1
+axs[1].plot(cx, cy, lw = 2, label = r'$k$ = 1')
+axs[1].plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+axs[1].set_xlabel('x', size = 16)
+axs[1].set_title(r'$k$ = 1, linear' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y - pred_y)))
+#axs[1].legend(loc = 'best', fontsize = 16)
+#
+cy = design_matrix(cx, 3) @ w_hat_3
+pred_y = design_matrix(x, 3) @ w_hat_3
+axs[2].plot(cx, cy, lw = 2, label = r'$k$ = 3')
+axs[2].plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+axs[2].set_xlabel('x', size = 16)
+axs[2].set_title('$k$ = 3, cubic' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y - pred_y)))
+#axs[2].legend(loc = 'best', fontsize = 16)
+#
+fig.tight_layout();
+```
+:::
+
+:::{.fragment .center-text}
+Here, $E(\mathbf{w})$ is the training error.
+:::
+::::
+
+## Model Selection
+
+::::{style="font-size: .7em;"}
+A third-order polynomial ($k=3$) leads to small training error and hence is a good fit.
+
+:::{.center-text style="font-size: 1em"}
+What about _higher order_ polynomials?
+:::
+:::{.fragment}
+
+By setting $k=9$, we get the following polynomial to fit the data:
+
+:::{.center-text}
+```{python}
+w_hat_9 = fit_poly(x, y, 9)
+cy = design_matrix(cx, 9) @ w_hat_9
+plt.figure(figsize=(8, 2.5))
+plt.plot(cx, cy, lw = 2, label = r'$k$ = 9')
+plt.plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+plt.xlabel('x', size = 16)
+plt.ylabel('y', size = 16)
+plt.title(r'$k$ = 9' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(0));
+```
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        &emsp;&emsp;So \(\dots\) is the 9th order polynomial a <em>"better"</em> model for this dataset?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+:::
+:::
+::::
+
+## Model Selection
+
+::::{style="font-size: .8em;"}
+We want the model to do a good job of predicting on **future** data. this is called the model's **generalization** ability.
+
+The 9th degree polynomial would seem to have poor generalization ability.
+
+:::{.center-text}
+<img src="/images/vectors_ds/train-test-graph.png" style="width:394px; height:271px;" />
+:::
+<!-- Unable to get this graph working :( -->
+
+:::{.fragment}
+_Test data_ is data that was not used to train the model, but comes from the same source.
+:::
+::::
+
+## Model Selection 
+<!-- Questionable Fragmentation...? -->
+
+::::{style="font-size: .75em;"}
+Notice that as we increase the order of the polynomial, the training error always declines. Eventually, the training error reaches zero.<br>
+<div style="margin-bottom: 0.5em;"> </div> 
+_However,_ the test error does not — it reaches its smallest value at $k=3$, a cubic polynomial.
+
+:::{.fragment}
+The phenenmom in which training error declines but testing error does not, is called **overfitting.** <br>
+In a sense we are fitting the training data "too well".
+:::
+:::{.fragment}
+There are two ways to think about overfitting:
+
+:::{.incremental}
+1. The number of parameters in the model is too large, compared to the size of the training data.
+
+2. The model is more complex than the actual phenomenon being modeled. As a result, the model is not just fitting the underlying phenomenon, but also the noise in the data.
+:::
+:::
+::::
+
+## More Training Data
+
+::::{style="font-size: .68em"}
+It's not necessarily true that a order-3 polynomial is best for this problem.
+
+But the higher the order of polynomial we want to fit, the more data we need to avoid overfitting.
+
+:::{.fragment}
+Here we use an order-9 polynomial for increasing amounts of training data (N = 15, 50, 200):
+
+:::{.center-text}
+```{python}
+Ns = [15, 50, 200]
+xs = {Nval: np.linspace(0, 1, Nval) for Nval in Ns}
+ys = {Nval: np.sin(2 * np.pi * xs[Nval]) + default_rng(3).normal(size = Nval, scale = 0.20) for Nval in Ns}
+fig, axs = plt.subplots(1, 3, sharey = True, figsize = (9, 3))
+#
+cx = np.linspace(0, 1, 1000)
+for i, Nval in enumerate(Ns):
+    w_star = fit_poly(xs[Nval], ys[Nval], 9)
+    cy = design_matrix(cx, 9) @ w_star
+    pred_y = design_matrix(xs[Nval], 9) @ w_star
+    axs[i].plot(xs[Nval], ys[Nval], 'ro', markersize = 9, fillstyle = 'none', alpha = 0.5)
+    axs[i].plot(cx, cy, lw = 2, label = r'$N$ = {}'.format(Nval))
+    axs[i].set_xlabel('x', size = 16)
+    if i == 0:
+        axs[i].set_ylabel('y', size = 16)
+    axs[i].set_title(r'$k$ = 9, N = {}'.format(Nval))
+#
+fig.tight_layout();
+```
+:::
+:::
+
+:::{.fragment}
+We see that with enough training data, the high order polynomial begins to capture the sine wave as well.
+:::
+::::
+
+## Model Complexity
+::::{style="font-size: .8em;"}
+Many times however, we cannot simply get more training data, or enough training data, to solve the overfitting problem.
+
+:::{.fragment}
+In that case, we need to control the **complexity of the model.**
+
+Notice that model selection problem required us to choose a value $k$ that specifies the order of the polynomial model.
+:::
+
+:::{.fragment}
+_Hyperparameters_ are often used to control model complexity.
+Here, the hyperparameter $k$ controls the complexity (the order) of the polynomial model.
+
+So, to avoid overfitting, we need to choose the proper value for the hyperparameter $k$.
+:::
+:::{.fragment .center-text style="font-size: 1em"}
+We do that by _holding out_ data.
+:::
+::::
+
+## Holding Out Data
+::::{style="font-size: .8em"}
+When we hold out data, we hold some data aside (i.e., not use it to train the model) and use it to test the generalization ability of the model.
+
+:::{.fragment}
+Let's assume that we have 20 data points to work with stored in arrays `x` and `y`.<br>
+
+`scikit-learn` has some functions that can be helpful.<br>
+:::
+
+:::{.fragment}
+We will use `train_test_split()`:
+
+```{python}
+#|echo: true
+x_train, x_test, y_train, y_test = model_selection.train_test_split(
+    x, y, test_size=0.5, random_state = 0)
+
+print(f'Number of items in training set: {x_train.shape[0]}, in testing set: {x_test.shape[0]}')
+```
+:::
+:::{.fragment}
+Notice that `train_test_split()` splits the data **randomly.**
+:::
+::::
+
+## Holding out Data
+
+::::{style="font-size: .8em;"}
+This will be important.
+
+::::{.columns}
+
+:::{.fragment .column width="50%"}
+Our strategy will be:
+
+For each possible value of the hyperparameter $k$:
+
+- randomly split the data 5
+- compute the mean testing and training error over the 5 random splits
+
+:::
+
+:::{.column width="50%"}
+```{python}
+#
+fig, axs = plt.subplots(1, 2, sharey = True, figsize = (6, 5))
+#
+axs[0].plot(x_train, y_train, 'ro', markersize = 8, fillstyle = 'none')
+axs[0].set_xlabel('x', size = 16)
+axs[0].set_ylabel('y', size = 16)
+axs[0].set_title('Training Set', size = 16)
+#
+axs[1].plot(x_test, y_test, 'ro', markersize = 8, fillstyle = 'none')
+axs[1].set_xlabel('x', size = 16)
+axs[1].set_title('Testing Set', size = 16)
+#
+fig.tight_layout();
+```
+:::
+
+::::
+::::
+
+## Holding Out Data{.scrollable}
+
+::::{style="font-size: .8em;"}
+What are good possible values for the hyperparameter? it can depend on the problem, and may involve trial and error.
+
+This strategy of trying all possible values of the hyperparameter is called a **grid search**.
+
+:::{style="font-size: .8em"}
+```{python}
+def model_error(x_train, y_train, x_test, y_test, k):
+    '''
+    This function fits a polynomial of degree k to the training data
+    and returns the error on both the training and test data.
+    '''
+    w_star = fit_poly(x_train, y_train, k)
+    pred_test_y = design_matrix(x_test, k) @ w_star
+    pred_train_y = design_matrix(x_train, k) @ w_star
+    return (np.linalg.norm(y_train - pred_train_y), np.linalg.norm(y_test - pred_test_y))
+
+np.random.seed(7)
+```
+```{python}
+#| echo: true
+# fraction of data used for testing
+#
+split_frac = 0.5
+#
+# maximum polynomial degree to consider
+#
+max_k = 10
+#
+n_splits = 5
+#
+# grid search over k
+# we assume a model_error() function that reports the
+# training and testing error
+# (definition omitted for space)
+# 
+#
+err = []
+for k in range(1, max_k):
+    for s in range(n_splits):
+        x_train, x_test, y_train, y_test = model_selection.train_test_split(
+            x, y, test_size = split_frac)
+        split_train_err, split_test_err = model_error(x_train, y_train, x_test, y_test, k)
+        err.append([k, s, split_train_err, split_test_err])
+#
+# put the results in a DataFame for easy manipulation
+#
+df = pd.DataFrame(err, columns = ['k', 'split', 'Training Error', 'Testing Error'])
+df.head  (10)
+```
+:::
+::::
+
+## Holding Out Data
+::::{style="font-size: .8em;"}
+Let's plot the mean for each value `k` and its standard error $\sigma/\sqrt{n}$
+
+:::{.center-text}
+```{python}
+#|echo: true
+df.groupby('k').mean()[['Training Error', 'Testing Error']].plot(
+    yerr = df.groupby('k').std()/np.sqrt(n_splits), figsize=(8,3))
+plt.ylabel('Error')
+plt.ylim([0, 5]);
+```
+:::
+
+From this plot we can conclude that, for this dataset, a polynomial of degree $k=3$ shows the best generalization ability.
+::::
+
+## Hold Out Strategies
+
+::::{style="font-size: .8em;"}
+We aim to use as much data as possible for training. However, increasing the training data reduces the amount of data available for testing, which can reduce testing accuracy.
+
+:::{.fragment}
+In this course we consider two types of hold out strategies:
+
+- *random subsampling*
+- *cross validation*
+
+:::
+
+:::{.fragment}
+In **random subsampling** one partitions the data randomly between train and test sets. This is what the function `train_test_split()` does.
+
+This ensures there is no dependence between the test and train sets.
+
+One needs to perform a reasonable number of random splits—usually five at least.
+:::
+::::
+
+## Hold Out Strategies
+::::{style="font-size: .8em;"}
+**Cross Validation** partitions the data once, using $k$ "folds". Each "fold" is used as test data once.
+
+::::{.columns}
+
+:::{.column size="45%"}
+![](/images/vectors_ds/k_folds.png)
+:::
+:::{.column size="55%" style="font-size:.8em"}
+
+:::{.fragment}
+The value of $k$ can vary up to the size of the dataset.
+:::
+:::{.fragment}
+The larger $k$ we use, the more data is used for training, but the more folds must be evaluated, which increases the time required.
+:::
+:::{.fragment}
+In the extreme case where $k$ is equal to the data size, then each data item is held out by itself;  is called "leave-one-out".
+:::
+:::
+::::
+::::
+
+## Evaluating a Binary Classifier
+
+::::{style="font-size: .8em"}
+Let's look at a binary classifier. That is, a classifier with two possible labels: "positive" and "negative."
+
+How do we measure its performance?
+
+:::{.fragment}
+The most basic measure is **accuracy**, the fraction of correctly classified test points.
+:::
+:::{.fragment}
+Accuracy is important, but can be too simplistic.
+
+
+For example, consider a dataset where 90% of data points have the "positive" label and 10% - the "negative" label. 
+:::
+
+:::{.fragment}
+For this dataset a classifier that always predicts "positive" will have 90% accuracy.
+:::
+::::
+
+## Evaluating a Binary Classifier
+
+::::{style="font-size: .7em;"}
+A better way to measure the classifier's performance is using a __Confusion Matrix__.
+
+_Diagonal_ elements represent successes, and _off diagonals_ represent errors.
+
+::::{.columns}
+
+:::{.column width="45%"}
+<img src="/images/vectors_ds/confusion_matrix.png" style="width:576px; height:372.6px;" />
+:::
+
+:::{.fragment .column width="55%"}
+Using the confusion matrix we can define some more useful measures:
+
+:::{.fragment}
+* __Recall__ - defined as the fraction of actual positives correctly classified:  
+    * TP/(TP + FN)
+:::
+:::{.fragment}
+* __Precision__ - defined as the fraction of classified positives correctly classified: 
+    * TP/(TP + FP)
+:::
+:::
+::::
+::::
+
+## Evaluating K-NN on Synthetic Data {.smaller-title}
+::::{style="font-size: .8em"}
+Let us generate a dataset with two labels.
+::::
+
+
+```{python}
+#|echo: true
+X, y = datasets.make_circles(noise=.1, factor=.5, random_state=1)
+print('Shape of data: {}'.format(X.shape))
+print('Unique labels: {}'.format(np.unique(y)))
+```
+
+:::{.center-text}
+```{python}
+plt.figure(figsize = (5.5,5.5))
+plt.prism()  # this sets a nice color map
+plt.scatter(X[:, 0], X[:, 1], c=y, s = 80)
+plt.axis('off')
+plt.axis('equal');
+```
+:::
+
+
+## Evaluating k-NN on Synthetic Data {.smaller-title}
+::::{style="font-size: .8em"}
+We will use the first 50 data points for training and the remaining part for testing.
+::::
+
+```{python}
+#|echo: true
+X_train = X[:50]
+y_train = y[:50]
+X_test = X[50:]
+y_test = y[50:]
+```
+
+```{python}
+fig_size = (12, 5)
+
+plt.figure(figsize = fig_size)
+plt.subplot(1, 2, 1)
+plt.scatter(X_train[:, 0], X_train[:, 1], c = y_train, s = 80)
+plt.axis('equal')
+plt.axis('off')
+plt.title('Training Data')
+
+plt.subplot(1, 2, 2)
+plt.scatter(X_test[:, 0], X_test[:, 1], c = y_test, s = 80)
+plt.title('Test Data')
+plt.axis('equal')
+plt.axis('off');
+```
+
+## Evaluating k-NN on Synthetic Data {.smaller-title}
+
+:::{style="font-size: .8em"}
+Let's first classify the points into two classes using k-NN with $k=5$
+:::
+
+```{python}
+#| echo: true
+k = 5
+knn5 = KNeighborsClassifier(n_neighbors = k)
+```
+<br>
+
+::::{.fragment}
+:::{style="font-size: .8em"}
+In the context of supervised learning, the `scikit-learn` `fit()` function corresponds to __training__ and the `predict()` function corresponds to __testing.__
+:::
+```{python}
+#| echo: true
+knn5.fit(X_train,y_train)
+print(f'Accuracy on test data: {knn5.score(X_test, y_test)}')
+```
+::::
+
+## Evaluating k-NN on Synthetic Data {.smaller-title}
+
+::::{style="font-size: .8em"}
+Let us look at the confusion matrix
+
+
+```{python}
+#| echo: true
+y_pred_test = knn5.predict(X_test)
+pd.DataFrame(metrics.confusion_matrix(y_test, y_pred_test), 
+             columns = ['Predicted +', 'Predicted -'], 
+             index = ['Actual +', 'Actual -'])
+```
+<br>
+
+:::{.fragment}
+Looks like the classifier is getting all of the Negative class correct, but only achieving accuracy of 50% on the Positive class.
+
+That is, its __precision__ is 100%, but its __recall__ is only 50%.
+:::
+::::
+
+## Evaluating k-NN on Synthetic Data {.smaller-title}
+
+```{python}
+k = 5
+
+plt.figure(figsize = fig_size)
+plt.subplot(1, 2, 1)
+
+plt.scatter(X_train[:, 0], X_train[:, 1], c = y_train, s = 80)
+plt.axis('equal')
+plt.title('Training')
+plt.axis('off')
+
+plt.subplot(1, 2, 2)
+plt.scatter(X_test[:, 0], X_test[:, 1], c = y_pred_test, s = 80)
+plt.title(f'Testing $k$={k}\nAccuracy: {knn5.score(X_test, y_test)}')
+plt.axis('off')
+plt.axis('equal');
+```
+
+::::{style="font-size: .8em"}
+The positive (red) points in the upper half of the test data are _all_ classified incorrectly.
+::::
+
+## Evaluating k-NN on Synthetic Data {.smaller-title}
+```{python}
+k=5 
+test_point = np.argmax(X_test[:,1])
+neighbors = knn5.kneighbors([X_test[test_point]])[1]
+
+plt.figure(figsize = fig_size)
+plt.subplot(1, 2, 1)
+plt.scatter(X_train[:, 0], X_train[:, 1], c = y_train, s = 80)
+plt.scatter(X_train[neighbors,0], X_train[neighbors,1],
+            c = y_train[neighbors], marker='o', 
+            facecolors='none', edgecolors='b', s = 80)
+radius = np.max(metrics.euclidean_distances(X_test[test_point].reshape(1, -1), X_train[neighbors][0]))
+ax = plt.gcf().gca()
+circle = mp.patches.Circle(X_test[test_point], radius, facecolor = 'blue', alpha = 0.2)
+ax.add_artist(circle)
+plt.axis('equal')
+plt.axis('off')
+plt.title(r'Training')
+
+plt.subplot(1, 2, 2)
+plt.scatter(X_test[:, 0], X_test[:, 1], c = y_pred_test, s = 80)
+plt.scatter(X_test[test_point,0], X_test[test_point,1], marker='o', 
+            facecolors='none', edgecolors='b', s = 80)
+plt.title('Testing $k$={}\nAccuracy: {}'.format(k,knn5.score(X_test, y_test)))
+plt.axis('equal')
+plt.axis('off');
+```
+::::{style="font-size: .8em" .fragment .center-text}
+For comparison purposes, let's try $k=3$
+::::
+
+
+## Evaluating k-NN on Synthetic Data {.smaller-title}
+
+```{python}
+k = 3
+knn3 = KNeighborsClassifier(n_neighbors=k)    
+knn3.fit(X_train,y_train)
+y_pred_test = knn3.predict(X_test)
+
+plt.figure(figsize = fig_size)
+plt.subplot(1, 2, 1)
+plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, s = 80)
+plt.axis('equal')
+plt.axis('off')
+plt.title(r'Training')
+
+plt.subplot(1, 2, 2)
+plt.scatter(X_test[:, 0], X_test[:, 1], c=y_pred_test, s = 80)
+plt.title(f'Testing $k$={k}\nAccuracy: {knn3.score(X_test, y_test)}')
+plt.axis('off')
+plt.axis('equal');
+```
+
+## Evaluating k-NN on Synthetic Data {.smaller-title}
+
+::::{style="font-size: .8em"}
+::::{.columns}
+Thus, the proper way to evaluate generalization ability (accuracy on the test data) is:
+
+:::{.column size="55%" .incremental}
+<br>
+
+1. Form a random train/test split
+2. Train the classifier on the training split
+3. Test the classifier on the testing split
+4. Accumulate statistics
+5. Repeat from step (1) until enough statistics have been collected.
+:::
+
+:::{.column size="45%"}
+```{python}
+nreps = 50
+kvals = range(1, 10)
+acc = []
+np.random.seed(4)
+for k in kvals:
+    test_rep = []
+    train_rep = []
+    for i in range(nreps):
+        X_train, X_test, y_train, y_test = model_selection.train_test_split(X, 
+                                                                            y, 
+                                                                            test_size = 0.5)
+        knn = KNeighborsClassifier(n_neighbors = k)    
+        knn.fit(X_train, y_train)
+        train_rep.append(knn.score(X_train, y_train))
+        test_rep.append(knn.score(X_test, y_test))
+    acc.append([np.mean(np.array(test_rep)), np.mean(np.array(train_rep))])
+accy = np.array(acc)
+
+plt.figure(figsize=(5,5))
+plt.plot(kvals, accy[:, 0], '.-', label = 'Accuracy on Test Data')
+plt.plot(kvals, accy[:, 1], '.-', label = 'Accuracy on Training Data')
+plt.xlabel(r'$k$')
+plt.ylabel('Accuracy')
+plt.title('Train/Test Comparision of $k$-NN')
+plt.legend(loc = 'best');
+```
+
+
+:::
+:::{.fragment .center-text style="font-size: 1em"}
+Based on the generalization error, $k=2$ is the best choice.
+:::
+::::
+::::
+
+## Evaluating k-NN on Synthetic Data {.smaller-title} 
+
+```{python}
+x_min, x_max = X[:, 0].min() - .1, X[:, 0].max() + .1
+y_min, y_max = X[:, 1].min() - .1, X[:, 1].max() + .1
+plot_step = 0.02
+xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
+                     np.arange(y_min, y_max, plot_step))
+
+
+np.random.seed(1)
+X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size = 0.5)
+
+k = 2
+knn = KNeighborsClassifier(n_neighbors = k)  
+knn.fit(X_train, y_train)
+y_pred_train = knn.predict(X_train)
+y_pred_test = knn.predict(X_test)
+
+Z = knn.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+
+plt.figure(figsize = (15, 8))
+plt.subplot(1, 2, 1)
+cs = plt.contourf(xx, yy, Z, cmap=plt.cm.Paired, alpha=0.3)
+plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, s=30)
+plt.axis('equal')
+plt.axis('off')
+plt.xlim((x_min, x_max))
+plt.ylim((y_min, y_max))
+plt.title(f'{k}-NN - Training Data\nAccuracy: {knn.score(X_train, y_train)}');
+
+plt.subplot(1, 2, 2)
+cs = plt.contourf(xx, yy, Z, cmap=plt.cm.Paired, alpha=0.3)
+plt.scatter(X_test[:, 0], X_test[:, 1], c=y_test, s=30)
+plt.axis('equal')
+plt.axis('off')
+plt.xlim((x_min, x_max))
+plt.ylim((y_min, y_max))
+plt.title(f'{k}-NN - Test Data\nAccuracy: {knn.score(X_test, y_test)}');
+```
+
+## Key Ideas
+
+- Model selection is important for its generalization ability and to avoid overfitting.
+- Holding out data also prevents overfitting. Two important techniques are random subsampling and cross-validation.
+- To evaluate a binary classifier, accuracy should be used together with metrics like recall and precision.
