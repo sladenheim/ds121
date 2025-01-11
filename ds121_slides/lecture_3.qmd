@@ -6,6 +6,7 @@ format:
         math: true
         css: 
         - styles.css
+        html-math-method: mathjax
 ---
 
 ## Learning Objectives
@@ -1143,11 +1144,6 @@ plt.show()
 
 ## Angle Between Two Vectors
 
-:::{style="font-size: .8em"}
-We can also compute this angle using `Python` and `numpy`.
-:::
-
-:::{.fragment}
 ```{python}
 #|echo: true
 import numpy as np
@@ -1159,7 +1155,7 @@ v = np.array([0.28, 0.96])
 if np.isclose(np.linalg.norm(u), 1) and np.isclose(np.linalg.norm(v), 1):
     print("u and v are unit vectors")
 ```
-:::
+
 
 :::{.fragment}
 ```{python}
