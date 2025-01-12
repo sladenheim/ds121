@@ -1,5 +1,5 @@
 ---
-title: "Supervised Learning"
+title: "Clustering with K-Means"
 author: "CDS DS 121<br>Boston University"
 format: 
     revealjs:
