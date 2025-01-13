@@ -1,0 +1,27 @@
+---
+title: "Presentation with LaTeX Boxes"
+format: 
+    revealjs:
+        css: stylesC.css
+        code-fold: true
+        code-summary: "Show the code"
+execute:
+  echo: false
+---
+
+## Slide with Custom Box
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return """
+    <div class="custom-box">
+        <span class="label">Set:</span>
+        <p>A set is a collection of distinct objects, such as letters or numbers.</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```

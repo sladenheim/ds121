@@ -1,0 +1,241 @@
+---
+title: "Introduction to Linear Algebra"
+number: "Lecture 1"
+author: "Lisa Wobbes"
+format: 
+    revealjs:
+        css: styles.css
+---
+
+## Why Linear Algebra?
+
+::: {.antique-center-image}
+![](/images/image1.jpeg)
+:::
+
+::: {.center-text}
+Linear algebra, probability/statistics, and optimization are the mathematical pillars of machine learning.
+:::
+
+## Why Linear Algebra?
+<span style="font-size: 0.8em;">
+_Linear algebra enables powerful machine learning techniques such as k-means for clustering, PageRank for web search ranking, PCA for dimensionality reduction, and neural networks for deep learning._
+</span>
+
+:::{.columns}
+::: {.column width="50%"}
+![](images/Clustering.png){fig-align="left" width=110%}
+:::
+
+::: {.column width="50%"}
+![](images/page_rank.png){fig-align="right" width=110%}
+:::
+:::
+
+## Why Linear Algebra?
+
+:::{.columns}
+::: {.column width="50%"}
+![](images/PCA_genes_Europe.png){fig-align="left" width=110%}
+:::
+
+::: {.column width="50%"}
+![](images/Handwritten_digits.png){fig-align="right" width=110%}
+:::
+:::
+
+## What is Linear Algebra?
+:::{.incremental}
+:::{.fragment}
+<span style="font-size: 1.2em;">
+Linear algebra is a branch of mathematics that deals with vectors, matrices, linear systems, and linear transformations. 
+</span>
+
+:::
+:::{.fragment}
+<span style="font-size: 1.2em;">
+It involves understanding and manipulating multi-dimensional data through concepts like vector spaces, matrix operations, and matrix factorizations.
+</span>
+
+:::
+:::
+
+## Three Modes of Thinking
+:::{.incremental}
+
+- **Algebraic thinking**: how to correctly manipulate symbols in a consistent logical framework.
+
+- **Geometric thinking**: learning to extend familiar two- and three-dimensional concepts to higher dimensions.
+
+- **Computational thinking**: understanding the relationship between abstract algebraic machinery and actual computations which efficiently arrive at the correct answer.
+
+:::{.fragment}
+Integrating these three concepts is **_essential_** for using linear algebra in data science.
+
+:::
+
+:::
+
+## Three Modes of Thinking
+:::{center-text}
+![](images/01-modes.jpg)
+:::
+
+## Three Modes of Vector V
+- **_Algebraically:_** a vector $\mathbf{v}$ is an abstract object that permits addition ${\bf v} + {\bf w}$ and multiplication by a constant or *scalar* $c$ to form $c {\bf v}$.
+
+## Three Modes of Vector V
+- **_Computationally:_** a vector is an ordered list of real numbers.
+
+  $$
+  \large \begin{array}{ccc}
+  {\bf u} = \left[\begin{array}{r}3\\-1\end{array}\right] &
+  {\bf v} = \left[\begin{array}{c}2\\2\end{array}\right] &
+  {\bf w} = \left[\begin{array}{c}-2\\-1\end{array}\right]
+  \end{array}
+  $$
+
+## Three Modes of Vector V
+- **_Geometrically:_** a vector is a point in $n$-dimensional space.
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import laUtilities as ut
+
+# Set up plot
+ax = ut.plotSetup(size=(5,5))
+ut.centerAxes(ax)
+
+# Plot points
+ut.plotPoint(ax, -2, -1)
+ut.plotPoint(ax, 2, 2)
+ut.plotPoint(ax, 3, -1)
+
+# Draw arrows representing vectors
+ax.arrow(0, 0, -2, -1, head_width=0.2, head_length=0.2, length_includes_head=True)
+ax.arrow(0, 0, 2, 2, head_width=0.2, head_length=0.2, length_includes_head=True)
+ax.arrow(0, 0, 3, -1, head_width=0.2, head_length=0.2, length_includes_head=True)
+
+# Plot boundaries
+ax.plot(0, -2, '')
+ax.plot(-4, 0, '')
+ax.plot(0, 2, '')
+ax.plot(4, 0, '')
+
+# Add labels
+ax.text(3.25, -1.1, '$(3,-1)$', size=12)
+ax.text(2.25, 1.9, '$(2,2)$', size=12)
+ax.text(-3.5, -1.1, '$(-2,-1)$', size=12)
+
+plt.show()
+```
+:::
+## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
+:::{.center-text}
+**Let us consider the well known Iris Dataset.**
+:::
+<!-- Make the image a little smaller and the code tab smaller -->
+```{python}
+from sklearn.datasets import load_iris
+iris = load_iris()
+rows, cols = iris.data.shape
+print("This dataset contains", rows, "rows.")
+print("Each row contains", cols, "columns that contain the following features:")
+print(iris.feature_names)
+```
+:::{center-text}
+![](images/01-iris.png)
+:::
+
+## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
+:::{.center-text}
+**The data can be represented as a _matrix_.**
+:::
+
+:::{.columns}
+
+:::{.column width="50%"}
+```{python}
+#|echo: true
+A = iris.data
+print(A.shape)
+
+```
+:::
+
+:::{.column width="50%"}
+```{python}
+#|echo: true
+print(A)
+```
+:::
+
+:::
+
+## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
+
+<span style="font-size: .7em;">This dataset might look random to the human eye. _However,_ if we plot its attributes we can see that there is structure within the data.</span>
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+#|echo: true
+x_index = 2
+y_index = 3 
+# this formatter will label the colorbar with the correct target names
+formatter = plt.FuncFormatter(lambda i, *args: iris.target_names[int(i)])
+plt.scatter(A[:, x_index], A[:, y_index], c=iris.target, cmap = plt.cm.get_cmap('RdYlBu', 3))
+plt.colorbar(ticks=[0, 1, 2], format=formatter)
+plt.clim(-0.5, 2.5)
+plt.xlabel(iris.feature_names[x_index])
+plt.ylabel(iris.feature_names[y_index]);
+```
+:::
+
+## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
+We can make the following __observations__:
+
+:::{.incremental}
+- There are _correlations_ among the 150 rows of A.
+  - Knowing the petal length of an iris tells you something about the petal width.
+  - Knowing the petal length and width might give you a way to classify which type of iris you have.
+:::
+
+## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
+We can make the following __observations__:
+
+:::{.incremental}
+- The matrix is _compressible_.
+  - The 150 rows of $A$ are all samples of the same underlying physical process.
+  - We should be able to decompose this $150 \times 4$ matrice into simpler matrices.
+:::
+
+## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
+
+:::{.center-text}
+<span style="font-size: 1.2em;">What makes a matrix _simple_?</span>
+:::
+
+:::{.incremental}
+- **Size:** one matrix might have fewer rows or columns than another, which means it is more compact and has fewer degrees of freedom.
+- **Sparsity:** a matrix might be lower triangular (denoted $L$) or upper triangular (denoted $U$ or $R$), with all other entries equal to zero.
+- **Symmetry:** the entries of the matrix might be symmetric across the diagonal $S$, or it might even be a diagonal matrix $\Sigma$ with 0s on all other entries.
+
+:::
+
+## Matrix Decomposition
+- $A = L U$ - Gauss-Jordan Elimination
+- $A = Q R$ - Gram-Schmidt orthogonalization
+- $A = U \Sigma V$ - Singular Value Decomposition or SVD
+
+:::{.center-text}
+![](images/01-svd.png)
+:::
+
+## Assumptions
+Many techniques in this course involve dealing with high-dimensional datasets for which we assume low intrinsic dimensionality. This is often a good assumption, but not always!
+
+:::{.center-text}
+![](images/01-spurious.png)
+:::
