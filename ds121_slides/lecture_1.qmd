@@ -1,13 +1,13 @@
 ---
 title: "Introduction to Linear Algebra"
 number: "Lecture 1"
-author: "Lisa Wobbes"
+author: "DS-121"
 format: 
     revealjs:
         css: styles.css
 ---
 
-## Why Linear Algebra?
+## Why Linear Algebra?   
 
 ::: {.antique-center-image}
 ![](/images/image1.jpeg)
@@ -17,9 +17,10 @@ format:
 Linear algebra, probability/statistics, and optimization are the mathematical pillars of machine learning.
 :::
 
+
 ## Why Linear Algebra?
 <span style="font-size: 0.8em;">
-_Linear algebra enables powerful machine learning techniques such as k-means for clustering, PageRank for web search ranking, PCA for dimensionality reduction, and neural networks for deep learning._
+Linear algebra enables powerful machine learning techniques such as k-means for clustering, PageRank for web search ranking, PCA for dimensionality reduction, and neural networks for deep learning.
 </span>
 
 :::{.columns}
@@ -45,33 +46,43 @@ _Linear algebra enables powerful machine learning techniques such as k-means for
 :::
 
 ## What is Linear Algebra?
+
+::: {.center-y}
 :::{.incremental}
 :::{.fragment}
-<span style="font-size: 1.2em;">
+<span style="font-size: 0.8em;">
 Linear algebra is a branch of mathematics that deals with vectors, matrices, linear systems, and linear transformations. 
 </span>
 
 :::
 :::{.fragment}
-<span style="font-size: 1.2em;">
+<span style="font-size: 0.8em;">
 It involves understanding and manipulating multi-dimensional data through concepts like vector spaces, matrix operations, and matrix factorizations.
 </span>
 
 :::
 :::
+:::
 
 ## Three Modes of Thinking
+
 :::{.incremental}
-
+<span style="font-size: 0.8em;">
 - **Algebraic thinking**: how to correctly manipulate symbols in a consistent logical framework.
+</span>
 
+<span style="font-size: 0.8em;">
 - **Geometric thinking**: learning to extend familiar two- and three-dimensional concepts to higher dimensions.
+</span>
 
+<span style="font-size: 0.8em;">
 - **Computational thinking**: understanding the relationship between abstract algebraic machinery and actual computations which efficiently arrive at the correct answer.
+</span>
 
 :::{.fragment}
-Integrating these three concepts is **_essential_** for using linear algebra in data science.
-
+<span style="font-size: 0.8em;">
+Integrating these three concepts is _essential_ for using linear algebra in data science.
+</span>
 :::
 
 :::
@@ -81,12 +92,17 @@ Integrating these three concepts is **_essential_** for using linear algebra in 
 ![](images/01-modes.jpg)
 :::
 
-## Three Modes of Vector V
-- **_Algebraically:_** a vector $\mathbf{v}$ is an abstract object that permits addition ${\bf v} + {\bf w}$ and multiplication by a constant or *scalar* $c$ to form $c {\bf v}$.
+## Three Modes of Vector ${\bf v}$
+:::{.incremental}
+<span style="font-size: 0.8em;">
+- **Algebraically:** a vector $\mathbf{v}$ is an abstract object that permits addition ${\bf v} + {\bf w}$ and multiplication by a constant or *scalar* $c$ to form $c {\bf v}$.
+</span>
 
-## Three Modes of Vector V
-- **_Computationally:_** a vector is an ordered list of real numbers.
+<span style="font-size: 0.8em;">
+- **Computationally:** a vector is an ordered list of real numbers.
+</span>
 
+<span style="font-size: 0.8em;">
   $$
   \large \begin{array}{ccc}
   {\bf u} = \left[\begin{array}{r}3\\-1\end{array}\right] &
@@ -94,9 +110,13 @@ Integrating these three concepts is **_essential_** for using linear algebra in 
   {\bf w} = \left[\begin{array}{c}-2\\-1\end{array}\right]
   \end{array}
   $$
+</span>
+:::
 
 ## Three Modes of Vector V
-- **_Geometrically:_** a vector is a point in $n$-dimensional space.
+<span style="font-size: 0.8em;">
+- **Geometrically:** a vector is a point in $n$-dimensional space.
+</span>
 
 :::{.center-text}
 ```{python}
@@ -132,9 +152,10 @@ plt.show()
 ```
 :::
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
-:::{.center-text}
-**Let us consider the well known Iris Dataset.**
-:::
+<span style="font-size: 0.8em;">
+Let us consider the well known Iris Dataset.
+</span>
+
 <!-- Make the image a little smaller and the code tab smaller -->
 ```{python}
 from sklearn.datasets import load_iris
@@ -149,9 +170,9 @@ print(iris.feature_names)
 :::
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
-:::{.center-text}
-**The data can be represented as a _matrix_.**
-:::
+<span style="font-size: 0.8em;">
+The data can be represented as a _matrix_.
+</span>
 
 :::{.columns}
 
@@ -175,7 +196,7 @@ print(A)
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
 
-<span style="font-size: .7em;">This dataset might look random to the human eye. _However,_ if we plot its attributes we can see that there is structure within the data.</span>
+<span style="font-size: .8em;">This dataset might look random to the human eye. However, if we plot its attributes we can see that there is structure within the data.</span>
 
 :::{.center-text}
 ```{python}
@@ -194,47 +215,66 @@ plt.ylabel(iris.feature_names[y_index]);
 :::
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
-We can make the following __observations__:
 
-:::{.incremental}
-- There are _correlations_ among the 150 rows of A.
-  - Knowing the petal length of an iris tells you something about the petal width.
-  - Knowing the petal length and width might give you a way to classify which type of iris you have.
-:::
+<span style="font-size: .8em;">
+We can make the following observations.
+</span>
+
+
+<span style="font-size: .8em;">
+1. There are _correlations_ among the 150 rows of A. 
+</span>
+
+<span style="font-size: .8em;">
+- Knowing the petal length of an iris tells you something about the petal width. 
+- Knowing the petal length and width might give you a way to classify which type of iris you have.
+</span>
+
+<span style="font-size: .8em;">
+2. The matrix is _compressible_.
+</span>
+
+<span style="font-size: .8em;">
+  - The 150 rows of $A$ are all samples of the same underlying physical process.<br>
+  - We should be able to decompose this $150 \times 4$ matrix into simpler matrices.
+</span>
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
-We can make the following __observations__:
+
+<span style="font-size: 0.8em;">
+What makes a matrix _simple_?
+</span>
+
 
 :::{.incremental}
-- The matrix is _compressible_.
-  - The 150 rows of $A$ are all samples of the same underlying physical process.
-  - We should be able to decompose this $150 \times 4$ matrice into simpler matrices.
-:::
-
-## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
-
-:::{.center-text}
-<span style="font-size: 1.2em;">What makes a matrix _simple_?</span>
-:::
-
-:::{.incremental}
+<span style="font-size: 0.8em;">
 - **Size:** one matrix might have fewer rows or columns than another, which means it is more compact and has fewer degrees of freedom.
-- **Sparsity:** a matrix might be lower triangular (denoted $L$) or upper triangular (denoted $U$ or $R$), with all other entries equal to zero.
-- **Symmetry:** the entries of the matrix might be symmetric across the diagonal $S$, or it might even be a diagonal matrix $\Sigma$ with 0s on all other entries.
+</span>
 
+<span style="font-size: 0.8em;">
+- **Sparsity:** a matrix might be lower triangular (denoted $L$) or upper triangular (denoted $U$ or $R$), with all other entries equal to zero.
+</span>
+
+<span style="font-size: 0.8em;">
+- **Symmetry:** the entries of the matrix might be symmetric across the diagonal $S$, or it might even be a diagonal matrix $\Sigma$ with all other entries being 0.
+</span>
 :::
 
 ## Matrix Decomposition
-- $A = L U$ - Gauss-Jordan Elimination
-- $A = Q R$ - Gram-Schmidt orthogonalization
+<span style="font-size: 0.8em;">
+- $A = L U$ - Gauss-Jordan Elimination <br>
+- $A = Q R$ - Gram-Schmidt orthogonalization <br>
 - $A = U \Sigma V$ - Singular Value Decomposition or SVD
+</span>
 
 :::{.center-text}
 ![](images/01-svd.png)
 :::
 
 ## Assumptions
+<span style="font-size: 0.8em;">
 Many techniques in this course involve dealing with high-dimensional datasets for which we assume low intrinsic dimensionality. This is often a good assumption, but not always!
+</span>
 
 :::{.center-text}
 ![](images/01-spurious.png)
