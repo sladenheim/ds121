@@ -130,3 +130,9 @@
 .smaller-title {
   font-size: 35px;
 }
+
+.center-y {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }

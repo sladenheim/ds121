@@ -108,8 +108,8 @@ Let us write this in a more mathematical way:
 :::
 
 :::{.fragment }
-**Input:**  $\mathbf{x}_1,\ldots, \mathbf{x}_m$ _with_  $\mathbf{x}_i \in \mathbb{R}^n \: \: \forall \: i \in \{1, \ldots, n\}.$<br>
-**Output:** $\mathbf{y}_1,\dots, \mathbf{y}_m$  _with_  $\mathbf{y}_i \in \mathbb{R}^k \: \: \forall \: i \in \{1, \dots, n\},$ _where_ 
+**Input:**  $\mathbf{x}_1,\ldots, \mathbf{x}_m$ _with_  $\mathbf{x}_i \in \mathbb{R}^n \: \: \forall \: i \in \{1, \ldots, m\}.$<br>
+**Output:** $\mathbf{y}_1,\dots, \mathbf{y}_m$  _with_  $\mathbf{y}_i \in \mathbb{R}^k \: \: \forall \: i \in \{1, \dots, m\},$ _where_ 
 [$k \ll n$]{style="color:red;"}.<br><br>
 :::
 
@@ -247,7 +247,7 @@ Step **5**: Project the data into the <br>directions of the PCs.
 
 ::::
 
-## Least Squares Interpretation
+## Geometric Interpretation
 
 ::: {style="font-size: .8em"}
 Centered data often clusters along a line or other low-dimensional <br> subspace of $\mathbb{R}^{n}$.
@@ -343,7 +343,7 @@ def generate_html():
         </p>
         <p style="text-align: center; font-size: 1em;">
             \\[
-            S = \\frac{1}{m-1} X^T X.
+            S = \\frac{1}{m-1} XX^T.
             \\]
         </p>
     </div>
@@ -355,7 +355,7 @@ display(HTML(html_content))
 $S$ is symmetric:
 
 $$
-S^T = \left( \frac{1}{m-1} X^T X \right)^T = \frac{1}{m-1}  X^T (X^T)^T  = \frac{1}{m-1} X^T X = S.
+S^T = \left( \frac{1}{m-1} X X^T\right)^T = \frac{1}{m-1}  (X^T)^T X^T = \frac{1}{m-1} X X^T = S.
 $$
 
 Since $S$ is symmetric, we can apply the **spectral decomposition**.
@@ -370,7 +370,7 @@ def generate_html():
     return """
     <div class="purple-box" style="background-color: #f3e6ff; padding: 2px; border-radius: 5px;">
         <p>
-            Every symmetric matrix \( S \) has the factorization \(S = V \Lambda V^T,\) where \( \Lambda \) is a diagonal matrix that contains the eigenvalues of \( S \) and \( V \) is a matrix whose columns are orthogonal eigenvectors of \( S \).
+            Every symmetric matrix \( S \) has the factorization \(S = V \Lambda V^T,\) where \( \Lambda \) is a diagonal matrix that contains the eigenvalues of \( S \) and \( V \) is a matrix whose columns are orthonormal eigenvectors of \( S \).
         </p>
     </div>
     """
@@ -385,22 +385,21 @@ $$
 \Lambda = 
 \begin{bmatrix}
 \lambda_1                                   \\
-& \lambda_2             &   & \Large0\\
-&               & \ddots                \\
-& \Large0 &   & \lambda_{n-1}            \\
-&               &   &   & \lambda_n
+& \lambda_2             &   & \Large0 \\
+  &               & \ddots                \\
+% & \Large0 &   & \lambda_{n-1}            \\
+ &        \Large0       &   &   & \lambda_n
 \end{bmatrix}
 \quad \text{and} \quad
 V = \begin{bmatrix} 
-\bigg| & \bigg| &  & \bigg| & \bigg| \\
-\mathbf{v}_1   & \mathbf{v}_2  & \dots & \mathbf{v}_{n-1}   & \mathbf{v}_n  \\
-\bigg| & \bigg| & & \bigg| & \bigg|
+\bigg| & \bigg| &   & \bigg| \\
+\mathbf{v}_1   & \mathbf{v}_2  & \dots  & \mathbf{v}_n  \\
+\bigg| & \bigg| & & \bigg|
 \end{bmatrix}
 $$
 
-:::{.center-text}
-with $\lambda_1\geq\lambda_2\geq\dots\geq\lambda_{n-1}\geq\lambda_n$ and $S\mathbf{v}_i=\lambda_i\mathbf{v}_i$, $\mathbf{v}_i\perp\mathbf{v}_j$ for $i\neq j$.
-:::
+with $\lambda_1\geq\lambda_2\geq\dots\geq\lambda_n$ and $S\mathbf{v}_i=\lambda_i\mathbf{v}_i$, $\mathbf{v}_i\perp\mathbf{v}_j$ $(i\neq j)$, $||\mathbf{v}_i|| = 1$.
+
 
 :::
 
@@ -408,7 +407,7 @@ with $\lambda_1\geq\lambda_2\geq\dots\geq\lambda_{n-1}\geq\lambda_n$ and $S\math
 
 :::{.incremental style="font-size: .8em"}
 - The columns of $V$ are the principal directions.
-- The principal components are the projection of the data into principal directions: $XV$.
+- The principal components are the projection of the data into principal directions: $X^TV$.
 - The total variance $T$ in the data is the sum of all eigenvalues: $T=\lambda_1+\lambda_2+\cdots+\lambda_n$.
 - The first eigenvector $\mathbf{v}_1$ points in the most significant direction of the data. This direction explains the largest fraction $\lambda_1/T$ of the total variance.
 - The second eigenvector $\mathbf{v}_2$ accounts for a smaller fraction $\lambda_2/T$.
@@ -434,7 +433,7 @@ We **center** the data by subtracting each entry of $\mu$ from the corresponding
 $X = \begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}$.
 :::
 :::
-:::
+::: 
 
 ## Example
 
@@ -442,19 +441,18 @@ $X = \begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}$.
 Next, we compute the **covariance matrix:**
 
 $$
-S = \frac{1}{2-1}X^TX = \begin{bmatrix} 5 & -5 \\ 0 & 0 \\ -5 & 5 \end{bmatrix}
-\begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}
-= \begin{bmatrix} 50 & 0 & -50 \\ 0 & 0 & 0 \\ -50 & 0 & 50 \end{bmatrix}.
+S = \frac{1}{2-1}XX^T = 
+\begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix} \begin{bmatrix} 5 & -5 \\ 0 & 0 \\ -5 & 5 \end{bmatrix}
+= \begin{bmatrix} 50 & -50 \\ -50 & 50 \end{bmatrix}.
 $$
 
-The eigenvalues of $S$ are $\lambda_1=100$ and $\lambda_2=\lambda_3=0$.
+The eigenvalues of $S$ are $\lambda_1=100$ and $\lambda_2=0$.
 
 The eigenvectors of $S$ are:
 
 $$
-\mathbf{v}_1 = \begin{bmatrix} 0.7071 \\ 0 \\ -0.7071 \end{bmatrix},
-\mathbf{v}_2 = \begin{bmatrix} 0.7071 \\ 0 \\ 0.7071 \end{bmatrix},
-\mathbf{v}_3 = \begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}.
+\mathbf{v}_1 = \begin{bmatrix} 0.7071 \\ -0.7071 \end{bmatrix},
+\mathbf{v}_2 = \begin{bmatrix} 0.7071 \\ 0.7071 \end{bmatrix}.
 $$
 :::
 
@@ -488,12 +486,94 @@ This implies that the first principal component accounts for all the variance in
 We can compute the first principal component as:
 
 $$
-Y = X\mathbf{v}_1 = \begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}
-\begin{bmatrix} 0.7071 \\ 0 \\ -0.7071 \end{bmatrix}
-= \begin{bmatrix} 7.071 \\ -7.071 \end{bmatrix}.
+Y = X^T\mathbf{v}_1 = \begin{bmatrix} 5 & -5 \\ 0 & 0 \\ -5 & 5 \end{bmatrix}
+\begin{bmatrix} 0.7071 \\ -0.7071 \end{bmatrix}
+= \begin{bmatrix} 7.071 \\ 0 \\ -7.071 \end{bmatrix}.
 $$
 :::
 :::
+
+<!-- ## Example
+
+:::{style="font-size: .8em"}
+:::{.fragment}
+Consider the following dataset $\mathbf{x}_1 = \begin{bmatrix} 90 \\ 60 \\ 60 \end{bmatrix}$ and $\mathbf{x}_2 = \begin{bmatrix} 80 \\ 60 \\ 70 \end{bmatrix}$. <br>Let us find its **first principal component**.
+:::
+:::{.fragment}
+First, we construct $X_0$: $X_0 = \begin{bmatrix} 90 & 60 & 60 \\ 80 & 60 & 70 \end{bmatrix}^T$. Note the use of the transpose.
+:::
+:::{.fragment}
+The mean across columns is: $\mu = \begin{bmatrix} 85 & 60 & 65 \end{bmatrix}^T$.
+:::
+:::{.fragment}
+:::{style="font-size: 1em"}
+We **center** the data by subtracting each entry of $\mu$ from the corresponding column in $X_0$:
+:::
+:::{.center-text}
+$X = \begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}^T$.
+:::
+:::
+::: 
+
+## Example
+
+::::{style="font-size: .8em"}
+Next, we compute the **covariance matrix:**
+
+$$
+S = \frac{1}{2-1}X^TX = 
+\begin{bmatrix} 5 & 0 & -5 \\ -5 & 0 & 5 \end{bmatrix}
+\begin{bmatrix} 5 & -5 \\ 0 & 0 \\ -5 & 5 \end{bmatrix}
+= \begin{bmatrix} 50 & -50 \\  -50 & 50 \end{bmatrix}.
+$$
+
+The eigenvalues of $S$ are $\lambda_1=100$ and $\lambda_2=0$.
+
+The eigenvectors of $S$ are:
+
+$$
+\mathbf{v}_1 = \begin{bmatrix} 0.7071 \\ -0.7071 \end{bmatrix},
+\mathbf{v}_2 = \begin{bmatrix} 0.7071 \\ 0.7071 \end{bmatrix}.
+$$
+:::
+
+## Example
+
+::::{style="font-size: .8em"}
+:::{.center-text style="font-size: 1em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return """
+    <div class="blue-box">
+        <p>What is the total variance in the data?</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+:::{.fragment}
+The **total variance** is $T=100$.
+:::
+
+:::{.fragment}
+This implies that the first principal component accounts for all the variance in the dataset.
+:::
+:::{.fragment}
+We can compute the first principal component as:
+
+$$
+Y = X\mathbf{v}_1 = \begin{bmatrix} 5 & -5 \\ 0 & 0 \\ -5 & 5 \end{bmatrix}
+\begin{bmatrix} 0.7071 \\ -0.7071 \end{bmatrix}
+= \begin{bmatrix} 7.071 \\ -7.071 \end{bmatrix}.
+$$
+:::
+::: -->
+
 
 ## PCA Step by Step
 :::{style="font-size: .8em"}
@@ -505,7 +585,7 @@ Input: $X_0 \in \mathbb{R}^{m \times n}$. Output: $Y \in \mathbb{R}^{m \times k}
 :::
 
 :::{.fragment}
-2. Compute the sample covariance matrix: $S = \frac{1}{m-1}X^TX$.
+2. Compute the sample covariance matrix: $S = \frac{1}{m-1}XX^T$.
 :::
 
 :::{.fragment}
@@ -521,7 +601,7 @@ Input: $X_0 \in \mathbb{R}^{m \times n}$. Output: $Y \in \mathbb{R}^{m \times k}
 :::
 
 :::{.fragment}
-6. Project the data: $Y = XV_k$.
+6. Project the data: $Y = X^TV_k$.
 :::
 :::
 
@@ -533,22 +613,22 @@ The SVD of a mean-centered data matrix $X \in \mathbb{R}^{m \times n}$ is $X = U
 ![](/images/pca/UeV.png)
 
 :::{.center-text}
-Hence, $X^TX = (U\Sigma V^T)^T(U\Sigma V^T) = (V^T)^T\Sigma U^TU\Sigma(V^T)^T$
+Hence, $XX^T = (U\Sigma V^T)(U\Sigma V^T)^T = U\Sigma V^T(V^T)^T\Sigma U^T$
 :::
 $$
-= V\Sigma U^TU\Sigma V^T = V\Sigma I\Sigma V^T = V\Sigma^2 V^T.
+= U\Sigma V^TV\Sigma U^T = U\Sigma I\Sigma U^T = U\Sigma^2 U^T.
 $$
 :::
 
 ## Relationship to the SVD
 :::{style="font-size: 0.8em;"}
 :::{.fragment}
-Recall that in PCA the covariance matrix $S$ is given by $\frac{1}{m-1} X^T X$.
+Recall that in PCA the covariance matrix $S$ is given by $\frac{1}{m-1} XX^T$.
 :::
 <br>
 
 :::{.fragment}
-Thus, $S = \frac{1}{m-1} V \Sigma^2 V^T$.
+Thus, $S = \frac{1}{m-1} U \Sigma^2 U^T$.
 :::
 <br>
 
@@ -560,9 +640,6 @@ This tells us that the eigenvalues $\lambda_i$ of $S$ are the squares of the sin
 In practice, PCA is done by computing the SVD of your data matrix as opposed to forming the covariance matrix and computing the eigenvalues. 
 ::: 
 
-:::{.fragment}
-The principal components are the right singular vectors $V$. The projected data is computed as $XV$. The eigenvalues of $S$ are obtained from squaring the entries of $\Sigma$ and scaling them by $\frac{1}{m-1}$.
-:::
 :::
 
 
@@ -597,7 +674,7 @@ plt.show()
 
 ## Case Study: Random Data
 :::{style="font-size: 0.8em; "}
-Let us do PCA and plot the principle components over our dataset. As expected, the principal components are orthogonal and point in the directions of the maximum variance.
+Let us do PCA and plot the directions of the principle components over our dataset. As expected, the principal components are orthogonal and point in the directions of the maximum variance.
 
 ```{python}
 #| fig-align: center
@@ -718,6 +795,7 @@ plt.show()
 We observe the following in our plot of the digits in the first two principal components:
 
 - There is a decent clustering of some of our digits, in particular 0, 2, 3, 4, and 6.
+- There is a clear difference between certain digits (i.e., 0 and 1, and 3 and 4).
 - The numbers 0 and 6 seem to be relatively close to each other in this space.
 - There is not a very clear separation of the number 5 from some of the other points.
 :::
@@ -805,4 +883,25 @@ When we normalize our data, we observe an **equal distribution** of the variance
 :::
 :::
 ::::
+
+## Eigenfaces
+:::{style="font-size: .8em"}
+
+:::{.center-text style="max-width:80%;"}
+:::: {.columns}
+::: {.column width="68%"}
+- PCA provides a set of standardized facial features.
+- $X_0$ is a training set with a wide variety of faces.
+- Eigenvector $\textbf{v}_1$ tells the best combination of known faces that best describe a new face, $\textbf{v}_2$ is the next best combination.
+- First commercial use: Super Bowl 35 in Tampa.
+- Eigenvoices, Eigeneyes, Eigenexpressions, ...
+
+
+:::
+::: {.column width="32%"}
+![](images/Eigenfaces.png)
+Eigenfaces pick out hairline, mouth, eyes, and shape.
+:::
+::::
+:::
 
