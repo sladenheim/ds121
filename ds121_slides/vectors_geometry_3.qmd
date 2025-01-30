@@ -1,0 +1,569 @@
+---
+title: "Classification with <br> K-Nearest Neighbors"
+author: "CDS DS 121<br>Boston University"
+format: 
+    revealjs:
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib as mp
+import sklearn.datasets as sk_data
+from sklearn.neighbors import KNeighborsClassifier
+import sklearn.metrics as metrics
+```
+## Learning Objectives
+
+::::{style="font-size: .8em"}
+In the last lecture, we explored vector geometry, including vector length, distance, and the angle between two vectors.
+
+:::{.fragment}
+Today, we will build on that foundation by connecting the concept of distance between vectors to a widely used machine learning algorithm known as k-nearest neighbors ($k$-NN). Before diving into $k$-NN, we will discuss different types of ML methods.
+:::
+
+:::{.fragment}
+By the end of this lecture, you will understand how vector distances are applied in $k$-NN, be able to differentiate between various ML approaches, and recognize the challenges posed by high-dimensional data.
+:::
+
+::::
+
+## Types of Machine Learning Algorithms {.smaller}
+
+::::{style="font-size: .8em" .center-text}
+Encoding data into vectors allows us to use vector geometry to uncover structure in the data. This is the objective of many data science algorithms.
+::::
+
+<img src="images/vectors_ds/image_types.jpg" />
+
+## Supervised vs. Unsupervised Learning {.smaller}
+
+:::{style="font-size: .8em"}
+- __Supervised__ methods:  Data items have labels, and we want to learn a function that correctly assigns labels to new data items.
+- __Unsupervised__ methods:  Data items do not have labels, and we want to learn a function that extracts  important patterns from the data.
+
+
+:::{.fragment}
+Let us write the supervised learning problem more precisely.
+
+- You are given some example data, which we'll think of abstractly as tuples $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,N\}$.  
+
+- Your goal is to learn a rule that allows you to predict $y_j$ for some $\mathbf{x_j}$ that is not in the example data you were given.
+:::
+
+:::{.fragment}
+In this class, we think of the data $\mathbb{x}$ as a vector. We refer to the components of $\mathbb{x}$ as **features**.
+:::
+:::
+
+## Supervised Learning
+
+::::{style="font-size: .8em"}
+The collection $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,N\}$ is called the __training data.__
+
+:::{.fragment}
+Our assumption here is that the labels $y_i$ have some _dependence_ on the features in $\mathbf{x_i}$. For this reason, we sometimes say that:
+
+- the features in the $\mathbf{x_i}$ vectors are the __independent variables__, and
+- the label $y_j$ is the target or __dependent variable__.
+:::
+
+:::{.fragment .incremental}
+Machine learning relies on the following two principles:
+
+1. There is a set of functions ("rules") that could be used to predict $y_i$ from $\mathbf{x}_i$. In this case, the goal of learning is to find the "right" function.
+
+2. The rule for predicting $y_i$ from $\mathbf{x}_i$ is the same as the rule for predicting $y_j$ from the new item $\mathbf{x}_j$. This is because we want the model to do a good job of predicting on __future__ data.  This is called the model's __generalization__ ability.
+:::
+
+::::
+
+## Regression vs. Classification
+
+::::{style="font-size: .7em"}
+If $y$ is a continuous (numeric) value, then the problem is called __regression.__ 
+
+:::{.incremental}
+- For example, in predicting housing prices, the features $x_{i1}, x_{i2}, x_{i3}, \ldots$ could be a vector containing lot size, square footage, number of bathrooms, etc. of a collection of houses, and $y_i$ could be the sale price of house $i$.
+
+- In the regression case, you will usually be satisfied if your prediction is __close__ to the true $y$ value... it usually need not be exact to be useful.
+:::
+
+:::{.fragment .incremental}
+If $y$ is a discrete value (a label, for example) then the problem is called __classification.__
+
+- For example, in image recognition, the features $\mathbf{x}$ could be a vector that represents the pixels of the image, and $y$ could be a label such as "tiger," "tree," etc.
+    
+- In the classification case, you will usually be satisfied if your predicted label is accurate _most_ of the time... it usually need not be 100% accurate to be useful.
+:::
+::::
+
+## Parametric vs. Nonparametric Models {.smaller}
+
+<!-- No need for font-size to be .8 em. Font-size already smaller due to header. -->
+Another way in which different machine leaerning models can vary is in the number of training parameters that exist.
+
+- If the model has a _fixed_ number of parameters, no matter the size of the training dataset, then it is called **parametric**.
+- If the number of parameters _grows_ with the data, the model is called **nonparametric**.
+
+
+:::{.fragment}
+Parametric models have 
+
+* the advantage of often being faster to use, 
+* but the disadvantage of making strong assumptions about the nature of data distributions.
+:::
+
+:::{.fragment}
+Nonparametric models are
+
+* more flexible,
+* but can be computationally intractable for large datasets.
+:::
+
+## K-Nearest Neighbors
+
+::::{style="font-size: .8em"}
+$k$-nearest neighbors is an example of a supervised, non-parametric classifier.
+
+:::{.fragment}
+Like any classifier, $k$-Nearest Neighbors is trained by providing it a set of labeled data, and the goal is to classify future data points that aren't already labeled.
+
+However, at _training_ time, the classifier does very little. It just stores away the training data. This is what makes it non-parametric.
+:::
+
+:::{.fragment}
+At _classification_ time, it simply "looks at" the $k$ points in the training set that are nearest to the test input point $\mathbf{x}$, and makes a decision based on the labels on those points.
+
+By "nearest" we usually mean in Euclidean distance.
+:::
+::::
+
+## K-Nearest Neighbors
+
+
+:::{style="font-size: .75em"}
+Here is an example of a training dataset $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,N\}$ where the feature vectors $\mathbf{x_i}$ are each 2-dimensional, and the label $y_i$ is either 'blue' or 'red.'
+:::
+
+:::{.center-text}
+```{python}
+from matplotlib.colors import ListedColormap
+figsize = (10,7)
+cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
+cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
+
+demo_y = [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+demo_X = np.array([[-3,1], [-2, 4], [-2, 2], [-1.5, 1], [-1, 3], [0, 0], [1, 1.5], [2, 0.5], [2, 3], [2, 0], [3, 1], [4, 4], [0, 1]])
+test_X = [-0.3, 0.7]
+#
+plt.figure(figsize=figsize)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+plt.axis('equal')
+plt.axis('off')
+plt.title('Training Points: 2 Classes');
+plt.show()
+```
+:::
+
+## K-Nearest Neighbors
+
+:::{.center-text}
+```{python}
+plt.figure(figsize=figsize)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+plt.plot(test_X[0], test_X[1], 'ok')
+plt.annotate('Test Point', test_X, [75, 25], 
+             textcoords = 'offset points', fontsize = 14, 
+             arrowprops = {'arrowstyle': '->'})
+plt.axis('equal')
+plt.axis('off')
+plt.title('Training Points: 2 Classes');
+plt.show()
+```
+:::
+
+## K-Nearest Neighbors
+
+:::{.center-text}
+```{python}
+plt.figure(figsize=figsize)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+plt.plot(test_X[0], test_X[1], 'ok')
+ax=plt.gcf().gca()
+circle = mp.patches.Circle(test_X, 0.5, facecolor = 'red', alpha = 0.2)
+plt.axis('equal')
+plt.axis('off')
+ax.add_artist(circle)
+plt.title('1-Nearest-Neighbor: Classification: Red')
+plt.show()
+```
+:::
+
+## K-Nearest Neighbors
+
+:::{.center-text}
+
+```{python}
+plt.figure(figsize=figsize)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+test_X = [-0.3, 0.7]
+plt.plot(test_X[0], test_X[1], 'ok')
+ax=plt.gcf().gca()
+    #ellipse = mp.patches.Ellipse(gmm.means_[clus], 3 * e[0], 3 * e[1], angle, color = 'r')
+circle = mp.patches.Circle(test_X, 0.9, facecolor = 'gray', alpha = 0.3)
+plt.axis('equal')
+plt.axis('off')
+ax.add_artist(circle)
+plt.title('2-Nearest-Neighbor');
+plt.show()
+```
+:::
+
+## K-Nearest Neighbors
+
+:::{.center-text}
+```{python}
+plt.figure(figsize=figsize)
+ax=plt.gcf().gca()
+    #ellipse = mp.patches.Ellipse(gmm.means_[clus], 3 * e[0], 3 * e[1], angle, color = 'r')
+circle = mp.patches.Circle(test_X, 1.4, facecolor = 'blue', alpha = 0.2)
+ax.add_artist(circle)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+test_X = [-0.3, 0.7]
+plt.plot(test_X[0], test_X[1], 'ok')
+plt.axis('equal')
+plt.axis('off')
+plt.title('3-Nearest-Neighbor: Classification: Blue');
+plt.show()
+```
+:::
+
+## K-Nearest Neighbors
+
+::::{style="font-size: .8em"}
+Note that $k$-Nearest Neighbors can do either _hard_ or _soft_ classification.
+
+:::{.fragment}
+As a **hard classifier**, it returns the majority vote of the labels on the $k$ Nearest Neighbors (which may be indeterminate, as above). This is the primary method that we will consider in this course.
+
+It is also reasonable to weight the votes of neighborhood points according to their distance from $x$.
+:::
+
+:::{.fragment}
+As a **soft classifier** it returns:
+    
+$$ 
+p(x = c\,|\,\mathbf{x}, k) = \frac{\text{number of points in neighborhood with label } c}{k} 
+$$
+:::
+::::
+
+## Model Selection for K-NN
+
+::::{style="font-size: .8em"}
+The variable $k$ itself is called a __hyperparameter__. That is: it is a parameter that must be set _before_ the model parameters themselves can be learned.
+<br><br>
+
+
+Each choice of $k$ results in a different model. The complexity of the resulting model is therefore controlled by the hyperparameter $k$.
+<br><br>
+
+
+:::{.fragment}
+Let's see what happens if we apply $k$-nearest neighbors to a dataset with different choices of $k$.
+:::
+::::
+
+## Model Selection for K-NN
+
+:::{style="font-size: .8em"}
+Consider the following dataset with 3 classes.
+:::
+
+:::{.center-text}
+```{python}
+X, y = sk_data.make_blobs(n_samples=150, 
+                          centers=[[-2, 0],[1, 5], [2.5, 1.5]],
+                          cluster_std = [2, 2, 3],
+                          n_features=2,
+                          center_box=(-10.0, 10.0),random_state=0)
+plt.figure(figsize = figsize)
+plt.axis('equal')
+plt.axis('off')
+plt.scatter(X[:,0], X[:,1], c = y, cmap = cmap_bold, s = 80);
+#plt.scatter(X[:,0], X[:,1], c = y, s = 80);
+plt.show()
+```
+:::
+
+## Model Selection for K-NN
+
+:::{style="font-size: .8em"}
+Let us vary $k$ and observe the change in model complexity.
+
+
+```{python}
+# Plot the decision boundary. For that, we will assign a color to each
+# point in the mesh [x_min, x_max]x[y_min, y_max].
+h = .1  # step size in the mesh
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                      np.arange(y_min, y_max, h))
+
+f, axs = plt.subplots(1, 3, figsize=(15, 5))
+for i, k in enumerate([1, 5, 25]):
+    knn = KNeighborsClassifier(n_neighbors = k)
+    knn.fit(X, y)
+    Z = knn.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    axs[i].pcolormesh(xx, yy, Z, cmap = cmap_light, shading = 'auto')
+    axs[i].pcolormesh(xx, yy, Z, shading = 'auto')
+    axs[i].axis('equal')
+    axs[i].axis('off')
+    axs[i].set_title(f'Decision Regions for $k$ = {k}');
+```
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What is the best choice for \(k\)?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+:::
+
+## Challenges for K-NN
+
+::::{.columns style="font-size: .8em"}
+:::{.incremental .column width="40%"}
+- The computational cost grows with the size of the training data
+- Data scaling is required
+- The curse of dimensionality
+:::
+
+:::{.column width="60%" .center-text}
+<img src="/images/vectors_ds/curse.jpeg" width=400/>
+
+:::
+::::
+
+## The Curse of Dimensionality
+
+::::{style="font-size: .8em"}
+The **Curse of Dimensionality** is a somewhat tongue-in-cheek term for serious problems that arise when we use geometric algorithms in high dimensions.
+
+:::{.fragment}
+There are various aspects of the Curse that affect $k$-NN.
+
+1. Points are far apart in high dimension.
+2. Points tend to all be at similar distances in high dimension.
+:::
+
+:::{.fragment}
+Let's analyze these two claims in more detail.
+:::
+::::
+
+## The Curse of Dimensionality
+
+::::{style="font-size: .75em"}
+__1. Points are far apart in high dimension.__
+
+$k$-NN relies on there being one or more "close" points to the test point $x$.   
+
+In other words, we need the training data to be relatively dense, so there are "close" points everywhere.
+
+:::{.fragment}
+Unfortunately, the amount of space we work in grows exponentially with the dimension $d$.
+
+Hence, points in high-dimensional spaces tend not to be close to one another at all.
+:::
+
+:::{.fragment}
+One very intuitive way to think about it is this:
+
+In order for two points to be close in $\mathbb{R}^d$, they must be close in _each_ of the $d$ dimensions.
+
+As the number of dimensions grows, it becomes harder and harder for a pair of points to be close in _each_ dimension.
+:::
+::::
+
+## The Curse of Dimensionality
+
+::::{style="font-size: .8em"}
+__2. Points tend to all be at similar distances in high dimension.__
+
+Let's say points are uniformly distributed in space, so that the number of points in a region is proportional to the region's volume.  
+
+How does volume relate to distance as dimension $d$ grows?
+
+:::{.fragment}
+Consider you are at some point in space (say, the test point $x$), and you want to know how many points are within a unit distance from you.
+
+This is proportional to the volume of a hypersphere with radius 1.
+:::
+
+:::{.fragment}
+Now, the volume of a hypersphere is $k_d \,r^d$.  
+
+For each $d$ there is a different $k_d$.
+
+* For $d = 2$, $k_d$ is $\pi$, and 
+* for $d = 3$, $k_d$ is 4/3 $\pi$, etc.
+:::
+::::
+
+## The Curse of Dimensionality
+
+::::{style="font-size: .8em" .columns}
+
+:::{.column}
+Let's also ask how many points are within a slightly smaller distance, let's say 0.99.  
+
+:::{.fragment}
+The new distance can be thought of as $1 - \epsilon$ for some small $\epsilon$.
+:::
+
+:::{.fragment}
+The number of points then of course is proportional to $k_d (1-\epsilon)^d$.
+:::
+:::
+
+:::{.center-text .column}
+```{python}
+ax = plt.figure(figsize = (7,7)).add_subplot(projection = '3d')
+# coordinates of sphere surface
+u, v = np.mgrid[0:2*np.pi:50j, 0:np.pi:50j]
+x = np.cos(u)*np.sin(v)
+y = np.sin(u)*np.sin(v)
+z = np.cos(v)
+#
+ax.plot_surface(x, y, z, color='r', alpha = 0.3)
+s3 = 1/np.sqrt(3)
+ax.quiver(0, 0, 0, s3, s3, s3, color = 'b')
+ax.text(s3/2, s3/2, s3/2-0.2, 'r', size = 14)
+ax.set_axis_off()
+plt.title('Hypersphere in $d$ dimensions\nVolume is $k_d \,r^d$');
+```
+:::
+
+::::
+
+## The Curse of Dimensionality
+
+::::{style="font-size: .8em"}
+What is the fraction $f_d$ of all the points within the unit distance but not within the distance of 0.99?
+
+:::{.fragment}
+$$ 
+f_d = \frac{k_d 1^d - k_d (1-\epsilon)^d}{k_d 1^d} = 1 - (1-\epsilon)^d.
+$$
+:::
+
+:::{.fragment}
+As d approaches infinity, $f_d$ approaches 1.
+<!-- Too much vertical whitespace for matplotlib plot so this is quick fix. -->
+
+:::{.center-text}
+<img src="/images/vectors_ds/inscribed-circle.png" width=300 />
+
+:::
+
+:::
+
+::::
+
+## The Curse of Dimensionality
+
+:::{style="font-size: .8em"}
+Let's demonstrate this effect in practice.
+
+What we will do is create 1000 points, scattered at random within a $d$-dimensional ball of diameter 1 in each dimension.
+
+We will look at two quantities:
+
+
+* The _minimum_ distance between any two points, and
+* The _average_ distance between any two points.
+
+as we vary $d$.
+:::
+
+## The Curse of Dimensionality
+
+:::{.center-text}
+```{python}
+
+nsamples = 1000
+unif_X = np.random.default_rng().uniform(0, 1, nsamples).reshape(-1, 1)
+euclidean_dists = metrics.euclidean_distances(unif_X)
+# extract the values above the diagonal
+dists = euclidean_dists[np.triu_indices(nsamples, 1)]
+mean_dists = [np.mean(dists)]
+min_dists = [np.min(dists)]
+for d in range(2, 101):
+    unif_X = np.column_stack([unif_X, np.random.default_rng().uniform(0, 1, nsamples)])
+    euclidean_dists = metrics.euclidean_distances(unif_X)
+    dists = euclidean_dists[np.triu_indices(nsamples, 1)]
+    mean_dists.append(np.mean(dists))
+    min_dists.append(np.min(dists))
+
+plt.figure(figsize=figsize)
+plt.plot(min_dists, label = "Minimum Distance")
+plt.plot(mean_dists, label = "Average Distance")
+plt.xlabel(r'Number of dimensions ($d$)')
+plt.ylabel('Distance')
+plt.legend(loc = 'best')
+plt.title(f'Comparison of Minimum Versus Average Distance Between {nsamples} Points\nAs Dimension Grows');
+```
+:::
+
+## The Curse of Dimensionality
+
+:::{.center-text}
+```{python}
+plt.figure(figsize=figsize)
+plt.plot([a/b for a, b in zip(min_dists, mean_dists)])
+plt.xlabel(r'Number of dimensions ($d$)')
+plt.ylabel('Ratio')
+plt.title(f'Ratio of Minimum to Average Distance Between {nsamples} Points\nAs Dimension Grows');
+```
+:::
+
+## The Curse of Dimensionality
+
+:::{style="font-size: .8em"}
+The above figures show the growth of the ratio of the minimum distance to the average distance.
+
+For K-NN the implication of the curse of dimensionality is that in high dimension, most points are about the same distance from the test point.
+
+This leads to ineffectiveness of $k$-NN in higher dimensions.
+:::
+
+## Key Ideas
+
+:::{.incremental style="font-size: .8em"}
+- The main difference between supervised and unsupervised methods is that the former ones require labeled data.
+
+- $k$-NN is an example of a supervised ML algorithm. It classifies new unlabeled points by looking at its k nearest neighbor.
+
+- One of the main challanges for $k$-NN is formed by the curse of dimensionality.
