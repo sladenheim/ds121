@@ -1,6 +1,6 @@
 ---
 title: "Clustering with K-Means"
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         css: 
@@ -20,14 +20,14 @@ We will describe the intuition behind this algorithm and its main types. We will
 :::
 
 :::{.fragment}
-In this lecture we will also touch upon the concepts of similarity and dissimiliarity mesuares, synthetic data, and multidimensional sealing.
+In this lecture we will also touch upon the concepts of similarity and dissimiliarity mesuares, synthetic data, and multidimensional scaling.
 :::
 ::::
 
 ## Similarity and Dissimilarity
 
 ::::{style="font-size: .8em;"}
-Working with data, we can encounter a wide variety of different data objects:
+Working with data, we can encounter a wide variety of data objects:
 
 ::::{.columns .fragment}
 
@@ -53,69 +53,62 @@ Working with data, we can encounter a wide variety of different data objects:
 ::::
 
 :::{.fragment}
-We are naturally interested in how **similar** or **dissimilar** two objects are.
+We are naturally interested in how _similar_ or _dissimilar_ two objects are.
 :::
 ::::
 
 ## Similarity and Dissimilarity
 
-::::{style="font-size: .8em;"}
+::::{style="font-size: .8em;" .center-y}
 A dissimilarity function takes two objects as input, and returns a large value when the two objects are not very similar.
 
+Often we put restrictions on the dissimilarity function.
+One of the most common is that it be a _metric_.
+
+A metric is commonly called a _distance_. We will mainly work with Euclidian distance.
+::::
+
+## Similarity and Dissimilarity
+
+::::{style="font-size: .8em;" }
 ::::{.columns}
 
 :::{.column width="65%"}
-
-:::{style="font-size: .8em"}
-
-:::{.fragment}
-Often we put restrictions on the dissimilarity function
-
-One of the most common is that it be a **metric**
-:::
-
-:::{.fragment}
 The dissimilarity $d(x, y)$ between two objects $x$ and $y$ is a
-__metric__ if
+__metric__ if <br>
 
-* $d(i, j) = 0 \leftrightarrow i == j\;\;\;\;\;\;\;\;$ (identity of indiscernables)
-* $d(i, j) > 0 \leftrightarrow i \neq j\;\;\;\;\;\;\;\;\;\;$ (positivity)
-* $d(i, j) = d(j, i)\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;$ (symmetry)
-* $d(i, j) \leq d(i, h)+d(h, j)\;\;$ (triangle inequality)
-:::
-:::
+* $d(x, y) = 0 \leftrightarrow x == y\;\;\;\;\;\;\;\;$ 
+* $d(x, y) > 0 \leftrightarrow x \neq y\;\;\;\;\;\;\;\;\;\;$
+* $d(x, y) = d(y, x)\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;$ 
+* $d(x, y) \leq d(x, z) + d(z, y)\;\;$ 
 :::
 
 :::{.column width="35%"}
 <img src="/images/vectors_ds/triangle-inequality.png"/>
-
 :::
 ::::
-
-:::{.fragment}
-A metric is commonly called a **distance**. We will mainly work with Euclidian distance
-:::
 ::::
+
 
 ## Cosine Similarity
 
-::::{style="font-size: .75em"}
+::::{style="font-size: .8em"}
 
 Suppose we are given two documents $d_1$ and $d_2.$ How can we find out if they are similar?
 
 :::{.fragment}
-We can say that $d_1$ and $d_2$ are similar if the contain similar words. Each document is considered to be a "bag of words."
+Consider both $d_1$ and $d_2$ as a "bag of words."
 :::
 
 :::{.fragment}
 To describe $d_1$, we construct a vector $\mathbf{x}\in\mathbb{R^n}$ that counts the frequency of occurrence of certain words in $d_1.$
 
 $$
-\mathbf{x}=\begin{bmatrix}3\\7\\4\\ \dots \\ 20 \end{bmatrix} \leftarrow \begin{bmatrix} \text{dog} \\ \text{cat} \\ \text{house} \\ \dots \\ \text{door} \end{bmatrix}
+\mathbf{x}=\begin{bmatrix}3\\7\\4\\ \vdots \\ 20 \end{bmatrix} \leftarrow \begin{bmatrix} \text{dog} \\ \text{cat} \\ \text{house} \\ \vdots \\ \text{door} \end{bmatrix}
 $$
 :::
 :::{.fragment}
-We do the same for $d_2$ to obtain $\mathbf{y} \in \mathbb{R^n}$
+We do the same for $d_2$ to obtain $\mathbf{y} \in \mathbb{R^n}$.
 :::
 ::::
 
@@ -131,7 +124,7 @@ $$
 \cos(\theta_{\mathbf{x}, \mathbf{y}}) = \frac{\mathbf{x}^{\top} \mathbf{y}}{\Vert\mathbf{x}\Vert \Vert\mathbf{y}\Vert}
 $$
 
-This value is __large__ when $\mathbf{x} \approx \mathbf{y}.$  So it is a __similarity__ function.
+This value is _large_ when $\mathbf{x} \approx \mathbf{y}.$  So it is a _similarity_ function.
 :::
 <br>
 
@@ -165,21 +158,18 @@ Informally, a **clustering** is:
 :::
 ::::
 
-:::{.fragment}
-A clustering algorithm
+A clustering algorithm _minimizes_ intra-cluster distances and _maximizes_ inter-cluster distances.
 
-- **minimizes** intra-cluster distances;&emsp; •&ensp;**maximizes** inter-cluster distances.
-:::
 
 ::::
 
 ## Clustering
 
 ::::{style="font-size: .8em"}
-In this course, we will focus on **partitional** clustering.
+In this course, we will focus on _partitional clustering_.
 
 :::{.fragment}
-In a partitional clustering, the points are divided into a set of **non-overlapping** groups. That is, each point belongs only to one cluster, and the set of clusters covers all points.
+In a **partitional clustering**, the points are divided into a set of _non-overlapping_ groups. That is, each point belongs only to one cluster, and the set of clusters covers all points.
 
 
 :::{.center-text}
@@ -192,22 +182,18 @@ In a partitional clustering, the points are divided into a set of **non-overlapp
 ## K-Means Clustering
 
 ::::{style="font-size: .8em"}
-We will start by discussing an example of k-means clustering for image compression.
+Consider the following image. Each color in the image is represented by an integer. Typically we might use 24 bits for each integer (8 bits for R, G, and B).
+
+Now _cluster_ the pixels by their color value, and replace each pixel by its _cluster center_. Because there are a smaller number of colors used, we can use fewer bits for each pixel.
 
 ::::{.fragment style="font-size: .8em"}
-Consider the following image. Each color in the image is represented by an integer. Typically we might use 24 bits for each integer (8 bits for R, G, and B).
+
 
 :::{.center-text}
 <img src="/images/vectors_ds/girl.jpeg" width = 350/>
 
 :::
 ::::
-
-:::{.fragment style="font-size: .8em"}
-Now _cluster_ the pixels by their color value, and replace each pixel by its _cluster center_.
-
-Because there are a smaller number of colors used, we can use fewer bits for each pixel.
-:::
 ::::
 
 ## K-Means Clustering
@@ -218,7 +204,7 @@ Here, we use 4 bits (16 colors) for a compression ratio around 6$\times$.
 :::
 
 :::{.center-text}
-<img src="/images/vectors_ds/4bit-compressed-girl.png" width = 750/>
+<img src="/images/vectors_ds/4bit-compressed-girl.png" width = 650/>
 
 :::
 
@@ -230,7 +216,7 @@ Here, we use 3 bits (8 colors) for a compression ratio around 8$\times$.
 :::
 
 :::{.center-text}
-<img src="/images/vectors_ds/3bit-compressed-girl.png" width = 750/>
+<img src="/images/vectors_ds/3bit-compressed-girl.png" width = 650/>
 
 :::
 
@@ -241,7 +227,7 @@ Here, we use 2 bits (4 colors) for a compression ratio around 12$\times$.
 :::
 
 :::{.center-text}
-<img src="/images/vectors_ds/2bit-compressed-girl.png" width = 750/>
+<img src="/images/vectors_ds/2bit-compressed-girl.png" width = 650/>
 
 :::
 
@@ -252,7 +238,7 @@ Finally, we use 1 bit (2 colors) for a compression ratio around 24$\times$.
 :::
 
 :::{.center-text}
-<img src="/images/vectors_ds/1bit-compressed-girl.png" width = 750/>
+<img src="/images/vectors_ds/1bit-compressed-girl.png" width = 650/>
 
 :::
 
@@ -265,12 +251,12 @@ Here is a clustering of the colors within this image of a yellow flower, based o
 ::::{.columns}
 
 :::{.column width="50%"}
-<img src="/images/vectors_ds/yellow-flower.png" width = 450/>
+<img src="/images/vectors_ds/yellow-flower.png" width = 420/>
 
 :::
 
 :::{.column width="50%"}
-<img src="/images/vectors_ds/flower-clustering.png"/>
+<img src="/images/vectors_ds/flower-clustering.png" width = 420/>
 
 :::
 
@@ -278,7 +264,7 @@ Here is a clustering of the colors within this image of a yellow flower, based o
 
 ## K-Means Clustering
 
-::::{style="font-size: .6em"}
+::::{style="font-size: .8em"}
 To properly define the k-means problem, we need to introduce the concept of the centroid and the sample variance of a dataset.
 
 :::{.fragment}
@@ -290,6 +276,11 @@ $$
 
 In other words: the centroid is the "center of mass" of the dataset.
 :::
+::::
+
+## K-Means Clustering
+
+::::{style="font-size: .8em" .center-y}
 
 :::{.fragment}
 We define the **sample variance** of a dataset $\{{\bf x_1},\ldots,{\bf x_n}\}$ as:
@@ -302,29 +293,17 @@ In other words, the sample variance of the set of points is the average squared 
 :::
 ::::
 
+
 ## K-Means Clustering
 
-::::{style="font-size: .6em"}
+::::{style="font-size: .8em"}
 
-::::{.columns}
-
-:::{.column width="70%"}
 We will assume that 
 
 - data items are represented by points in $\mathbb{R}^d$ (i.e., each data item has $d$ features)
 - $n$ points are given
 - the number of clusters $k$ is given
-:::
 
-:::{.column width="25%"}
-
-<img src="/images/vectors_ds/clusters.png" />
-
-:::
-::::
-
-::::{.columns}
-:::{.column width="50%" .fragment}
 **$k$-means Problem:**
 
 Find $k$ points $\mathbf{c_1}, \dots, \mathbf{c_k}$ (called _centers_, _centroids_, or _means_), so that the cost is minimized.
@@ -332,10 +311,13 @@ Find $k$ points $\mathbf{c_1}, \dots, \mathbf{c_k}$ (called _centers_, _centroid
 $$
 \sum_{i=1}^n \min_j \Vert \mathbf{x_i} -\mathbf{c_j}\Vert^2
 $$
-:::
+::::
 
-:::{.column width="50%" .fragment}
-**Equivalently:** we can think in terms of the partition itself.
+
+## K-Means Clustering
+
+::::{style="font-size: .8em"}
+Equivalently, we can think in terms of the partition itself.
 
 Consider the set $X = \{{\bf x_1}, \dots, {\bf x_n}\}$ where ${\bf x_i} \in \mathbb{R}^d$. The problem here is to:
 
@@ -345,13 +327,13 @@ Consider the set $X = \{{\bf x_1}, \dots, {\bf x_n}\}$ where ${\bf x_i} \in \mat
     $$ 
     \sum_{i=1}^n \min_j \Vert \mathbf{x_i} - \mathbf{c_j} \Vert^2 = \sum_{j=1}^k \sum_{\mathbf{x} \in X_j} \Vert \mathbf{x} - \mathbf{c_j} \Vert^2.
     $$
-:::
 ::::
-::::
+
+
 
 ## K-Means Clustering
 
-::::{style="font-size: .6em" .columns}
+::::{style="font-size: .8em" .columns}
 :::{.column width="70%"}
 
 How hard is it to solve this problem?
@@ -363,15 +345,11 @@ How hard is it to solve this problem?
 :::
 
 :::{.fragment}
-__Nonetheless,__ there is a simple algorithm that works quite well in practice!
+_Nonetheless,_ there is a simple algorithm that works quite well in practice!
 
-There is a "classic" algorithm that finds an _approximate_ solution to the $k$-means problem. Fittingly, it is often called the "$k$-means algorithm."
 
-It was voted among the __top-10 algorithms__ in data mining!
+This algorithm was voted among the _top-10 algorithms_ in data mining!
 
-It is such a good idea that it has been independently discovered multiple times.
-
-It was first discovered by Lloyd in 1957, so it is often called Lloyd's algorithm.
 :::
 :::
 

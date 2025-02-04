@@ -1,6 +1,6 @@
 ---
 title: "Classification with <br> K-Nearest Neighbors"
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         css: 
@@ -33,7 +33,7 @@ By the end of this lecture, you will understand how vector distances are applied
 
 ## Types of Machine Learning Algorithms {.smaller}
 
-::::{style="font-size: .8em" .center-text}
+::::{style="font-size: 1.2em"}
 Encoding data into vectors allows us to use vector geometry to uncover structure in the data. This is the objective of many data science algorithms.
 ::::
 
@@ -41,12 +41,18 @@ Encoding data into vectors allows us to use vector geometry to uncover structure
 
 ## Supervised vs. Unsupervised Learning {.smaller}
 
-:::{style="font-size: .8em"}
-- __Supervised__ methods:  Data items have labels, and we want to learn a function that correctly assigns labels to new data items.
-- __Unsupervised__ methods:  Data items do not have labels, and we want to learn a function that extracts  important patterns from the data.
-
+:::{style="font-size: 1.2em" .center-y}
+- __Supervised__ methods:  data items have labels, and we want to learn a function that correctly assigns labels to new data items.
+- __Unsupervised__ methods:  data items do not have labels, and we want to learn a function that extracts  important patterns from the data.
 
 :::{.fragment}
+In this class, we think of the data $\mathbf{x}$ as a vector. We refer to the components of $\mathbf{x}$ as **features**.
+:::
+:::
+
+
+## Supervised Learning
+:::{style="font-size: 0.8em" .center-y}
 Let us write the supervised learning problem more precisely.
 
 - You are given some example data, which we'll think of abstractly as tuples $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,N\}$.  
@@ -54,24 +60,25 @@ Let us write the supervised learning problem more precisely.
 - Your goal is to learn a rule that allows you to predict $y_j$ for some $\mathbf{x_j}$ that is not in the example data you were given.
 :::
 
-:::{.fragment}
-In this class, we think of the data $\mathbb{x}$ as a vector. We refer to the components of $\mathbb{x}$ as **features**.
-:::
-:::
 
 ## Supervised Learning
 
-::::{style="font-size: .8em"}
+::::{style="font-size: .8em" .center-y}
 The collection $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,N\}$ is called the __training data.__
 
 :::{.fragment}
 Our assumption here is that the labels $y_i$ have some _dependence_ on the features in $\mathbf{x_i}$. For this reason, we sometimes say that:
 
 - the features in the $\mathbf{x_i}$ vectors are the __independent variables__, and
-- the label $y_j$ is the target or __dependent variable__.
+- the label $y_i$ is the target or __dependent variable__.
 :::
 
-:::{.fragment .incremental}
+::::
+
+
+## Supervised Learning
+
+:::{style="font-size: .8em" .center-y}
 Machine learning relies on the following two principles:
 
 1. There is a set of functions ("rules") that could be used to predict $y_i$ from $\mathbf{x}_i$. In this case, the goal of learning is to find the "right" function.
@@ -79,11 +86,10 @@ Machine learning relies on the following two principles:
 2. The rule for predicting $y_i$ from $\mathbf{x}_i$ is the same as the rule for predicting $y_j$ from the new item $\mathbf{x}_j$. This is because we want the model to do a good job of predicting on __future__ data.  This is called the model's __generalization__ ability.
 :::
 
-::::
 
 ## Regression vs. Classification
 
-::::{style="font-size: .7em"}
+::::{style="font-size: .8em" .center-y}
 If $y$ is a continuous (numeric) value, then the problem is called __regression.__ 
 
 :::{.incremental}
@@ -91,25 +97,35 @@ If $y$ is a continuous (numeric) value, then the problem is called __regression.
 
 - In the regression case, you will usually be satisfied if your prediction is __close__ to the true $y$ value... it usually need not be exact to be useful.
 :::
+::::
 
-:::{.fragment .incremental}
+
+## Regression vs. Classification
+
+::::{style="font-size: .8em" .center-y}
 If $y$ is a discrete value (a label, for example) then the problem is called __classification.__
 
 - For example, in image recognition, the features $\mathbf{x}$ could be a vector that represents the pixels of the image, and $y$ could be a label such as "tiger," "tree," etc.
     
 - In the classification case, you will usually be satisfied if your predicted label is accurate _most_ of the time... it usually need not be 100% accurate to be useful.
-:::
 ::::
+
+
+
 
 ## Parametric vs. Nonparametric Models {.smaller}
 
-<!-- No need for font-size to be .8 em. Font-size already smaller due to header. -->
-Another way in which different machine leaerning models can vary is in the number of training parameters that exist.
+::::{style="font-size: 1.2em" .center-y}
+Another way in which different machine learning models can vary is in the number of training parameters that exist.
 
 - If the model has a _fixed_ number of parameters, no matter the size of the training dataset, then it is called **parametric**.
 - If the number of parameters _grows_ with the data, the model is called **nonparametric**.
+::::
 
 
+## Parametric vs. Nonparametric Models {.smaller}
+
+::::{style="font-size: 1.2em" .center-y}
 :::{.fragment}
 Parametric models have 
 
@@ -123,14 +139,16 @@ Nonparametric models are
 * more flexible,
 * but can be computationally intractable for large datasets.
 :::
+::::
 
-## K-Nearest Neighbors
 
-::::{style="font-size: .8em"}
-$k$-nearest neighbors is an example of a supervised, non-parametric classifier.
+## K-Nearest Neighbors 
+
+::::{style="font-size: .8em" .center-y}
+$k$NN is an example of a supervised, non-parametric classifier.
 
 :::{.fragment}
-Like any classifier, $k$-Nearest Neighbors is trained by providing it a set of labeled data, and the goal is to classify future data points that aren't already labeled.
+Like any classifier, $k$NN is trained by providing it a set of labeled data, and the goal is to classify future data points that aren't already labeled.
 
 However, at _training_ time, the classifier does very little. It just stores away the training data. This is what makes it non-parametric.
 :::
@@ -152,7 +170,7 @@ Here is an example of a training dataset $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,
 :::{.center-text}
 ```{python}
 from matplotlib.colors import ListedColormap
-figsize = (10,7)
+figsize = (8,5)
 cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
 cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
@@ -320,7 +338,7 @@ y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
 xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
                       np.arange(y_min, y_max, h))
 
-f, axs = plt.subplots(1, 3, figsize=(15, 5))
+f, axs = plt.subplots(1, 3, figsize=(13, 4.5))
 for i, k in enumerate([1, 5, 25]):
     knn = KNeighborsClassifier(n_neighbors = k)
     knn.fit(X, y)
@@ -368,13 +386,13 @@ display(HTML(html_content))
 
 ## The Curse of Dimensionality
 
-::::{style="font-size: .8em"}
-The **Curse of Dimensionality** is a somewhat tongue-in-cheek term for serious problems that arise when we use geometric algorithms in high dimensions.
+::::{style="font-size: .8em" .center-y}
+The _curse of dimensionality_ refers to serious issues that occur when using geometric algorithms in high dimensions.
 
 :::{.fragment}
-There are various aspects of the Curse that affect $k$-NN.
+There are various aspects of the curse that affect $k$-NN.
 
-1. Points are far apart in high dimension.
+1. Points are far apart in high dimensions.
 2. Points tend to all be at similar distances in high dimension.
 :::
 
@@ -385,51 +403,29 @@ Let's analyze these two claims in more detail.
 
 ## The Curse of Dimensionality
 
-::::{style="font-size: .75em"}
+::::{style="font-size: .8em"}
 __1. Points are far apart in high dimension.__
 
-$k$-NN relies on there being one or more "close" points to the test point $x$.   
+$k$-NN relies on having "close" points to the test point $x$, requiring _dense training data_. 
 
-In other words, we need the training data to be relatively dense, so there are "close" points everywhere.
-
-:::{.fragment}
-Unfortunately, the amount of space we work in grows exponentially with the dimension $d$.
-
-Hence, points in high-dimensional spaces tend not to be close to one another at all.
-:::
-
-:::{.fragment}
-One very intuitive way to think about it is this:
-
+However, as the dimension $d$ of $\mathbb{R}^d$ increases, the space grows exponentially, making points rarely close. 
 In order for two points to be close in $\mathbb{R}^d$, they must be close in _each_ of the $d$ dimensions.
 
-As the number of dimensions grows, it becomes harder and harder for a pair of points to be close in _each_ dimension.
-:::
+Hence, it becomes hard for the algorithm to find points that are close.
 ::::
 
 ## The Curse of Dimensionality
 
-::::{style="font-size: .8em"}
+::::{style="font-size: .8em" .center-y}
 __2. Points tend to all be at similar distances in high dimension.__
 
 Let's say points are uniformly distributed in space, so that the number of points in a region is proportional to the region's volume.  
 
-How does volume relate to distance as dimension $d$ grows?
-
-:::{.fragment}
-Consider you are at some point in space (say, the test point $x$), and you want to know how many points are within a unit distance from you.
-
-This is proportional to the volume of a hypersphere with radius 1.
-:::
-
-:::{.fragment}
-Now, the volume of a hypersphere is $k_d \,r^d$.  
-
-For each $d$ there is a different $k_d$.
+Consider the volume of a hypersphere with radius 1 around a point (say, $x$). For any dimension $d$ the volume of a hypersphere is $k_d \,r^d$.  However, $k_d$ is different for each dimension.
 
 * For $d = 2$, $k_d$ is $\pi$, and 
 * for $d = 3$, $k_d$ is 4/3 $\pi$, etc.
-:::
+
 ::::
 
 ## The Curse of Dimensionality
@@ -437,7 +433,7 @@ For each $d$ there is a different $k_d$.
 ::::{style="font-size: .8em" .columns}
 
 :::{.column}
-Let's also ask how many points are within a slightly smaller distance, let's say 0.99.  
+Let's also ask how many points are within a slightly smaller distance than the radius of the hypersphere. Let's say 0.99.  
 
 :::{.fragment}
 The new distance can be thought of as $1 - \epsilon$ for some small $\epsilon$.
@@ -480,7 +476,7 @@ $$
 :::
 
 :::{.fragment}
-As d approaches infinity, $f_d$ approaches 1.
+As $d$ approaches infinity, $f_d$ approaches 1. This means that most points are about the same distance from the point $x$.
 <!-- Too much vertical whitespace for matplotlib plot so this is quick fix. -->
 
 :::{.center-text}
@@ -492,7 +488,7 @@ As d approaches infinity, $f_d$ approaches 1.
 
 ::::
 
-## The Curse of Dimensionality
+<!-- ## The Curse of Dimensionality
 
 :::{style="font-size: .8em"}
 Let's demonstrate this effect in practice.
@@ -547,23 +543,27 @@ plt.xlabel(r'Number of dimensions ($d$)')
 plt.ylabel('Ratio')
 plt.title(f'Ratio of Minimum to Average Distance Between {nsamples} Points\nAs Dimension Grows');
 ```
-:::
+::: -->
 
-## The Curse of Dimensionality
+<!-- ## The Curse of Dimensionality
 
 :::{style="font-size: .8em"}
 The above figures show the growth of the ratio of the minimum distance to the average distance.
 
-For K-NN the implication of the curse of dimensionality is that in high dimension, most points are about the same distance from the test point.
+For $k$-NN the implication of the curse of dimensionality is that in high dimension, most points are about the same distance from the test point.
 
 This leads to ineffectiveness of $k$-NN in higher dimensions.
-:::
+::: -->
 
 ## Key Ideas
 
 :::{.incremental style="font-size: .8em"}
 - The main difference between supervised and unsupervised methods is that the former ones require labeled data.
 
-- $k$-NN is an example of a supervised ML algorithm. It classifies new unlabeled points by looking at its k nearest neighbor.
+- The main difference between parametric and non-parametric models is that parametric models have a fixed number of parameters no matter the size of the training set.
+
+- Classification algorithms work with data that has discrete labels.
+
+- $k$-NN is an example of a supervised, non-parametric classifier. It classifies new unlabeled points by looking at its $k$ closest neighbors.
 
 - One of the main challanges for $k$-NN is formed by the curse of dimensionality.
