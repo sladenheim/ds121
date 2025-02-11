@@ -1,0 +1,790 @@
+---
+title: "Linear Systems"
+author: "CDS DS 121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+Today we are going to return to linear algebra for solving systems of equations. We will algebraically and geometrically explore the solutions to a system of equations
+
+:::{.fragment}
+In addition, we will redefine the concept of a span and will connect it to what we know about linear systems.
+:::
+:::
+
+## Systems of Equations
+
+::::{style="font-size: .8em"}
+Here is an example of a system of 3 equations in 3 i.e. 3 unknown variables.
+
+$$
+\begin{align*}
+x_1 - 2x_2 + x_3 &= 5 \\
+2x_2 - 8x_3 &= -4 \\
+6x_1 + 5x_2 + 9x_3 &= -4
+\end{align*}
+$$
+
+:::{.fragment}
+We call these **linear equations** because no term has a power other than 1; for example, there are no terms involving $x_1^2$, or $x_1x_2$, or $\sqrt{x_3}$.
+
+Put another way: the only operations applied to our unknown variables are: (1) addition and (2) mulitiplication by a constant, aka a scalar.
+:::
+::::
+
+## Systems of Equations
+
+::::{style="font-size:.8em"}
+Let us recall a number of definitions that should be familiar from DS120.
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A <b>linear equation</b> in the variables \(x_1,\dots,x_d\) is an equation that can be written in the form <br>\(a_1x_1+a_2x_2+\dots+a_dx_d=b\)<br>
+        where \(b\) and the coefficients \(a_1,\dots,a_d\) are real or complex numbers that are usually known in advance.
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+
+<br>
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A <b>system of linear equations</b> (or <b>linear system</b>) is a collection of one or more linear equations involving the same variables - say \(x_1,\dots,x_d\).
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+::::
+
+## Systems of Equations
+
+::::{style="font-size:.6em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A <b>solution</b> of the system is a list of numbers \((s_1,s_2,\dots,s_3)\) that makes each eqaution a true statement when the values \((s_1,s_2,\dots,s_3)\) are substituted for \((x_1,x_2,\dots,x_3)\) respectively.
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        The set of all possible solutions is called the <b>solution set</b> of the linear system. Two linear systems are called <b>equivalent</b> is they have the same solution set.
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+
+:::{.fragment}
+A system of linear equations has 0, 1, or infinitely many solutions.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A system of linear equations is said to be <b>consistent</b> if it has either one solution or infinitely many solutions.<br>
+        A system of linear equations is said to be <b>inconsistent</b> if it has no solution.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+::::
+
+## Systems of Equations
+
+::::{style="font-size: .8em"}
+Notice that
+
+$$
+\begin{align*}
+&\begin{aligned}
+x_1 - 2x_2 + x_3 &= 5 \\
+2x_2 - 8x_3 &= -4 \\
+6x_1 + 5x_2 + 9x_3 &= -4
+\end{aligned}
+\Leftrightarrow 
+x_1 
+\begin{bmatrix}
+1 \\ 
+0 \\ 
+6
+\end{bmatrix}
++ x_2
+\begin{bmatrix}
+-2 \\ 
+2 \\ 
+5
+\end{bmatrix}
++ x_3
+\begin{bmatrix}
+1 \\ 
+-8 \\ 
+9
+\end{bmatrix}
+=
+\begin{bmatrix}
+5 \\ 
+-4 \\ 
+-4
+\end{bmatrix}
+\end{align*}
+$$
+
+
+
+:::{.fragment}
+The equation on the right is called a _vector equation_. This single equation that involves column vectors is _equivalent to_ a system of linear equations arranged in rows. That is, they have the same solution.
+
+$$
+x_1=1,\space x_2=-2,\space x_3=0.
+$$
+:::
+::::
+
+## Systems of Equations
+
+::::{style="font-size:.8em"}
+$$
+\begin{align*}
+&\begin{aligned}
+x_1 - 2x_2 + x_3 & = 5 \\
+2x_2 - 8x_3 & = -4 \\
+6x_1 + 5x_2 + 9x_3 & = -4
+\end{aligned}
+\quad \rightarrow \quad
+\begin{aligned}
+x_1 & = 1 \\
+x_2 & = -2 \\
+x_3 & = 0
+\end{aligned}
+\end{align*}
+$$
+
+:::{.fragment}
+We can verify this claim by substitution.
+
+$$
+\begin{align*}
+1 - 2(-2) + 0 & = 5 \\
+2(-2) - 8(0) & = -4 \\
+6(1) + 5(-2) + 9(0) & = -4
+\end{align*}
+$$
+
+The solution $(x_1,x_2,x_3)=(1,-2,0)$ makes each equation true. Confirmed!
+:::
+::::
+
+## Visualizing Systems of Equations{.smaller-title}
+
+::::{style="font-size: .8em"}
+Geometrically, we can find the solutions to a system of linear equations in $d$ variables by:
+
+- Creating a graph showing the solution space to each individual equation, which is a $d-1$ dimensional space.
+- Finding the point(s) that are in common to all equations, if any.
+
+:::{.fragment}
+Let us first look at some examples in $\mathbb{R^2}$.
+
+If a linear equation has 2 variables, then the set of all possible solutions is one-dimensional... in other words, it forms a line.
+
+:::{.center-text}
+```{python}
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+
+
+# Set the x range
+
+x = np.linspace(-6, 6, 400)
+
+
+
+# Calculate y values based on the equation x1 - 2x2 = -1 => x2 = (x1 + 1) / 2
+
+y = (x + 1) / 2
+
+
+# Create the plot with updated settings
+plt.figure(figsize=(5, 3))  # Placeholder for plot size, can adjust dimensions as needed
+plt.plot(x, y, color='red', label=r'$x_1 - 2x_2 = -1$')
+plt.axhline(0, color='black', linewidth=0.8, linestyle='--')  # x-axis
+plt.axvline(0, color='black', linewidth=0.8, linestyle='--')  # y-axis
+plt.xlim(-6, 6)
+plt.ylim(-2, 4)
+plt.xlabel("$x_1$")
+plt.ylabel("$x_2$")
+plt.legend(loc="upper left", frameon=True)  # Add legend with red line as key
+
+# Remove lines on the outside edge
+plt.gca().spines['top'].set_visible(False)
+plt.gca().spines['right'].set_visible(False)
+plt.gca().spines['left'].set_position(('data', 0))
+plt.gca().spines['bottom'].set_position(('data', 0))
+
+# Place axis numbers "on" the axis
+plt.gca().xaxis.set_tick_params(direction='in')
+plt.gca().yaxis.set_tick_params(direction='in')
+
+# Remove grid lines
+plt.grid(False)
+
+# Show the plot
+plt.show()
+```
+:::
+:::
+::::
+
+## Visualizing Systems of Equations{.smaller-title}
+
+::::{style="font-size: .8em"}
+Here's the first system of equations.
+
+:::{.center-text}
+```{python}
+# Create the plot with updated settings
+plt.figure(figsize=(8, 4))  # Placeholder for plot size, can adjust dimensions as needed
+
+# Plot the first equation
+plt.plot(x, y, color='red', label=r'$x_1 - 2x_2 = -1$')
+
+# Calculate y values for the second equation -x1 + 3x2 = 3 => x2 = (x1 + 3) / 3
+y2 = (x + 3) / 3
+plt.plot(x, y2, color='blue', label=r'$-x_1 + 3x_2 = 3$')
+
+# Add axes and other formatting
+plt.axhline(0, color='black', linewidth=0.8, linestyle='--')  # x-axis
+plt.axvline(0, color='black', linewidth=0.8, linestyle='--')  # y-axis
+plt.xlim(-6, 6)
+plt.ylim(-2, 4)
+plt.xlabel("$x_1$")
+plt.ylabel("$x_2$")
+plt.legend(loc="upper left", frameon=True)  # Add legend with both lines as keys
+
+# Remove lines on the outside edge
+plt.gca().spines['top'].set_visible(False)
+plt.gca().spines['right'].set_visible(False)
+plt.gca().spines['left'].set_position(('data', 0))
+plt.gca().spines['bottom'].set_position(('data', 0))
+
+# Place axis numbers "on" the axis
+plt.gca().xaxis.set_tick_params(direction='in')
+plt.gca().yaxis.set_tick_params(direction='in')
+
+# Remove grid lines
+plt.grid(False)
+
+# Show the plot
+plt.show()
+
+```
+
+:::{.fragment style="font-size:1em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        How many solutions does this system have?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+:::
+::::
+
+## Visualizing Systems of Equations{.smaller-title}
+
+::::{style="font-size: .8em"}
+Let us replace $3x_2$ by $2x_2$ in the second equation:&emsp;&emsp;&emsp;&emsp;
+$\begin{align}x_1-2x_2=-1 \\-x_1+2x_2=3\end{align}$
+
+:::{.center-text}
+```{python}
+# Create the plot with updated settings
+plt.figure(figsize=(8, 4))  # Placeholder for plot size, can adjust dimensions as needed
+
+# Plot the first equation
+plt.plot(x, y, color='red', label=r'$x_1 - 2x_2 = -1$')
+
+# Calculate y values for the second equation -x1 + 2x2 = 3 => x2 = (x1 + 3) / 2
+y2 = (x + 3) / 2
+plt.plot(x, y2, color='blue', label=r'$-x_1 + 2x_2 = 3$')
+
+# Add axes and other formatting
+plt.axhline(0, color='black', linewidth=0.8, linestyle='--')  # x-axis
+plt.axvline(0, color='black', linewidth=0.8, linestyle='--')  # y-axis
+plt.xlim(-6, 6)
+plt.ylim(-2, 4)
+plt.xlabel("$x_1$")
+plt.ylabel("$x_2$")
+plt.legend(loc="upper left", frameon=True)  # Add legend with both lines as keys
+
+# Remove lines on the outside edge
+plt.gca().spines['top'].set_visible(False)
+plt.gca().spines['right'].set_visible(False)
+plt.gca().spines['left'].set_position(('data', 0))
+plt.gca().spines['bottom'].set_position(('data', 0))
+
+# Place axis numbers "on" the axis
+plt.gca().xaxis.set_tick_params(direction='in')
+plt.gca().yaxis.set_tick_params(direction='in')
+
+# Remove grid lines
+plt.grid(False)
+
+# Show the plot
+plt.show()
+
+```
+
+:::{.fragment style="font-size:1em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        How many solutions are there now?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+:::
+::::
+
+## Visualizing Systems of Equations{.smaller-title}
+
+::::{style="font-size:.8em"}
+This geometric reasoning also works in higher dimensions. Let's consider $R^3$ and look at our earlier system of equations again.
+
+$$
+\begin{align*}
+x_1 - 2x_2 + x_3 &= 5 \\
+2x_2 - 8x_3 &= -4 \\
+6x_1 + 5x_2 + 9x_3 &= -4
+\end{align*}
+$$
+
+
+:::{.fragment}
+In three-dimensional space, the solution to each individual linear equation forms a 2-dimensional plane. Let's see geometrically whether they intersect.
+:::
+::::
+
+## Visualizing Systems of Equations{.smaller-title}
+
+<video width="1000" autoplay loop muted>
+  <source src="/figures/Fig2.1.mp4" type="video/mp4">
+</video>
+
+
+## Visualizing Systems of Equations{.smaller-title}
+
+:::{style="font-size:.8em"}
+Recall that a new system with the same solution set is **equivalent** to the old system.
+
+
+To solve a linear system, we can find an equivalent system where the solution set is explicit, such as:
+$$
+\begin{align}
+x_1=1 \\
+x_2=-2 \\
+x_3=0
+\end{align}
+$$
+
+We can plot this too.
+:::
+
+## Visualizing Systems of Equations{.smaller-title}
+
+<video width="1000" autoplay loop muted>
+  <source src="/figures/Fig2.2.mp4" type="video/mp4">
+</video>
+
+## From Systems of Equations to Vectors {.really-smaller-title}
+
+::::{style="font-size: 1em"}
+We are now going to take up a very basic question that will lead us to a deeper understanding of linear systems.
+
+Given some set of vectors $\mathbf{a_1,a_2,\dots,a_k}$, can a given vector $\mathbf{b}$ be written as a linear combination of $\mathbf{a_1,a_2,\dots,a_k}$?
+
+:::{.fragment}
+Let's take a specific example.<br>
+
+Let $a_1=\begin{bmatrix}1 \\ -2 \\ -5 \end{bmatrix}$, $a_2=\begin{bmatrix}2 \\ 5 \\ 6 \end{bmatrix}$, and $b=\begin{bmatrix}7 \\ 4 \\ -3 \end{bmatrix}$
+:::
+
+:::{.fragment}
+We need to determine whether $\mathbf{b}$ can be generated as a linear combination of $\mathbf{a_1}$ and $\mathbf{a_2}$. That is, we seek to find whether weights $x_1$ and $x_2$ exist such that
+
+$$
+x_1\mathbf{a_1} + x_2\mathbf{a_2} = \mathbf{b}
+$$
+:::
+
+:::{.fragment}
+It turns out that we can convert this single vector equation into a set of linear equations, that is, a linear system.
+:::
+::::
+
+## From Systems of Equations to Vectors {.really-smaller-title}
+
+$$
+x_1 
+\begin{bmatrix}
+1 \\ 
+-2 \\ 
+-5
+\end{bmatrix}
++ x_2
+\begin{bmatrix}
+2 \\ 
+5 \\ 
+6
+\end{bmatrix}
+=
+\begin{bmatrix}
+7 \\ 
+4 \\ 
+-3
+\end{bmatrix}.
+$$
+
+:::{.fragment}
+By the definition of scalar-vector multiplication, this is:
+
+$$
+\begin{bmatrix}
+x_1 \\ 
+-2x_1 \\ 
+-5x_1
+\end{bmatrix}
++ 
+\begin{bmatrix}
+2x_2 \\ 
+5x_2 \\ 
+6x_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+7 \\ 
+4 \\ 
+-3
+\end{bmatrix}.
+$$
+:::
+
+:::{.fragment}
+By the definition of vector addition, this is:
+
+$$
+\begin{bmatrix}
+x_1 + 2x_2 \\ 
+-2x_1 + 5x_2 \\ 
+-5x_1 + 6x_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+7 \\ 
+4 \\ 
+-3
+\end{bmatrix}.
+$$
+
+:::
+
+## From Systems of Equations to Vectors {.really-smaller-title}
+
+::::{style="font-size:.7em"}
+By the definition of vector equality, this is:
+
+$$
+\begin{aligned}
+x_1 + 2x_2 &= 7, \\
+-2x_1 + 5x_2 &= 4, \\
+-5x_1 + 6x_2 &= -3.
+\end{aligned}
+$$
+
+This is a linear system! Its solution is $x_1=3$ and $x_2=2$.
+
+:::{.fragment}
+We have found the solution to our vector equation as well:
+
+$$
+3 
+\begin{bmatrix}
+1 \\ 
+-2 \\ 
+-5
+\end{bmatrix}
++ 2
+\begin{bmatrix}
+2 \\ 
+5 \\ 
+6
+\end{bmatrix}
+=
+\begin{bmatrix}
+7 \\ 
+4 \\ 
+-3
+\end{bmatrix}.
+$$
+:::
+
+:::{.fragment}
+In other words, we have found that
+
+$$
+3a_1 + 2a_2 = \mathbf{b}.
+$$
+And vice versa! Given a system of linear equations, we can form a vector equation where the vectors correspond to the "columns" of the linear system.
+:::
+
+:::{.fragment}
+This is a powerful concept; we have related
+
+- a single equation involving column vectors
+- to a set of equations corresponding to rows.
+:::
+::::
+
+## Span
+
+::::{style="font-size:.65em"}
+If linear systems can be inconsistent (i.e., have no solutions), then so can be vector equations.
+
+How can we understand what it means – in terms of vectors – for a vector equation to be inconsistent?
+
+The answer involves the **span** of a set of vectors
+
+:::{.fragment}
+Let's say we are given vectors $\mathbf{a_1}$, $\mathbf{a_2}$, $\mathbf{b}$.
+
+And, say we know that it is possible to express $\mathbf{b}$ as a linear combination of $a_1$ and $a_2$. That is, there are some $x_1,x_2$ such that $x_1\mathbf{a_1} + x_2\mathbf{a_2}=\mathbf{b}$
+
+Then we say that $\mathbf{b}$ is in the **Span** of the set of vectors $\{a_1,a_2\}$.
+:::
+
+:::{.fragment}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        Let's say we are given a set of vectors \(\mathbf{a_1,\dots,a_k}\) where each \(\mathbf{a_i}\in\mathbb{R^d}\).
+        Then the set of all linear combinations of \(\mathbf{a_1,\dots,a_k}\) is denoted by<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(\text{Span}\mathbf{\{a_1,\dots,a_k\}}\)<br>
+        and is called the <b>subset of \(\mathbb{R^d}\) spanned by 
+        \(\mathbf{a_1,\dots,a_k}\). </b>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+:::
+::::
+
+## Span of a Single Vector in $\mathbb{R^3}$
+
+<video width="1000" autoplay loop muted>
+  <source src="/figures/Fig2.4.mp4" type="video/mp4">
+</video>
+
+## Span of Two Vectors in $\mathbb{R^3}$
+
+<video width="1000" autoplay loop muted>
+  <source src="/figures/Fig2.5.mp4" type="video/mp4">
+</video>
+
+## Span
+
+::::{style="font-size: .8em"}
+Asking whether a vector $\mathbf{b}$ is in $\text{Span}\mathbf{\{a_1,\dots,a_k\}}$ is the same as asking whether the vector equation
+
+$$
+x_1\mathbf{a_1}+x_2\mathbf{a_2}+\dots+x_k\mathbf{a_k}=\mathbf{b}
+$$
+
+
+:::{.fragment}
+Here is an example. Let $\mathbf{a_1}=\begin{bmatrix}1 \\ -2 \\ 3 \end{bmatrix}$, $\mathbf{a_2}=\begin{bmatrix}5 \\ -13 \\ -3 \end{bmatrix}$, and $\mathbf{b}=\begin{bmatrix}6 \\ 8 \\ -5 \end{bmatrix}$.
+
+Then $\text{Span}\mathbf{\{a_1,\dots,a_k\}}$ is a plane through the origin in $\mathbb{R^3}$.
+
+Is $\mathbf{b}$ in that plane?
+:::
+::::
+
+## Is _b_ in Span$\{\mathbf{a_1,a_2}\}$ {.smaller-title}
+
+<div style="text-align: center;">
+  <video width="500" autoplay loop muted>
+    <source src="/figures/Fig2.6.mp4" type="video/mp4">
+  </video>
+</div>
+
+
+:::{.fragment style="font-size: .8em"}
+No, $\mathbf{b}$ is not in $\text{Span}\{\mathbf{a_1,a_2}\}$.
+
+This means that the vector equation $x_1\mathbf{a_1}+x_2\mathbf{a_2}=\mathbf{b}$ is inconsistent.
+:::
+
+## Two Distinct Vector Spaces
+
+::::{style="font-size:.6em"}
+
+We have been working with two different vector spaces.
+
+:::{.incremental}
+1. One vector Space is for visualizing equations that correspond to rows
+2. The other vector space is for visualizing vector equations (involving columns).
+:::
+
+:::{.fragment}
+These are two different ways of visualizing the same linear system.
+:::
+
+:::{.fragment}
+Example. Let's look at an inconsistent system both ways.
+
+$$
+x_1 \begin{bmatrix} 1 \\ -2 \\ 3 \end{bmatrix} +
+x_2 \begin{bmatrix} 5 \\ -13 \\ -3 \end{bmatrix} =
+\begin{bmatrix} 6 \\ 8 \\ -5 \end{bmatrix}.
+$$
+:::
+
+:::{.fragment}
+Here are the views, first as a vector equation, and then as a system of equations.
+
+The _column-based_ view asks whether $\mathbf{b}=\begin{bmatrix}6 \\ 8 \\ -5 \end{bmatrix}$ is in the span of $\mathbf{a_1}=\begin{bmatrix}1 \\ -2 \\ 3 \end{bmatrix}$ and $\mathbf{a_2}=\begin{bmatrix}5 \\ -13 \\ -3 \end{bmatrix}$ 
+:::
+
+::::
+
+## Two Distinct Vector Spaces
+
+<video width="1000" autoplay loop muted>
+  <source src="/figures/Fig2.7.mp4" type="video/mp4">
+</video>
+
+## Two Distinct Vector Spaces
+
+::::{style="font-size: .8em"}
+The _row-based_ view draws individually the solution set of each equation and then asks whether there is a common point of intersection.
+
+$$
+\begin{aligned}
+    x_1 + 5x_2 &= 6 \\
+    -2x_1 - 13x_2 &= -8 \\
+    3x_1 - 3x_2 &= -5
+\end{aligned}
+$$
+
+:::{.fragment}
+This second vector space is more familiar to us right now.
+
+However, as the course goes on we will use the first vector space – the one in which columns are vectors – much more often.
+:::
+
+::::
+
+## Two Distinct Vector Spaces
+
+<video width="1000" autoplay loop muted>
+    <source src="/figures/Fig2.8.mp4" type="video/mp4">
+  </video>
+
+## Key Ideas
+
+:::{.incremental style="font-size:.8em"}
+
+- A solution of a linear system is a list of numbers that makes each equation a true statement.
+- A linear system is inconsistent if it has no solutions.
+- A linear system and its vector equation are equivalent.
+- $\text{Span}\{\mathbf{a_1,\dots,a_k\}}$ is the set of all linear combinations of $\mathbf{a_1,\dots,a_k}$
+
+:::
