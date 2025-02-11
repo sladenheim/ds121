@@ -1,0 +1,1038 @@
+---
+title: "Linear Dependence and<br> Matrix Algebra"
+author: "CDS DS 121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+## Learning Objectives
+
+::::{style="font-size:.8em"}
+One of the main topics of today's lecture is linear dependence. We will explore it algebraically and geometrically. We will also connect the concept of linear independence and span.
+
+:::{.fragment}
+In the second part of the lecture we will revisit matrix notation and matrix algebra, which should be familiar to you from DS120
+:::
+::::
+
+## Linear Dependence
+
+::::{style="font-size:.8em"}
+Let's consider a system of equations $x_1\mathbf{a_1} + x_2\mathbf{a_2}=\mathbf{a_3}$ that is consistent, meaning that $\mathbf{a_3}$ is in the span of $\mathbf{a_1}$ and $\mathbf{a_2}$. Geoemetrically, this looks like:
+
+::::
+
+<video width="500" autoplay loop muted>
+    <source src="/figures/Fig2.9.mp4" type="video/mp4">
+</video>
+<!-- center this later -->
+
+## Linear Dependence
+
+:::{style="font-size:.8em"}
+Clearly, $\mathbf{0, a_1, a_2,}$ and $\mathbf{a_3}$ have a particular relationship, namely, they all lie within the same two dimensional plane -- even though the vectors are in $\mathbb{R^3}$.
+
+This is not the case in general for points in $\mathbb{R^3}$!
+
+:::{.fragment}
+The relationship between these vectors is called linear independence.
+
+Before stating the definition, let's get a sense intuitively of what we want to capture.
+
+:::
+
+:::{.fragment}
+We make this observation:
+
+<!-- Does this look nice? -->
+> The plane defined by vectors $\mathbf{a_1,a_2,}$ and $\mathbf{a_3}$ happens to include the origin $\mathbf{0}$.
+:::
+
+:::{.fragment}
+
+That's one way of capturing the special relationship among $\mathbf{a_1,a_2,}$ and $\mathbf{a_3}.$ 
+:::
+:::
+
+## Linear Dependence
+
+::::{style="font-size:.5em"}
+Here is the formal definition:
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A set of vectors \(\{\mathbf{v_1,\dots,v_p}\}\) all of which are in \(\mathbb{R^n}\) is said to be <b>linearly dependent</b> if the vector equation<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(x_1\mathbf{v_1}+\dots+x_p\mathbf{v_p}=\mathbf{0}\) <br>
+        has a solution \(x_1=c_1,\dots,x_p=c_p\) where <em>at least</em> one of the scalar weights \(c_i\) is nonzero.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+<div style="margin-bottom: 0.5em;"> </div> 
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        How does this definition capture our intuition about the special relationship of the vectors in the previous figure?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+
+<div style="margin-bottom: 0.5em;"> </div> 
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        Conversely, the set \(\{\mathbf{v_1,\dots,v_p}\}\) is said to be <b>linearly independent</b> if the vector equation<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(x_1\mathbf{v_1}+\dots+x_p\mathbf{v_p}=\mathbf{0}\)
+        <br>
+        has <em>only</em> the trivial solution \(x_1=0,\dots,x_p=0\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+
+:::{.fragment}
+A set of nonzero weights that yield zero is called a **linear dependence relation** among $\{\mathbf{v_1,\dots,v_p}\}$.
+:::
+::::
+
+## Linear Dependence
+
+::::{style="font-size:.8em"}
+A set of vectors is either dependent or independent.
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        For each set of vectors specify if they are dependent or independent.
+        <ol type="a">
+            <li>\(\Big\{{\small\begin{bmatrix}1 \\ 0 \end{bmatrix},\begin{bmatrix}0 \\ 1 \end{bmatrix} }\Big\}\)</li>
+            <li>\(\Big\{{\small\begin{bmatrix}1 \\ 1 \end{bmatrix},\begin{bmatrix}-1 \\ -1 \end{bmatrix} }\Big\}\)</li>
+            <li>\(\Big\{{\small\begin{bmatrix}1 \\ 1 \end{bmatrix},\begin{bmatrix}0 \\ 0 \end{bmatrix} }\Big\}\)</li>
+            <li>\(\Big\{{\small\begin{bmatrix}a \\ b \end{bmatrix},\begin{bmatrix}c \\ d \end{bmatrix},\begin{bmatrix}e \\ f \end{bmatrix} }\Big\}\)</li>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+<!-- 
+    a independent
+    b dependent
+    c independent : )
+    d dependent? -->
+::::
+
+## Linear Dependence and Span
+
+::::{style="font-size:.7em"}
+The following theorem connects linear dependence and linear combinations (or span).
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        <b>Theorem.</b> Let \(S\) be a set of two or more vectors: \(S=\mathbf{v_1,\dots,v_p}.\) At least one of the vectors in \(S\) is a linear combination of the others if and only if \(S\) is linearly dependent.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+<!-- Even if small amount of text after, is it better to just fragment the big chunk, then reveal little one? Not wanting to show too much at once. -->
+
+:::{.fragment}
+**Proof.** First, let's consider the 'if' part. In this direction, there exists one vector in $S$ that is a linear combination of the others. Since $S$ is an unordered set, the labeling of indices is arbitrary, so let's relabel the indices in order to make this vector $\mathbf{v_p}$.
+
+:::
+:::{.fragment}
+By the definition of linear combination, this means that there exist scalars $c_1,c_2,\dots,c_{p-1}$ such that:
+:::
+::::
+
+## Linear Dependence and Span
+
+::::{style="font-size:.6em;"}
+$$
+c_1\mathbf{v_1}+\cdots+c_{p-1}\mathbf{v_{p-1}} = \mathbf{v_p}.
+$$
+
+:::{.fragment}
+If we subtract both sides of this equation by $v_p$, then clearly
+
+$$
+c_1\mathbf{v_1}+\cdots+c_{p-1}\mathbf{v_{p-1}} = \mathbf{0},
+$$
+:::
+
+:::{.fragment}
+and not all the coefficients are zero (in particular, the coefficient of $\mathbf{v_p}$ is $-1$). Thus, the vectors are linearly dependent.
+:::
+
+:::{.fragment}
+Now, we consider the "only if" part:
+
+Assume $S$ is linearly dependent. Then $c_1\mathbf{v_1}+\cdots+c_{p-1}\mathbf{v_{p-1}} = \mathbf{0}$ and at least one of the $c_i$ is nonzero.
+:::
+
+:::{.fragment}
+Pick one of the nonzero $c_i$, and rearranging it, we get:
+<!-- maybe instead $, rearrange it, and we get:
+or $, rearranging it gets us: ? -->
+$$
+\mathbf{v_i}=-(c_1/c_i)\mathbf{v_1}+\cdots+-(c_p/c_i)\mathbf{v_p}
+$$
+:::
+
+:::{.fragment}
+Thus, there is at least one vector that is a linear combination of the others.
+:::
+::::
+
+## Linear Dependence and Span
+
+::::{style="font-size:.7em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A spanning set for a subset of \(\mathbb{R^d}\), say \(V\) is a set of vectors such that any vector in \(V\) can be expressed as a linear combination of the vectors in this set.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.fragment}
+Let's use our new theorum to formalize the connection between spanning sets and linear dependence.
+
+We'll start with two linearly independent vectors $\mathbf{u}={\small\begin{bmatrix}3\\1\\0\end{bmatrix}}$ and $\mathbf{v}={\small\begin{bmatrix}1\\6\\0\end{bmatrix}}.$
+:::
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What subset of \(\mathbb{R^3}\) is spanned by \(\mathbf{u}\) and \(\mathbf{v}\)?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+::::
+
+## Linear Dependence and Span
+
+<div style="text-align: center;">
+  <video width="600" autoplay loop muted>
+    <source src="/figures/Fig2.10.mp4" type="video/mp4">
+  </video>
+</div>
+
+## Linear Dependence and Span 
+
+::::{style="font-size:.7em"}
+Next, let us explain why a non-zero vector $\mathbf{w}$ is in $\text{Span}\{\mathbf{u},\mathbf{v}\}$ if and only if $\{\mathbf{u,v,w}\}$ is linearly dependent.
+
+
+:::{.fragment}
+If $\mathbf{w}$ is in $\text{Span}\{\mathbf{u},\mathbf{v}\}$, then $\mathbf{w}$ is a linear combination of $\mathbf{u}$ and $\mathbf{v}$.
+
+So $\{\mathbf{u,v,w}\}$ is linearly dependent (by the theorum we just proved).
+:::
+
+:::{.fragment}
+On the other hand, $\{\mathbf{u,v,w}\}$ is linearly dependent, there exists $c_1,c_2,$ and $c_3,$ not all zero, such that
+
+$$
+c_1\mathbf{u} + c_2\mathbf{v} + c_3\mathbf{w} = \mathbf{0}
+$$
+:::
+
+:::{.fragment .incremental}
+This implies that there are two options for $c_3$:
+
+1. $c_3=0$ and
+2. $c_3\neq 0.$
+
+:::
+::::
+
+## Linear Dependence and Span 
+
+::::{style="font-size:.7em"}
+Let us consider both options
+
+:::{.fragment}
+1. If $c_3=0$, then $c_1\mathbf{u} + c_2\mathbf{v} = \mathbf{0}.$ However, this is not possible, because $\mathbf{u}$ and $\mathbf{v}$ are linearly independent. Thus, $c_3\neq0.$
+:::
+:::{.fragment}
+2. If $c_3\neq0$, then we can express $\mathbf{w}$ as
+
+$$
+\mathbf{w} = -\left(\frac{c_1}{c_3}\right) \mathbf{u} - \left(\frac{c_2}{c_3}\right) \mathbf{v}.
+$$
+:::
+
+:::{.fragment}
+From here it follows that $\mathbf{w}$ is in $\text{Span}\{\mathbf{u},\mathbf{v}\}.$
+:::
+
+::::
+
+## Linear Dependence and Span
+
+<div style="text-align: center;">
+  <video width="600" autoplay loop muted>
+    <source src="/figures/Fig2.10.mp4" type="video/mp4">
+  </video>
+</div>
+
+## Linear Dependence and Span
+
+<div style="text-align: center;">
+  <video width="600" autoplay loop muted>
+    <source src="/figures/Fig2.11.mp4" type="video/mp4">
+  </video>
+</div>
+
+## Linear Dependence and Span
+
+::::{style="font-size:.8em"}
+The above example can be expanded from $3$ to $p$ $(p>3)$ vectors.
+
+:::{.fragment .incremental}
+So we conclude:
+
+- If a set of vectors $\{\mathbf{v_1,v_2,\dots,v_p}\}$ is linearly dependent, then at least one of them lies wihin the span of the others, and
+
+- If one vector in the set $\{\mathbf{v_1,v_2,\dots,v_p}\}$ lies within the span of the others, then the set is linearly dependent.
+:::
+::::
+
+## Matrices of a Linear System
+
+::::{style="font-size:.5em"}
+The essential information of a linear system can be recorded compactly in a rectangular array called a _matrix._ Recall from D120 that, given the following system of equations,
+
+$$
+\begin{aligned}
+    x_1 - 2x_2 + x_3 &= 5 \\
+    2x_2 - 8x_3 &= -4 \\
+    6x_1 + 5x_2 + 9x_3 &= -4
+\end{aligned}
+$$
+
+:::{.fragment}
+the matrix
+
+$$
+\begin{bmatrix}
+    1 & -2 & 1 \\
+    0 & 2 & -8 \\
+    6 & 5 & 9
+\end{bmatrix}
+$$
+
+is called the _coefficient matrix_ of the system.
+:::
+
+:::{.fragment}
+In addition, recall that
+
+$$
+\begin{bmatrix}
+    1 & -2 & 1 & \vert & 5 \\
+    0 & 2 & -8 & \vert & -4 \\
+    6 & 5 & 9 & \vert & -4
+\end{bmatrix}
+$$
+
+is called the _augmented matrix_ of a system. The augmented matrix consists of the coefficient matrix with an added column containing the constants from the right sides of the equations.
+:::
+::::
+
+## Matrices
+
+::::{style="font-size: .6em"}
+A matrix with $m$ rows and $n$ columns is referred to as "an $m \times n$ matrix" and is an element of the set $\mathbb{R^{m\times n}}$. Note that we always list the number of rows first, then the number of columns.
+
+:::{.fragment}
+In this course, we denote matrices using a capital letter like $A$, and we denote its entry in row $i$ and column $j$ with a lowercase variable $a_{i,j}$.
+:::
+
+:::{.fragment}
+More generally, given a system of $m$ equations in $n$ unknown variables, we can form an $m \times n$ coefficient matrix $A$ from the scalars in all equations.
+
+$$
+A = \overset{n}{\overbrace{%
+  \begin{bmatrix}
+    a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+    a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
+    \vdots  & \vdots  & \ddots & \vdots  \\
+    a_{m,1} & a_{m,2} & \cdots & a_{m,n}
+  \end{bmatrix}
+}} \quad
+\left. \vphantom{%
+  \begin{bmatrix}
+    a_{1,1} \\[1ex]
+    a_{2,1} \\[1ex]
+    \vdots  \\[1ex]
+    a_{m,1}
+  \end{bmatrix}
+} \right\} m
+$$
+
+:::
+::::
+
+## Matrices
+
+::::{style="font-size:.6em"}
+The columns of this matrix are the same as the column vectors $\mathbf{a_1,a_2,\dots,a_n}\in\mathbb{R^m}$ in our vector equation.
+
+$$
+{\small
+\overset{n}{\overbrace{%
+  \begin{bmatrix}
+    \vdots & \vdots &  & \vdots \\
+    \vdots & \vdots &  & \vdots \\
+    \mathbf{a_{1}} & \mathbf{a_{2}} & \cdots & \mathbf{a_{n}} \\
+    \vdots  & \vdots  &  & \vdots  \\
+    \vdots & \vdots &  & \vdots
+  \end{bmatrix}
+}} \quad
+\left. \vphantom{%
+  \begin{bmatrix}
+    a_{1,1} \\[1ex]
+    a_{2,1} \\[1ex]
+    \vdots  \\[1ex]
+    a_{m,1}
+  \end{bmatrix}
+} \right\} m
+}
+$$
+
+:::{.fragment}
+Since we will form matrices often by concatenating vectors, let's create a new notational shorthand fore this:
+
+$$
+A = [\mathbf{a_1,a_2,\dots,a_n}]
+$$
+:::
+
+::::
+
+## Matrix Equations
+
+::::{style="font-size:.6em"}
+Now let's write a matrix equation. Let's start with a linear system.
+
+$$
+\begin{align}
+x_1 + 2x_2 - x_3 &= 4 \\
+-5x_2 +3x_3 &= 1
+\end{align}
+$$
+
+:::{.fragment}
+We saw that this linear system is equivalent to a vector equation, namely
+
+$$
+x_1{\small\begin{bmatrix}1 \\0 \end{bmatrix}} + x_2{\small\begin{bmatrix}2 \\-5 \end{bmatrix}} + x_3{\small\begin{bmatrix}-1 \\3 \end{bmatrix}} = {\small\begin{bmatrix}4 \\1 \end{bmatrix}}
+$$
+:::
+
+:::{.fragment}
+Now, we have learned that htis vector equation is also equivalent to this _matrix equation_:
+
+$$
+\begin{bmatrix}1 & 2 &-1 \\ 0 & -5 &3\end{bmatrix}\begin{bmatrix}x_1\\x_2\\x_3 \end{bmatrix} = \begin{bmatrix}4 \\ 1\end{bmatrix} 
+$$
+
+which has the form $A\mathbf{x}=\mathbf{b}.$
+:::
+::::
+
+## Matrix Equations
+
+::::{style="font-size: .8em"}
+The above linear system, vector equation, and matrix equation all have the same solution.
+
+:::{.fragment}
+Let's state this formally
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        If \(A\) is an \(m\times n\) matrix, with columns \(\mathbf{a_1,a_2,\dots,a_n,}\) and if \(\mathbf{b}\) is in \(\mathbb{R^m}\), the matrix equation<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(A\mathbf{x}=\mathbf{b}\)<br> has the same solution set as the vector equation<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(x_1{\bf a_1} + x_2{\bf a_2} + ... + x_n{\bf a_n} = {\bf b}.\)<br>
+        which, in turn, has the same solution set as the system of linear equations whose augmented matrix is<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\([{\bf a_1} \; {\bf a_2} \; ... \;{\bf a_n}\; | \; {\bf b}].\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+::::
+
+## Matrix Equations
+
+::::{style="font-size: .7em"}
+The above linear system, vector equation, and matrix equation all have the same solution.
+
+:::{.fragment}
+Let's state this formally.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        If \(A\) is an \(m\times n\) matrix, with columns \(\mathbf{a_1,a_2,\dots,a_n,}\) and if \(\mathbf{b}\) is in \(\mathbb{R^m}\), the matrix equation<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(A\mathbf{x}=\mathbf{b}\)<br> has the same solution set as the vector equation<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(x_1\mathbf{a_1}+x_2\mathbf{a_2}+\dots+x_n\mathbf{a_n}=\mathbf{b}\)<br>
+        which in turn, has the same solution set as the system of linear equations whose augmented matrix is<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\([\mathbf{a_1\space a_2 \dots a_n \space| \space b}].\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+:::
+::::
+
+## Matrix-Vector Multiplication
+
+::::{style="font-size:.6em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        If \(A\) is an \(m\times n\) matrix, with columns \(\mathbf{a_1,a_2,\dots,a_n,}\) and if \(\mathbf{x}\in \mathbb{R^m}\), then <b>the product of \(A\) and \(x\)</b>, denoted \(A\mathbf{x}\), is the vector \(\mathbf{b}\in\mathbb{R^m}\) that is the linear combination of the columns of \(A\) using the corresponging entries in \(\mathbf{x}\) as weights; that is,<br>
+
+        \({Ax} =
+            \begin{bmatrix}
+            \vdots & \vdots &  & \vdots \\
+            \vdots & \vdots &  & \vdots \\
+            \mathbf{a_1} & \mathbf{a_2} &  & \mathbf{a_n} \\
+            \vdots & \vdots &  & \vdots \\
+            \vdots & \vdots &  & \vdots
+            \end{bmatrix}
+            \begin{bmatrix}
+            x_1 \\ x_2 \\ \vdots \\ x_n
+            \end{bmatrix}
+            = x_1 \mathbf{a_1} + x_2 \mathbf{a_2} + \dots + x_n \mathbf{a_n} = \mathbf{b}.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+:::{.fragment}
+Notice that if $A$ is an $m\times n$ matrix, then the column vector $\mathbf{x}$ must be in $\mathbb{R^n}$ in order for this operation to be defined. That is, the number of _columns_ of $A$ must match the number of _rows_ of $\mathbf{x}$
+:::
+::::
+
+## Matrix-Vector Multiplication
+
+::::{style="font-size:.6em"}
+
+::::{.columns}
+
+:::{.column width="50%"}
+**Example.** Let's calculate the following matrix-vector multiplication.
+
+$$
+\begin{bmatrix} 1 & 2 & -1 \\ 0 & -5 & 3 \end{bmatrix} \begin{bmatrix} 4 \\ 3 \\ 7 \end{bmatrix} = 
+$$
+
+$$
+4 \begin{bmatrix} 1 \\ 0 \end{bmatrix} + 3 \begin{bmatrix} 2 \\ -5 \end{bmatrix} + 7 \begin{bmatrix} -1 \\ 3 \end{bmatrix} = 
+$$
+
+$$
+\begin{bmatrix} 4 \\ 0 \end{bmatrix} + \begin{bmatrix} 6 \\ -15 \end{bmatrix} + \begin{bmatrix} -7 \\ 21 \end{bmatrix} = \begin{bmatrix} 3 \\ 6 \end{bmatrix}
+$$
+:::
+
+:::{.column width="50%"}
+:::{.fragment}
+**Relationship to Span.** For $\mathbf{a_1,a_2,a_3} \in \mathbb{R^m}$ let's write the linear combination $3\mathbf{a_1}+5\mathbf{a_2} + 7\mathbf{a_3}$ as a matrix times a vector.
+
+$$
+3\mathbf{a_1}+5\mathbf{a_2} + 7\mathbf{a_3} =[\mathbf{a_1 \space a_2 \space a_3}]\begin{bmatrix}3\\5\\7\end{bmatrix}
+$$
+
+$$
+= A\mathbf{x}.
+$$
+
+:::
+:::
+::::
+:::{.fragment}
+Notice that if $A = [\mathbf{a_1 \space a_2 \dots a_n}]$ then $A\mathbf{x}$ is some point that lies in $\text{Span}\{\mathbf{a, a_2, \dots, a_n}\}.$
+:::
+::::
+
+## Matrix-Vector Multiplication
+
+::::{style="font-size:.6em"}
+Let's see how the inner product can be used to think about matrix-vector multiplication.
+
+**Example.** Here are two different ways to compute matrix vector multiplication:
+
+:::{.fragment}
+Using linear combination:
+$$
+\begin{aligned}
+\begin{bmatrix}1 & 2 & -1 \\ 0 & -5 & 3 \end{bmatrix}
+\begin{bmatrix}4\\3\\7\end{bmatrix}
+&= 4\begin{bmatrix}1\\0\end{bmatrix} 
+ + 3\begin{bmatrix}2\\-5\end{bmatrix} 
+ + 7\begin{bmatrix}-1\\3\end{bmatrix} \\
+&= \begin{bmatrix} 4\\0 \end{bmatrix} 
+ + \begin{bmatrix} 6\\-15 \end{bmatrix} 
+ + \begin{bmatrix} -7\\21 \end{bmatrix} \\
+&= \begin{bmatrix}3\\6\end{bmatrix}
+\end{aligned}
+$$
+:::
+
+:::{.fragment}
+Using inner products:
+$$
+\begin{bmatrix}1 & 2 & -1 \\ 0 & -5 & 3 \end{bmatrix}\begin{bmatrix}4\\3\\7\end{bmatrix}= \begin{bmatrix} 1 \cdot 4 \space+\space 2 \cdot 3 \space+\space -1\cdot 7 \\ 1 \cdot 4 \space+\space 2 \cdot 3 \space+\space -1\cdot 7\end{bmatrix} = \begin{bmatrix} 4 \\ 6 \end{bmatrix}
+$$
+:::
+::::
+
+## Matrix-Vector Multiplication
+
+:::{style="font-size:.8em"}
+In Python, we can use `Numpy` to calculate a matrix-vector product using the `@` symbol.
+
+```{python}
+#| echo: true
+import numpy as np
+A = np.array([[1, 2, -1],
+              [0, -5, 3]])
+x = np.array([[4],
+              [3],
+              [7]])
+A @ x
+```
+
+:::
+
+## Identity Matrix
+
+::::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        An \(n \times n\) matrix (i.e, a matrix that has \(n\) rows and \(n\)) columns) is called a <b>square matrix</b>.<br>
+        An <b>identity matrix</b> is a square matrix that has ones on the main diagonal and zeros everywhere else.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+:::{.fragment}
+An identity matrix is denoted by $I$.
+
+$$
+\begin{array}{ccc}
+I_2 = \left[\begin{array}{rr}1&0\\0&1\end{array}\right]\;\;\;
+I_3 = \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&1\end{array}\right]\;\;\;
+I_4 = \left[\begin{array}{rrrr}1&0&0&0\\0&1&0&0\\0&0&1&0\\0&0&0&1\end{array}\right]
+\end{array}
+$$
+:::
+
+:::{.fragment}
+An important property of $I$ is that for any $\mathbf{x}$, $I\mathbf{x}=\mathbf{x}.$
+:::
+::::
+
+## Matrix Algebra
+
+::::{style="font-size:.6em"}
+We can now being laying out the algebra of matrices and defining the rules for valid symbolic manipulation of matrices.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        If \(A\) is an \(m \times n\) matrix, \(\bf u\) and \(\bf v\) are vectors in \(\mathbb{R}^n\), and \(c\) is a scalar, then:
+        <ol type="1">
+        <li> \(A({\bf u} + {\bf v}) = A{\bf u} + A{\bf v};\)</li>
+        <li> \(A(c{\bf u}) = c(A{\bf u}).\)</li>
+        
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.fragment}
+Extending beyond matrix-vector algebra, we can define rules for matrix multiplication and addition.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        If \(A\) is an \(m \times n\) matrix and \(B\) is \(n \times p\) matrix with columns \({\bf b_1},\dots,{\bf b_p},\) then the product \(AB\) is defined as the \(m \times p\) matrix whose columns are \(A{\bf b_1}, \dots, A{\bf b_p}.\)  That is,<br>
+
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(AB = A[{\bf b_1} \; \dots \; {\bf b_p}] = [A{\bf b_1} \; \dots \; A{\bf b_p}].\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+::::
+
+## Matrix Algebra
+
+::::{style="font-size:.8em"}
+Matrix product can also be defined via inner product.
+
+$(AB)_{ij} =$ inner product of row $i$ of $A$ and column $j$ of $B$
+
+$(AB)_{ij} = \sum_k A_{ik}B_{kj}.$
+
+:::{.fragment}
+**Example.** Given the same matrices from before, $A = \left[\begin{array}{rr}2&3\\1&-5\end{array}\right]$ and $B = \left[\begin{array}{rrr}4&3&6\\1&-2&3\end{array}\right],$ compute the entry in row 1, column 3 of $C$.
+:::
+
+<div style="margin-bottom: 0.5em;"> </div> 
+
+:::{.fragment}
+$$
+AB = \left[\begin{array}{rr}\fbox{2} & \fbox{3}\\1&-5\end{array}\right]\left[\begin{array}{rrr}4&3&\fbox{6}\\1&-2&\fbox{3}\end{array}\right] = \left[\begin{array}{rrc}*&*&2(6)+3(3)\\*&*&*\end{array}\right] = \left[\begin{array}{rrr}*&*&21\\*&*&*\end{array}\right].
+$$
+
+:::
+::::
+
+## Matrix Algebra 
+
+::::{style="font-size:.8em"}
+Note: In general, $AB\neq BA$
+
+:::{.fragment}
+__Example.__ Given, $A = \left[\begin{array}{rr}2&3\\1&-5\end{array}\right]$ and $B = \left[\begin{array}{rrr}4&3&6\\1&-2&3\end{array}\right],$ compute $AB$.
+:::
+
+:::{.fragment}
+```{python}
+#| echo: true
+A = np.array([[2,  3],
+              [1, -5]])
+B = np.array([[4,  3, 6],
+              [1, -2, 3]])
+A @ B
+```
+::: 
+
+:::{.fragment}
+```{python}
+#| echo: true
+#| error: true
+B @ A
+```
+:::
+::::
+
+## Matrix Algebra
+
+::::{style="font-size:.7em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        If \(A\) is \(m\times n\), and \(B\) is \(p \times q\), then \(AB\) is defined if and only if \(n = p\).   If \(AB\) is defined, then it is \(m \times q\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+:::{.fragment}
+For example, &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;$\begin{array}{cccc}A&B&=&AB\\ 3\times \fbox{5}&\fbox{5} \times 2&& 3 \times 2\\ \end{array}$
+:::
+
+:::{.fragment}
+$$
+\begin{array}{cccc}A&B&=&AB\\
+3\times 5&5 \times 2&& 3 \times 2\\
+\left[\begin{array}{rrrrr}*&*&*&*&*\\ *&*&*&*&*\\ *&*&*&*&*\end{array}\right] & 
+\left[\begin{array}{rr}*&*\\ *&*\\ *&*\\ *&*\\ *&*\end{array}\right] & 
+= &
+\left[\begin{array}{rr}*&*\\ *&*\\ *&*\end{array}\right]
+\end{array}
+$$
+:::
+::::
+
+## Matrix Algebra
+
+::::{style="font-size:.8em"}
+We've defined multiplication of two matrices. What about addition of two matrices?
+
+:::{.fragment}
+This is straightfoward: if $A$ and $B$ are the same shape, we get $A + B$ by adding the corresponding elements.  (Just like adding vectors.)
+:::
+
+<div style="margin-bottom: 0.5em;"> </div> 
+
+:::{.fragment}
+That is, 
+
+$$
+(A + B)_{ij} = A_{ij} + B_{ij}.
+$$
+:::
+
+:::{.fragment}
+If $A$ and $B$ are not the same shape, $A + B$ is undefined.
+:::
+
+:::{.fragment}
+Furthermore, we define scalar-matrix multiplication just as for vectors:
+
+$$
+(rA)_{ij} = r(A_{ij}).
+$$
+:::
+::::
+
+## Matrix Algebra
+
+::::{style="font-size:.8em"}
+Matrix addition satisfies the following properties.
+
+For any matrices $A, B, C$ of the same shape and any scalars $r, s \in \mathbb{R}$:
+
+:::{.incremental}
+1. $A +  B = B + A$
+2. $(A + B) + C = A + (B + C)$
+3. $A + 0 = A$
+4. $r(A + B) = rA + rB$
+5. $(r + s)A = rA + sA$
+6. $r(sA) = (rs)A$
+:::
+::::
+
+## Matrix Algebra
+
+::::{style="font-size:.8em"}
+For matrix multiplication we have the properties below.
+
+:::{.incremental}
+1. Associative: $A(BC) = (AB)C$
+2. Scalar associative: $r(AB) = (rA)B = A(rB)$ for any scalar $r$
+3. Distributive: $A(B+C) = AB + AC$ and $(B+C)A = BA + CA$ 
+4. Identity: $I A = A = AI$
+:::
+::::
+
+## Unexpected properties
+
+::::{style="font-size:.8em"}
+1. We already saw that, $AB$ is _not_ equal to $BA$.  Multiplication is __not commutative!__
+    * Even if $AB$ is defined, $BA$ may not be defined.
+    * Sometimes though, $A$ and $B$ _do_ commute. For instance, the identity matrix $I$ commutes with all matrices.
+
+:::{.fragment}
+2. In general, you cannot cancel out matrices in a multiplication. If $AC = AB$, it does _not_ follow that $C = B$.
+:::
+
+
+:::{.fragment}
+3. If $AB$ is the zero matrix, in general, you cannot conclude that either $A$ or $B$ is a zero matrix.
+    * Example: $A = \left[\begin{array}{rr}1 & 0\\0&0\end{array}\right]$ and $B = \left[\begin{array}{rr}0 & 0\\0&1\end{array}\right].$
+:::
+::::
+
+## Powers of a Matrix
+
+::::{style="font-size:.8em"}
+Now with matrix-matrix multiplication, we can define the powers of a matrix in a straightforward way.  For an integer $k > 0$:
+
+$$
+A^k = \overbrace{A\cdots A}^k.
+$$
+
+Obviously, $A$ must be a square matrix for $A^k$ to be defined.
+
+:::{.fragment}
+What should $A^0$ be?
+:::
+
+:::{.fragment}
+$A^0{\bf x}$ should be the result of multiplying ${\bf x}$ with $A$ zero times.   So we define $A^0 = I$.
+:::
+::::
+
+## Transpose of a Matrix
+
+::::{style="font-size: .55em"}
+Given an $m \times n$ matrix $A,$ the transpose of $A$ is the matrix we get by interchanging its rows and columns.
+
+It is denoted $A^\top$.   Its shape is $n \times m$.
+
+:::{.fragment}
+The definition can be stated succinctly:
+
+$$
+A^\top_{ij} = A_{ji}.
+$$
+
+:::
+
+:::{.fragment}
+For example, if:
+
+$$
+\begin{array}{ccc}
+A = \left[\begin{array}{rr}a&b\\c&d\end{array}\right],&
+B = \left[\begin{array}{rr}-5&2\\1&-3\\0&4\end{array}\right],&
+C = \left[\begin{array}{rrrr}1&1&1&1\\-3&5&-2&7\end{array}\right]
+\end{array}
+$$
+:::
+
+:::{.fragment}
+Then:
+
+$$
+\begin{array}{ccc}
+A^\top = \left[\begin{array}{rr}a&c\\b&d\end{array}\right],&
+B^\top = \left[\begin{array}{rrr}-5&1&0\\2&-3&4\end{array}\right],&
+C^\top = \left[\begin{array}{rr}1&-3\\1&5\\1&-2\\1&7\end{array}\right]
+\end{array}
+$$
+:::
+::::
+
+## Transpose of a Matrix
+
+::::{style="font-size:.8em"}
+Rules for Transposes:
+
+:::{.incremental}
+1. $(A^\top)^\top = A$
+2. $(A + B)^\top = A^\top + B^\top$
+3. For any scalar $r$, $(rA)^\top = r(A^\top)$
+4. $(AB)^\top = B^\top A^\top$
+:::
+::::
+
+## Key Ideas
+
+:::{style="font-size:.8em" .incremental}
+
+- The set $\{{\bf v_1, ..., v_p}\}$ is said is said to be __linearly independent__ if the vector equation $x_1{\bf v_1} + ... + x_p{\bf v_p} = {\bf 0}.$ has only the trivial solution $x_1 = 0, ..., x_p = 0$.
+
+- The vectors $\mathbf{v_1,v_2,\dots,v_p}$ span the space if their combinations fill that space.
+
+- Matrices do not always obey the same algebraic rules as scalars. For example, in general, $AB \neq BA.$
+:::
