@@ -1,6 +1,6 @@
 ---
 title: "Linear Systems"
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         math: true
@@ -12,7 +12,7 @@ format:
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
-Today we are going to return to linear algebra for solving systems of equations. We will algebraically and geometrically explore the solutions to a system of equations
+Today we are going to return to linear algebra for solving systems of equations. We will algebraically and geometrically explore the solutions to a system of equations.
 
 :::{.fragment}
 In addition, we will redefine the concept of a span and will connect it to what we know about linear systems.
@@ -22,7 +22,7 @@ In addition, we will redefine the concept of a span and will connect it to what 
 ## Systems of Equations
 
 ::::{style="font-size: .8em"}
-Here is an example of a system of 3 equations in 3 i.e. 3 unknown variables.
+Here is an example of a system of 3 equations in 3 unknown variables:
 
 $$
 \begin{align*}
@@ -33,17 +33,16 @@ x_1 - 2x_2 + x_3 &= 5 \\
 $$
 
 :::{.fragment}
-We call these **linear equations** because no term has a power other than 1; for example, there are no terms involving $x_1^2$, or $x_1x_2$, or $\sqrt{x_3}$.
+We call these _linear equations_ because no term has a power other than 1. For example, there are no terms involving $x_1^2$, or $x_1x_2$, or $\sqrt{x_3}$.
 
-Put another way: the only operations applied to our unknown variables are: (1) addition and (2) mulitiplication by a constant, aka a scalar.
+In other words, the only operations applied to our unknown variables are: <br>
+(1) addition and (2) mulitiplication by a constant.
 :::
 ::::
 
 ## Systems of Equations
 
 ::::{style="font-size:.8em"}
-Let us recall a number of definitions that should be familiar from DS120.
-
 :::{.fragment}
 ```{python}
 from IPython.core.display import HTML
@@ -52,8 +51,10 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        A <b>linear equation</b> in the variables \(x_1,\dots,x_d\) is an equation that can be written in the form <br>\(a_1x_1+a_2x_2+\dots+a_dx_d=b\)<br>
-        where \(b\) and the coefficients \(a_1,\dots,a_d\) are real or complex numbers that are usually known in advance.
+        A <b>linear equation</b> in the variables \(x_1,\dots,x_d\) is an equation that can be written in the form <br><span style="display: block; text-align: center;">
+        \(a_1x_1+a_2x_2+\dots+a_dx_d=b,\)
+        </span><br>
+        where \(b\) and the coefficients \(a_1,\dots,a_d\) are real numbers that are usually known in advance.
         </p>
     </div>
     """
@@ -74,7 +75,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        A <b>system of linear equations</b> (or <b>linear system</b>) is a collection of one or more linear equations involving the same variables - say \(x_1,\dots,x_d\).
+        A <b>system of linear equations</b> (or <b>linear system</b>) is a collection of one or more linear equations involving the same variables, say \(x_1, x_2\dots,x_d\).
         </p>
     </div>
     """
@@ -88,7 +89,7 @@ display(HTML(html_content))
 
 ## Systems of Equations
 
-::::{style="font-size:.6em"}
+::::{style="font-size:.8em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -97,7 +98,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        A <b>solution</b> of the system is a list of numbers \((s_1,s_2,\dots,s_3)\) that makes each eqaution a true statement when the values \((s_1,s_2,\dots,s_3)\) are substituted for \((x_1,x_2,\dots,x_3)\) respectively.
+        A <b>solution</b> of the system is a list of numbers \((s_1,s_2,\dots,s_3)\) that makes each equation a true statement when the values \(s_1,s_2,\dots,s_3\) are substituted for \(x_1,x_2,\dots,x_3\), respectively.
         </p>
     </div>
     """
@@ -106,6 +107,8 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
+
+<br>
 
 :::{.fragment}
 ```{python}
@@ -126,7 +129,13 @@ display(HTML(html_content))
 ```
 :::
 
-:::{.fragment}
+::::
+
+
+## Systems of Equations
+
+::::{style="font-size:.8em"}
+
 A system of linear equations has 0, 1, or infinitely many solutions.
 
 ```{python}
@@ -145,8 +154,9 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
-:::
 ::::
+
+
 
 ## Systems of Equations
 
@@ -157,7 +167,7 @@ $$
 \begin{align*}
 &\begin{aligned}
 x_1 - 2x_2 + x_3 &= 5 \\
-2x_2 - 8x_3 &= -4 \\
+ 2x_2 - 8x_3 &= -4 \\
 6x_1 + 5x_2 + 9x_3 &= -4
 \end{aligned}
 \Leftrightarrow 
@@ -191,7 +201,7 @@ $$
 
 
 :::{.fragment}
-The equation on the right is called a _vector equation_. This single equation that involves column vectors is _equivalent to_ a system of linear equations arranged in rows. That is, they have the same solution.
+The equation on the right is called a _vector equation_. This single equation that involves column vectors is _equivalent to_ a system of linear equations arranged in rows. That is, they have the same solution:
 
 $$
 x_1=1,\space x_2=-2,\space x_3=0.
@@ -229,22 +239,21 @@ $$
 \end{align*}
 $$
 
-The solution $(x_1,x_2,x_3)=(1,-2,0)$ makes each equation true. Confirmed!
+The solution $(x_1,x_2,x_3)=(1,-2,0)$ makes each equation true. 
 :::
 ::::
 
 ## Visualizing Systems of Equations{.smaller-title}
 
-::::{style="font-size: .8em"}
+::::{style="font-size: .85em"}
 Geometrically, we can find the solutions to a system of linear equations in $d$ variables by:
 
-- Creating a graph showing the solution space to each individual equation, which is a $d-1$ dimensional space.
-- Finding the point(s) that are in common to all equations, if any.
+- creating a graph showing the solution space to each individual equation, which is a $d-1$ dimensional space;
+- finding the point(s) that are in common to all equations, if any.
 
 :::{.fragment}
-Let us first look at some examples in $\mathbb{R^2}$.
-
-If a linear equation has 2 variables, then the set of all possible solutions is one-dimensional... in other words, it forms a line.
+Let us first look at some examples in $\mathbb{R}^2$.
+If a linear equation has 2 variables, then the set of all possible solutions is one-dimensional (i.e., a line).
 
 :::{.center-text}
 ```{python}
@@ -363,8 +372,7 @@ display(HTML(html_content))
 ## Visualizing Systems of Equations{.smaller-title}
 
 ::::{style="font-size: .8em"}
-Let us replace $3x_2$ by $2x_2$ in the second equation:&emsp;&emsp;&emsp;&emsp;
-$\begin{align}x_1-2x_2=-1 \\-x_1+2x_2=3\end{align}$
+Let us replace $3x_2$ by $2x_2$ in the second equation.
 
 :::{.center-text}
 ```{python}
@@ -428,7 +436,7 @@ display(HTML(html_content))
 ## Visualizing Systems of Equations{.smaller-title}
 
 ::::{style="font-size:.8em"}
-This geometric reasoning also works in higher dimensions. Let's consider $R^3$ and look at our earlier system of equations again.
+This geometric reasoning also works in higher dimensions. Let's consider $\mathbb{R}^3$ and look at our earlier system of equations again.
 
 $$
 \begin{align*}
@@ -478,26 +486,24 @@ We can plot this too.
 ## From Systems of Equations to Vectors {.really-smaller-title}
 
 ::::{style="font-size: 1em"}
-We are now going to take up a very basic question that will lead us to a deeper understanding of linear systems.
-
 Given some set of vectors $\mathbf{a_1,a_2,\dots,a_k}$, can a given vector $\mathbf{b}$ be written as a linear combination of $\mathbf{a_1,a_2,\dots,a_k}$?
 
 :::{.fragment}
 Let's take a specific example.<br>
 
-Let $a_1=\begin{bmatrix}1 \\ -2 \\ -5 \end{bmatrix}$, $a_2=\begin{bmatrix}2 \\ 5 \\ 6 \end{bmatrix}$, and $b=\begin{bmatrix}7 \\ 4 \\ -3 \end{bmatrix}$
+Let $\mathbf{a}_1=\begin{bmatrix}1 \\ -2 \\ -5 \end{bmatrix}$, $\mathbf{a}_2=\begin{bmatrix}2 \\ 5 \\ 6 \end{bmatrix}$, and $\mathbf{b}=\begin{bmatrix}7 \\ 4 \\ -3 \end{bmatrix}$.
 :::
 
 :::{.fragment}
-We need to determine whether $\mathbf{b}$ can be generated as a linear combination of $\mathbf{a_1}$ and $\mathbf{a_2}$. That is, we seek to find whether weights $x_1$ and $x_2$ exist such that
+We need to determine whether $\mathbf{b}$ can be generated as a linear combination of $\mathbf{a_1}$ and $\mathbf{a_2}$. That is, we are looking for weights $x_1$ and $x_2$ such that
 
 $$
-x_1\mathbf{a_1} + x_2\mathbf{a_2} = \mathbf{b}
+x_1\mathbf{a_1} + x_2\mathbf{a_2} = \mathbf{b}.
 $$
 :::
 
 :::{.fragment}
-It turns out that we can convert this single vector equation into a set of linear equations, that is, a linear system.
+We can convert this single vector equation into a linear system.
 :::
 ::::
 
@@ -569,7 +575,7 @@ $$
 
 ## From Systems of Equations to Vectors {.really-smaller-title}
 
-::::{style="font-size:.7em"}
+::::{style="font-size: 1.0em"}
 By the definition of vector equality, this is:
 
 $$
@@ -583,66 +589,43 @@ $$
 This is a linear system! Its solution is $x_1=3$ and $x_2=2$.
 
 :::{.fragment}
-We have found the solution to our vector equation as well:
-
-$$
-3 
-\begin{bmatrix}
-1 \\ 
--2 \\ 
--5
-\end{bmatrix}
-+ 2
-\begin{bmatrix}
-2 \\ 
-5 \\ 
-6
-\end{bmatrix}
-=
-\begin{bmatrix}
-7 \\ 
-4 \\ 
--3
-\end{bmatrix}.
-$$
-:::
-
-:::{.fragment}
+We have found the solution to our vector equation as well.
 In other words, we have found that
 
 $$
-3a_1 + 2a_2 = \mathbf{b}.
+3\mathbf{a}_1 + 2\mathbf{a}_2 = \mathbf{b}.
 $$
 And vice versa! Given a system of linear equations, we can form a vector equation where the vectors correspond to the "columns" of the linear system.
 :::
 
-:::{.fragment}
+<!-- :::{.fragment}
 This is a powerful concept; we have related
 
 - a single equation involving column vectors
 - to a set of equations corresponding to rows.
-:::
+::: -->
 ::::
 
 ## Span
 
-::::{style="font-size:.65em"}
+::::{style="font-size:.8em"}
 If linear systems can be inconsistent (i.e., have no solutions), then so can be vector equations.
 
 How can we understand what it means – in terms of vectors – for a vector equation to be inconsistent?
 
-The answer involves the **span** of a set of vectors
+The answer involves the _span_ of a set of vectors.
 
 :::{.fragment}
 Let's say we are given vectors $\mathbf{a_1}$, $\mathbf{a_2}$, $\mathbf{b}$.
 
-And, say we know that it is possible to express $\mathbf{b}$ as a linear combination of $a_1$ and $a_2$. That is, there are some $x_1,x_2$ such that $x_1\mathbf{a_1} + x_2\mathbf{a_2}=\mathbf{b}$
+And, say we know that it is possible to express $\mathbf{b}$ as a linear combination of $\mathbf{a}_1$ and $\mathbf{a}_2$. That is, there are some $x_1,x_2$ such that $x_1\mathbf{a_1} + x_2\mathbf{a_2}=\mathbf{b}.$
 
-Then we say that $\mathbf{b}$ is in the **Span** of the set of vectors $\{a_1,a_2\}$.
+Then we say that $\mathbf{b}$ is in the span of the set of vectors $\{\mathbf{a}_1,\mathbf{a}_2\}$.
 :::
+::::
 
-:::{.fragment}
-
+## Span
+::::{style="font-size:.8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -650,10 +633,10 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        Let's say we are given a set of vectors \(\mathbf{a_1,\dots,a_k}\) where each \(\mathbf{a_i}\in\mathbb{R^d}\).
+        Consider a set of vectors \(\mathbf{a_1,\dots,a_k}\) where each \(\mathbf{a_i}\in\mathbb{R}^d\).
         Then the set of all linear combinations of \(\mathbf{a_1,\dots,a_k}\) is denoted by<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(\text{Span}\mathbf{\{a_1,\dots,a_k\}}\)<br>
-        and is called the <b>subset of \(\mathbb{R^d}\) spanned by 
+       &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(\text{Span}\mathbf{\{a_1,\dots,a_k\}}\)<br>
+        and is called the <b>subset of \(\mathbb{R}^d\) spanned by 
         \(\mathbf{a_1,\dots,a_k}\). </b>
         </p>
     </div>
@@ -663,16 +646,35 @@ display(HTML(html_content))
 
 ```
 
+<br>
+
+:::{.center-text}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What is the span of a single non-zero vector?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
 :::
 ::::
 
-## Span of a Single Vector in $\mathbb{R^3}$
+
+## Span of a Single Vector in $\mathbb{R}^3$
 
 <video width="1000" autoplay loop muted>
   <source src="/figures/Fig2.4.mp4" type="video/mp4">
 </video>
 
-## Span of Two Vectors in $\mathbb{R^3}$
+## Span of Two Vectors in $\mathbb{R}^3$
 
 <video width="1000" autoplay loop muted>
   <source src="/figures/Fig2.5.mp4" type="video/mp4">
@@ -686,18 +688,18 @@ Asking whether a vector $\mathbf{b}$ is in $\text{Span}\mathbf{\{a_1,\dots,a_k\}
 $$
 x_1\mathbf{a_1}+x_2\mathbf{a_2}+\dots+x_k\mathbf{a_k}=\mathbf{b}
 $$
-
+has a solution.
 
 :::{.fragment}
 Here is an example. Let $\mathbf{a_1}=\begin{bmatrix}1 \\ -2 \\ 3 \end{bmatrix}$, $\mathbf{a_2}=\begin{bmatrix}5 \\ -13 \\ -3 \end{bmatrix}$, and $\mathbf{b}=\begin{bmatrix}6 \\ 8 \\ -5 \end{bmatrix}$.
 
-Then $\text{Span}\mathbf{\{a_1,\dots,a_k\}}$ is a plane through the origin in $\mathbb{R^3}$.
+Then $\text{Span}\mathbf{\{\mathbf{a}_1,\mathbf{a}_2\}}$ is a plane through the origin in $\mathbb{R}^3$.
 
 Is $\mathbf{b}$ in that plane?
 :::
 ::::
 
-## Is _b_ in Span$\{\mathbf{a_1,a_2}\}$ {.smaller-title}
+## Is $\mathbf{b}$ in Span$\{\mathbf{a_1,a_2}\}$? {.smaller-title}
 
 <div style="text-align: center;">
   <video width="500" autoplay loop muted>
@@ -707,28 +709,32 @@ Is $\mathbf{b}$ in that plane?
 
 
 :::{.fragment style="font-size: .8em"}
-No, $\mathbf{b}$ is not in $\text{Span}\{\mathbf{a_1,a_2}\}$.
-
-This means that the vector equation $x_1\mathbf{a_1}+x_2\mathbf{a_2}=\mathbf{b}$ is inconsistent.
+No, the vector equation $x_1\mathbf{a_1}+x_2\mathbf{a_2}=\mathbf{b}$ is inconsistent.
 :::
 
-## Two Distinct Vector Spaces
+## Two Perspectives
 
-::::{style="font-size:.6em"}
+::::{style="font-size:.8em"}
 
-We have been working with two different vector spaces.
+We have been working with two perspectives on linear systems.
 
 :::{.incremental}
-1. One vector Space is for visualizing equations that correspond to rows
-2. The other vector space is for visualizing vector equations (involving columns).
+1. One perspective is through equations that correspond to rows.
+2. The other is through vector equations corresponding to columns.
 :::
 
 :::{.fragment}
 These are two different ways of visualizing the same linear system.
 :::
 
+::::
+
+## Two Perspectives
+
+::::{style="font-size:.8em"}
+
 :::{.fragment}
-Example. Let's look at an inconsistent system both ways.
+Let's look at an inconsistent system both ways.
 
 $$
 x_1 \begin{bmatrix} 1 \\ -2 \\ 3 \end{bmatrix} +
@@ -738,12 +744,12 @@ $$
 :::
 
 :::{.fragment}
-Here are the views, first as a vector equation, and then as a system of equations.
-
-The _column-based_ view asks whether $\mathbf{b}=\begin{bmatrix}6 \\ 8 \\ -5 \end{bmatrix}$ is in the span of $\mathbf{a_1}=\begin{bmatrix}1 \\ -2 \\ 3 \end{bmatrix}$ and $\mathbf{a_2}=\begin{bmatrix}5 \\ -13 \\ -3 \end{bmatrix}$ 
+The _column-based_ view asks whether $\mathbf{b}=\begin{bmatrix}6 \\ 8 \\ -5 \end{bmatrix}$ is in the span of $\mathbf{a_1}=\begin{bmatrix}1 \\ -2 \\ 3 \end{bmatrix}$ and $\mathbf{a_2}=\begin{bmatrix}5 \\ -13 \\ -3 \end{bmatrix}.$ 
 :::
 
 ::::
+
+
 
 ## Two Distinct Vector Spaces
 
@@ -765,14 +771,14 @@ $$
 $$
 
 :::{.fragment}
-This second vector space is more familiar to us right now.
+This second perspective is more familiar to us right now.
 
-However, as the course goes on we will use the first vector space – the one in which columns are vectors – much more often.
+However, as the course goes on we will use the first perspective much more often.
 :::
 
 ::::
 
-## Two Distinct Vector Spaces
+## Two Perspectives
 
 <video width="1000" autoplay loop muted>
     <source src="/figures/Fig2.8.mp4" type="video/mp4">

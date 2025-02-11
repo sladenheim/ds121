@@ -361,13 +361,13 @@ This algorithm was voted among the _top-10 algorithms_ in data mining!
 ## K-Means Clustering
 
 ::::{style="font-size: .8em;"}
-Here is the (approximate) $k$-means algorithm:
+Here is the $k$-means algorithm for $X = \{{\bf x_1}, \dots, {\bf x_n}\}$ where ${\bf x_i} \in \mathbb{R}^d$:
 
 :::{.incremental}
-1. Pick $k$ cluster centers $\{{\bf c_1}, \dots, {\bf c_k}\}$.  These can be chosen randomly, or by some other method.
-2. For each $j$, define the cluster $X_j$ as the set of points in $X$ that are __closest to center__ ${\bf c_j}$.&emsp;(Nearer to ${\bf c_j}$ than to any other center.)
-3. For each $j$, redefine ${\bf c_j}$ to be the __center of mass__ of cluster $X_j$.&emsp;(In other words, ${\bf c_j}$ is the mean of the vectors in $X_j$.)
-4. Repeat (i.e., go to Step 2) until convergence.
+1. Pick $k$ cluster centers $\{{\bf c_1}, \dots, {\bf c_k}\}$.  These can be chosen randomly, or by some deterministic method.
+2. For each $j$ between 1 and $k$, define the cluster $X_j$ as the set of points in $X$ that are _closest to center_ ${\bf c_j}$.
+3. For each $j$ between 1 and $k$, redefine ${\bf c_j}$ to be the _center of mass_ of cluster $X_j$.
+4. Repeat steps 2 and 3 until convergence.
 :::
 
 :::{.fragment}
@@ -391,7 +391,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p> Consider the following dataset: \({\small\begin{bmatrix} -2 \\ 10 \end{bmatrix}, \begin{bmatrix} 1 \\ 10 \end{bmatrix}, \begin{bmatrix} 0 \\ 10 \end{bmatrix}, \begin{bmatrix} 2 \\ 10 \end{bmatrix}, \begin{bmatrix} 4 \\ 10 \end{bmatrix}}\) <br><br>
+        <p> Consider the following dataset: \({\small\begin{bmatrix} -2 \\ 10 \end{bmatrix}, \begin{bmatrix} 1 \\ 10 \end{bmatrix}, \begin{bmatrix} 0 \\ 10 \end{bmatrix}, \begin{bmatrix} 2 \\ 10 \end{bmatrix}, \begin{bmatrix} 4 \\ 10 \end{bmatrix}.}\) <br><br>
         The number of clusters is equal to 2 (i.e., \(k=2\)). In the beginning of the 1st iteration, we initialize the cluster centers at \(\small\begin{bmatrix} 1 \\ 10 \end{bmatrix}\) and \(\small\begin{bmatrix} 4 \\ 10 \end{bmatrix}\).
         <ol type="a">
             <li>Provide the list of points in the cluster associated with the center at \(\small\begin{bmatrix}1 \\ 10 \end{bmatrix}\) in the 1st iteration.</li>
@@ -414,8 +414,6 @@ display(HTML(html_content))
 ::::{style="font-size: .8em"}
 Let's do an extended example showing $k$-means clustering in practice and in the context of the python libraries __`scikit-learn`__.
 
-`scikit-learn` is a useful Python library for machine learning functions.
-
 Our goals are to learn:
 
 :::{.incremental}
@@ -430,7 +428,7 @@ Our goals are to learn:
 ## Synthetic Data {.scrollable}
 
 ::::{style="font-size: .8em"}
-Among other things, `scikit-learn` contains tools for generating synthetic data for testing.
+We are going to generate synthetic data and inspect it.
 
 
 ```{python}
@@ -441,15 +439,17 @@ X, y = sk_data.make_blobs(n_samples=100, centers=3, n_features=30,
 print(X.shape)
 ```
 
-:::{.fragment}
-To get a sense of the raw data we can inspect it.
+::::
+
+## Synthetic Data {.scrollable}
+
+::::{style="font-size: .8em"}
 
 ```{python}
 #| echo: true
 import seaborn as sns
 sns.heatmap(X, xticklabels = False, yticklabels = False, linewidths = 0, cbar = False)
 ```
-:::
 ::::
 
 ## Synthetic Data
@@ -462,7 +462,6 @@ Let's compute the pairwise distances for visualization purposes.
 
 
 :::{.fragment}
-We can compute all pairwise distances in a single step using a `scikit-learn` function:
 
 ```{python}
 #| echo: true
@@ -476,7 +475,7 @@ euclidean_dists
 ## Synthetic Data
 
 :::{style="font-size: .75em"}
-And we can then visualize the data using a heatmap on the set of pairwise distances.
+We can then visualize the data using a heatmap on the set of pairwise distances.
 
 :::{.center-text}
 ```{python}
@@ -489,20 +488,15 @@ sns.heatmap(euclidean_dists, xticklabels=False, yticklabels=False, linewidths=0,
 
 ## Multidimensional Scaling
 
-::::{style="font-size: .75em"}
-Geometrically, the dataset lives in a __30 dimensional__ space, so we cannot directly visualize its geometry.  
+::::{style="font-size: .8em"}
+Geometrically, the dataset lives in a _30 dimensional_ space, so we cannot directly visualize it. But we can approximate it!
 
-:::{.fragment}
-But we can approximate it!
-
-__Multidimensional Scaling__ (MDS) is a way to visualize the relative similarity or unsimilarity between pairs of points in a dataset.
-:::
+__Multidimensional Scaling__ (MDS) is a way to visualize the relative similarity or dissimilarity between pairs of points in a dataset.
 
 :::{.fragment}
 The idea behind MDS is:
 
-- given a distance (or dissimilarity) matrix
-- find a set of coordinates for the points that approximates those distances as well as possible.
+given a distance (or dissimilarity) matrix, find a set of coordinates for the points that approximates those distances as well as possible.
 :::
 
 :::{.fragment}
@@ -537,9 +531,7 @@ Although the data lives in 30 dimensions, we can get a sense of how the points a
 ## K-Means Clustering
 
 ::::{style="font-size: .8em"}
-The Python package `scikit-learn` has a huge set of tools for unsupervised learning generally, and clustering specifically.  
-
-These are in __`sklearn.cluster`__.
+The `scikit-learn` module `sklearn.cluster` has a large set of tools for clustering.  
 
 :::{.fragment}
 There are 3 functions in all the clustering classes, 
@@ -619,16 +611,14 @@ rX = X[idx, :]
 sns.heatmap(rX, xticklabels = False, yticklabels = False, linewidths = 0)
 ```
 :::
-
-:::{.fragment}
-Next, let's look again at the matrix of pairwise distances between points, after sorting them by cluster.
-:::
 ::::
 
 
 ## K-Means Clustering
 
 :::{style="font-size: .75em"}
+
+Let's look at the matrix of pairwise distances between points, after sorting them by cluster.
 Dark squares indicate that the pair of points are _close_ to each other, whereas light colors indicate that they are _far apart_.
 
 :::
