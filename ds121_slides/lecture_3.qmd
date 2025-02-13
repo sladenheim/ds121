@@ -1,6 +1,6 @@
 ---
 title: "Lengths and Inner Products"
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         math: true
@@ -15,16 +15,16 @@ Today we will continue talking about vectors. We will start by re-introducing th
 
 :::{.incremental}
 
-- vector <span style="background-color: #ffa500; color:#000">length</span>
-- the <span style="background-color: #ffa500; color:#000">distance</span> between two vectors
-- the cosine of the <span style="background-color: #ffa500; color:#000">angle</span> between two vectors
-- vector <span style="background-color: #ffa500; color:#000">orthogonality.</span>
+- vector _length_
+- the _distance_ between two vectors
+- the cosine of the _angle_ between two vectors
+- vector _orthogonality_
 :::
 ::::
 
 ## Inner Product
 
-::::{style="font-size: .6em"}
+::::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -32,22 +32,22 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        Let \(\mathbf{\bar{u}}, \mathbf{\bar{v}} \in \mathbb{R}^n\) be n-dimensional column vectors. 
-        The inner product (or dot product) of \(\mathbf{\bar{u}}\) and \(\mathbf{\bar{v}}\) 
-        is the number \(\mathbf{\bar{u}}^T \mathbf{\bar{v}}\) such that:
+        Let \(\mathbf{u}, \mathbf{v} \in \mathbb{R}^n\) be \(n\)-dimensional column vectors. 
+        The <b>inner product</b> (or <b>dot product</b>) of \(\mathbf{u}\) and \(\mathbf{v}\) 
+        is the number \(\mathbf{u}^{\top} \mathbf{v}\) such that:
         </p>
         <p>
         \[
-          \mathbf{\bar{u}}^T \mathbf{\bar{v}} = 
-          [u_1, \, u_2, \, \ldots, \, u_n]
+          \mathbf{u}^{\top} \mathbf{v} = 
+          [u_1 \, u_2 \, \ldots \, u_n]
           \begin{bmatrix}
             v_1 \\
             v_2 \\
             \vdots \\
             v_n
           \end{bmatrix}
-          = u_1 v_1 + u_2 v_2 + \cdots + u_n v_n
-          = \sum_{i=1}^{n} u_i v_i
+          = u_1 v_1  + \cdots + u_n v_n
+          = \sum_{i=1}^{n} u_i v_i.
         \]
         </p>
     </div>
@@ -58,33 +58,37 @@ display(HTML(html_content))
 
 ```
 
-The inner product is also denoted by $\mathbf{\bar{u}} \cdot \mathbf{\bar{v}}$.
+The inner product is also denoted by $\mathbf{u} \cdot \mathbf{v}$.
 
-:::{.fragment}
-Let us look at some examples. The vectors 
-$\mathbf{\bar{u}} = \begin{bmatrix}4 \\ 2\end{bmatrix}$ 
+::::
+
+## Inner Product
+
+::::{style="font-size: .8em"}
+Let us look at some examples.
+
+ The vectors 
+$\mathbf{u} = \begin{bmatrix}4 \\ 2\end{bmatrix}$ 
 and 
-$\mathbf{\bar{v}} = \begin{bmatrix}-1 \\ 2\end{bmatrix}$ 
+$\mathbf{v} = \begin{bmatrix}-1 \\ 2\end{bmatrix}$ 
 have a zero dot product:
-:::
-:::{.fragment}
-$$\mathbf{\bar{u}} \cdot \mathbf{\bar{v}} 
+$$\mathbf{u} \cdot \mathbf{v} 
 = \begin{bmatrix}4 \\ 2\end{bmatrix}
 \cdot
 \begin{bmatrix}-1 \\ 2\end{bmatrix}
 = -4 + 4 = 0.
 $$
-:::
+
 ::::
 
 ## Inner Product
 
-::::{style="font-size: .6em"}
+::::{style="font-size: .8em"}
 
 Dot products enter in economics and data science. Assume that we have three goods to buy and sell. Their prices are 
-$\tiny \mathbf{\begin{bmatrix} p_1 \\ p_2 \\ p_3 \end{bmatrix}}$ 
-for each unit — this is the price vector $\mathbf{\bar{p}}$. The quantities we buy or sell are 
-$\tiny \mathbf{\begin{bmatrix} q_1 \\ q_2 \\ q_3 \end{bmatrix}}$. 
+$\mathbf{\begin{bmatrix} p_1 \\ p_2 \\ p_3 \end{bmatrix}}$ 
+for each unit — this is the price vector $\mathbf{p}$. The quantities we buy or sell are 
+$\mathbf{q} = \mathbf{\begin{bmatrix} q_1 \\ q_2 \\ q_3 \end{bmatrix}}$. 
 They are positive when we sell, negative when we buy. Selling $q_1$ units at the price $p_1$ brings $q_1 p_1$.
 
 The total income is the inner product of $\mathbf{q}$ and $\mathbf{p}$:
@@ -102,7 +106,7 @@ $$
 
 ::::
 
-::::{.fragment .center-text style="font-size: .75em"}
+<!-- ::::{.fragment .center-text style="font-size: .75em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -120,7 +124,7 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
-::::
+:::: -->
 
 ## Properties
 
@@ -131,21 +135,21 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>Let \(\bar{u}\), \(\bar{v}\), and \(\bar{w}\) be vectors in \( \mathbb{R}^n \), and let \( c \) be a scalar. Then:</p>
+        <p>Let \(\mathbf{u}\), \(\mathbf{v}\), and \(\mathbf{w}\) be vectors in \( \mathbb{R}^n \), and let \( c \) be a scalar. Then:</p>
         <ul>
-            <li><b>\( \bar{u}^T \bar{v} = \bar{v}^T \bar{u} \)</b> <em>(symmetry)</em></li>
-            <li><b>\( (\bar{u} + \bar{v})^T \bar{w} = \bar{u}^T \bar{w} + \bar{v}^T \bar{w} \)</b> <em>(linearity)</em></li>
-            <li><b>\( (c \bar{u})^T \bar{v} = c (\bar{u}^T \bar{v}) = \bar{u}^T (c \bar{v}) \) </b><em>(linearity)</em></li>
-            <li><b>\( \bar{u}^T \bar{u} \geq 0 \)</b><em> (non-negativity)</em></li>
+            <li><b>\( \mathbf{u}^{\top} \mathbf{v} = \mathbf{v}^{\top} \mathbf{u} \)</b> <em>(symmetry)</em></li>
+            <li><b>\( (\mathbf{u} + \mathbf{v})^{\top} \mathbf{w} = \mathbf{u}^{\top} \mathbf{w} + \mathbf{v}^{\top} \mathbf{w} \)</b> <em>(linearity)</em></li>
+            <li><b>\( (c \mathbf{u})^{\top} \mathbf{v} = c (\mathbf{u}^{\top} \mathbf{v}) = \mathbf{u}^{\top} (c \mathbf{v}) \) </b><em>(linearity)</em></li>
+            <li><b>\(\mathbf{u}^{\top} \mathbf{u} \geq 0 \)</b><em> (non-negativity)</em></li>
         </ul>
-        <p><b>Note:</b> \( u^T u = 0 \) <b>if and only if</b> \( u = 0 \).</p>
+        <p>Note: \( \mathbf{u}^{\top} \mathbf{u} = 0 \) if and only if \( \mathbf{u} = 0 \).</p>
     </div>
     """
 
 html_content = generate_html()
 display(HTML(html_content))
 ```
-Armed with the inner product, let's start talking about vector geometry.
+With the inner product at our disposal, let's start talking about vector geometry.
 ::::
 
 ## Vector Lengths
@@ -222,7 +226,9 @@ ax.grid(False)
 plt.show()
 ```
 
-In two dimensions the length is $\sqrt{v_1^2 + v_2^2}$.
+:::
+:::{.fragment}
+In two dimensions, the length is $\sqrt{v_1^2 + v_2^2}$.
 :::
 ::::
 
@@ -230,7 +236,7 @@ In two dimensions the length is $\sqrt{v_1^2 + v_2^2}$.
 
 :::{style="font-size: .8em"}
 
-What happens in $\mathbb{R^3}$?
+What happens in $\mathbb{R}^3$?
 
 :::{.center-text .fragment}
 ```{python}
@@ -339,9 +345,10 @@ plt.tight_layout()
 plt.show()
 
 ```
+:::
 
-
-In $\mathbb{R}^3$ the length is $\sqrt{v_1^2 + v_2^2 + v_3^2}$.
+:::{.fragment style="font-size: .8em"}
+In $\mathbb{R}^3$, the length is $\sqrt{v_1^2 + v_2^2 + v_3^2}$.
 :::
 :::
 
@@ -355,8 +362,8 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        The length (or norm) of a vector \(\mathbf{v} = {\tiny \begin{bmatrix}v_1 \\v_2 \\\vdots \\v_n\end{bmatrix}} \in \mathbb{R}^n\) is the non-negative scalar \(\|\mathbf{\bar{v}}\|\), defined by: <br> 
-        \(\|\mathbf{\bar{v}}\| = \sqrt{\mathbf{\bar{v}} \cdot \mathbf{\bar{v}}} = \sqrt{\sum_{i=1}^{n} v_i^2} = \sqrt{v_1^2 + v_2^2 + \cdots + v_n^2}\).
+        The <b>length</b> (or <b>norm</b>) of a vector \(\mathbf{v} = {\tiny \begin{bmatrix}v_1 \\v_2 \\\vdots \\v_n\end{bmatrix}} \in \mathbb{R}^n\) is the non-negative scalar \(\|\mathbf{v}\|\), defined by: 
+        \(\|\mathbf{v}\| = \sqrt{\mathbf{v} ^{\top} \mathbf{v}} = \sqrt{\sum_{i=1}^{n} v_i^2} = \sqrt{v_1^2 + v_2^2 + \cdots + v_n^2}\).
         </p>
     </div>
     """
@@ -367,12 +374,12 @@ display(HTML(html_content))
 ```
 :::
 
-:::{.fragment style="font-size: .8em" .center-text}
-We also refer to $\|\bar{v}\|$ as the magnitude of $\bar{v}$ 
+:::{.fragment style="font-size: .8em"}
+We also refer to $\|\mathbf{v}\|$ as the magnitude of $\mathbf{v}$. 
 :::
 
-:::{.fragment style="font-size: .65em"}
-The length of a four-dimensional vector would be $\sqrt{v_1^2 + v_2^2 + v_3^2 + v_4^2}$. Thus, $\tiny\begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}$ has a length of $\sqrt{1^2 + 1^2 +1^2 +1^2}= 2$. This is the diagonal through a unit cube in four-dimensional space.
+:::{.fragment style="font-size: .8em"}
+The length of a four-dimensional vector would be $\sqrt{v_1^2 + v_2^2 + v_3^2 + v_4^2}$. That is, $\begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}$ has a length of $\sqrt{1^2 + 1^2 +1^2 +1^2}= 2$.
 :::
 
 ## Normalization to Unit Length
@@ -388,7 +395,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        A unit vector \(\bar{u}\) is a vector whose length equals one. That is, \(\|u\| = 1\)
+        A <b>unit vector</b> \(\mathbf{u}\) is a vector whose length equals one. That is, \(\|\mathbf{u}\| = 1.\)
         </p>
     </div>
     """
@@ -400,17 +407,17 @@ display(HTML(html_content))
 :::
 
 :::{.fragment}
-For any scalar $c$, the length of $c\bar{v}$ is $|c|$ times the length of $\bar{v}$:  
+For any scalar $c$, the length of $c\mathbf{v}$ is $|c|$ times the length of $\mathbf{v}$:  
 $$
-c\bar{v} = |c|\|\bar{v}\|
+c\mathbf{v} = |c|\|\mathbf{v}\|.
 $$
 :::
 <br>
 
 :::{.fragment}
-If we divide a non-zero vector $\bar{v}$ by its length, we obtain a unit vector:
+If we divide a non-zero vector $\mathbf{v}$ by its length, we obtain a unit vector:
 $$
-\bar{u} = \frac{1}{\|\bar{v}\|}\bar{v}.
+\mathbf{u} = \frac{1}{\|\mathbf{v}\|}\mathbf{v}.
 $$
 :::
 :::
@@ -418,30 +425,30 @@ $$
 ## Normalization to Unit Length
 
 ::::{style="font-size: .8em"}
-**Example.** Let $\mathbf{v}= {\tiny\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}}$. Find the unit vector $\mathbf{u} \in \mathbb{R^3}$ in the **same direction** as $\mathbf{v}$
+**Example.** Let $\mathbf{v}= {\tiny\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}}$. Find the unit vector $\mathbf{u} \in \mathbb{R}^3$ in the _same direction_ as $\mathbf{v}$.
 
 :::{.fragment}
 **Solution.** _First,_ compute the length of $\mathbf{v}$:
 
 :::{.center-text}
-$\|\mathbf{v}\|^2 = \mathbf{v}^\top \mathbf{v} = (4)^2 + (-2)^2 + (2)^2 + (1)^2 = 25$
+$\|\mathbf{v}\|^2 = \mathbf{v}^\top \mathbf{v} = (4)^2 + (-2)^2 + (2)^2 + (1)^2 = 25.$
 
-$\|v\|^2 = \sqrt{25} = 5$
+$\|\mathbf{v}\| = \sqrt{25} = 5.$
 :::
 :::
 
 :::{.fragment}
-_Then,_ multiply $\mathbf{v}$ by $1/\|v\|$ to obtain:
+_Then,_ multiply $\mathbf{v}$ by $1/\|\mathbf{v}\|$ to obtain:
 
 :::{.center-text}
-$\mathbf{u} = \frac{1}{\|\mathbf{v}\|} \mathbf{v} = \frac{1}{5} \mathbf{v} = \frac{1}{5} \begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix} = \begin{bmatrix} \frac{4}{5} \\ \frac{-2}{5} \\ \frac{2}{5} \\ \frac{1}{5} \end{bmatrix}$
+$\mathbf{u} = \frac{1}{\|\mathbf{v}\|} \mathbf{v} = \frac{1}{5} \mathbf{v} = \frac{1}{5} \begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix} = \begin{bmatrix} \frac{4}{5} \\ \frac{-2}{5} \\ \frac{2}{5} \\ \frac{1}{5} \end{bmatrix}.$
 :::
 :::
 ::::
 
 ## Distance
 ::::{style="font-size: .8em"}
-In $\mathbb{R^\prime}$ the distance between two points a and b is equal to $|a - b|$
+In $\mathbb{R}^1$, the distance between two points a and b is equal to $|a - b|$.
 <br>
 
 :::{.center-text}
@@ -476,7 +483,7 @@ plt.show()
 ```
 :::
 
-The same is true in $\mathbb{R^n}$.
+The same is true in $\mathbb{R}^n$.
 
 ```{python}
 from IPython.core.display import HTML
@@ -485,9 +492,10 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        For <em>\(u\)</em> and <em>\(v\)</em> in \(\mathbb{R^n}\), the <b> distance between \(u\) and \(v\),</b> written as \(\text{dist(u,v)}\) is the length of the vector \(u-v\). That is,
-        <br><br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(\text{dist(u,v)} = \|u-v\|\)
+        For <em>\(\mathbf{u}\)</em> and <em>\(\mathbf{v}\)</em> in \(\mathbb{R}^n\), the distance between \(\mathbf{u}\) and \(\mathbf{v}\), written as \(\text{dist}(\mathbf{u},\mathbf{v})\) is the length of the vector \(\mathbf{u}-\mathbf{v}\). That is,
+        \[
+        \text{dist}(\mathbf{u},\mathbf{v}) = \|\mathbf{u}-\mathbf{v}\|.
+        \]
         </p>
     </div>
     """
@@ -501,9 +509,9 @@ display(HTML(html_content))
 
 ## Distance 
 
-::::{style="font-size: .6em"}
+::::{style="font-size: .8em"}
 
-Consider $\bar{u} = \begin{bmatrix} 7 \\ 1 \end{bmatrix}$ and $\bar{v} = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$. The distance from $\bar{u}$ to $\bar{v}$ is the same as the length of $\bar{u} - \bar{v}$, $\begin{bmatrix} 4 \\ -1 \end{bmatrix}$.
+Consider $\mathbf{u} = \begin{bmatrix} 7 \\ 1 \end{bmatrix}$ and $\mathbf{v} = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$. The distance from $\mathbf{u}$ to $\mathbf{v}$ is the same as the length of $\mathbf{u} - \mathbf{v}$.
 
 :::{.center-text}
 ```{python}
@@ -523,7 +531,7 @@ u_minus_v = u - v
 # Add an additional label for ||u-v|| on the bottom line
 
 # Create figure and axis
-fig, ax = plt.subplots(figsize=(8, 8))
+fig, ax = plt.subplots(figsize=(6, 6))
 
 # Plot the red lines (u and v)
 ax.plot([origin[0], v[0]], [origin[1], v[1]], color='red')  # From origin to v
@@ -576,22 +584,20 @@ plt.show()
 ```
 :::
 
-_Geometrically,_ the distance between two vectors is the length of their difference.
+Geometrically, the distance between two vectors is the length of their difference.
 ::::
 
 ## Distance
 
 :::{style="font-size: .8em"}
-Algebraically, the distance between $\bar{u}$ and $\bar{v}$ in $\mathbb{r^n}$ follows the formula for Euclidian distance between two points.
-
+Algebraically, the distance between $\mathbf{u}$ and $\mathbf{v}$ in $\mathbb{R}^n$ follows the formula for Euclidian distance between two points.
 $$
-\text{dist(u,v)} = \sqrt{(v_1 - u_1)^2 + (v_2 - u_2)^2 + \dots + (v_n - u_n)^2}
+\text{dist}(\mathbf{u},\mathbf{v}) = \sqrt{(v_1 - u_1)^2 + (v_2 - u_2)^2 + \dots + (v_n - u_n)^2}.
 $$
-
 Which you can see is equal to:
 
 $$
-\|u - v\| = \sqrt{(u - v)^\top (u - v)} = \sqrt{\begin{bmatrix} u_1 - v_1 & u_2 - v_2 & \dots & u_n - v_n \end{bmatrix} \begin{bmatrix} u_1 - v_1 \\ u_2 - v_2 \\ \vdots \\ u_n - v_n \end{bmatrix}}
+\|\mathbf{u} - \mathbf{v}\| = \sqrt{(\mathbf{u} - \mathbf{v})^\top (\mathbf{u} - \mathbf{v})} = \sqrt{\begin{bmatrix} u_1 - v_1 & \dots & u_n - v_n \end{bmatrix} \begin{bmatrix} u_1 - v_1 \\ \vdots \\ u_n - v_n \end{bmatrix}}.
 $$
 
 :::
@@ -599,7 +605,7 @@ $$
 ## Orthogonality
 
 ::::{style="font-size: .8em"}
-We say that two vectors $u$ and $v$ are perpendicular if and only if they form a right angle at the origin.
+We say that two vectors $\mathbf{u}$ and $\mathbf{v}$ are perpendicular if and only if they form a right angle at the origin.
 
 :::{.center-text}
 
@@ -661,7 +667,7 @@ plt.show()
 ```
 :::
 
-Draw the line conneting $u$ and $v$. Then $u$ and $v$ are perpendicular **if and only if** this is a right triangle, meaning that the Pythagorean Theorum is satisfied.
+Draw the line conneting $\mathbf{u}$ and $\mathbf{v}$. Then $\mathbf{u}$ and $\mathbf{v}$ are perpendicular if and only if this is a right triangle, meaning that the Pythagorean theorem is satisfied.
 ::::
 ## Orthogonality
 
@@ -725,7 +731,7 @@ What is the length of the red side of the triangle?
 ## Orthogonality
 :::{style="font-size: .8em"}
 
-According to the definitions we've developed today, it is $\|u - v\|$.
+According to the definitions, we have developed today, it is $\|\mathbf{u} - \mathbf{v}\|$.
 
 :::{.center-text}
 ```{python}
@@ -785,7 +791,7 @@ plt.show()
 So the blue and green lines are perpendicular if and only if:
 
 $$
-\|u-v\|^2 = \|u\|^2 + \|v\|^2
+\|\mathbf{u}-\mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{u}\|^2.
 $$
 :::
 
@@ -793,13 +799,10 @@ $$
 
 :::{style="font-size: .8em"}
 
-We can also calculate the squared distance from $\bar{u}$ to $\bar{v}$ using the properties of the inner product.
-
-:::
-
+We can also calculate the squared distance from $\mathbf{u}$ to $\mathbf{v}$ using the properties of the inner product.
 $$
 \begin{aligned}
-\text{dist(u, v)}^2 &= \|\mathbf{u} - \mathbf{v}\|^2 \\
+\text{dist}(\mathbf{u},\mathbf{v})^2 &= \|\mathbf{u} - \mathbf{v}\|^2 \\
 &= (\mathbf{u} - \mathbf{v})^\top (\mathbf{u} - \mathbf{v}) \\
 &= (\mathbf{u}^\top - \mathbf{v}^\top)(\mathbf{u} - \mathbf{v}) \\
 &= \mathbf{u}^\top (\mathbf{u} - \mathbf{v}) - \mathbf{v}^\top (\mathbf{u} - \mathbf{v}) \\
@@ -807,29 +810,30 @@ $$
 &= \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2 - 2 \mathbf{u}^\top \mathbf{v}.
 \end{aligned}
 $$
+:::
 
 ## Orthogonality
 <!-- Unable to get red color for latex expression -->
 :::{style="font-size: .8em"}
 
-We now have two equations for the square distance between $\bar{u}$ and $\bar{v}$.
+We now have two equations for the square distance between $\mathbf{u}$ and $\mathbf{v}$.
 
 :::{.fragment}
 In general,
 
 $$
-\|\bar{u} - \bar{v} \|^2 = \|\bar{u}\|^2 + \|\bar{v}\|^2 - \mathbf{2 \bar{u}^\top \bar{v}}
+\|\mathbf{u} - \mathbf{v} \|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2 - \mathbf{2 u^\top v}.
 $$
 :::
 :::{.fragment}
-Assuming that $\bar{u}$ and $\bar{v}$ are orthogonal,
+Assuming that $\mathbf{u}$ and $\mathbf{v}$ are orthogonal,
 
 $$
-\|\bar{u} - \bar{v}\|^2 = \|\bar{u}\|^2 + \|\bar{v}\|^2
+\|\mathbf{u} - \mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2.
 $$
 :::
 :::{.fragment}
-Thus, if $\bar{u}$ is orthogonal to $\bar{v}$, then $\bar{u}^\top \bar{v}$
+Thus, if $\mathbf{u}$ is orthogonal to $\mathbf{v}$, then $\mathbf{u}^\top \mathbf{v}$.
 :::
 :::
 
@@ -843,7 +847,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        Two vectors \(\bar{u}\) and \(\bar{v}\) in \(\mathbb{R^n}\) are orthogonal, if \(\bar{u}^\top \bar{v} = 0\).
+        Two vectors \(\mathbf{u}\) and \(\mathbf{v}\) in \(\mathbb{R}^n\) are <b>orthogonal</b>, if \(\mathbf{u}^\top \mathbf{v} = 0\).
         </p>
     </div>
     """
@@ -853,15 +857,15 @@ display(HTML(html_content))
 
 ```
 :::{.fragment}
-The inner product of $\bar{u}$ and $\bar{v}$ is zero when the angle $\theta$ between them is $90^\circ$. Then $\cos\theta = 0$.
+The inner product of $\mathbf{u}$ and $\mathbf{v}$ is zero when the angle $\theta$ between them is $90^\circ$. Then $\cos\theta = 0$.
 :::
 
 :::{.fragment}
-The zero vector $\bar{0}$ is perpendicular to every vector $\bar{v}$ because **$\bar{0}^\top\bar{v}=0$ is always zero**.
+The zero vector $\mathbf{0}$ is perpendicular to every vector $\mathbf{v}$ because $\mathbf{0}^\top\mathbf{v}$ is always zero.
 :::
 
 :::{.fragment}
-Now suppose $\bar{u}^\top\bar{v}$ is **not zero**. If $\bar{u}^\top\bar{v}$ is _positive_, the angle is less than $90^\circ$. If $\bar{u}^\top\bar{v}$ is _negative_, the angle is above $90^\circ$.
+Now suppose $\mathbf{u}^\top\mathbf{v}$ is not zero. If $\mathbf{u}^\top\mathbf{v}$ is _positive_, the angle is less than $90^\circ$. If $\mathbf{u}^\top\mathbf{v}$ is _negative_, the angle is above $90^\circ$.
 :::
 ::::
 
@@ -949,8 +953,7 @@ origin = np.array([0, 0])  # Origin point
 # Calculate u-v
 
 # Create figure and axis
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(8, 6))
+fig, ax = plt.subplots(figsize=(6, 4))
 
 # Plot the lines
 ax.plot([origin[0], u[0]], [origin[1], u[1]], color='blue', label='$\|u\|$')  # Line for u
@@ -1005,12 +1008,12 @@ ax.set_aspect('equal', adjustable='box')
 plt.show()
 ```
 :::
-::::{style="font-size: .7em"}
+::::{style="font-size: .8em"}
 
 :::{.fragment}
 Applying the law of cosines we get:
 $$
-\|\mathbf{u} - \mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2 - 2\|\mathbf{u}\|\|\mathbf{v}\|\cos\theta
+\|\mathbf{u} - \mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2 - 2\|\mathbf{u}\|\|\mathbf{v}\|\cos\theta.
 $$
 :::
 
@@ -1028,47 +1031,48 @@ $$
 
 :::{style="font-size: .8em"}
 
-Hence, $\bar{u}^\top\bar{v}=\|\bar{u}\|\|\bar{v}\|\cos\theta$.
+Hence, $\mathbf{u}^\top\mathbf{v}=\|\mathbf{u}\|\|\mathbf{v}\|\cos\theta$.
 
 :::{.fragment}
 From here it follows that
 $$
-\cos\theta=\frac{\bar{u}^\top\bar{v}}{\|\bar{u}\|\|\bar{v}\|}.
+\cos\theta=\frac{\mathbf{u}^\top\mathbf{v}}{\|\mathbf{u}\|\|\mathbf{v}\|}.
 $$
 :::
 
 :::{.fragment}
 Equivalently, 
 $$
-\cos\theta=\frac{\bar{u}^\top}{\|\bar{u}\|}\frac{\bar{v}}{\|\bar{v\|}}.
+\cos\theta=\frac{\mathbf{u}^\top}{\|\mathbf{u}\|}\frac{\mathbf{v}}{\|\mathbf{v\|}}.
 $$
 
 
-**Note** that $\frac{\bar{u}^\top}{\|\bar{u}\|}$ and $\frac{\bar{v}}{\|\bar{v\|}}$ are unit vectors.
+Note that $\frac{\mathbf{u}^\top}{\|\mathbf{u}\|}$ and $\frac{\mathbf{v}}{\|\mathbf{v\|}}$ are unit vectors.
 :::
 :::
 
 ## Angle Between Two Vectors
 
-::::{style="font-size: .7em"}
-**Example.** Consider $\mathbf{u}=\begin{bmatrix} .8 \\ .6 \end{bmatrix}$, and $\mathbf{v}=\begin{bmatrix} .28 \\ .96 \end{bmatrix}$
+::::{style="font-size: .8em"}
+**Example.** Consider $\mathbf{u}=\begin{bmatrix} .8 \\ .6 \end{bmatrix}$, and $\mathbf{v}=\begin{bmatrix} .28 \\ .96 \end{bmatrix}.$
 
 :::{.fragment}
 They are both unit vectors: $0.8^2 + 0.6^2 = 1$ and $0.28^2 + 0.96^2 = 1.$
 :::
 
 :::{.fragment}
-So $\mathbf{u}^\top\mathbf{v} = (0.8\cdot.28) + (0.6\cdot.96)=0.8$
+So $\mathbf{u}^\top\mathbf{v} = (0.8\cdot 0.28) + (0.6\cdot 0.96)=0.8$.
 :::
 
 :::{.fragment}
-So $\cos\theta = 0.8$, which we can use to find the angle $\theta$
+So $\cos\theta = 0.8$, which we can use to find the angle $\theta$.
 
 :::{.center-text}
 ```{python}
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc
+
 
 # Points on the unit circle
 point1 = (0.28, 0.96)
@@ -1178,9 +1182,9 @@ print("Angle theta =", theta_degrees)
 ## Key Ideas
 
 :::{.incremental style="font-size: .8em"}
-- The _inner product_ $\bar{u}^\top \bar{v}$ _multiplies_ each component $u_i$ by $v_i$ and _sums_ all $u_i v_i$.
-- The _length_ $\mathbf{\|\bar{v}\|}$ is the _square root_ of $\bar{v}^\top \bar{v}$.
-- The vector $\mathbf{\frac{\bar{v}}{\|\bar{v}\|}}$ is a unit vector; its length is 1.
-- The inner product $\mathbf{\bar{u}^\top \bar{v}}$ is _zero_ when $\bar{u}$ and $\bar{v}$ are **_orthogonal_**.
-- The cosine of $\theta$, the angle between $\bar{u}$ and $\bar{v}$, is given by $\cos\theta = \mathbf{\frac{\bar{u}^\top \bar{v}}{\|\bar{u}\|\|\bar{v}\|}}$.
+- The inner product $\mathbf{u}^\top \mathbf{v}$ multiplies each component $u_i$ by $v_i$ and sums all $u_i v_i$.
+- The length $\mathbf{\|\mathbf{v}\|}$ is the square root of $\mathbf{v}^\top \mathbf{v}$.
+- The vector $\frac{\mathbf{v}}{\|\mathbf{v}\|}$ is a unit vector. Its length is 1.
+- The inner product $\mathbf{u}^\top \mathbf{v}$ is zero when $\mathbf{u}$ and $\mathbf{v}$ are orthogonal.
+- The cosine of $\theta$, the angle between $\mathbf{u}$ and $\mathbf{v}$, is given by $\cos\theta = \mathbf{\frac{\mathbf{u}^\top \mathbf{v}}{\|\mathbf{u}\|\|\mathbf{v}\|}}$.
 :::

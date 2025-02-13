@@ -1,0 +1,645 @@
+---
+title: "Clustering with K-Means"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+## Learning Objectives
+
+::::{style="font-size: .8em;"}
+
+The main goal of today's lecture is to introduce the k-means algorithm for clustering problems.
+<br>
+
+:::{.fragment}
+We will describe the intuition behind this algorithm and its main types. We will provide examples of its application with and without Python.
+:::
+
+:::{.fragment}
+In this lecture we will also touch upon the concepts of similarity and dissimiliarity mesuares, synthetic data, and multidimensional scaling.
+:::
+::::
+
+## Similarity and Dissimilarity
+
+::::{style="font-size: .8em;"}
+Working with data, we can encounter a wide variety of data objects:
+
+::::{.columns .fragment}
+
+:::{.column width="60%"}
+<img src="/images/vectors_ds/data-objects.png" style="width:576px; height:372.6px;"/>
+
+:::
+
+:::{.column width="40%"}
+
+:::{style="font-size: .9em"}
+* Records of users
+* Graphs
+* Images
+* Videos
+* Text (webpages, books)
+* Strings (DNA sequences)
+* Timeseries
+* ...
+:::
+:::
+
+::::
+
+:::{.fragment}
+We are naturally interested in how _similar_ or _dissimilar_ two objects are.
+:::
+::::
+
+## Similarity and Dissimilarity
+
+::::{style="font-size: .8em;" .center-y}
+A dissimilarity function takes two objects as input, and returns a large value when the two objects are not very similar.
+
+Often we put restrictions on the dissimilarity function.
+One of the most common is that it be a _metric_.
+
+A metric is commonly called a _distance_. We will mainly work with Euclidian distance.
+::::
+
+## Similarity and Dissimilarity
+
+::::{style="font-size: .8em;" }
+::::{.columns}
+
+:::{.column width="65%"}
+The dissimilarity $d(x, y)$ between two objects $x$ and $y$ is a
+__metric__ if <br>
+
+* $d(x, y) = 0 \leftrightarrow x == y\;\;\;\;\;\;\;\;$ 
+* $d(x, y) > 0 \leftrightarrow x \neq y\;\;\;\;\;\;\;\;\;\;$
+* $d(x, y) = d(y, x)\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;$ 
+* $d(x, y) \leq d(x, z) + d(z, y)\;\;$ 
+:::
+
+:::{.column width="35%"}
+<img src="/images/vectors_ds/triangle-inequality.png"/>
+:::
+::::
+::::
+
+
+## Cosine Similarity
+
+::::{style="font-size: .8em"}
+
+Suppose we are given two documents $d_1$ and $d_2.$ How can we find out if they are similar?
+
+:::{.fragment}
+Consider both $d_1$ and $d_2$ as a "bag of words."
+:::
+
+:::{.fragment}
+To describe $d_1$, we construct a vector $\mathbf{x}\in\mathbb{R^n}$ that counts the frequency of occurrence of certain words in $d_1.$
+
+$$
+\mathbf{x}=\begin{bmatrix}3\\7\\4\\ \vdots \\ 20 \end{bmatrix} \leftarrow \begin{bmatrix} \text{dog} \\ \text{cat} \\ \text{house} \\ \vdots \\ \text{door} \end{bmatrix}
+$$
+:::
+:::{.fragment}
+We do the same for $d_2$ to obtain $\mathbf{y} \in \mathbb{R^n}$.
+:::
+::::
+
+## Cosine Similarity
+
+::::{style="font-size: .8em"}
+To decide whether the documents are similar, we simply ask if $\mathbf{x}$ and $\mathbf{y}$ point in the same direction.
+
+:::{.fragment}
+The cosine of the angle between the two document-vectors is simply:
+
+$$
+\cos(\theta_{\mathbf{x}, \mathbf{y}}) = \frac{\mathbf{x}^{\top} \mathbf{y}}{\Vert\mathbf{x}\Vert \Vert\mathbf{y}\Vert}
+$$
+
+This value is _large_ when $\mathbf{x} \approx \mathbf{y}.$  So it is a _similarity_ function.
+:::
+<br>
+
+:::{.fragment}
+Note: We often use $1-\cos(\theta_{x,y})$ to convert this _similarity_ function, to a _dissimilarity_ function.
+:::
+::::
+
+## Clustering
+
+::::{style="font-size: .8em"}
+What if rather than having 2 documents, we have a million documents?
+
+:::{.fragment}
+Clustering is an unsupervised learning technique that offers a more systematic approach to find similar documents.
+:::
+
+::::{.columns .fragment}
+
+:::{.column width="65%"}
+Informally, a **clustering** is:
+
+:::{style="font-size: .9em"}
+> a grouping of data objects, such that the objects within a group are similar (or near) to one another and dissimilar (or far) from the objects in other groups.
+:::
+:::
+
+:::{.column width="35%"}
+<img src="/images/vectors_ds/clusters.png"/>
+
+:::
+::::
+
+A clustering algorithm _minimizes_ intra-cluster distances and _maximizes_ inter-cluster distances.
+
+
+::::
+
+## Clustering
+
+::::{style="font-size: .8em"}
+In this course, we will focus on _partitional clustering_.
+
+:::{.fragment}
+In a **partitional clustering**, the points are divided into a set of _non-overlapping_ groups. That is, each point belongs only to one cluster, and the set of clusters covers all points.
+
+
+:::{.center-text}
+<img src="/images/vectors_ds/partitional-clustering.png" width = 600/>
+
+:::
+:::
+::::
+
+## K-Means Clustering
+
+::::{style="font-size: .8em"}
+Consider the following image. Each color in the image is represented by an integer. Typically we might use 24 bits for each integer (8 bits for R, G, and B).
+
+Now _cluster_ the pixels by their color value, and replace each pixel by its _cluster center_. Because there are a smaller number of colors used, we can use fewer bits for each pixel.
+
+::::{.fragment style="font-size: .8em"}
+
+
+:::{.center-text}
+<img src="/images/vectors_ds/girl.jpeg" width = 350/>
+
+:::
+::::
+::::
+
+## K-Means Clustering
+
+:::{style="font-size: .8em"}
+
+Here, we use 4 bits (16 colors) for a compression ratio around 6$\times$.
+:::
+
+:::{.center-text}
+<img src="/images/vectors_ds/4bit-compressed-girl.png" width = 650/>
+
+:::
+
+## K-Means Clustering
+
+:::{style="font-size: .8em"}
+
+Here, we use 3 bits (8 colors) for a compression ratio around 8$\times$.
+:::
+
+:::{.center-text}
+<img src="/images/vectors_ds/3bit-compressed-girl.png" width = 650/>
+
+:::
+
+## K-Means Clustering
+
+:::{style="font-size: .8em"}
+Here, we use 2 bits (4 colors) for a compression ratio around 12$\times$.
+:::
+
+:::{.center-text}
+<img src="/images/vectors_ds/2bit-compressed-girl.png" width = 650/>
+
+:::
+
+## K-Means Clustering
+
+:::{style="font-size: .8em"}
+Finally, we use 1 bit (2 colors) for a compression ratio around 24$\times$.
+:::
+
+:::{.center-text}
+<img src="/images/vectors_ds/1bit-compressed-girl.png" width = 650/>
+
+:::
+
+## K-Means Clustering
+
+::::{style="font-size: .8em"}
+Here is a clustering of the colors within this image of a yellow flower, based on the red-ness and green-ness of each pixel in the image.
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+<img src="/images/vectors_ds/yellow-flower.png" width = 420/>
+
+:::
+
+:::{.column width="50%"}
+<img src="/images/vectors_ds/flower-clustering.png" width = 420/>
+
+:::
+
+::::
+
+## K-Means Clustering
+
+::::{style="font-size: .8em"}
+To properly define the k-means problem, we need to introduce the concept of the centroid and the sample variance of a dataset.
+
+:::{.fragment}
+Given $n$ different vectors ${\bf x_1},\ldots,{\bf x_n}$ each with the same dimension $d$, the **centroid** is the average of the vectors taken componentwise.
+
+$$
+\overline{\mathbf{x}} = \frac{1}{n}\sum_i {\bf x_i}.
+$$
+
+In other words: the centroid is the "center of mass" of the dataset.
+:::
+::::
+
+## K-Means Clustering
+
+::::{style="font-size: .8em" .center-y}
+
+:::{.fragment}
+We define the **sample variance** of a dataset $\{{\bf x_1},\ldots,{\bf x_n}\}$ as:
+    
+$$
+\operatorname{Var}(X) = \frac{1}{n}\sum_i\Vert \mathbf{x}_i - \overline{\mathbf{x}}\Vert^2. 
+$$
+
+In other words, the sample variance of the set of points is the average squared distance from each point to the centroid. 
+:::
+::::
+
+
+## K-Means Clustering
+
+::::{style="font-size: .8em"}
+
+We will assume that 
+
+- data items are represented by points in $\mathbb{R}^d$ (i.e., each data item has $d$ features)
+- $n$ points are given
+- the number of clusters $k$ is given
+
+**$k$-means Problem:**
+
+Find $k$ points $\mathbf{c_1}, \dots, \mathbf{c_k}$ (called _centers_, _centroids_, or _means_), so that the cost is minimized.
+
+$$
+\sum_{i=1}^n \min_j \Vert \mathbf{x_i} -\mathbf{c_j}\Vert^2
+$$
+::::
+
+
+## K-Means Clustering
+
+::::{style="font-size: .8em"}
+Equivalently, we can think in terms of the partition itself.
+
+Consider the set $X = \{{\bf x_1}, \dots, {\bf x_n}\}$ where ${\bf x_i} \in \mathbb{R}^d$. The problem here is to:
+
+1. Find $k$ points $\mathbf{c_1}, \dots, \mathbf{c_k}$, and
+
+2. Partition the set $X$ into $k$ different subsets $\{X_1, \dots, X_k\}$ by assigning each point ${\bf x_i}$ to its nearst cluster center, in such a way as to minimize the cost
+    $$ 
+    \sum_{i=1}^n \min_j \Vert \mathbf{x_i} - \mathbf{c_j} \Vert^2 = \sum_{j=1}^k \sum_{\mathbf{x} \in X_j} \Vert \mathbf{x} - \mathbf{c_j} \Vert^2.
+    $$
+::::
+
+
+
+## K-Means Clustering
+
+::::{style="font-size: .8em" .columns}
+:::{.column width="70%"}
+
+How hard is it to solve this problem?
+
+:::{.incremental}
+* $k=1$ and $k=n$ are easy special cases (why?)
+* But, this problem is __NP-hard__ if the dimension of the data is at least 2
+    * As a result, we don't expect that there is any exact, efficient algorithm in general 
+:::
+
+:::{.fragment}
+_Nonetheless,_ there is a simple algorithm that works quite well in practice!
+
+
+This algorithm was voted among the _top-10 algorithms_ in data mining!
+
+:::
+:::
+
+:::{.column width="30%" .center-text}
+<img src="/images/vectors_ds/top-algorithms-book.png" />
+:::
+::::
+
+## K-Means Clustering
+
+::::{style="font-size: .8em;"}
+Here is the $k$-means algorithm for $X = \{{\bf x_1}, \dots, {\bf x_n}\}$ where ${\bf x_i} \in \mathbb{R}^d$:
+
+:::{.incremental}
+1. Pick $k$ cluster centers $\{{\bf c_1}, \dots, {\bf c_k}\}$.  These can be chosen randomly, or by some deterministic method.
+2. For each $j$ between 1 and $k$, define the cluster $X_j$ as the set of points in $X$ that are _closest to center_ ${\bf c_j}$.
+3. For each $j$ between 1 and $k$, redefine ${\bf c_j}$ to be the _center of mass_ of cluster $X_j$.
+4. Repeat steps 2 and 3 until convergence.
+:::
+
+:::{.fragment}
+We refer to steps 2 and 3 as an iteration of the $k$-means algorithm.
+:::
+::::
+
+## K-Means Clustering
+
+:::{.center-text}
+<img src="/images/vectors_ds/cluster-plots.png" />
+
+:::
+
+## K-Means Clustering
+
+::::{style="font-size: .6em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p> Consider the following dataset: \({\small\begin{bmatrix} -2 \\ 10 \end{bmatrix}, \begin{bmatrix} 1 \\ 10 \end{bmatrix}, \begin{bmatrix} 0 \\ 10 \end{bmatrix}, \begin{bmatrix} 2 \\ 10 \end{bmatrix}, \begin{bmatrix} 4 \\ 10 \end{bmatrix}.}\) <br><br>
+        The number of clusters is equal to 2 (i.e., \(k=2\)). In the beginning of the 1st iteration, we initialize the cluster centers at \(\small\begin{bmatrix} 1 \\ 10 \end{bmatrix}\) and \(\small\begin{bmatrix} 4 \\ 10 \end{bmatrix}\).
+        <ol type="a">
+            <li>Provide the list of points in the cluster associated with the center at \(\small\begin{bmatrix}1 \\ 10 \end{bmatrix}\) in the 1st iteration.</li>
+            <li>Provide the cluster centers at the end of the 1st iteration.</li>
+            <li>Continue iterating until convergence. How many iterations were needed for the algorithm to complete?</li>
+            <li>Provide the centers of the final clusters.</li>
+            <li>Provide the lists of the final clusters.</li>
+        </ol>
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+::::
+
+## K-Means Clustering
+
+::::{style="font-size: .8em"}
+Let's do an extended example showing $k$-means clustering in practice and in the context of the python libraries __`scikit-learn`__.
+
+Our goals are to learn:
+
+:::{.incremental}
+* How clustering is used in practice
+* Tools for evaluating the quality of a clustering
+* Tools for assigning meaning or labels to a cluster
+* Important visualizations
+* A little bit about feature extraction for text
+:::
+::::
+
+## Synthetic Data {.scrollable}
+
+::::{style="font-size: .8em"}
+We are going to generate synthetic data and inspect it.
+
+
+```{python}
+#| echo: true
+import sklearn.datasets as sk_data
+X, y = sk_data.make_blobs(n_samples=100, centers=3, n_features=30,
+                          center_box=(-10.0, 10.0), random_state=0)
+print(X.shape)
+```
+
+::::
+
+## Synthetic Data {.scrollable}
+
+::::{style="font-size: .8em"}
+
+```{python}
+#| echo: true
+import seaborn as sns
+sns.heatmap(X, xticklabels = False, yticklabels = False, linewidths = 0, cbar = False)
+```
+::::
+
+## Synthetic Data
+
+:::{style="font-size: .8em"}
+
+Each row is a data item and the columns correspond to features (which are simply coordinates here).
+
+Let's compute the pairwise distances for visualization purposes.
+
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+import sklearn.metrics as metrics
+euclidean_dists = metrics.euclidean_distances(X)
+euclidean_dists
+```
+:::
+:::
+
+## Synthetic Data
+
+:::{style="font-size: .75em"}
+We can then visualize the data using a heatmap on the set of pairwise distances.
+
+:::{.center-text}
+```{python}
+#| echo: true
+sns.heatmap(euclidean_dists, xticklabels=False, yticklabels=False, linewidths=0, 
+            square=True);
+```
+:::
+:::
+
+## Multidimensional Scaling
+
+::::{style="font-size: .8em"}
+Geometrically, the dataset lives in a _30 dimensional_ space, so we cannot directly visualize it. But we can approximate it!
+
+__Multidimensional Scaling__ (MDS) is a way to visualize the relative similarity or dissimilarity between pairs of points in a dataset.
+
+:::{.fragment}
+The idea behind MDS is:
+
+given a distance (or dissimilarity) matrix, find a set of coordinates for the points that approximates those distances as well as possible.
+:::
+
+:::{.fragment}
+The algorithm works by starting with random positions, and then moving points in a way that reduces the disparity between true distance and Euclidean distance.
+:::
+
+:::{.fragment}
+Let's run MDS to build a 2 dimensional model of our 30 dimensional dataset.
+:::
+::::
+
+## Multidimensional Scaling
+
+:::{.center-text}
+```{python}
+import sklearn.manifold
+import matplotlib.pyplot as plt
+mds = sklearn.manifold.MDS(n_components=2, max_iter=3000, eps=1e-9, random_state=0,
+                   dissimilarity = "precomputed", n_jobs = 1)
+fit = mds.fit(euclidean_dists)
+pos = fit.embedding_
+plt.scatter(pos[:, 0], pos[:, 1], s=8)
+plt.axis('square')
+plt.show()
+```
+:::
+
+:::{style="font-size: .8em"}
+Although the data lives in 30 dimensions, we can get a sense of how the points are clustered by approximately placing the points into two dimensions.
+:::
+
+## K-Means Clustering
+
+::::{style="font-size: .8em"}
+The `scikit-learn` module `sklearn.cluster` has a large set of tools for clustering.  
+
+:::{.fragment}
+There are 3 functions in all the clustering classes, 
+
+- **`fit()`,**
+- **`predict()`,** and
+- **`fit_predict()`**.
+:::
+
+:::{.fragment}
+`fit()` builds the model from the training data (e.g. for $k$-means, it finds the centroids), 
+
+
+`predict()` assigns labels to the data after building the model, and 
+
+
+`fit_predict()` does both in a single step.
+
+
+:::
+::::
+
+## K-Means Clustering
+
+:::{style="font-size: .8em"}
+```{python}
+#| echo: true
+from sklearn.cluster import KMeans
+kmeans = KMeans(init = 'k-means++', n_clusters = 3, n_init = 100)
+kmeans.fit_predict(X)
+```
+
+All the tools in `scikit-learn` are implemented as python objects.
+
+:::{.fragment .incremental}
+Thus, the general sequence for using a tool from `scikit-learn` is:
+
+* Create the object, probably with some hyperparameter settings or intialization,
+* Run the method, generally by using the `fit()` function, and
+* Examine the results, which are generally property variables of the object.
+:::
+:::
+
+
+## K-Means Clustering
+
+```{python}
+import numpy as np
+```
+```{python}
+#| echo: true
+centroids = kmeans.cluster_centers_
+labels = kmeans.labels_
+error = kmeans.inertia_
+```
+
+:::{.fragment}
+```{python}
+#| echo: true
+print(f'The total error of the clustering is: {error:0.1f}.')
+print('\nCluster labels:')
+print(labels)
+print('\nCluster centroids:')
+print(np.round(centroids, 3))
+```
+:::
+
+## K-Means Clustering
+
+::::{style="font-size: .70em"}
+Let's visualize the results. We'll do that by reordering data items according to their cluster.
+
+:::{.center-text}
+```{python}
+idx = np.argsort(labels)
+rX = X[idx, :]
+sns.heatmap(rX, xticklabels = False, yticklabels = False, linewidths = 0)
+```
+:::
+::::
+
+
+## K-Means Clustering
+
+:::{style="font-size: .75em"}
+
+Let's look at the matrix of pairwise distances between points, after sorting them by cluster.
+Dark squares indicate that the pair of points are _close_ to each other, whereas light colors indicate that they are _far apart_.
+
+:::
+
+:::{.center-text}
+```{python}
+rearranged_dists = euclidean_dists[idx,:][:,idx]
+sns.heatmap(rearranged_dists, xticklabels = False, yticklabels = False, linewidths = 0, square = True);
+```
+:::
+
+## Key Ideas
+
+:::{.incremental style="font-size: .8em"}
+- $k$-means algorithm is an unsupervised learning technique that minimizes intra-cluster distances and maximizes inter-cluster distances.
+
+- Its main steps are
+    1. Select $k$ cluster centers.
+    2. For each cluster center, find the set of points closest to it.
+    3. Based on this set, redefine the cluster centers.
+    4. Repeat until convergence.
+
+- `scikit-learn` offers a comprehensive set of tools for k-means clustering.
+:::

@@ -1,6 +1,6 @@
 ---
 title: "Supervised Learning"
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         css: 
@@ -44,12 +44,9 @@ Finally, we will discuss the evaluation of a binary classifier and learn several
 ## Synthetic Data for Regression
 ::::{style="font-size: .8em;"}
 
-Suppose were are given a training set comprising $N$ observations of a scalar value $x_i$ (i.e., a 1-dimensional vector).
+Consider a training set comprising $N$ observations of a scalar value $x_i$ (i.e., a 1-dimensional vector).
 
-For each input variable $x_i$, we have a correspoinding numeric value $y_i$ that we believe **depends** on $x_i$ in some way. The goal of our regression algorithm is to learn some simple 'rule' that models the relationship.
-
-:::{.fragment}
-Here is a plot of the 10 training points
+For each input variable $x_i$, we have a correspoinding numeric value $y_i$ that we believe _depends_ on $x_i$ in some way. The goal of our regression algorithm is to learn some simple 'rule' that models the relationship.
 
 :::{.center-text}
 ```{python}
@@ -71,8 +68,8 @@ plt.ylabel('y', size = 16);
 ::::{style="font-size: .8em;"}
 This is a synthetic dataset that was generated in the following way:
 
-- choose $x_i$ as equal spaced points no the range 0 to 1, and
-- for each choice of $x_i$, we then calculated $y_i=\sin(2\pi x_i)$ **plus** a sample of Gaussian random variable.
+- choose $x_i$ as equally spaced points between 0 and 1, and
+- for each choice of $x_i$, find $y_i=\sin(2\pi x_i)$ _plus_ a sample of Gaussian random variable.
 
 :::{.fragment}
 ```{python}
@@ -80,7 +77,7 @@ import numpy as np
 ```
 ```{python}
 #| echo: true
-N = 20
+N = 10
 x = np.linspace(0, 1, N)
 y = np.sin(2 * np.pi * x) + default_rng(2).normal(size = N, scale = .20)
 ```
@@ -103,20 +100,21 @@ plt.ylabel('y', size = 16);
 
 ## Synthetic Data for Regression
 
-::::{style="font-size: .8em;"}
-In a real dataset, the "noise" component might not be _actually_ random, but rather it sometimes depends on features that we cannot see. For instance, in the housing example from earlier, the price of a house might depend on **more features** besides the lot size, square footage, and number of bathrooms.
+::::{style="font-size: .8em;" .center-y}
+In a real dataset, the "noise" component might not be actually random, but rather it sometimes depends on features that we cannot see. For instance, in the housing example from earlier, the price of a house might depend on _more features_ besides the lot size, square footage, and number of bathrooms.
 
 :::{.fragment}
 One of the advantages of a synthetic dataset is that we know the exact rule that can be used for prediction. In this case, it is
 $$y
 =\sin(2\pi x).
 $$
+
+Let's _learn_ from this data.
 :::
 ::::
 
 ## Synthetic Data for Regression
 ::::{style="font-size: .8em"}
-Let's _learn_ from this data.
 
 :::{.fragment}
 The class of models we will consider are polynomials. They are of the form:
@@ -130,18 +128,18 @@ where $k$ is the order (or degree) of the polynomial.
 :::{.fragment}
 If we are given some k, then we want to learn the scalars $w_i.$
 
-That is; $k$ is a **hyperparameter** of the model, and the $w_i$ values are the parameters of the model.
+That is, $k$ is a hyperparameter of the model, and the $w_i$ values are the parameters of the model.
 :::
 
 :::{.fragment}
-Once a choice $k$ is fixed, there is an algorithm called _linear regression_ that will solve for the best model parameters $\mathbf{w}.$
+Once a choice $k$ is fixed, there is an algorithm called **linear regression** that will solve for the best model parameters $\mathbf{w}.$
 :::
 ::::
 
 ## Model Selection
 
 ::::{style="font-size: .8em"}
-The problem of choosing the hyperparameter $k$ is called model selection.
+The problem of choosing the hyperparameter $k$ is called **model selection**.
 
 :::{.fragment}
 Let's see what happens when we apply regression to build the best possible constant (order 0), linear (order 1), and cubic (order 3) models.
@@ -156,7 +154,8 @@ def design_matrix(x, k):
 
 def fit_poly(x, y, k):
     A = design_matrix(x, k)
-    w_hat = np.linalg.inv(A.T @ A) @ A.T @ y
+    [Q, R] = np.linalg.qr(A)
+    w_hat, _, _, _ = np.linalg.lstsq(A, y)
     return w_hat
 
 w_hat_0 = 1/N * np.sum(y)
@@ -193,19 +192,17 @@ fig.tight_layout();
 ```
 :::
 
-:::{.fragment .center-text}
-Here, $E(\mathbf{w})$ is the training error.
+:::{.fragment}
+Here, $E(\mathbf{w})$ is the **training error**.
 :::
 ::::
 
 ## Model Selection
 
-::::{style="font-size: .7em;"}
+::::{style="font-size: .8em;"}
 A third-order polynomial ($k=3$) leads to small training error and hence is a good fit.
-
-:::{.center-text style="font-size: 1em"}
 What about _higher order_ polynomials?
-:::
+
 :::{.fragment}
 
 By setting $k=9$, we get the following polynomial to fit the data:
@@ -222,15 +219,15 @@ plt.ylabel('y', size = 16)
 plt.title(r'$k$ = 9' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(0));
 ```
 
-:::{.fragment}
+:::{.fragment style="text-align: left;"}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
-    <div class="blue-box">
+    <div class="blue-box" style="text-align: left;">
         <p>
-        &emsp;&emsp;So \(\dots\) is the 9th order polynomial a <em>"better"</em> model for this dataset?
+       Is the 9th order polynomial a <em>"better"</em> model for this dataset?
         </p>
     </div>
     """
@@ -246,7 +243,7 @@ display(HTML(html_content))
 ## Model Selection
 
 ::::{style="font-size: .8em;"}
-We want the model to do a good job of predicting on **future** data. this is called the model's **generalization** ability.
+We want the model to have a good generalization ability (i.e., do a good job of predicting on _future_ data).
 
 The 9th degree polynomial would seem to have poor generalization ability.
 
@@ -256,14 +253,14 @@ The 9th degree polynomial would seem to have poor generalization ability.
 <!-- Unable to get this graph working :( -->
 
 :::{.fragment}
-_Test data_ is data that was not used to train the model, but comes from the same source.
+**Test data** is data that was not used to train the model, but comes from the same source.
 :::
 ::::
 
 ## Model Selection 
 <!-- Questionable Fragmentation...? -->
 
-::::{style="font-size: .75em;"}
+::::{style="font-size: .8em;" .center-y}
 Notice that as we increase the order of the polynomial, the training error always declines. Eventually, the training error reaches zero.<br>
 <div style="margin-bottom: 0.5em;"> </div> 
 _However,_ the test error does not — it reaches its smallest value at $k=3$, a cubic polynomial.
@@ -272,20 +269,24 @@ _However,_ the test error does not — it reaches its smallest value at $k=3$, a
 The phenenmom in which training error declines but testing error does not, is called **overfitting.** <br>
 In a sense we are fitting the training data "too well".
 :::
-:::{.fragment}
+::::
+
+## Model Selection 
+<!-- Questionable Fragmentation...? -->
+
+::::{style="font-size: .8em;" .center-y}
+
 There are two ways to think about overfitting:
 
-:::{.incremental}
 1. The number of parameters in the model is too large, compared to the size of the training data.
 
 2. The model is more complex than the actual phenomenon being modeled. As a result, the model is not just fitting the underlying phenomenon, but also the noise in the data.
-:::
-:::
+
 ::::
 
 ## More Training Data
 
-::::{style="font-size: .68em"}
+::::{style="font-size: .8em"}
 It's not necessarily true that a order-3 polynomial is best for this problem.
 
 But the higher the order of polynomial we want to fit, the more data we need to avoid overfitting.
@@ -317,30 +318,19 @@ fig.tight_layout();
 :::
 :::
 
-:::{.fragment}
-We see that with enough training data, the high order polynomial begins to capture the sine wave as well.
-:::
 ::::
 
 ## Model Complexity
-::::{style="font-size: .8em;"}
-Many times however, we cannot simply get more training data, or enough training data, to solve the overfitting problem.
-
-:::{.fragment}
-In that case, we need to control the **complexity of the model.**
+::::{style="font-size: .8em;" .center-y}
+Many times we simply cannot get more training data, so we need to control the **complexity of the model.**
 
 Notice that model selection problem required us to choose a value $k$ that specifies the order of the polynomial model.
-:::
 
-:::{.fragment}
 _Hyperparameters_ are often used to control model complexity.
 Here, the hyperparameter $k$ controls the complexity (the order) of the polynomial model.
 
-So, to avoid overfitting, we need to choose the proper value for the hyperparameter $k$.
-:::
-:::{.fragment .center-text style="font-size: 1em"}
-We do that by _holding out_ data.
-:::
+So, to avoid overfitting, we need to choose the proper value for the hyperparameter $k$. We do that by _holding out_ data.
+
 ::::
 
 ## Holding Out Data
@@ -369,25 +359,39 @@ Notice that `train_test_split()` splits the data **randomly.**
 :::
 ::::
 
-## Holding out Data
+
+## Hold Out Strategies
 
 ::::{style="font-size: .8em;"}
-This will be important.
+We aim to use as much data as possible for training. However, increasing the training data reduces the amount of data available for testing, which can reduce testing accuracy.
 
-::::{.columns}
+:::{.fragment}
+In this course we consider two types of hold out strategies:
 
-:::{.fragment .column width="50%"}
-Our strategy will be:
-
-For each possible value of the hyperparameter $k$:
-
-- randomly split the data 5
-- compute the mean testing and training error over the 5 random splits
+- *random subsampling*
+- *cross validation*
 
 :::
 
-:::{.column width="50%"}
-```{python}
+:::{.fragment}
+In **random subsampling** one partitions the data randomly between train and test sets. This is what the function `train_test_split()` does.
+
+This ensures there is no dependence between the test and train sets.
+
+One needs to perform a reasonable number of random splits—usually five at least.
+:::
+::::
+
+
+## Random Subsampling
+
+::::{style="font-size: .8em;"}
+For each possible value of the hyperparameter $k$:
+
+ - randomly split the data 5 times,
+ - compute the mean testing and training error over the 5 random splits.
+
+<!-- ```{python}
 #
 fig, axs = plt.subplots(1, 2, sharey = True, figsize = (6, 5))
 #
@@ -401,13 +405,10 @@ axs[1].set_xlabel('x', size = 16)
 axs[1].set_title('Testing Set', size = 16)
 #
 fig.tight_layout();
-```
-:::
-
-::::
+``` -->
 ::::
 
-## Holding Out Data{.scrollable}
+## Random Subsampling{.scrollable}
 
 ::::{style="font-size: .8em;"}
 What are good possible values for the hyperparameter? it can depend on the problem, and may involve trial and error.
@@ -462,10 +463,8 @@ df.head  (10)
 :::
 ::::
 
-## Holding Out Data
+## Random Subsampling
 ::::{style="font-size: .8em;"}
-Let's plot the mean for each value `k` and its standard error $\sigma/\sqrt{n}$
-
 :::{.center-text}
 ```{python}
 #|echo: true
@@ -479,56 +478,29 @@ plt.ylim([0, 5]);
 From this plot we can conclude that, for this dataset, a polynomial of degree $k=3$ shows the best generalization ability.
 ::::
 
-## Hold Out Strategies
-
+## Cross Validation
 ::::{style="font-size: .8em;"}
-We aim to use as much data as possible for training. However, increasing the training data reduces the amount of data available for testing, which can reduce testing accuracy.
+**Cross validation** partitions the data once, using $k$ "folds". Each "fold" is used as test data once.
 
-:::{.fragment}
-In this course we consider two types of hold out strategies:
-
-- *random subsampling*
-- *cross validation*
-
-:::
-
-:::{.fragment}
-In **random subsampling** one partitions the data randomly between train and test sets. This is what the function `train_test_split()` does.
-
-This ensures there is no dependence between the test and train sets.
-
-One needs to perform a reasonable number of random splits—usually five at least.
-:::
-::::
-
-## Hold Out Strategies
-::::{style="font-size: .8em;"}
-**Cross Validation** partitions the data once, using $k$ "folds". Each "fold" is used as test data once.
-
-::::{.columns}
-
-:::{.column size="45%"}
+:::{.center-text}
 ![](/images/vectors_ds/k_folds.png)
 :::
-:::{.column size="55%" style="font-size:.8em"}
-
-:::{.fragment}
-The value of $k$ can vary up to the size of the dataset.
-:::
-:::{.fragment}
-The larger $k$ we use, the more data is used for training, but the more folds must be evaluated, which increases the time required.
-:::
-:::{.fragment}
-In the extreme case where $k$ is equal to the data size, then each data item is held out by itself;  is called "leave-one-out".
-:::
-:::
 ::::
+
+
+## Cross Validation
+::::{style="font-size: .8em;" .center-y}
+The value of $k$ can vary up to the size of the dataset.
+
+The larger $k$ we use, the more data is used for training, but the more folds must be evaluated, which increases the time required.
+
+In the special case where $k$ equals the size of the dataset, each data item is individually excluded. This is known as "leave-one-out".
 ::::
 
 ## Evaluating a Binary Classifier
 
 ::::{style="font-size: .8em"}
-Let's look at a binary classifier. That is, a classifier with two possible labels: "positive" and "negative."
+Let's look at a binary classifier, a classifier with two possible labels: "positive" and "negative."
 
 How do we measure its performance?
 
@@ -549,8 +521,8 @@ For this dataset a classifier that always predicts "positive" will have 90% accu
 
 ## Evaluating a Binary Classifier
 
-::::{style="font-size: .7em;"}
-A better way to measure the classifier's performance is using a __Confusion Matrix__.
+::::{style="font-size: .8em;"}
+A better way to measure the classifier's performance is using a __confusion matrix__.
 
 _Diagonal_ elements represent successes, and _off diagonals_ represent errors.
 
@@ -561,7 +533,7 @@ _Diagonal_ elements represent successes, and _off diagonals_ represent errors.
 :::
 
 :::{.fragment .column width="55%"}
-Using the confusion matrix we can define some more useful measures:
+Using the confusion matrix we can define recall and precision:
 
 :::{.fragment}
 * __Recall__ - defined as the fraction of actual positives correctly classified:  
@@ -573,6 +545,34 @@ Using the confusion matrix we can define some more useful measures:
 :::
 :::
 ::::
+::::
+
+## Evaluating a Binary Classifier
+
+::::{style="font-size: .8em;" }
+Imagine you are a medical professional developing a test to identify whether a patient has a certain type of cancer. Your test produces the following confusion matrix:
+
+|               | Predicted Positive | Predicted Negative |
+|---------------|--------------------|--------------------|
+| **Actual Positive**  | 80                 | 20                 |
+| **Actual Negative**  | 10                 | 90                 |
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box" style="text-align: left;">
+        <p>
+       Would you focus on improving the recall or the precision of your test? 
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
 ::::
 
 ## Evaluating K-NN on Synthetic Data {.smaller-title}
@@ -727,9 +727,6 @@ plt.title('Testing $k$={}\nAccuracy: {}'.format(k,knn5.score(X_test, y_test)))
 plt.axis('equal')
 plt.axis('off');
 ```
-::::{style="font-size: .8em" .fragment .center-text}
-For comparison purposes, let's try $k=3$
-::::
 
 
 ## Evaluating k-NN on Synthetic Data {.smaller-title}
@@ -755,10 +752,40 @@ plt.axis('equal');
 ```
 
 ## Evaluating k-NN on Synthetic Data {.smaller-title}
+```{python}
+#
+k = 3
+test_point = np.argmax(X_test[:,1])
+X_test[test_point]
+neighbors = knn3.kneighbors([X_test[test_point]])[1]
+
+plt.figure(figsize = fig_size)
+plt.subplot(1, 2, 1)
+plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, s = 80)
+plt.scatter(X_train[neighbors, 0], X_train[neighbors, 1], marker = 'o', 
+            facecolors = 'none', edgecolors = 'b', s = 80)
+radius = np.max(metrics.euclidean_distances(X_test[test_point].reshape(1, -1), 
+                                            X_train[neighbors][0]))
+ax = plt.gcf().gca()
+circle = mp.patches.Circle(X_test[test_point], radius, facecolor = 'blue', alpha = 0.2)
+ax.add_artist(circle)
+plt.axis('equal')
+plt.axis('off')
+plt.title(r'Training')
+plt.subplot(1, 2, 2)
+plt.scatter(X_test[:, 0], X_test[:, 1], c = y_pred_test, s = 80)
+plt.scatter(X_test[test_point,0], X_test[test_point,1], marker = 'o', 
+            facecolors = 'none', edgecolors = 'b', s = 80)
+plt.title(f'Testing $k$={k}\nAccuracy: {knn3.score(X_test, y_test)}')
+plt.axis('off')
+plt.axis('equal');
+```
+
+## Evaluating k-NN on Synthetic Data {.smaller-title}
 
 ::::{style="font-size: .8em"}
 ::::{.columns}
-Thus, the proper way to evaluate generalization ability (accuracy on the test data) is:
+The proper way to evaluate generalization ability (accuracy on the test data) is:
 
 :::{.column size="55%" .incremental}
 <br>
@@ -767,7 +794,7 @@ Thus, the proper way to evaluate generalization ability (accuracy on the test da
 2. Train the classifier on the training split
 3. Test the classifier on the testing split
 4. Accumulate statistics
-5. Repeat from step (1) until enough statistics have been collected.
+5. Repeat from step (1) until enough statistics have been collected
 :::
 
 :::{.column size="45%"}
@@ -801,7 +828,7 @@ plt.legend(loc = 'best');
 
 
 :::
-:::{.fragment .center-text style="font-size: 1em"}
+:::{.fragment style="font-size: 1em"}
 Based on the generalization error, $k=2$ is the best choice.
 :::
 ::::

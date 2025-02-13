@@ -1,6 +1,6 @@
 ---
 title: "Vectors and Linear Combinations"
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         css: 
@@ -15,13 +15,13 @@ Today we will talk about vectors.
 We will discuss why we need vectors in the first place. We will look at vectors from three perspectives:
 
 :::{.fragment}
-- Algebraic,
-- Geometric, and
-- Computational.
+- Algebraic
+- Geometric
+- Computational
 :::
 
 :::{.fragment}
-_In addition_, we will discuss how to compare and combine vectors.
+In addition, we will discuss how to compare and combine vectors.
 :::
 ::::
 ## Why Vectors?
@@ -30,20 +30,20 @@ _In addition_, we will discuss how to compare and combine vectors.
 ![](/images/lecture_2/oranges_apples.jpg)
 
 :::{.center-text style="font-size: .8em"}
-"You **can't** add _apples_ and _oranges_"
+"You can't add apples and oranges."
 :::
 ::::
 ::::{.column width="50%"}
 
 :::{style="font-size: .8em;"}
 
-_Two_ seperate numbers $v_1$ and $v_2$ form a _**two-dimensional**_ vector:
+_Two_ seperate numbers $v_1$ and $v_2$ form a _two-dimensional_ vector:
 
 :::{.center-text}
 
 :::{style="font-size: 1.2em;"}
 $$
-\begin{bmatrix} \mathit{v_1} \\ \mathit{v_2} \end{bmatrix}
+\begin{bmatrix} \mathit{v_1} \\ \mathit{v_2} \end{bmatrix}.
 $$
 :::
 :::
@@ -82,7 +82,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>The set of all vectors with \( d \) entries is denoted by \( \mathbb{R^d}\).
+        <p>The set of all vectors with \( d \) entries is denoted by \( \mathbb{R}^d\).
         </p>
     </div>
     """
@@ -92,23 +92,23 @@ display(HTML(html_content))
 ```
 :::
 ::::{.fragment}
-Examples of vectors in $\mathbb{R^2}$:<br>
+Examples of vectors in $\mathbb{R}^2$:<br>
 
-:::{.center-text style="font-size: 1.25em"}
-$\bar{a}=\begin{bmatrix}3 \\ -1\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bar{b}=\begin{bmatrix}.2 \\ .3\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bar{c}=\begin{bmatrix}w_1 \\ w_2\end{bmatrix}$.
+:::{.center-text style="font-size: 0.8em"}
+$\bf{a}=\begin{bmatrix}3 \\ -1\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bf{b}=\begin{bmatrix}.2 \\ .3\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bf{c}=\begin{bmatrix}w_1 \\ w_2\end{bmatrix}$.
 :::
 ::::
 ::::
 ## Algebraic Representation
 
-:::{.center-text style="font-size: .8em;"}
+:::{style="font-size: .8em;"}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>How do vectors in \( \mathbb{R^3}\) look like?
+        <p>How do vectors in \( \mathbb{R}^3\) look like?
         </p>
     </div>
     """
@@ -119,14 +119,14 @@ display(HTML(html_content))
 :::
 ::::{.fragment}
 :::{style="font-size: .8em;"}
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Examples of vectors in $\mathbb{R^3}$:
+Examples of vectors in $\mathbb{R}^3$:
 :::
 
 :::{.center-text style="font-size: .6em;"}
-**$\bar{d}=\begin{bmatrix}2 \\ 3 \\ 4\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bar{e}=\begin{bmatrix}-1 \\ 0 \\ 2\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bar{f}=\begin{bmatrix}w_1 \\ w_2 \\ w_3\end{bmatrix}$**
+**$\bf{d}=\begin{bmatrix}2 \\ 3 \\ 4\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bf{e}=\begin{bmatrix}-1 \\ 0 \\ 2\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$\bf{f}=\begin{bmatrix}w_1 \\ w_2 \\ w_3\end{bmatrix}.$**
 :::
 ::::
-:::{.fragment .center-text style="font-size: .8em;"}
+:::{.fragment style="font-size: .8em;"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -169,11 +169,11 @@ ax.plot(-4, 0, '')
 ## Geometric Representation
 
 :::{style="font-size: .8em"}
-Equivalently, we can represent a vector by drawing an arrow from the origin $[0,0]$ to the point. 
+Equivalently, we can represent a vector by drawing an arrow from the origin the origin to the point. 
 :::
 :::{.center-text}
 ```{python}
-ax = ut.plotSetup(size=(15,5))
+ax = ut.plotSetup(size=(8,4))
 ut.centerAxes(ax)
 ax.arrow(0, 0, -2, -1, head_width=0.2, head_length=0.2, length_includes_head = True)
 ax.arrow(0, 0, 2, 2, head_width=0.2, head_length=0.2, length_includes_head = True)
@@ -202,7 +202,7 @@ print(np.array_equal(u,v))
 print(np.array_equal(v,v))
 ```
 :::{.center-text style="font-size: .8em"}
-$\bar{u} = \begin{bmatrix}7 \\ 4\end{bmatrix}$ does _not_ equal $\bar{v} = \begin{bmatrix}4 \\ 7\end{bmatrix}$
+$\bf{u} = \begin{bmatrix}7 \\ 4\end{bmatrix}$ does _not_ equal $\bf{v} = \begin{bmatrix}4 \\ 7\end{bmatrix}.$
 :::
 :::{.fragment style="font-size: .8em"}
 ```{python}
@@ -282,7 +282,7 @@ display(HTML(html_content))
 For example:
 
 $$
-\left[\begin{array}{r}1\\-2\end{array}\right] + \left[\begin{array}{c}2\\-5\end{array}\right] = \left[\begin{array}{r}1 + 2\\-2 - 5\end{array}\right] = \left[\begin{array}{c}3\\-7\end{array}\right]
+\left[\begin{array}{r}1\\-2\end{array}\right] + \left[\begin{array}{c}2\\-5\end{array}\right] = \left[\begin{array}{r}1 + 2\\-2 - 5\end{array}\right] = \left[\begin{array}{c}3\\-7\end{array}\right].
 $$
 
 ::::
@@ -301,8 +301,8 @@ print(s + t)
 
 ## Vector Manipulations {.scrollable}
 
-::::{style="font-size: .7em"}
-Note that __vectors of different sizes cannot be compared or added.__ 
+::::{style="font-size: .8em"}
+Note that _vectors of different sizes cannot be compared or added._
 
 :::{.fragment}
 For example, if ${\bf s} = \left[\begin{array}{r}1\\-2\end{array}\right] \in \mathbb{R}^2$ and ${\bf r} = \left[\begin{array}{r}-3\\4\\-5\end{array}\right] \in \mathbb{R}^3$:
@@ -352,7 +352,7 @@ ax.plot(0,0,'')
 
 ## Scalar Multiplication
 :::{.fragment style="font-size: .8em"}
-Multiplying vector $\bar{v}$ by a scalar $c$ corresponds to _lengthening_ $\bar{v}$ by a factor of $c$. <br>
+Multiplying vector $\bf{v}$ by a scalar $c$ corresponds to _lengthening_ $\bf{v}$ by a factor of $c$. <br>
 :::
 
 <div style="margin-bottom: 0.5em;"> </div> 
@@ -494,9 +494,9 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>Let \( v_1, v_2, \dots, v_p \) be vectors in \( \mathbb{R}^n \).
-        Let \( c_1, c_2, \dots, c_p \) be scalars. Then a <b>linear combination</b> of \( v_1, v_2, \dots, v_p \) is given by 
-        \( y = c_1v_1 + \dots + c_pv_p\).
+        <p>Let \( \bf{v}_1, \bf{v}_2, \dots, \bf{v}_p \) be vectors in \( \mathbb{R}^n \).
+        Let \( c_1, c_2, \dots, c_p \) be scalars. Then a <b>linear combination</b> of \( \bf{v}_1, \bf{v}_2, \dots, \bf{v}_p \) is given by 
+        \( \bf{y} = c_1\bf{v}_1 + \dots + c_p\bf{v}_p\).
         </p>
     </div>
     """
@@ -508,14 +508,19 @@ display(HTML(html_content))
 The $c_i$ values are called __weights__.   Weights can be any real number, including zero.  So some examples of linear combinations are:
 :::
 ::::{.fragment .center-text}
-$\sqrt{3}{\bf v_1} + {\bf v_2}$,&emsp;&emsp;$(1 / 2){\bf v_1} = (1 / 2){\bf v_1} + 0{\bf v_2}$,&emsp;&emsp; and ${\bf 0} = 0{\bf v_1} + 0{\bf v_2}$
+$3{\bf v_1} + {\bf v_2}$,&emsp;&emsp;$(1 / 2){\bf v_1} = (1 / 2){\bf v_1} + 0{\bf v_2}$,&emsp;&emsp; and ${\bf 0} = 0{\bf v_1} + 0{\bf v_2}$
 
 ::::
 :::::
 
 ## Linear Combinations
 ::::{style="font-size: .8em"}
-Here is what a linear combination looks like geometrically. Suppose that $\mathbf{u} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}$ and $\mathbf{v} = \begin{bmatrix} -1 \\ 1 \end{bmatrix}$.
+Here is what a linear combination looks like geometrically. Suppose that 
+
+::::{.center-text}
+$\mathbf{u} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}$ and $\mathbf{v} = \begin{bmatrix} -1 \\ 1 \end{bmatrix}$.
+::::
+
 
 Then, the linear combination $c \mathbf{u} + d \mathbf{v}$ corresponds to a walk in the $\mathbf{u}$ direction followed by a walk in the $\mathbf{v}$ direction.
 
@@ -531,7 +536,7 @@ $$
 $$
 :::
 :::
-::::
+
 
 ## Linear Combinations
 
@@ -559,7 +564,7 @@ ut.plotPoint(ax,-u[0]+3*v[0],-u[1]+3*v[1],'y')
 
 :::{.center-text}
 ```{python}
-ax = ut.plotSetup(-6, 6, -4, 4, size=(15, 7.5))
+ax = ut.plotSetup(-6, 6, -4, 4, size=(10,5))
 ut.centerAxes(ax)
 ax.set_xticks([])
 ax.set_yticks([])
@@ -581,7 +586,7 @@ ut.plotPoint(ax,-u[0]+3*v[0],-u[1]+3*v[1],'y')
 
 ## Linear Combinations
 ::::{style="font-size: .8em"}
-Consider $\bar{u}$ ,$\bar{v}$ and $\bar{w}$ that are distinct nonzero vectors in $\mathbb{R^3}$.
+Consider $\bf{u}$ ,$\bf{v}$ and $\bf{w}$ that are distinct vectors in $\mathbb{R}^3$.
 
 ```{python}
 from IPython.core.display import HTML
@@ -589,7 +594,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>What is the picture of all linear combinations of \( \bar{u}\)?
+        <p>What is the picture of all linear combinations of \( \bf{u}\)?
         </p>
     </div>
     """
@@ -599,17 +604,17 @@ display(HTML(html_content))
 ```
 
 :::{.fragment}
-_If_ $\bar{u}$ is the **zero vector** (i.e., $\bar{u}= \tiny \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}$), then every lin. comb. of $\bar{u}$ would be zero.
+_If_ $\bf{u}$ is the _zero vector_, $\bf{u}= \tiny \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}$, then every linear combination of $\bf{u}$ would be zero.
 :::
 :::{.fragment}
-_If_ $\bar{u}$ is a **nonzero vector**, its lin. comb. fills a _**line through**_ $\tiny \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}$
+_If_ $\bf{u}$ is a _nonzero vector_, its linear combination fills a _line through_ $\tiny \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}.$
 :::
 ::::
 
 ## Linear Combinations
 
 ::::{style="font-size: .8em"}
-Consider $\bar{u}$ ,$\bar{v}$ and $\bar{w}$ that are distinct nonzero vectors in $\mathbb{R^3}$.
+Consider $\bf{u}$ ,$\bf{v}$ and $\bf{w}$ that are distinct vectors in $\mathbb{R}^3$.
 
 ```{python}
 from IPython.core.display import HTML
@@ -617,7 +622,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>What is the picture of all linear combinations of \( \bar{u}\) and \( \bar{v}\)?
+        <p>What is the picture of all linear combinations of \( \bf{u}\) and \( \bf{v}\)?
         </p>
     </div>
     """
@@ -626,8 +631,8 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 <!-- Note, center-text lowers font size by .8em -->
-:::{.fragment .center-text}
-Assuming that $\boldsymbol{\bar{u}}$ and $\boldsymbol{\bar{v}}$ are nonzero vectors, their linear combinations, $c\boldsymbol{\bar{u}} + d\boldsymbol{\bar{v}}$, fill a plane through $\boldsymbol{(0, 0, 0)}$.
+:::{.fragment}
+Assuming that $\boldsymbol{\bf{u}}$ and $\boldsymbol{\bf{v}}$ are nonzero vectors, their linear combinations, $c\boldsymbol{\bf{u}} + d\boldsymbol{\bf{v}}$, fill a plane through $\tiny \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}.$
 :::
 :::{.fragment}
 ```{python}
@@ -636,7 +641,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>What is the picture of all linear combinations of \( \bar{u}\), \( \bar{v}\) and \( \bar{w}\)?
+        <p>What is the picture of all linear combinations of \(\mathbf{u}\), \( \mathbf{v}\) and \( \mathbf{w}\)?
         </p>
     </div>
     """
@@ -646,8 +651,8 @@ display(HTML(html_content))
 ```
 :::
 
-:::{.fragment .center-text}
-The linear combinations of $\boldsymbol{\bar{u}}$, $\boldsymbol{\bar{v}}$, and $\boldsymbol{\bar{w}}$, $c\boldsymbol{\bar{u}} + d\boldsymbol{\bar{v}} +e\boldsymbol{\bar{w}}$, fill _three-dimensional space_ $\mathbb{R^3}$
+:::{.fragment}
+The linear combinations of $\boldsymbol{\bf{u}}$, $\boldsymbol{\bf{v}}$, and $\boldsymbol{\bf{w}}$, $c\boldsymbol{\bf{u}} + d\boldsymbol{\bf{v}} +e\boldsymbol{\bf{w}}$, fill _three-dimensional space_ $\mathbb{R}^3.$
 :::
 ::::
 
@@ -655,7 +660,7 @@ The linear combinations of $\boldsymbol{\bar{u}}$, $\boldsymbol{\bar{v}}$, and $
 <!-- Good fragmentation? -->
 ::::{style="font-size: .8em"}
 
-Consider the linear combinations of $\bar{v} = \tiny \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$ and $\bar{w} = \tiny \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}$. <br> They fill a plane in $\mathbb{R}^3$.
+Consider the linear combinations of $\mathbf{v} = \tiny \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$ and $\mathbf{w} = \tiny \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}$. <br> They fill a plane in $\mathbb{R}^3$.
 
 ```{python}
 from IPython.core.display import HTML
@@ -663,7 +668,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p><b>Describe that plane.</b>
+        <p>Describe that plane.
         </p>
     </div>
     """
@@ -673,10 +678,10 @@ display(HTML(html_content))
 ```
 
 :::{.fragment}
-The plane of $\bar{v}$ and $\bar{w}$ contains all combinations $c\bar{v} + d\bar{w}$ with any $c \in \mathbb{R}$ and $d \in \mathbb{R}$:
+The plane of $\mathbf{v}$ and $\mathbf{w}$ contains all combinations $c\mathbf{v} + d\mathbf{w}$ with any $c \in \mathbb{R}$ and $d \in \mathbb{R}$:
 
 $$
-c\bar{v} + d\bar{w} = c {\tiny \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}} + d {\tiny \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}} = \tiny \begin{bmatrix} c \\ c + d \\ d \end{bmatrix}.
+c\mathbf{v} + d \mathbf{w} =  c{\tiny \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}} +  d{\tiny \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}} = \tiny \begin{bmatrix} c \\ c + d \\ d \end{bmatrix}.
 $$
 :::
 ::::
@@ -684,7 +689,7 @@ $$
 ## Linear Combinations
 
 ::::{style="font-size: .8em"}
-Consider the linear combinations of $\bar{v} = {\tiny\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}}$ and $\bar{w} = {\tiny\begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}}$. <br>They fill a plane in $\mathbb{R}^3$.
+Consider the linear combinations of $\mathbf{v} = {\tiny\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}}$ and $\mathbf{w} = {\tiny\begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}}$. <br>They fill a plane in $\mathbb{R}^3$.
 
 ```{python}
 from IPython.core.display import HTML
@@ -692,7 +697,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p><b>Find four vectors in that plane.</b>
+        <p>Find four vectors in that plane.
         </p>
     </div>
     """
@@ -717,7 +722,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p><b>Find a vector that is not on the plane</b>
+        <p>Find a vector that is not on the plane.
         </p>
     </div>
     """
@@ -726,7 +731,7 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 :::{.fragment}
-:::{.center-text style="font-size: 1em"}
+:::{style="font-size: 1em"}
 Like most vectors, ${\tiny\begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix}}$ is not on the plane.
 :::
 :::{style="font-size: .8em"}
@@ -737,7 +742,7 @@ _**Note:**_ $2 + 1 + 3$ is the reason why ${\tiny\begin{bmatrix} 1 \\ 2 \\ 3 \en
 ## Linear Combinations
 
 ::::{style="font-size: .8em"}
-Consider $\bar{v} = {\tiny\begin{bmatrix} 2 \\ -1 \end{bmatrix}}, \bar{w} = {\tiny\begin{bmatrix} -1 \\ 2 \end{bmatrix}}, \text{ and } \bar{b} = {\tiny\begin{bmatrix} 1 \\ 0 \end{bmatrix}}$.
+Consider $\mathbf{v} = {\tiny\begin{bmatrix} 2 \\ -1 \end{bmatrix}}, \mathbf{w} = {\tiny\begin{bmatrix} -1 \\ 2 \end{bmatrix}}, \text{ and } \mathbf{b} = {\tiny\begin{bmatrix} 1 \\ 0 \end{bmatrix}}$.
 
 ```{python}
 from IPython.core.display import HTML
@@ -745,7 +750,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>Find two equations for \(c\) and \(d\) so that \(c\bar{v} + d\bar{w} \) equals \(\bar{b}\).
+        <p>Find two equations for \(c\) and \(d\) so that \(c\mathbf{v} + d\mathbf{w} \) equals \(\mathbf{b}\).
         </p>
     </div>
     """
@@ -758,7 +763,7 @@ We find the equasions as follows:
 
 $$
 \begin{aligned}
-c\bar{v} + d\bar{w} = \bar{b} &\iff c{\tiny\begin{bmatrix} 2 \\ -1 \end{bmatrix}} + d{\tiny\begin{bmatrix} -1 \\ 2 \end{bmatrix}} = {\tiny\begin{bmatrix} 1 \\ 0 \end{bmatrix}} \\
+c\mathbf{v} + d\mathbf{w} = \mathbf{b} &\iff c{\tiny\begin{bmatrix} 2 \\ -1 \end{bmatrix}} + d{\tiny\begin{bmatrix} -1 \\ 2 \end{bmatrix}} = {\tiny\begin{bmatrix} 1 \\ 0 \end{bmatrix}} \\
 &\iff
 \begin{cases}
 2c - d = 1 \\
@@ -777,5 +782,5 @@ $$
 - A vector can be viewed as a list of numbers, an arrow from the origin, a point in the plane, or a NumPy array.
 - A vector in $d$-dimensional space $\mathbb{R}^d$ has $d$ entries.
 - Vector addition and scalar multiplication are performed entrywise.
-- Take all linear combinations of three-dimensional vectors $\bar{u}$, $\bar{v}$, and $\bar{w}$. These combinations typically form a line, a plane, or the whole space $\mathbb{R}^3$.
+- Take all linear combinations of three-dimensional vectors $\mathbf{u}$, $\mathbf{v}$, and $\mathbf{w}$. These combinations typically form a line, a plane, or the whole space $\mathbb{R}^3$.
 :::

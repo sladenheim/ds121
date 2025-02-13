@@ -30,7 +30,7 @@ import sklearn.metrics as metrics
 ::::{style="font-size:.8em"}
 In the last lecture we introduced the $k$-means algorithm for clustering.
 
-Today we will discuss it farther.
+Today we will discuss it further.
 
 :::{.fragment}
 We will outline the limitations of $k$-means clustering. We will also learn how to find whether the obtained clusters represent "real" structure in the dataset using the so-called Rand Index and the Silhouette Coefficient.
@@ -48,10 +48,10 @@ There are various settings in which $k$-means can fail to perform well.
 
 :::{.fragment}
 
-1. if the clusters are not spherical
+1. The clusters are not spherical.
 
 :::{.center-text}
-<img src="/images/vectors_ds/k-means-nonsphere.png" width = 800/>
+<img src="/images/vectors_ds/k-means-nonsphere.png" width = 700/>
 
 :::
 :::
@@ -62,7 +62,7 @@ There are various settings in which $k$-means can fail to perform well.
 ::::{style="font-size: .8em"}
 
 
-2. if clusters have significantly different sizes
+2. Clusters have significantly different sizes.
 
 :::{.center-text}
 <img src="/images/vectors_ds/k-means-cluster-size.png" width = 800/>
@@ -74,10 +74,10 @@ There are various settings in which $k$-means can fail to perform well.
 
 ::::{style="font-size: .8em"}
 
-3. if the initial guess is poor and it is unable to improve the starting clusters.
+3. The initial guess is poor and it is unable to improve the starting clusters.
 
 :::{.center-text}
-<img src="/images/vectors_ds/k-means-bad-initialization.png" width = 600/>
+<img src="/images/vectors_ds/k-means-bad-initialization.png" width = 500/>
 
 :::
 
@@ -92,37 +92,23 @@ Some of the above limitations arise due to the implicit assumptions of the algor
 Because each point is assigned to its closest cluster center, the points in a cluster are implicitly assumed to be arranged in a sphere around the center.
 
 In addition, the number of points in each cluster are assumed to be approximately the same.
-:::
-::::
 
-## Limitations of $k$-Means
-
-::::{style="font-size: .8em"}
 The performance of all iterative methods depends on the initial guess. The $k$-means algorithm is no exception.
 
-:::{.fragment}
-A good strategy is to pick initial cluster centers that are distant to each other. This strategy is called **k-means++**.
-
-It works very well in practice, and the `sci-kit` implementation uses it by default.
+A good strategy is to pick initial cluster centers that are distant to each other. This strategy is called **k-means++**. 
 :::
 ::::
-
 
 ## Feature Scaling
 
-::::{style="font-size: .6em"}
+::::{style="font-size: .8em"}
 Due to the tendency of $k$-means to look for spherical clusters, it
 is important to consider the scales of various features.
 
-:::{.fragment}
-_Example._ Consider the case where we are clustering perople based on their age, income, and whether they are a parent.
-
-We might use age in years, income in dollars, and build an enumerated data type for parenthood.
-:::
+Consider the case where people are being clustered based on their age, income, and whether they are a parent.
 
 ::::{.columns}
 :::{.fragment .column width="50%"}
-Thus, the following records:
 
 * Joe Smith, age 27, income USD 75,000, two children
 * Eve Jones, age 45, income USD 42,000, no children
@@ -130,7 +116,6 @@ Thus, the following records:
 :::
 
 :::{.fragment .column width="50%"}
-Are encoded in feature space as:
 
 $$
 \begin{bmatrix} 27 \\ 75000 \\ 1 \end{bmatrix}, \begin{bmatrix} 45 \\ 42000 \\ 0 \end{bmatrix}
@@ -162,10 +147,9 @@ display(HTML(html_content))
 
 ## Feature Scaling
 
-::::{style="font-size: .6em"}
-Clearly, the influence of income would dominate the other two features. For example, a difference of parenthood is about as significant as a difference of one dollar of yearly income.
-
-We are unlikely to expose parenting-based differences if we cluster using this representation
+::::{style="font-size: .8em"}
+The influence of income would dominate the other two features. 
+We are unlikely to expose parenting-based differences if we cluster using this representation.
 
 
 :::{.fragment}
@@ -178,17 +162,15 @@ The basic idea is to rescale each feature seperately, so that its range of value
 :::{.fragment .incremental}
 For example, one may choose to:
 
-- shift each feature independently by subtracting the mean over all observed values
-    - This means that each feature is now centered on zero
+- shift each feature independently by subtracting the mean over all observed values;
 - then rescale each feature so that the standard deviation overall observed values is 1.
-    - This means that the feature will have about the same range of values as all the others.
 :::
 ::::
 
-## Cluster Evaluation
+<!-- ## Cluster Evaluation
 
 <!-- Not the best right now but was having lots of trouble formatting -->
-:::{style="font-size: .8em"}
+<!-- :::{style="font-size: .8em"}
 Consider this dataset, which we have clustered using k-means
 
 
@@ -209,13 +191,13 @@ plt.axis('off');
 
 :::{.fragment}
 This dataset has no actual clusters, but $k$-means still outputs a clustering.
-:::
-::::
+::: -->
+<!-- :::: -->
 
 ## Cluster Evaluation
 
 ::::{style="font-size:.8em"}
-In general, there are two questions that we we need to answer:
+In general, there are two questions that we need to answer.
 
 :::{.fragment}
 &emsp;
@@ -239,7 +221,7 @@ In general, there are two questions that we we need to answer:
 ::::{style="font-size: .8em"}
 The **Rand Index** is a _similarity_ measure for clusterings. We can use it to compare two clusterings.
 
-Or, if we are testing an algorithm on data for which we know ground truth, we can use it to assess the algorithm's accuracy.
+If we are testing an algorithm on data for which we know ground truth, we can use it to assess the algorithm's accuracy.
 
 :::{.fragment}
 Assume that each item in our dataset has two labelings, one for each clustering.
@@ -257,8 +239,8 @@ We have a ground truth label assignment $T$ and a comparison clustering $C$.
 
 ## Rand Index
 
-::::{style="font-size: .7em"}
-Intuitively, the idea behind Rand Index is to consider _pairs_ of points, and ask whether paris that fall into the same cluster in $T$ also fall into the same cluster in $C$.
+::::{style="font-size: .8em"}
+The idea behind Rand Index is to consider _pairs_ of points, and ask whether paris that fall into the same cluster in $T$ also fall into the same cluster in $C$.
 
 ```{python}
 from IPython.core.display import HTML
@@ -267,8 +249,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        Let \(a\) be the number of pairs that habe the same label in \(T\) and the same label in \(C\). <br>
-        Let \(b\) be the number of pairs that have different labels in \(T\) and different labels in \(C\). <br>
+        Let \(a\) be the number of pairs that habe the same label in \(T\) and the same label in \(C\). Let \(b\) be the number of pairs that have different labels in \(T\) and different labels in \(C\). 
         Then the Rand Index is: <br>
         &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(\mbox{RI}(T,C) = \frac{a+b}{n \choose 2}\)
         </p>
@@ -285,11 +266,9 @@ The Rand Index is frequently replaced by the Adjusted Rand Index that compares t
 :::
 ::::
 
-## Rand index
+## Rand Index
 
-::::{style="font-size:.75em"}
-Example.
-
+::::{style="font-size:.8em"}
 ```{python}
 import sklearn.datasets as sk_data
 X, y = sk_data.make_blobs(n_samples=100, centers=3, n_features=30,
@@ -337,7 +316,7 @@ plt.ylabel('Adjusted Rand Index');
 :::
 
 :::{.fragment}
-The Adjusted Rand Index is the highest for $k=3$, three clusters.
+The Adjusted Rand Index is the highest for three clusters.
 :::
 ::::
 
@@ -366,16 +345,19 @@ display(HTML(html_content))
 
 ## Silhouette Coefficient
 
-::::{style="font-size: .6em"}
+::::{style="font-size: .8em"}
 Recall our definition of clustering: 
 
 > a grouping of data objects, such that the objects within a group are similar (or near) to one another and dissimilar (or far) from the objects in other groups.
 
 This suggests a metric that could evaluate a clustering: comparing the distances between points within a cluster, to the distances between points in different clusters.
+::::
 
-:::{.fragment}
+## Silhouette Coefficient
+
+::::{style="font-size: .8em"}
 The Silhouette Coefficient is an example of such an evaluation, where a higher Silhouette Coefficient score relates to a model with "better defined" clusters. 
-:::
+
 
 :::{.fragment}
 ```{python}
@@ -385,10 +367,10 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        Let \(a\) be the mean distance between a data point and all other points in the same cluster. <br>
-        Let \(b\) be the mean distance between a data point and all other points in the next nearest cluster.<br>
+        Let \(a\) be the mean distance between a data point and all other points in the same cluster.
+        Let \(b\) be the mean distance between a data point and all other points in the next nearest cluster.
         Then the <b>Silhouette Coefficient</b> for a clustering is:<br><br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(s = \frac{b-a}{\max(a, b)}\) 
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(s = \frac{b-a}{\max(a, b)}\). 
         </p>
     </div>
     """
@@ -398,10 +380,12 @@ display(HTML(html_content))
 ```
 :::
 ::::
+
+
 ## Silhouette Coefficient
 
 ::::{style="font-size:.8em"}
-Recall our 30-dimensional synthetic data from earlier, which we approximated using this 2-d multidimensional scaling model.
+Recall our 30-dimensional synthetic data from earlier, which we approximated using a 2D multidimensional scaling model.
 
 :::{.center-text}
 ```{python}
@@ -531,8 +515,8 @@ If the error stops going down, that would suggest that the clustering is not imp
 
 ## Number of Clusters
 
-:::{style="font-size:.6em"}
-For the synthetic dataset, here is the $k$-means objective, as a function of $k$:
+:::{style="font-size:.8em"}
+For the synthetic dataset, here is the $k$-means objective, as a function of $k$.
 
 :::{.center-text}
 ```{python}
@@ -550,11 +534,7 @@ plt.ylabel('Error');
 :::
 
 :::{.fragment}
-This gives us a methodical way to determine $k$. Even if we hadn't known it previously, we should choose $k = 3$ since it is at the "_elbow_" of this graph. Increasing the number of clusters doesn't cause the clustering error to decrease much further.
-:::
-
-:::{.fragment}
-This synthetic data is not at all typical.   You will almost never see such a sharp change in the error function as we see here.
+We should choose $k = 3$ since it is at the "_elbow_" of this graph. Increasing the number of clusters doesn't cause the clustering error to decrease much further.
 :::
 :::
 
