@@ -1,0 +1,932 @@
+---
+title: "Computational Complexity"
+author: "CDS DS 121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+```{python}
+import numpy as np
+```
+
+## Learning Objectives
+
+:::{style="font-size:.8em"}
+Recall that we explore linear algebra through three modes of thinking: algebraic, geometric, and computational. So far, we have explored vectors and matrices from an algebraic and geometric perspective.
+
+
+:::{.fragment}
+Today we will focus on the computational perspective. In particular, we will discuss how to measure the computational costs of matrix algorithms. We will also examine how computers perform mathematical calculations, why they can be incorrect, and how best to mitigate this problem.
+:::
+
+:::{.fragment}
+An important goal of this course is to get computers to do matrix math with acceptable speed and accuracy.
+:::
+
+:::
+
+## Computing Quickly and Accurately{.smaller-title}
+
+:::{style="font-size:.8em"}
+Data science is largely about manipulating matrices since almost all data can be represented as a matrix: time-series, structured data, anything that fits in a spreadsheet or SQL database, images, and language (often represented as word embeddings).
+
+:::{.fragment}
+There are (at least) four things to keep in mind when choosing or designing an algorithm for vector and matrix computations:
+
+- Speed
+- Memory Use
+- Accuracy/Stability
+- Scalability/Parallelization
+:::
+
+:::{.fragment}
+Often there will be trade-offs between these categories.
+:::
+
+:::
+
+## Computing Quickly and Accurately{.smaller-title}
+
+:::{style="font-size:.8em"}
+
+__Example:__ Computational speed. Let's create three matrices of different sizes.
+
+```{python}
+#| echo: true
+A = np.random.rand(20000,2)
+B = np.random.rand(2,20000)
+C = np.random.rand(20000,2)
+```
+
+Suppose we want to multiply these matrices together to compute $D = A B C$.
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Is it faster to compute \((AB)C\) or \(A(BC)\)? 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+:::{.fragment}
+Let's run both operations in `Python` and time how long they take to compute.
+:::
+:::
+
+## Computing Quickly and Accurately{.smaller-title}
+
+:::{style="font-size:.8em"}
+
+```{python}
+#| echo: true
+%%time
+Dslow = (A@B) @ C
+```
+
+```{python}
+#| echo: true
+%%time
+Dfast = A @ (B@C)
+assert(np.allclose(Dslow, Dfast)), "Dslow and Dfast are not equal!"
+print("Assertion passed: Dslow and Dfast are nearly equal.")
+```
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What happened here? 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+:::{.fragment}
+$AB$ is $20000 \times 20000,$ while $BC$ is $2 \times 2.$
+:::
+:::
+
+
+## Computing Quickly and Accurately{.smaller-title}
+
+:::{style="font-size: .8em"}
+__Example:__ Computational (in)accuracy. The previous example exposed another issue: the two output matrices $D_{slow}$ and $D_{fast}$ should have been equal, but it turns out they were *slightly* different.
+
+This is why the code above used the Numpy command `allclose` to check whether two vectors were _approximately equal_ in each coordinate, rather than checking for exact equality.
+
+:::{.fragment}
+```{python}
+#|echo: true
+diff = Dslow-Dfast; diff.max()
+```
+
+Sometimes for the same question, the answers we get from a computer are very different from the answers we get mathematically!
+:::
+:::
+
+## Computing with Real Numbers
+
+:::{style=font-size:.8em}
+Sometimes Python gets even basic arithmetic wrong.
+
+```{python}
+#| echo: true
+1.1 - 1.0
+```
+
+:::{.fragment}
+Here's a more complicated example. Look at the piecewise-linear function $f$ whose code is shown below.
+
+```{python}
+#| echo: true
+
+# Source: Greenbaum and Chartier's Numerical Methods, page 107
+def f(x):
+    if x <= 1/2:
+        return 2 * x
+    if x > 1/2:
+        return 2 * x - 1
+```
+:::
+
+<div style="margin-bottom: 0.5em;"> </div> 
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        If I run \(f(1)\), what will be the output?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+:::
+
+## Computing with Real Numbers
+
+:::{style="font-size:.6em"}
+
+```{python}
+#| echo: true
+f(1)
+```
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        If I compute \(x_1=f(.2)\), what will be the output?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<div style="margin-bottom: 0.5em;"> </div> 
+
+:::{.fragment}
+```{python}
+#| echo: true
+f(0.2)
+```
+:::
+
+:::{.fragment}
+What if I keep going? Suppose I set
+$$
+\begin{align*}
+    x_1 &= f(0.2) \\
+    x_2 &= f(x_1) \\
+    x_3 &= f(x_2) \\
+        &\;\vdots
+    \end{align*}
+$$
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Keep going for 10 iterations. What is the result?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+:::
+
+## Computing with Real Numbers
+
+:::{style="font-size:.8em"}
+
+Now, let's run the code for 60 iterations on a computer starting with $x = 0.2$ and see if it agrees with our calculation.
+
+```{python}
+#| echo: true
+x = 0.2
+for i in range(60):
+    print("iteration", "{:2d}".format(i), "   x =", x)
+    x = f(x)
+```
+
+:::
+
+## Computing with Real Numbers
+
+:::{style="font-size:.8em"}
+What happened?
+
+:::{.fragment}
+The root of the problem has to do with how _numbers_ are represented and manipulated in a computer.
+
+In a computer we assign _bit patterns_ to correspond to certain numbers.   
+
+We say the bit pattern is the number's _representation._
+:::
+
+:::{.fragment}
+For example the number '3.14' might have the representation '01000000010010001111010111000011'.
+
+For reasons of efficiency, we use a fixed number of bits for these representations.   In most computers nowadays we use _64 bits_ to represent a number.
+:::
+:::
+
+## Floating-Point Representation
+
+:::{style="font-size:.8em"}
+Representing a real number in a computer is very complicated, much more so than representing integers (where computer arithmetic is, mostly, correct). 
+
+In fact, most real numbers cannot be represented exactly in a computer. For many decades after electronic computers were developed, there was no accepted "best" way to do this!
+
+Eventually (in the 1980s) a widely accepted standard emerged, called the IEEE-754 standard for __floating-point arithmetic__.
+:::
+
+## Floating-Point Representation
+
+:::{style="font-size: .55em"}
+This is what almost all computers now use. Conceptually, it is similar to "scientific notation."
+$$
+123456 = \underbrace{1.23456}_{\mbox{significand}}\times {\underbrace{10}_{\mbox{base}}}^{\overbrace{5}^{exponent}}
+$$
+
+:::{.fragment}
+Except that it is encoded in binary:
+
+$$
+17 = \underbrace{1.0001}_{significand}\times {\underbrace{2}_{base}}^{\overbrace{4}^{exponent}}
+$$
+
+:::
+
+:::{.fragment}
+In a double-precision floating point number: the sign, significand, and exponent are all contained within 64 bits (or 8 bytes).
+
+:::{.center-text}
+<img src="/images/vector_matrix_algebra/floating-point-format.png" width = 800/>
+
+:::
+:::
+:::
+
+## Floating-Point Representation
+
+:::{style="font-size:.8em"}
+There are a few special values defined by the IEEE-754 floating point standard:
+
+1.  NaN, which means "Not a Number" 
+2.  Infinity -- both positive and negative
+3.  Zero -- both positive and negative (though as far as we are concerned in this class, those are the same number).
+
+:::{.fragment}
+```{python}
+#| echo: true
+np.sqrt(-1)
+```
+
+```{python}
+#| echo: true
+var = np.log(0)
+var
+```
+
+```{python}
+#| echo: true
+1/var
+```
+
+:::
+:::
+
+## Floating-Point Representation
+
+:::{style="font-size:.8em"}
+As far as we are concerned, there is no difference between positive and negative zero. You can ignore the minus sign in front of a negative zero.
+
+```{python}
+#| echo: true
+var = np.nan
+var + 7
+```
+
+```{python}
+#| echo: true
+var = np.inf
+var + 7
+```
+:::
+
+## Absolute and Relative Errors
+
+:::{style="font-size:.8em"}
+A floating point is an approximation of some particular real number.
+
+:::{.fragment}
+
+- Floating point numbers cannot be arbitrarily large or small. Numbers can be as large as $1.79 \times 10^{308}$ and as small as $2.23 \times 10^{-308}$.
+:::
+
+:::{.fragment}
+
+- There are discrete gaps between floating point numbers. For instance, the interval $[1,2]$ is represented by discrete subset:
+    $$
+    1, \: 1+2^{-52}, \: 1+2 \times 2^{-52},\: 1+3 \times 2^{-52},\: \ldots, 2
+    $$
+:::
+
+:::{.fragment}
+Floats are discrete but not equidistant:
+
+:::{.center-text}
+<img src="/images/vector_matrix_algebra/fltscale-wh.png" width = 1000/>
+
+:::
+:::
+:::
+
+## Absolute and Relative Errors
+
+:::{style="font-size:.6em"}
+Generally when we try to store a real number in a computer, what we wind up storing is the nearest floating point number that the computer can represent.
+
+What does "nearest" mean? It means "rounded to the nearest representable value."
+
+:::{.fragment}
+Let's say we have a particular real number $x, x\in \mathbb{R}.$
+
+**Rounding** $x$ means that $x$ will be replaced with the floating point number closest to $x,$ which is called $fl(x).$ The error caused by this process is called **rounding error,** and $fl(x)$ is written as
+
+$$
+fl(x) = x(1 + \varepsilon).
+$$
+:::
+
+:::{.fragment}
+How big can $\varepsilon$ be? Let's say $x$ is a number that is ever so slightly larger than 1 (or more generally, any power of two $2^n$). The computer has two choices:
+
+$$
+\underbrace{1.000...00}_{53~bits}\times 2^n \quad \text{or} \quad \underbrace{1.000...01}_{53~bits}\times 2^n.
+$$
+
+:::{.fragment}
+The difference between these numbers is
+
+$$
+0.\underbrace{000...01}_{53~bits}\times 2^n
+$$
+
+:::
+:::
+:::
+
+## Absolute and Relative Errors
+
+:::{style="font-size: .55em"}
+
+The value $|x-fl(x)|=|\varepsilon |$ is called the **absolute error.** It is bounded by
+
+
+$$
+|\varepsilon x| \leq \frac{1}{2}\bigg( 0.\underbrace{000...01}_{53~bits}\times 2^0. \bigg)
+$$
+
+<!-- Below text better centered? Finding workaround to center text shrinking box as well maybe.. -->
+:::{.fragment }
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Can you see why?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+
+:::{.fragment}
+
+The **relative error** is $\frac{|x-fl(x)|}{x}$
+
+Note that $\frac{|x-fl(x)|}{x}=\frac{|\varepsilon x}{|x|}=|\varepsilon|.$ Let us find an upper bound for it.
+:::
+
+:::{.fragment}
+Since we assumed that $x$ is larger than $1$, we know that $|x| \ge 1 \geq 1.\underbrace{000...01}_{52~bits}\times 2^n.$
+
+Hence,
+
+$$
+| \varepsilon | = \frac{|\varepsilon x|}{|x|} \leq \frac{1}{2}\bigg( \frac{1.000...01\times 2^0.}{0.\underbrace{000...01}_{52~bits}\times 2^0.} \bigg) = \frac{1}{2}(2^{-52})=2^{-53} \approxeq 1.11 \times 10^{-16}
+$$
+:::
+
+:::
+
+## Absolute and Relative Errors
+
+::::{style="font-size:.8em"}
+$2^{-53} \approx 1.11 \times 10^{-16}$, is known as __machine epsilon__ for double precision. It is typically denoted by $\varepsilon_{machine}$.
+
+Machine epsilon is half the distance between 1 and the next larger floating point number. 
+
+The total distance between $1$ and the next larger floating point number is denoted as $\epsilon$ (yet another epsilon).
+
+:::{.fragment}
+
+`Numpy` can show your computer's epsilon.
+
+```{python}
+#| echo: true
+print(np.finfo(float).eps)
+print(np.finfo(float).eps == 2**-52)
+```
+:::
+
+:::{.fragment}
+This value $10^{-16}$ is an important one to remember.
+:::
+
+::::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+<!-- Not using 8em font size to compensate because really smaller title applies font to whole slide.. maybe raw html instead of css? -->
+
+:::{style="font-size: 1em"}
+Here are 3 principles to keep in mind when computing with floating point numbers.
+
+1. Compare floating point numbers for closeness, not equality
+2. Relative error can be magnified during subtractions
+3. Beware of ill-conditioned problems
+
+Let's discuss each of these principles in more detail.
+
+:::{.fragment}
+### Principle 1: Compare floating point numbers for closeness, not equality
+
+Two floating point computations that should yield the same result mathematically, may not do so due to rounding error.
+
+However, in general, if two numbers should be equal, the relative error of the difference in the floating point should be small.
+:::
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+:::{style="font-size: 1em"}
+Instead of asking whether two floating numbers are _equal_, we should ask if they are _close_  meaning that the relative error of their difference is small.
+
+Let's try an example.
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+a = 7
+b = 1/10
+c = 1/7
+r1 = a * b * c
+r2 = b * c * a
+print(r1)
+print(r2)
+np.abs(r1-r2)/r1
+```
+
+```{python}
+#| echo: true
+# The wrong way to check equality
+print(r1 == r2)
+```
+
+:::
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+Both 1/70 and 0.1 _cannot_ be stored exactly in a floating point representation.    
+
+<!-- Altered text a little here.. Is the below preferred gramatically to the previous writing?
+ -->
+More importantly, the rounding errors are different for the two numbers. So, when you round $1/70$ to its closest floating point representation and then multiply that by $7$, you yield a number whose closest floating point representation is _not_ 1.
+
+However, that floating point representation is very _close_ to 0.1.
+
+:::{.fragment}
+Let's look at the difference: 1.3877787807814457e-16
+
+This is about $-1\cdot 10^{-17}.$
+:::
+
+:::{.fragment}
+In other words $-1 \cdot 10^{-17} = -0.0000000000000001$.
+
+Compared to 0.1, this is a very small number.  The relative error abs(-0.0000000000000001 / 0.1) is about $10^{-16}.$
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+```{python}
+#| echo: true
+# A better way to check equality
+np.finfo('float')
+print(np.abs(r1 -  r2)/np.max([r1, r2]) < np.finfo('float').eps)
+```
+
+:::{.fragment}
+This test is needed often enough that `numpy` has a function that implements it:
+
+```{python}
+#| echo: true
+np.isclose(r1, r2)
+```
+
+:::
+
+:::{.fragment}
+The matrix version of this function is called `allclose`. It applies an `isclose` check for each entry in the matrix.
+
+```{python}
+#| echo: true
+A = np.random.rand(2,2)
+B = np.random.rand(2,2)
+C = np.random.rand(2,2)
+
+(A @ B) @ C == A @ (B @ C)
+```
+
+```{python}
+#| echo: true
+np.allclose((A @ B) @ C, A @ (B @ C))
+```
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+Two numbers, each with small relative error, can yield a value with large relative error if subtracted. If two numbers have errors in the 9th significant digit, but the first 8 significant digits cancel out, then all of a sudden the relative error is large.
+
+:::{.fragment}
+```{python}
+#| echo: true
+a = 1.23456789
+b = 1.2345678
+trueDiff = 0.00000009
+calcDiff = a - b
+print("True difference:", trueDiff)
+print("Calculated diff:", calcDiff,"\n")
+print("Absolute error:", trueDiff-calcDiff)
+print("Relative error:", (trueDiff-calcDiff) / trueDiff)
+```
+
+Here, the relative error in the inputs is on the order of $10^{-16}$, but the relative error of the output is on the order of $10^{-9}$ – i.e., a million times larger.
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+An *ill-conditioned problem* is one in which the outputs depend in a very sensitive manner on the inputs.
+
+That is, a small change in the inputs can yield a very large change in the outputs.
+
+:::{.fragment}
+A simple example is computing $1/(a-b).$ If $a$ is close to $b,$ then a small change in either will make a big difference in the output. This is because $0$ doesn't have a multiplicative inverse, so as $a$ and $b$ get closer then $1/(a-b)$ will go to infinity.
+
+```{python}
+#| echo: true
+print(f'r1 is {r1}')
+print(f'r2 is very close to r1')
+
+r3 = r1 + 0.0001
+
+print(f'r3 is {r3}')
+print(f'1/(r1-r2) = {1/(r1-r2)}')
+print(f'1/(r3-r2) = {1/(r3-r2)}')
+```
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+:::{style="font-size:.8em"}
+The notion of ill-conditioning applies to matrix problems too, and in particular comes up when we solve certain problems involving matrices that are _almost_ uninvertible.
+
+:::{.fragment}
+Here is a simple example. Given the $2 \times 2$ matrix $A = \begin{bmatrix} 1 & 2.0000000001 \\ 2 & 4 \end{bmatrix},$ solve:
+
+$$
+A {\bf x} = \begin{bmatrix} 1 \\ 2 \end{bmatrix} \quad \text{and} \quad A {\bf y} = \begin{bmatrix} 1 \\ 2.01 \end{bmatrix}.
+$$
+
+:::
+
+:::{.fragment}
+The two vectors on the right hand sides are similar, so we might expect that the (one and only) solution $x$ would be close to $y.$ Sometimes, this is _not_ the case.
+:::
+
+:::{.fragment}
+
+```{python}
+#| echo: true
+A = np.array([[1, 2.0000000001], [2, 4]])
+b = np.array([[1],[2]])
+c = np.array([[1],[2.01]])
+
+print("x =")
+print(np.linalg.solve(A, b)) # true answer: [[1], [0]]
+
+print("y =")
+print(np.linalg.solve(A, c)) # should be [[100 million], [-50 million]]
+```
+:::
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+A related concept to ill-conditioned problems is the idea of _numerical stability_.
+
+Numerical stability is a property of a computer algorithm. At a high level, it captures whether the algorithm is:
+
+- good at overcoming minor inaccuracies, or
+- bad enough to exacerbate the problem, turning a minor mistake into a major error.
+
+:::{.fragment}
+__Example.__ Let's go back to the piecewise-linear function $f$.
+
+```{python}
+#| echo: true
+# Source: Greenbaum and Chartier's Numerical Methods, page 107
+
+def f(x):
+    if x <= 1/2:
+        return 2 * x
+    if x > 1/2:
+        return 2 * x - 1
+```
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+:::{.incremental}
+So what went wrong here?
+
+- Because most real numbers cannot be represented exactly in a computer, any computation involving real numbers can introduce some error.
+
+- We never had a chance to use Principle #1 (compare for closeness rather than equality) because this code never performs equality checks.
+
+- Principle #2 says that errors can be magnified during subtractions. That's exactly what happens every time we run the `x > 1/2` case of the $f$ function. (And in the `x <= 1/2` case, we also multiply the error by 2.)
+
+- Principle #3 says to beware ill-conditioned problems. Fortunately, this piecewise linear function is not an ill-conditioned problem: it's not the case that a small change of $0.0000000001$ results in a big difference in the output.
+:::
+
+## Computational Cost of an Algorithm {.really-smaller-title}
+
+How do we measure cost of an algorithm?
+
+:::{.fragment}
+First, we need to define our units. In this course, we will measure the cost of an algorithm by counting the number of _additions, multiplications, divisions, subtractions, or square roots._
+
+In modern processors, each of these operations requires only a single instruction. When performed over real numbers in _floating point representation_ (which we will describe in detail next), these operations are called _flops_ (floating point operations).
+:::
+
+:::{.fragment}
+Second, when counting operations we will primarily be concerned with the _highest-powered_ term in the expression that counts flops.
+
+This tells us how the flop count scales for very large inputs.
+:::
+
+## Computational Cost of an Algorithm {.really-smaller-title}
+
+Let's say for a problem with input size $n$, an algorithm has flop count $12n^2 + 3n + 2$.  
+
+Then the __cost__ of the algorithm is $12n^2$.
+
+:::{.fragment}
+This is a good approximation because $12n^2$ is asymptotically equivalent to the exact flop count:
+
+$$
+\lim_{n\rightarrow\infty} \frac{12n^2 + 3n + 2}{12n^2} = 1. 
+$$
+
+:::
+
+:::{.fragment}
+We will use the symbol $\sim$ to denote this relationship.
+
+So we would say that this algorithm has flop count $\sim 12n^2$.
+:::
+
+## Costs of Matrix and Vector Algorithms {.smaller}
+
+<!-- .9 and not .8 for same reason stated above -->
+
+:::{style="font-size:.9em"}
+Let's calculate the cost of common linear algebra operations, starting with the inner product.
+
+$$
+[x_1\;x_2\;\dots\;x_n] \left[\begin{array}{c}y_1\\y_2\\\vdots\\y_n\end{array}\right] = \sum_{i=1}^n x_i y_i.
+$$
+
+:::{.fragment}
+Given two vectors of length $n$, calculating an inner product requires:
+
+- $n$ multiplications
+- $n - 1$ additions
+
+:::
+
+:::{.fragment}
+So the overall flop count of the inner product is $2n - 1$.
+
+As stated before, we'll often focus on the dominant term: $2n$.
+:::
+:::
+
+## Costs of Matrix and Vector Algorithms {.smaller}
+
+:::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What is the flop count when multiplying an \(n \times n\) matrix \(A\) with a \(n \times 1\) column vector \( \bf x\)? <br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(A{\bf x} = \left[\begin{array}{cccc}\begin{array}{c}\vdots\\\vdots\\{\bf a_1}\\\vdots\\\vdots\end{array}&\begin{array}{c}\vdots\\\vdots\\{\bf a_2}\\\vdots\\\vdots\end{array}&\dots&\begin{array}{c}\vdots\\\vdots\\{\bf a_n}\\\vdots\\\vdots\end{array}\\\end{array}\right]\;\left[\begin{array}{c}x_1\\x_2\\\vdots\\x_n\end{array}\right]\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+:::{.fragment}
+To perform matrix-vector multiplication, you must compute $n$ inner products. We just saw that each one has a flop count of approximately $2n$, so the overall cost is
+
+$$
+n \cdot 2n = 2n^2.
+$$
+:::
+
+:::{.fragment}
+Note that $n^2$ grows *much* quicker than $n$.
+
+This cost can be written as $O(n^2)$. In __Big-O notation__, the $O$ signifies that the cost does not exceed $cn^2$, where $c$ is a constant.
+:::
+:::
+
+## Costs of Matrix and Vector Algorithms {.smaller}
+
+:::{style="font-size:.8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What is the computational complexity of matrix multiplication <code>C = A @ B</code>, given two \(n \times n\) square matrices?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+:::{.fragment}
+The algorithm we studied for matrix-matrix multiplication involves separately computing $A \mathbf{b_i}$ for each of the $n$ columns in $B$.
+
+We just saw that the cost of matrix-vector multiplication is $2n^2$. So the cost of matrix-matrix multiplication is $n$ times that: $2n^3$.
+:::
+
+:::{.fragment}
+This is not good news; for two matrices of size 10,000  ×
+  10,000 (which is not  large in practice), this is 2 trillion operations (2 teraflops).
+
+Think of $𝑂(n^3)$ operations as slow. When possible, we should try to find faster algorithms that run in $O(n)$ or $O(n^2)$ time instead.
+:::
+:::
+
+## Costs of Matrix and Vector Algorithms {.smaller}
+
+:::{style="font-size:.9em"}
+__Example.__ What is the most efficient way to compute $A^2{\bf x}$?
+
+:::{.fragment}
+Here are your choices:
+
+1. First compute $A^2$, then compute $(A^2){\bf x}$
+2. First compute $A{\bf x}$, then compute $A(A{\bf x})$
+:::
+
+:::{.fragment}
+1. First compute $A^2$, then compute $(A^2){\bf x}$: 
+
+    - Complexity: $2n^3 + 2n^2$
+    - Runtime for $n = 10,000$ rows: about 2 Trillion flops
+:::
+
+:::{.fragment}
+2. First compute $A{\bf x}$, then compute $A(A{\bf x})$: 
+
+    - Complexity: $2 \cdot 2n^2 = 4n^2$
+    - Runtime for $n = 10,000$ rows: 4 Million flops ${\large \checkmark}$
+:::
+:::
+
+## Parallelization
+
+:::{style="font-size:.8em"}
+Although matrix multiplication is computationally demanding, it is _highly parallel_.
+
+That is, the computation needed for each element does not require computing the other elements.
+
+:::{.fragment}
+This means that if we have multiple processors, and each has access to $A$ and $B$, the work can be divided up very cleanly.
+
+For example, let's say you have $n$ processors.   Then each processor can independently compute one column $A{\bf b_i}$ of the result, without needing to know anything about what the other processors are doing.  
+
+Since all processors are working in parallel, the elapsed time is reduced from $2n^3$ down to $2n^2.$
+:::
+:::
+
+## Key Ideas
+
+:::{style="font-size:.8em"}
+
+- Real numbers are respresented in computers using floating-point representation. A floating point number consists of a sign, significand, and exponent.
+
+:::{.fragment}
+- 3 principles to keep in mind when computing with floating point numbers.
+    1. Compare floating point numbers for closeness, but not equality
+    2. Relative error can be magnified during subtractions
+    3. Beware of ill-conditioned problems
+:::
+
+:::{.fragment}
+- A floating point operation (flop) is a measure of computer performance. When counting flops, we focus on the highest-power term. Big O notation helps to classify algorithms based on their efficiency.
+:::
+
+:::
