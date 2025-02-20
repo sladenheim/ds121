@@ -5,7 +5,6 @@ format:
     revealjs:
         math: true
         css: 
-        - smaller_title.css
         - styles.css
         html-math-method: mathjax
 include-in-header:

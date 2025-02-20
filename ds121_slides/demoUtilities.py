@@ -19,6 +19,34 @@ def plotSetup(xmin = -3.0, xmax = 3.0, ymin = -3.0, ymax = 3.0, size=(6,6)):
     centerAxes(ax)
     return ax
 
+
+def plotSmallSetup(xmin = -3.0, xmax = 3.0, ymin = -3.0, ymax = 3.0, size=(4.5,4.5)):
+    """
+    refactored version of ut.plotSetup to hide as much as possible when showing code
+    basics of 2D plot setup
+    defaults: xmin = -3.0, xmax = 3.0, ymin = -3.0, ymax = 3.0, size=(6,6)
+    size is by default 6 inches by 6 inches
+    """
+    fig = plt.figure(figsize=size)
+    ax = fig.add_subplot(1, 1, 1, aspect='equal')
+    plt.xlim([xmin, xmax])
+    plt.ylim([ymin, ymax])
+    ax.axes.set_xlim([xmin, xmax])
+    centerAxes(ax)
+    return ax
+
+def plotSmallerSetup(xmin = -3.0, xmax = 3.0, ymin = -3.0, ymax = 3.0, size=(4,4)):
+    """
+    Smaller version of the smaller setup method. Used to maintain a sense of consistency between slides.
+    """
+    fig = plt.figure(figsize=size)
+    ax = fig.add_subplot(1, 1, 1, aspect='equal')
+    plt.xlim([xmin, xmax])
+    plt.ylim([ymin, ymax])
+    ax.axes.set_xlim([xmin, xmax])
+    centerAxes(ax)
+    return ax
+
 def AxVS(A,x):
     """
     Takes a matrix A and a vector x and returns their product
@@ -73,6 +101,15 @@ def centerAxes (ax):
     # ax.plot(bounds, '')
 
 def plotSquare(x,color='b'):
+    y = np.concatenate((x,x[:,[0]]),axis=1)
+    plt.plot(y[0],y[1],'b-')
+    plt.plot(y[0,0],y[1,0],'ro')
+    plt.plot(y[0,1],y[1,1],'go')
+    plt.plot(y[0,2],y[1,2],'co')
+    plt.plot(y[0,3],y[1,3],'yo')
+    plt.fill(x[0],x[1],color,alpha=0.15)
+
+def plotSmallSquare(x,color='b'):
     y = np.concatenate((x,x[:,[0]]),axis=1)
     plt.plot(y[0],y[1],'b-')
     plt.plot(y[0,0],y[1,0],'ro')
