@@ -1,6 +1,6 @@
 ---
 title: "Gauss-Jordan Elimination"
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         math: true
@@ -13,7 +13,7 @@ format:
 
 :::{style="font-size: .8em"}
 
-Today we will revisit Gauss-Jordan elimination that should be familiar to you from DS 120. In addition to using Gauss-Jordan elinmination to solve linear systems, we will also write it as a systematic algorithm that we can encode into a computer and calculate its flop count.
+Today we will revisit Gauss-Jordan elimination that should be familiar to you from DS-120. In addition to using Gauss-Jordan elinmination to solve linear systems, we will also write it as a systematic algorithm that we can encode into a computer and calculate its flop count.
 
 
 :::{.center-text}
@@ -29,7 +29,7 @@ Today we will revisit Gauss-Jordan elimination that should be familiar to you fr
 :::{style="font-size: .8em"}
 One of the most common questions you will encounter is, given a matrix $A$ and a vector ${\bf b}$, is there an ${\bf x}$ that makes $A{\bf x} = {\bf b}$ true?
 
-To solve a linear system, our objective is to transform it into a new system which is equivalent to the old system, meaning it has the same solution set. However, in the new system the solution is explicit.
+To solve a linear system, we transform it into a new system which is equivalent to the old system, meaning it has the same solution set. However, in the new system the solution is explicit.
 
 :::{.fragment}
 
@@ -50,7 +50,7 @@ $$
 :::{style="font-size: .8em"}
 Our transformations will be based on three facts.
 
-_Fact Number 1_: Given a set of linear equations, we can _change the order_ of the equations without changing anything. For example, the following two linear systems have the same solution set.
+_Fact Number 1_: Given a set of linear equations, we can _change the order_ of the equations without changing anything. 
 
 $$
 \begin{array}{rcr}
@@ -67,7 +67,7 @@ $$
 $$
 
 :::{.fragment}
-_Fact Number 2_: We can _multiply any equation by a constant_ without changing its meaning. For example: the following two linear systems have the same solution set.
+_Fact Number 2_: We can _multiply any equation by a constant_ without changing its meaning. 
 $$
 \begin{array}{rcr}
 3x = 2
@@ -85,9 +85,8 @@ $$
 ## Solving Linear Systems
 
 :::{style="font-size:.8em"}
-__Fact Number 3__: we can __add one equation to another__ without changing the solution set.
+__Fact Number 3__: we can _add one equation to another_ without changing the solution set.
 
-For example, the following two systems of linear equations have the same solution set:
 
 $$
     \begin{array}{rcr}
@@ -104,19 +103,17 @@ $$
 $$
 
 :::{.fragment}
-The procedure we will use to solve a linear system consists of two steps: __Elimination__ and __Backsubstitution__. Let's recall how it works.
+The procedure we will use to solve a linear system consists of two steps: __Elimination__ and __Backsubstitution__. 
 :::
 :::
 
 ## Elimination
 
-:::{style="font-size: .7em"}
-The goal of the elimination step is to create an upper triangular matrix (or system) with 1s on the diagonal.
-
-The basic operation we will repeatedly apply is to _add a multiple of one equation (row) to another_. We’ll do this with the equations and the matrix side-by-side.
+:::{style="font-size: .8em"}
+The goal of the elimination step is to create an upper triangular matrix.  
 
 :::{.fragment}
-__Example.__ Here is a linear system written both as a set of equations (on the left) and an augmented matrix (on the right).
+__Example.__ Here is a linear system written both as a set of equations and an augmented matrix.
 
 $$
 \begin{array}{cc}
@@ -136,17 +133,13 @@ $$
 \end{array}
 $$
 
-Our first objective is to change the red $\color{red}{6}$ into a 0. (Some other scalars will change along the way.)
-:::
-
-:::{.fragment}
-To do so: we use Fact Number 3 that "we can add one equation to another without changing the solution set."
+Our first objective is to change the red $\color{red}{6}$ into a 0. To do so we use Fact Number 3 that "we can add one equation to another without changing the solution set."
 :::
 :::
 
 ## Elimination
 
-:::{style="font-size: .5em"}
+:::{style="font-size: .8em"}
 $$
     \begin{array}{rrrrrr}
         &6x_1& +5x_2& +9x_3& =& -4\\
@@ -158,13 +151,13 @@ $$
 
 :::{.fragment}
 
-We will substitute this result back into row 3 of the linear system. This step can be represented using the notational shorthand
+We substitute this result back into row 3 of the linear system. 
 
 > $\text{row}_3 \gets \text{row}_3 - 6 \cdot \text{row}_1$.
 :::
 
 :::{.fragment}
-This gives us a new system.
+This gives us a new, *equivalent* system.
 
 $$
 \begin{array}{cc}
@@ -184,38 +177,14 @@ $$
 \end{array}
 $$
 
-Note that this is not the same system of equations, but it is *equivalent* – it has the same solution set.
 :::
 
-:::{.fragment}
-This gives us a new system.
-
-$$
-\begin{array}{cc}
-\begin{array}{rcr}
-        x_1 - 2x_2 +x_3 &=& 5\\
-        2x_2 - 8x_3 &=& -4\\
-        17x_2 +3x_3 &=& -34
-\end{array}
-& \; \Leftrightarrow \;
-\left[
-\begin{array}{rrr|r}
-        1  & -2  & 1 & 5\\
-        0 & 2 &  -8 & -4\\
-        0 & 17 & 3 & -34
-\end{array}
-\right]
-\end{array}
-$$
-
-Note that this is not the same system of equations, but it is *equivalent* – it has the same solution set.
-:::
 :::
 
 ## Elimination
 
-:::{style="font-size:.7em"}
-Next, we use Fact Number 2 and multiply the second equation by $1/2$ to get its leading coefficient to be 1. This step can be represented with the notational shorthand $\text{row}_2 \gets \frac{1}{2} \cdot \text{row}_2.$
+:::{style="font-size:.8em"}
+Next, we use Fact Number 2 and multiply the second equation by $1/2$ to get its leading coefficient to be 1: $\text{row}_2 \gets \frac{1}{2} \cdot \text{row}_2.$
 
 $$
 \begin{array}{cc}
@@ -236,7 +205,7 @@ $$
 $$
 
 :::{.fragment}
-Next, we multiply the second equation by $-17$ and add it to the third equation. In other words, we perform the operation $\text{row}_3 \gets \text{row}_3 - 17 \cdot \text{row}_2.$
+Next, we multiply the second equation by $-17$ and add it to the third equation: $\text{row}_3 \gets \text{row}_3 - 17 \cdot \text{row}_2.$
 
 $$
 \begin{array}{cc}
@@ -261,26 +230,7 @@ $$
 
 ## Elimination
 
-:::{style="font-size: .7em"}
-Next, we multiply the second equation by $-17$ and add it to the third equation. In other words, we perform the operation $\text{row}_3 \gets \text{row}_3 - 17 \cdot \text{row}_2.$
-
-$$
-\begin{array}{cc}
-\begin{array}{rcr}
-        x_1 - 2x_2 +x_3 &=& 5\\
-        x_2 - 4x_3 &=& -2\\
-        71x_3 &=& 0
-\end{array}
-&\;\Leftrightarrow\;
-\left[
-\begin{array}{rrr|r}
-        1  & -2  & 1 & 5\\
-        0 & 1 &  -4 & -2\\
-        0 & 0 & 71 & 0
-\end{array}
-\right]
-\end{array}
-$$
+:::{style="font-size: .8em"}
 
 Note that now all entries below the main diagonal are zero. We call such matrices upper triangular.
 
@@ -300,6 +250,27 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
+Now we divide the last equation by 71:
+
+$$
+\begin{array}{cc}
+\begin{array}{rcr}
+        x_1 - 2x_2 +x_3 &=& 5\\
+        x_2 - 4x_3 &=& -2\\
+        x_3 &=& 0
+\end{array}
+&\;\Leftrightarrow\;
+\left[
+\begin{array}{rrr|r}
+        1  & -2  & 1 & 5\\
+        0 & 1 &  -4 & -2\\
+        0 & 0 & 1 & 0
+\end{array}
+\right]
+\end{array}
+$$
+
+
 At this point, we have solved for the value of $x_3$: it is equal to 0. But we do not yet know the values of $x_1$ and $x_2.$
 
 :::
@@ -308,9 +279,9 @@ At this point, we have solved for the value of $x_3$: it is equal to 0. But we d
 ## Backsubstitution
 
 :::{style="font-size: .8em"}
-Once we have an upper triangular matrix, the process shifts to __backsubstitution__. We now have the value for one variable, and we will substitute it into other equations to simplify them and get values for the other variables.
+Once we have an upper triangular matrix, the process shifts to __backsubstitution__. We have the value for one variable. We will substitute it into other equations to simplify them and get values for the other variables.
 
-Although we think of it as a somewhat different stage, in reality it still comes down to applying the same three rules.
+Although we think of it as a different stage, it uses the same three rules.
 
 :::{.fragment}
 First, we substitute the value of $x_3$ into the equations above it. In this case, we subtract row 3 from row 1, and we add $4\times$ row 3 into row 2. That is, we compute $\text{row}_1 \gets \text{row}_1 - \text{row}_3$ and $\text{row}_2 \gets \text{row}_2 + 4 \cdot \text{row}_3.$
@@ -368,10 +339,18 @@ Notice the particular form of the final augmented matrix:
 
 :::
 
+
 ## Solving Linear Systems
 
-:::{style="font-size:.5em"}
-Let’s get a sense of this process geometrically. Recall the three starting equations.
+:::{style="font-size:.8em"}
+Recall the starting equations: &emsp;&emsp;&emsp;&emsp;
+:::
+
+:::{.columns}
+
+:::{.column width="40%"}
+<br>
+
 $$
 \begin{array}{rcr}
     x_1 - 2x_2 +x_3 &=& 5\\
@@ -381,16 +360,22 @@ $$
 $$
 :::
 
+:::{.column width="60%"}
+
 <div style="text-align: center;">
-  <video width="500" autoplay loop muted>
+  <video width="400" autoplay loop muted>
     <source src="/figures/Fig2.1.mp4" type="video/mp4">
   </video>
 </div>
 
+:::
+:::
+
+
 ## Solving Linear Systems
 
 :::{style="font-size:.8em"}
-Now recall our final set of equations: &emsp;&emsp;&emsp;&emsp;
+Now recall the final set of equations: &emsp;&emsp;&emsp;&emsp;
 :::
 
 :::{.columns}
@@ -420,8 +405,7 @@ All planes have shifted, but still intersect in the same point.
 
 ## Pivot Positions and Values
 
-:::{style="font-size: .6em"}
-Let us introduce further essential terminology,
+:::{style="font-size: .8em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -430,7 +414,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        A <b>pivot position</b> is the location of the first nonzero element in each row. 
+        A <b>pivot position</b> is the location of the first nonzero element in each row. <b>Pivot value</b> is the number in the pivot position.
         </p>
     </div>
     """
@@ -440,22 +424,6 @@ display(HTML(html_content))
 
 <div style="margin-bottom: 0.5em;"> </div> 
 
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="purple-box">
-        <p>
-        <b>Pivot value</b> is the number in the pivot position.
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
-
-<div style="margin-bottom: 0.5em;"> </div> 
 
 :::{.columns}
 
@@ -493,9 +461,51 @@ $$
 :::
 :::
 
+<!-- ## Pivot Positions and Values
+
+:::{style="font-size: .8em"}
+
+<div style="margin-bottom: 0.5em;"> </div> 
+
+:::{.columns}
+
+:::{.fragment .column width="50%"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Where are the pivot positions in the following augmented matrix? <br><br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(\left[\begin{array}{rrr|r}2&-3&2&1\\0&1&-4&8\\0&0&0&-5\end{array}\right]\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+:::{.fragment .column width="50%"}
+<br>
+The pivot positions are shown in blue boxes below. The corresponding pivot values are 2, 1, and -5.
+
+$$
+\left[\begin{array}{rrr|r}
+\color{blue}{\fbox{2}} &-3&2&1\\
+0&\color{blue}{\fbox{1}} &-4&8\\
+0&0&0&\color{blue}{\fbox{-5}}
+\end{array}\right]
+$$
+:::
+:::
+::: -->
+
 ## Echelon Form
 
-:::{style="font-size: .55em"}
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -506,7 +516,7 @@ def generate_html():
         A matrix is in <b>echelon form</b> (or row echelon form) if it has the following three properties:
         <ol type="1">
         <li>Any row that contains all zeros occurs at the bottom of the matrix (i.e., any row with a nonzero entry must appear above it).</li>
-        <li>Each pivot position of a row is in a column to the right of the pivot position of the row above it.</li>
+        <li>The pivot position of each row is located in a column to the right of the pivot position in the row directly above it.</li>
         <li>All entries in a column below a pivot position are zeros.</li>
         </p>
     </div>
@@ -515,7 +525,13 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-:::{.fragment}
+:::
+
+
+## Echelon Form
+
+:::{style="font-size: .8em"}
+
 For example:
 
 $$
@@ -531,12 +547,11 @@ $$
 
 In this diagram, the $\blacksquare$ symbols denote nonzero pivot positions, and the $*$ symbols can be any value.   
 :::
-:::
 
-## Echelon Form
+## Reduced Echelon Form
 
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -554,6 +569,12 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
+
+:::
+
+## Reduced Echelon Form
+
+:::{style="font-size: .8em"}
 
 :::{.fragment}
 For example:
@@ -587,7 +608,7 @@ Some properties of echelon forms:
 - Given a matrix $A$, the pivot positions of in any of its (reduced) echelon matrices are the same.
 :::
 
-## Gauss-Jordan Elimination: the Algorithm {.really-really-smaller-title}
+## Gauss-Jordan Elimination: Algorithm {.really-really-smaller-title}
 
 :::{style="font-size: 1.2em"}
 Gauss-Jordan Elimination has two stages. Given an augmented matrix $A$ representing a linear system:
@@ -717,9 +738,9 @@ $$
 \color{red}{0} & \color{blue}{0}    & \color{red}{0} & \color{blue}{0}    & \color{blue}{0}    & \color{blue}{0}    & \color{red}{0} & \color{red}{0}    & \color{blue}{0}    & 0\\
 \end{array}\right]
 \\[6pt]
-\begin{array}{ccccccccc}
-\color{red}{x_1} & \color{blue}{x_2} & \color{red}{x_3} & \color{blue}{x_4} & \color{blue}{x_5} & \color{blue}{x_6} & \color{red}{x_7} & \color{red}{x_8} & \color{blue}{x_9}
-\end{array}
+% \begin{array}{ccccccccc}
+% \color{red}{x_1} & \color{blue}{x_2} & \color{red}{x_3} & \color{blue}{x_4} & \color{blue}{x_5} & \color{blue}{x_6} & \color{red}{x_7} & \color{red}{x_8} & \color{blue}{x_9}
+% \end{array}
 \end{array}
 $$
 
@@ -729,8 +750,8 @@ $$
 
 ## Computational Costs
 
-:::{style="font-size: .6em"}
-Let's assess the computational cost required to solve a system of $n$ equations in $n$ unknowns using Gauss-Jordan Elimination. In this case, the augmented matrix $A$ is an $n \times (n+1)$ matrix.  
+:::{style="font-size: .8em"}
+Assume that the augmented matrix $A$ is an $n \times (n+1)$ matrix.  
 
 :::{.fragment}
 We can summarize the Elimination stage as, in the worst case:
@@ -752,15 +773,15 @@ We can summarize the Elimination stage as, in the worst case:
 
 :::
 
-:::{.fragment style="font-size: .6em"}
-For row 1, this becomes $(n-1) \cdot 2(n+1)$ flops.  
+:::{.fragment style="font-size: .8em"}
+For row 1, this becomes $2 (n-1) \cdot (n+1) = 2n^2-2$ flops.  
 
-That is, there are $n-1$ rows below row 1, each of those has $n+1$ elements, and each element requires one multiplication and one addition.  This is $2n^2-2$ flops for row 1.
+There are $n-1$ rows below row 1, each of those has $n+1$ elements, and each element requires one multiplication and one addition.  
 :::
 
 ## Computational Costs
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 When operating on row $i$, there are $k=n-i+1$ unknowns and so there are $2k^2-2$ flops required to process the rows below row $i.$ 
 
 :::{.center-text}
@@ -769,14 +790,14 @@ When operating on row $i$, there are $k=n-i+1$ unknowns and so there are $2k^2-2
 :::
 
 :::{.fragment .center-text style="font-size: 1em"}
-So we can see that $k$ ranges from $n$ down to 1.
+$k$ ranges from $n$ down to 1
 :::
 :::
 
 ## Computational Costs
 
-:::{style="font-size: .7em"}
-the number of operations required for the Elimination stage is:
+:::{style="font-size: .8em"}
+The number of operations required for the Elimination stage is:
 
 $$
 \begin{align*} \sum_{k=1}^n (2k^2 - 2) &= 2 \left(\sum_{k=1}^n k^2 - \sum_{k=1}^n 1\right)\\
@@ -785,17 +806,14 @@ $$
 \end{align*}
 $$
 
-based on the formula about sums of squares i.e., $\left(\lim_{n\rightarrow\infty} \frac{\frac{2}{3} n^3 +n^2 - \frac{5}{3} n}{\frac{2}{3} n^3} = 1.\right)$ 
+This is based on the formula about sums of squares. 
+When $n$ is large this expression is dominated by $\frac{2}{3} n^3$.
 
-:::{.fragment}
-When $n$ is large, this expression is dominated by $\frac{2}{3} n^3$.
-:::
 :::
 
 ## Computational Costs
 
 :::{style="font-size: .8em"}
-We found the following.
 
 * The cost of the Elimination stage is $\frac{2}{3} n^3$.
 * The cost of the Backsubstitution stage is $O(n^2)$.
