@@ -1,6 +1,6 @@
 ---
 title: "Transformations"
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         math: true
@@ -15,7 +15,7 @@ format:
 Today we will look at matrix-vector multiplication from a different perspective. Geometrically, a matrix $A$ "transforms" a vector $\bf v$ into a new vector $A \bf v.$ We will show that matrix-vector multiplication satisfies an algebraic property called linearity.
 
 :::{.fragment}
-In addition, we will visualize linear transformations of the plane $\mathbb{R^2}$.
+In addition, we will visualize linear transformations of the plane $\mathbb{R}^2$.
 :::
 :::
 
@@ -24,22 +24,18 @@ In addition, we will visualize linear transformations of the plane $\mathbb{R^2}
 :::{style="font-size: .8em"}
 So far we've been treating the matrix equation $A \bf x = \bf b$ as simply another way of writing the vector equation $x_1{\bf a_1} + \dots + x_n{\bf a_n} = {\bf b}.$
 
-However, we can think of the matrix equation $A({\bf x}) = {\bf b}$ in a new way:
-
-:::{.fragment} 
-We will think of $A$ as a function that is "acting on" the vector $\bf x$ to create a new vector $\bf b$.
+However, $A({\bf x}) = {\bf b}$ can be viewed in a different way: we can think of $A$ as a function that is "acting on" the vector $\bf x$ to create a new vector $\bf b$.
 
 :::{.center-text}
 <img src="images/linearity/2d-transform.jpeg" width=400 />
 
 :::
 :::
-:::
 
 ## Matrices as Functions
 
 :::{style="font-size: .7em"}
-For example, consider $A = \left[\begin{array}{rrr}2&1&1\\3&1&-1\end{array}\right].$ We will then find: $A \left[\begin{array}{r}1\\-4\\-3\end{array}\right] = \left[\begin{array}{r}-5\\2\end{array}\right]$
+For example, consider $A = \left[\begin{array}{rrr}2&1&1\\3&1&-1\end{array}\right].$ We find: $A \left[\begin{array}{r}1\\-4\\-3\end{array}\right] = \left[\begin{array}{r}-5\\2\end{array}\right]$
 
 
 :::{.fragment}
@@ -55,8 +51,8 @@ In other words, if ${\bf x} = \left[\begin{array}{r}1\\-4\\-3\end{array}\right]$
 
 ## Matrices as Functions
 
-:::{style="font-size: .7em;"}
-Notice what $A$ has done: it took a vector in $\mathbb{R^3}$ and transformed it into a vector in $\mathbb{R^2}.$
+:::{style="font-size: .8em;"}
+$A$ took a vector in $\mathbb{R}^3$ and transformed it into a vector in $\mathbb{R}^2.$
 
 <div style="margin-bottom: 0.5em;"> </div> 
 
@@ -82,24 +78,22 @@ display(HTML(html_content))
 
 
 :::{.fragment}
-$A$ is $2 \times 3$ -- that is, $A \in \mathbb{R}^{2 \times 3}$
+$A$ is $2 \times 3$ -- that is, $A \in \mathbb{R}^{2 \times 3}.$
 
-<br>
+This gives a **new** way of thinking about solving $A \bf x = \bf b.$
 
-This gives a **new** way of thinking about solving $A \bf x = \bf b$
-
-When we solve $A \bf x = \bf b$, we are finding the vector(s) $\bf x$ in $\mathbb{R^3}$ that are transformed into $\bf b$ in $\mathbb{R^2}$ under the "action" of $A.$
+When we solve $A \bf x = \bf b$, we are finding the vector(s) $\bf x$ in $\mathbb{R}^3$ that are transformed into $\bf b$ in $\mathbb{R}^2$ under the "action" of $A.$
 :::
 :::
 
 ## Matrices as Functions
 
-:::{stlye="font-size: .8em"}
+:::{style="font-size: .8em;"}
 
 For a different $A$, the mapping might be from $\mathbb{R}^1$ to $\mathbb{R}^3$:
 
 :::{.center-text}
-<img src="images/linearity/1d-3d-transform.jpeg" width = 800/>
+<img src="images/linearity/1d-3d-transform.jpeg" width = 900/>
 
 :::
 
@@ -163,7 +157,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        A <btransformation</b> (or <b>function</b> or <b>mapping</b>) \(T\) from \(\mathbb{R}^n\) to \(\mathbb{R}^m\) is a rule that assigns to each vector \({\bf x}\) in \(\mathbb{R}^n\) a vector \(T({\bf x})\) in \(\mathbb{R}^m\).<br>
+        A <btransformation</b> <b>function</b> (or <b>mapping</b>) \(T\) from \(\mathbb{R}^n\) to \(\mathbb{R}^m\) is a rule that assigns to each vector \({\bf x}\) in \(\mathbb{R}^n\) a vector \(T({\bf x})\) in \(\mathbb{R}^m\).<br>
         The set \(\mathbb{R}^n\) is called the <b>domain</b> of \(T\), and \(\mathbb{R}^m\) is called the <b>codomain</b> of \(T\).  
         </p>
     </div>
@@ -172,8 +166,6 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-
-<br>
 
 $T: \mathbb{R}^n \rightarrow \mathbb{R}^m$ indicates $T$'s domain is $\mathbb{R}^n$ and the codomain is $\mathbb{R}^m$.
 
@@ -194,7 +186,7 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-We sometimes write that $T$ maps ${\bf x} \mapsto T({\bf x})$.
+We sometimes write that $T$ maps ${\bf x}$ as ${\bf x} \mapsto T({\bf x})$.
 :::
 
 :::{.fragment}
@@ -227,18 +219,15 @@ The green plane is the set of all possible outputs of $T$ for some input $\bf x$
 
 <div style="margin-bottom: 0.5em;"> </div> 
 
-$T$'s _domain_ is $\mathbb{R}^2$, codomain is $\mathbb{R}^3$, and _range_ is the green plane.
+$T$'s domain is $\mathbb{R}^2$, its codomain is $\mathbb{R}^3$, and its range is the green plane.
 
 :::
 
 ## Visualizing Transformations
 
 :::{style="font-size: .8em"}
-I have these points in $\mathbb{R^2}$:
-
-$$
-\left[\begin{array}{r}0\\1\end{array}\right],\left[\begin{array}{r}1\\1\end{array}\right],\left[\begin{array}{r}1\\0\end{array}\right],\left[\begin{array}{r}0\\0\end{array}\right].
-$$
+Consider four points in $\mathbb{R}^2$:
+$\left[\begin{array}{r}0\\1\end{array}\right],\left[\begin{array}{r}1\\1\end{array}\right],\left[\begin{array}{r}1\\0\end{array}\right],\left[\begin{array}{r}0\\0\end{array}\right].$
 
 :::{.fragment}
 <!-- Is it ok to just have the graph cutoff at the bottom? -->
@@ -257,6 +246,24 @@ dm.plotSquare(square)
 ```
 :::
 :::
+:::
+
+## Visualizing Transformations
+:::{style="font-size: .8em"}
+
+Let's transform each of these points according to the following rule.  Consider the following matrix, which is called a __shear matrix__:
+
+$$ A = \left[\begin{array}{rr}1&1.5\\0&1\end{array}\right]. $$
+
+We define $T({\bf x}) = A{\bf x}$.  Then we have $T: \mathbb{R}^2 \rightarrow \mathbb{R}^2.$
+
+What is the image of each of these points under $T$?
+
+$$ A\left[\begin{array}{r}0\\1\end{array}\right] = \left[\begin{array}{r}1.5\\1\end{array}\right],  A\left[\begin{array}{r}1\\1\end{array}\right] = \left[\begin{array}{r}2.5\\1\end{array}\right],$$
+
+
+$$ A\left[\begin{array}{r}1\\0\end{array}\right] = \left[\begin{array}{r}1\\0\end{array}\right], A\left[\begin{array}{r}0\\0\end{array}\right] = \left[\begin{array}{r}0\\0\end{array}\right].$$
+
 :::
 
 ## Visualizing Transformations
@@ -281,9 +288,9 @@ dm.plotSquare(ssquare,'r')
 ```
 :::
 
-:::{style="font-size: .7em"}
+<!-- :::{style="font-size: .7em"}
 This is called a **shear** transformation, because the points are succesively slid sideways.
-:::
+::: -->
 
 ## Linearity
 
@@ -297,8 +304,8 @@ def generate_html():
         <p>
          A transformation \(T\) is <b>linear</b> if:
          <ol start="1">
-<li>\(T({\bf u} + {\bf v}) = T({\bf u}) + T({\bf v}) \;\;\;\) for all \(\bf u, \) in the domain of \(T\); and</li>
-<li>\(T(c{\bf u}) = cT({\bf u}) \;\;\;\) for all scalars \(c\) and all \(\bf u\) in the domain of \(T\).</li>
+<li>\(T({\bf u} + {\bf v}) = T({\bf u}) + T({\bf v}) \;\) for all \(\bf u, \) in the domain of \(T\); and</li>
+<li>\(T(c{\bf u}) = cT({\bf u}) \;\) for all scalars \(c\) and all \(\bf u\) in the domain of \(T\).</li>
         </p>
     </div>
     """
@@ -308,15 +315,12 @@ display(HTML(html_content))
 
 Here, $T$ is a general function, not just matrix-vector multiplication.
 
-This definition captures a _lot_ of transformations that are not matrix-vector multiplication. For example:
+This definition captures many transformations that are not matrix-vector multiplication, such as
 
 $$
-T(f) = \int_0^1 f(t) \,dt 
+T(f) = \int_0^1 f(t) \,dt. 
 $$
 
-:::{.fragment}
-$T$ is a linear transformation!
-:::
 :::
 
 ## Linearity
@@ -329,29 +333,27 @@ T(c\mathbf{u} + d\mathbf{v}) = cT(\mathbf{u}) + dT(\mathbf{v}).
 $$
 
 :::{.fragment}
-If a transformation satisfies this equation for all $\mathbf{u}, \mathbf{v}$ and $c, d;$ it must be a linear transformation.
+If a transformation satisfies this equation for all $\mathbf{u}, \mathbf{v}$ and $c, d,$ it must be a linear transformation.
 :::
 
 :::{.fragment}
 It is also important to note that if $T$ is a linear transformation, then
 
 $$
-T({\mathbf 0}) = T({\mathbf 0}) + T({\mathbf 0}), \quad \text{so} \quad T({\mathbf 0}) = {\mathbf 0}
+T({\mathbf 0}) = T({\mathbf 0}) + T({\mathbf 0}), \quad \text{so} \quad T({\mathbf 0}) = {\mathbf 0}.
 $$
 :::
 :::
 
 ## Linearity
 
-:::{style="font-size: .7em"}
-__Example.__ Given a scalar $r$, define $T: \mathbb{R}^2 \rightarrow \mathbb{R}^2$ by $T(\mathbf{x}) = r\mathbf{x}$.  
+:::{style="font-size: .8em"}
+Given a scalar $r$, define $T: \mathbb{R}^2 \rightarrow \mathbb{R}^2$ by $T(\mathbf{x}) = r\mathbf{x}$. $T$ is called a __contraction__ when $0\leq r \leq 1$ and a __dilation__ when $r > 1$.
 
-($T$ is called a __contraction__ when $0\leq r \leq 1$ and a __dilation__ when $r > 1$.)  
-
-Let $r = 3$, and show that $T$ is a linear transformation.
+Consider $r = 3$, and let us show that $T$ is a linear transformation.
 
 :::{.fragment}
-__Solution.__ Let $\mathbf{u}, \mathbf{v}$ be in $\mathbb{R}^2$ and let $c, d$ be scalars.   Then
+Let $\mathbf{u}, \mathbf{v}$ be in $\mathbb{R}^2$ and let $c, d$ be scalars.   Then
 
 $$
 \begin{align}
@@ -364,14 +366,14 @@ $$
 :::
 
 :::{.fragment}
-Thus, $T$ is a linear transformation because it satisfies the rule $T(c\mathbf{u} + d\mathbf{v}) = cT(\mathbf{u}) + dT(\mathbf{v}).$
+Thus, $T$ is a linear transformation because $T(c\mathbf{u} + d\mathbf{v}) = cT(\mathbf{u}) + dT(\mathbf{v}).$
 :::
 :::
 
 ## Linearity
 
 :::{style="font-size: .8em"}
-__Example.__ Let $T(\mathbf{x}) = \mathbf{x} + \mathbf{b}$ for some $\mathbf{b} \neq 0$. To give a concrete example, here is one such transformation in two-dimensional space:  $T(\mathbf{x}) = \mathbf{x} + \begin{bmatrix}1 \\ 2\end{bmatrix},$
+Let $T(\mathbf{x}) = \mathbf{x} + \mathbf{b}$ for some $\mathbf{b} \neq 0$. For example,  $T(\mathbf{x}) = \mathbf{x} + \begin{bmatrix}1 \\ 2\end{bmatrix}.$
 
 When $T$ is applied, the entire 2-dimensional plane $\mathbb{R}^2$ is shifted one unit right and two units up.
 
@@ -399,16 +401,14 @@ No! To see why, we only need to compare
 
 $$
 \begin{align*}
-T(\mathbf{u} + \mathbf{v}) &= \mathbf{u} + \mathbf{v} + \mathbf{b} \\
-T(\mathbf{u}) + T(\mathbf{v}) &= (\mathbf{u} + \mathbf{b}) + (\mathbf{v} + \mathbf{b}) = \mathbf{u} + \mathbf{v} + 2 \mathbf{b}.
+&T(\mathbf{u} + \mathbf{v}) = \mathbf{u} + \mathbf{v} + \mathbf{b} \\
+&T(\mathbf{u}) + T(\mathbf{v}) = (\mathbf{u} + \mathbf{b}) + (\mathbf{v} + \mathbf{b}) = \mathbf{u} + \mathbf{v} + 2 \mathbf{b}.
 \end{align*}
 $$
 :::
 
 :::{.fragment}
-If $\mathbf{b} \neq 0$, those two expressions are not equal.
-
-So $T$ is _not_ a linear transformation.
+If $\mathbf{b} \neq 0$, those two expressions are not equal, so $T$ is _not_ a linear transformation.
 :::
 :::
 
@@ -420,9 +420,9 @@ from IPython.core.display import HTML
 
 def generate_html():
     return r"""
-    <div class="blue-box">
+    <div class="purple-box">
         <p>
-        Let \(T: \mathbb{R}^n \rightarrow \mathbb{R}^m\) be a linear transformation.   Then there is (always) a unique matrix \(A\) such that:<br>
+        Let \(T: \mathbb{R}^n \rightarrow \mathbb{R}^m\) be a linear transformation.   Then there is a unique matrix \(A\) such that:<br>
         &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(T({\bf x}) = A{\bf x} \;\;\; \mbox{for all}\; {\bf x} \in \mathbb{R}^n.\)
         </p>
     </div>
@@ -432,7 +432,7 @@ display(HTML(html_content))
 ```
 
 :::{.fragment}
-Let ${\bf e_j}$ denote the $j$th column of $I$ in $\mathbb{R}^n$. Recall from DS-120 that these vectors are the __standard basis vectors__.
+Let ${\bf e_j}$ denote the $j$th column of $I$ in $\mathbb{R}^n$. Then ${\bf e_j}$ is a __standard basis vector__.
 
 :::{.center-text}
 ```{python}
@@ -492,7 +492,7 @@ $$
 
 :::{.fragment}
 $$
-\textcolor{white}{T({\bf x}) ===} = \left[T({\bf e_1}) \dots T({\bf e_n})\right] \, \left[\begin{array}{r}x_1\\\vdots\\x_n\end{array}\right] = A{\bf x}.
+\textcolor{white}{T({\bf x}) ===} = \left[T({\bf e_1}) \dots T({\bf e_n})\right] \, \left[\begin{array}{c}x_1\\ \vdots \\ x_n\end{array}\right] = A{\bf x}.
 $$
 :::
 :::
@@ -501,10 +501,10 @@ $$
 
 :::{style="font-size:.8em"}
 
-The above theorum tells us that to find the standard matrix of a linear transformation, ask what the transformation does to the columns of $I.$
+It follows that to find the standard matrix of a linear transformation, we should ask what the transformation does to the columns of $I.$
 
 :::{.fragment}
-Let us apply this to rotations about the origin.
+Let us apply this to counterclockwise rotations about the origin.
 
 :::{.center-text}
 ```{python}
@@ -584,8 +584,8 @@ ax.annotate("",
 
 ## Rotations
 
-:::{style="font-size: .5em"}
-**Example.** Let $T: \mathbb{R}^2 \rightarrow \mathbb{R}^2$ be the transformation that rotates each point in $\mathbb{R}^2$ about the origin through an angle $\theta$, with counterclockwise rotation for a positive angle.  
+:::{style="font-size:.8em"}
+Let $T: \mathbb{R}^2 \rightarrow \mathbb{R}^2$ be the transformation that rotates each point in $\mathbb{R}^2$ about the origin through an angle $\theta$, with counterclockwise rotation for a positive angle.  
 
 Let's find this transformation's standard matrix $A$.
 
@@ -606,7 +606,12 @@ display(HTML(html_content))
 ```
 :::
 
-:::{.fragment}
+:::
+
+## Rotations
+
+:::{style="font-size:.8em"}
+
 Referring to the diagram below, we can see that $\left[\begin{array}{r}1\\0\end{array}\right]$ rotates into $\left[\begin{array}{r}\cos\theta\\\sin\theta\end{array}\right],$ and $\left[\begin{array}{r}0\\1\end{array}\right]$ rotates into $\left[\begin{array}{r}-\sin\theta\\\cos\theta\end{array}\right].$
 
 :::{.center-text}
@@ -670,12 +675,10 @@ plt.plot([0, 1], [1, 0], 'go', markersize = 10);
 :::
 :::
 
-:::
-
 ## Rotations
 
-:::{style="font-size: .6em"}
-So by the Theorum above,
+:::{style="font-size: .8em"}
+By the theorem above,
 
 $$
 A = \left[\begin{array}{rr}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{array}\right].
@@ -688,8 +691,12 @@ $$
 $$
 :::
 
-:::{.fragment}
-To demonstrate computationally the use of a rotation matrix, let's rotate the following shape `note`. It is constructed using an array of 26 vectors in $\mathbb{R}^2$. In other words, it is a 2 $\times$ 26 matrix.
+:::
+
+## Rotations
+
+:::{style="font-size: .8em"}
+Let's use a rotation matrix to rotate the following `note`. It is constructed using an array of 26 vectors in $\mathbb{R}^2$. In other words, it is a 2 $\times$ 26 matrix.
 
 ```{python}
 #| echo: true
@@ -723,7 +730,8 @@ note = np.array(
 note = note.T/150.0    # now a 2 x 26 matrix
 ```
 :::
-:::
+
+
 
 ## Rotations
 
@@ -761,9 +769,9 @@ dm.plotShape(rnote)
 
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
-
-In two dimensions, the standard basis $V$ is given by ${\bf e_1} = \left[\begin{array}{r}1\\0\end{array}\right]$ and ${\bf e_2} = \left[\begin{array}{r}0\\1\end{array}\right].$
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+<!-- 
+In two dimensions, the standard basis is given by ${\bf e_1} = \left[\begin{array}{r}1\\0\end{array}\right]$ and ${\bf e_2} = \left[\begin{array}{r}0\\1\end{array}\right].$ -->
 
 ```{python}
 from IPython.core.display import HTML
@@ -772,7 +780,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        Where does \(\) with \(r=2.5\) map the standard basis vectors?
+        Where does \(A \mathbf{x} = r \mathbf{x}\) with \(r=2.5\) map the standard basis vectors?
         </p>
     </div>
     """
@@ -794,7 +802,7 @@ So the matrix $A$ must be $\left[\begin{array}{cc}2.5&0\\0&2.5\end{array}\right]
 This transformation is a _dilation_.
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
 
 <br>
 
@@ -824,9 +832,23 @@ dm.plotShape(A @ note,'r')
 :::
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
 
-Next, let's reflect through the x_1 axis. To find the standard matrix $A,$ we ask where $\bf e_1$ and $\bf e_2$ go?
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What is the standard matrix for reflection through the \(x_1\) axis?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
 
 :::{.columns .center-text}
 
@@ -851,10 +873,10 @@ dm.plotShape(A @ note,'r')
 :::
 
 :::{.fragment}
-$A=\begin{bmatrix} 1 0 \\ 0 -1 \end{bmatrix}$ corresponds to this reflection.
+$A=\begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$ corresponds to this reflection.
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
 
 ```{python}
 from IPython.core.display import HTML
@@ -898,7 +920,7 @@ dm.plotShape(A @ note,'r')
 $A=\begin{bmatrix} - 1 & 0 \\ 0 & 1 \end{bmatrix}$ \
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
 
 ```{python}
 from IPython.core.display import HTML
@@ -943,7 +965,7 @@ dm.plotShape(A @ note,'r')
 $A=\begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}$ \
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
 
 ```{python}
 from IPython.core.display import HTML
@@ -988,9 +1010,9 @@ dm.plotShape(A @ note,'r')
 $A=\begin{bmatrix} 0 & -1 \\ -1 & 0 \end{bmatrix}$ \
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
 
-:::{style="font-size: .6em"}
+:::{style="font-size: 1.0em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -998,7 +1020,7 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        What about 180-degree rotation through the origin? Why is this different than the reflection about the line \(x_1 = -x_2\)?
+        What about 180-degree rotation through the origin?
 
         </p>
     </div>
@@ -1007,7 +1029,7 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-We can use our rotation formula, but let's instead just think about how this transformation affects ${\bf e_1}$ and ${\bf e_2}$.
+<!-- We can use our rotation formula, but let's instead just think about how this transformation affects ${\bf e_1}$ and ${\bf e_2}$. -->
 
 :::{.columns .center-text .fragment}
 
@@ -1037,9 +1059,9 @@ $A=\begin{bmatrix} -1 & 0 \\ 0 & -1 \end{bmatrix}$
 :::
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
 
-:::{style="font-size: .7em"}
+:::{style="font-size:.87em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -1048,7 +1070,7 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        We can expand or shrink one dimension independent of the other. Suppose we want to contract the \(x_1\) dimension by a ratio of \(r = 0.45\), but leave the \(x_2\) axis unchanged. What matrix performs this operation?
+        If we want to contract the \(x_1\) dimension by a ratio of \(r = 0.45\), but leave the \(x_2\) axis unchanged, what matrix performs this operation?
         </p>
     </div>
     """
@@ -1086,7 +1108,7 @@ $A=\begin{bmatrix} 0.45 & 0 \\ 0 & 1 \end{bmatrix}$
 :::
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
 
 Let us look at a vertical shear with $A=\begin{bmatrix}1 & 0 \\ -1.5 & 1 \end{bmatrix}$.
 
@@ -1114,11 +1136,10 @@ dm.plotShape(A @ note,'r')
 :::
 :::
 
-## Visualizing Linear Transformations of $\mathbb{R^2}${.really-smaller-title}
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
 
 Another type of transformation is **projection**. Imagine we took any given point and 'dropped' it onto the $x_1$-axis.
-
-This time $A=\begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix}$
+This time $A=\begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix}.$
 
 
 :::{.columns .center-text .fragment}
@@ -1146,23 +1167,9 @@ dm.plotShape(A @ note,'r')
 
 ## Composing Transformations
 
-:::{style="font-size: .6em"}
-We know matrix-vector multiplication should be interpreted as a linear transformation over $\mathbb{R^n}.$
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-        What does the product of two matrices mean, geometrically?
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
+:::{style="font-size: .8em"}
+We interpret matrix-vector multiplication as a linear transformation over $\mathbb{R}^n.$
+What does the product of two matrices mean, geometrically?
 
 :::{.fragment}
 We determined that the matrix $C = \left[\begin{array}{rr}-1&0\\0&-1\end{array}\right]$ implements a 180 degree rotation about the origin.
@@ -1184,12 +1191,8 @@ dm.plotShape(C @ note,'r')
 
 ## Composing Transformations
 
-:::{style="font-size: .6em" .incremental}
-However, we could have done this differently:
-
-1. Reflect through the $x_1$ axis, via multiplication by $B = \left[\begin{array}{rr}1&0\\0&-1\end{array}\right].$
-
-2. Reflect throuh the $x_2$ axis, via multiplication by $A = \left[\begin{array}{rr}-1&0\\0&1\end{array}\right].$
+:::{style="font-size: .7em" .incremental}
+Another approach is to reflect through the $x_1$ axis, via multiplication by $B = \left[\begin{array}{rr}1&0\\0&-1\end{array}\right].$ Then reflect throuh the $x_2$ axis, via multiplication by $A = \left[\begin{array}{rr}-1&0\\0&1\end{array}\right].$
 
 :::{.center-text .fragment}
 ```{python}
@@ -1211,17 +1214,14 @@ dm.plotShape(A @ (B @ note),'r')
 
 ## Composing Transformations
 
-:::{style="font-size: .6em"}
-So, another way to reflect point ${\bf u}$ through the origin is:
+:::{style="font-size: .8em"}
+Another way to reflect point ${\bf u}$ through the origin is:
 
 * ${\bf v} = B{\bf u}$
 * Followed by ${\bf w} = A{\bf v}.$
 
 :::{.fragment}
-This is, ${\bf w} = A(B{\bf u}).$ We also know ${\bf w} = C {\bf u}$, which is true for all vectors ${\bf u}$.
-:::
-
-:::{.fragment}
+Hence, ${\bf w} = A(B{\bf u}) = C {\bf u}$.
 Therefore, _multiplication of matrices_ corresponds to _composition of linear transformations._
 
 That is: $C$ is the result of applying  a transformation from $B$, and then transformation $A$.
@@ -1234,7 +1234,7 @@ $$
 :::
 
 :::{.fragment}
-Just like functions: the order matters, and we read them __from right to left__!
+The order matters, and we read them __from right to left__!
 :::
 :::
 
@@ -1242,9 +1242,9 @@ Just like functions: the order matters, and we read them __from right to left__!
 
 :::{style="font-size: .8em" .incremental}
 
-- A transformation $T$ from $\mathbb{R^n}$ to $\mathbb{R^m}$ takes each vector ${\bf x}$ in $\mathbb{R^n}$ to $T({\bf x})$ in $\mathbb{R^m}$.
+- A transformation $T$ from $\mathbb{R}^n$ to $\mathbb{R}^m$ takes each vector ${\bf x}$ in $\mathbb{R}^n$ to $T({\bf x})$ in $\mathbb{R}^m$.
 
 - $T$ is linear if $T({\bf u} + {\bf v})$ = $T({\bf u}) + T({\bf v})$ and $T(c {\bf u} ) = cT( {\bf u} ).$
 
-- A linear transformation can be written as $T( {\bf u}) = A({\bf u}).$ $A$ is called the standard matrix of $T.$ To find $A,$ we look at what $T$ does to the columns of $I.$
+- A linear transformation can be written as $T( {\bf u}) = A{\bf u}.$ $A$ is called the standard matrix of $T.$ To find $A,$ we look at what $T$ does to the columns of $I.$
 :::

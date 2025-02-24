@@ -1,6 +1,6 @@
 ---
 title: \small Existence and Uniqueness<br>of Solutions
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         math: true
@@ -30,9 +30,9 @@ In addition, we will relate the number of solutions of $A\bf{x}=\bf{b}$ to the c
 :::
 :::
 
-## Consistency
+<!-- ## Consistency -->
 
-:::{style="font-size:.8em"}
+<!-- :::{style="font-size:.8em"}
 Recall that any system of linear equations has either 0, 1, or infinitely many solutions.
 
 :::{.fragment}
@@ -46,12 +46,12 @@ $$
 
 where $\blacksquare$ denotes a non-zero entry. Otherwise, the system is consistent.
 :::
-:::
+::: -->
 
-## Consistency
+## Consistency and Uniqueness
 
 :::{style="font-size: .8em"}
-Recall that any system of linear equations has either 0, 1, or infinitely many solutions. We call the system inconsistent when it has no solutions. 
+Recall that any system of linear equations has either 0, 1, or infinitely many solutions. We call the system _inconsistent_ when it has _no solutions_. 
 
 
 This is the case when during Gauss-Jordan elimination we obtain the augmented matrix with a row that looks like this:
@@ -61,9 +61,16 @@ $$
 \end{array}\right],
 $$
 
-where $\blacksquare$ denotes a non-zero entry. Otherwise, the system is consistent.
+where $\blacksquare$ denotes a non-zero entry. 
 
-:::{.fragment}
+Otherwise, the system is consistent.
+
+If a system is consistent, it has a _unique solution_ if and only if it has _no free variables_. That is, each column left from the partition line contains a pivot.
+
+Otherwise, a consistent system has infinitely many solutions.
+
+
+<!-- :::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
@@ -78,26 +85,19 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-:::
+::: -->
 :::
 
-## Uniqueness
+<!-- ## Uniqueness
 
 :::{style="font-size: .8em"}
-If a system is consistent, it has a unique solution if and only if it has no free variables.
-
-:::{.fragment}
-That is, each column left from the partition line contains a pivot.
+If a system is consistent, it has a _unique solution_ if and only if it has _no free variables_. That is, each column left from the partition line contains a pivot.
 
 Otherwise, a consistent system has infinitely many solutions.
-:::
 
-:::{.fragment}
-Let us look at some examples.
-:::
-:::
+::: -->
 
-## Consistency and Uniqueness
+<!-- ## Consistency and Uniqueness
 
 :::{style="font-size: .6em"}
 __Example 1.__ Consider the following augmented matrix and its associated echelon and reduced echelon forms.
@@ -151,13 +151,13 @@ This linear system is __inconsistent__ - that is, it has 0 solutions. There are 
 - The final equation states that $0 = 3$, which can never be true for any choice of $x_1$, $x_2$, and $x_3$.
 - The third row has a pivot position in the final column.
 :::
-:::
+::: -->
 
 ## Consistency and Uniqueness
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 
-__Example.__ Here is another augmented matrix, which is already in reduced echelon form.
+Here is an augmented matrix in reduced echelon form.
 
 $$
 \left[\begin{array}{rrr|r}
@@ -182,7 +182,7 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-:::{.fragment}
+<!-- :::{.fragment}
 The associated system of equations is
 
 $$
@@ -193,7 +193,7 @@ x_1 & & -5x_3 &=& 1\\
 \end{array}
 $$
 
-:::
+::: -->
 
 :::{.fragment}
 Variables $x_1$ and $x_2$ correspond to pivot columns, so $x_1$ and $x_2$ are basic variables. The remaining variable $x_3$ is free. Hence, there are infinitely many solutions.
@@ -212,12 +212,12 @@ For instance,
 
 These are _parametric_ descriptions of solutions sets.  The free variables act as parameters.  
 
-:::{.fragment}
+<!-- :::{.fragment}
 So solving a system amounts to either:
 
 * finding a parametric description of the solution set, or
 * determining that the solution set is empty.
-:::
+::: -->
 :::
 
 ## Consistency and Uniqueness
@@ -227,12 +227,12 @@ Geometrically, the solution set to this system is a line in $\mathbb{R}^3$.
 :::
 
 <div style="text-align: center;">
-  <video width="800" autoplay loop muted>
+  <video width="700" autoplay loop muted>
     <source src="/figures/Fig3.3.mp4" type="video/mp4">
   </video>
 </div>
 
-## Consistency and Uniqueness
+<!-- ## Consistency and Uniqueness
 
 :::{style="font-size: .5em"}
 
@@ -277,50 +277,59 @@ x_5 &= 4
 :::{.fragment}
 Following this approach: if I give you a matrix $A$ and vector ${\bf b},$ you can determine whether the matrix equation $A {\bf x} = {\bf b}$ is consistent (i.e., has at least one solution).
 :::
-:::
+::: -->
 
-## Existence of Solutions for Matrix $A$ {.smaller-title}
+## Consistency Based on Matrix $A$ {.smaller-title}
 
 :::{style="font-size: .9em"}
-Now we will ask a more general question, which is solely about the matrix $A \in \mathbb{R}^{m \times n}$. Specifically:
+Let us ask a more general question, which is solely about the matrix $A \in \mathbb{R}^{m \times n}.$ 
 
 > Does $A{\bf x} = {\bf b}$ have a solution for _every possible_ vector ${\bf b} \in \mathbb{R}^m$?
 
 :::{.fragment}
 __Example.__ Let $A = \left[\begin{array}{rrr}1&3&4\\-4&2&-6\\-3&-2&-7\end{array}\right]$ and ${\bf b} = \left[\begin{array}{r}b_1\\b_2\\b_3\end{array}\right].$  
 
-Is the equation $A{\bf x} = {\bf b}$ consistent for all possible $b_1, b_2, b_3?$
-:::
-<br>
+We can use Gauss-Jordan elimination to see if the equation $A{\bf x} = {\bf b}$ is consistent for all possible $b_1, b_2, b_3.$ 
 
-:::{.fragment}
-We know how to test for consistency (whether a solution exists): form the augmented matrix and perform Elimination to turn it into echelon form.
-:::
+$$
+\left[\begin{array}{rrr|c}1&3&4&b_1\\-4&2&-6&b_2\\-3&-2&-7&b_3\end{array}\right] \sim \left[\begin{array}{rrr|c}1&3&4&b_1\\0&14&10&b_2+4b_1\\0&0&0&b_3+3b_1-\frac{1}{2}(b_2 + 4b_1)\end{array}\right].
+$$
 :::
 
-## Existence of Solutions for Matrix $A$ {.smaller-title}
+:::
+
+## Consistency Based on Matrix $A$ {.smaller-title}
 
 :::{style="font-size: .9em"}
-$$
-\left[\begin{array}{rrr|c}1&3&4&b_1\\-4&2&-6&b_2\\-3&-2&-7&b_3\end{array}\right] \sim \left[\begin{array}{rrr|c}1&3&4&b_1\\0&14&10&b_2+4b_1\\0&7&5&b_3+3b_1\end{array}\right]
-$$
+<!-- $$
+\left[\begin{array}{rrr|c}1&3&4&b_1\\-4&2&-6&b_2\\-3&-2&-7&b_3\end{array}\right] \sim \left[\begin{array}{rrr|c}1&3&4&b_1\\0&14&10&b_2+4b_1\\0&0&0&b_3+3b_1-\frac{1}{2}(b_2 + 4b_1)\end{array}\right].
+$$ -->
 
-$$
+<!-- $$
 \sim \left[\begin{array}{rrr|c}1&3&4&b_1\\0&14&10&b_2+4b_1\\0&0&0&b_3+3b_1-\frac{1}{2}(b_2 + 4b_1)\end{array}\right].
+$$ -->
+
+The third entry in the column 4 is $b_1 -\frac{1}{2}b_2+ b_3.$ This expression can be nonzero. 
+
+For example, take $b_1 = 1, b_2 = 1, b_3 = 1.$ Then the lower right entry is 1.5.  This gives a row of the form $0 = 1.5$, which indicates an inconsistent system.  
+
+Hence, $A{\bf x} = {\bf b}$ is _not_ consistent for all possible $b_1, b_2, b_3.$
+
+:::{.fragment}
+It fails to be consistent for all $\bf b$ because the echelon form of $A$ has a row of zeros. For instance, the augmented matrix might have reduced to:
+
 $$
-
-:::{.fragment}
-The third entry in the column 4, simplified, is $b_1 -\frac{1}{2}b_2+ b_3.$ This expression can be nonzero. 
-
-For example, take $b_1 = 1, b_2 = 1, b_3 = 1;$ then the lower right entry is 1.5.  This gives a row of the form $0 = 1.5$, which indicates an inconsistent system.  
+\left[\begin{array}{rrr|c}1&3&4&0\\0&14&10&0\\0&0&0&1\end{array}\right].
+$$
 :::
 
 :::{.fragment}
-So the answer is "no, $A{\bf x} = {\bf b}$ is __not__ consistent for all possible $b_1, b_2, b_3.$"
-:::
+If $A$ had a pivot in all three rows, an echelon form of the augmented matrix could not have a row indicating $0 = k$.
 :::
 
-## Existence of Solutions for Matrix $A$ {.smaller-title}
+:::
+
+<!-- ## Consistency Based on Matrix $A$ {.smaller-title}
 
 :::{style="font-size: .8em"}
 Here is the echelon form of $A$ (note we are talking only about the coefficient matrix $A$ here, not the augmented matrix):
@@ -340,11 +349,11 @@ $$
 :::{.fragment}
 If $A$ had a pivot in all three rows, an echelon form of the augmented matrix could not have a row indicating $0 = k$ (and so the augmented column does not matter).
 :::
-:::
+::: -->
 
-## Existence of Solutions for Matrix $A$ {.smaller-title}
+<!-- ## Consistency Based on Matrix $A$ {.smaller-title}
 
-:::{style="font-size: .8em"}
+:::{style="font-size: .9em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -353,7 +362,7 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        Fine, so \(A{\bf x} = {\bf b}\) is not always consistent.  When <em>is</em> \(A{\bf x} = {\bf b}\) consistent?
+        When <em>is</em> \(A{\bf x} = {\bf b}\) consistent?
         </p>
     </div>
     """
@@ -362,16 +371,12 @@ display(HTML(html_content))
 ```
 
 :::{.fragment}
-When $b_1 -\frac{1}{2}b_2+ b_3 = 0.$  This makes the last row of the augmented matrix all zeros.
+When $b_1 -\frac{1}{2}b_2+ b_3 = 0$ (i.e., the last row of the augmented matrix all zeros). This is a single equation in three unknowns, so it defines a plane through the origin in $\mathbb{R}^3.$
 :::
 
-:::{.fragment}
-This is a single equation in three unknowns, so it defines a plane through the origin in $\mathbb{R}^3.$
-:::
+::: -->
 
-:::
-
-## Existence of Solutions for Matrix $A$ {.smaller-title}
+## Consistency Based on Matrix $A$ {.smaller-title}
 
 <!-- Was having trouble with putting video in fragment, so just did the easy solution of copying the slide... : ( -->
 
@@ -384,24 +389,27 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        Fine, so \(A{\bf x} = {\bf b}\) is not always consistent.  When <em>is</em> \(A{\bf x} = {\bf b}\) consistent?
+        For what entries of \({\bf b}\) <em>is</em> \(A{\bf x} = {\bf b}\) consistent?
         </p>
     </div>
     """
 html_content = generate_html()
 display(HTML(html_content))
 ```
-When $b_1 -\frac{1}{2}b_2+ b_3 = 0.$  This makes the last row of the augmented matrix all zeros.
 
-This is a single equation in three unknowns, so it defines a plane through the origin in $\mathbb{R}^3.$
+:::{.fragment}
+When $b_1 -\frac{1}{2}b_2+ b_3 = 0$ (this makes the last row of the augmented matrix all zeros). This is a single equation in three unknowns, so it defines a plane through the origin in $\mathbb{R}^3.$
 
-:::
+
 
 <div style="text-align: center;">
   <video width="400" autoplay loop muted>
     <source src="/figures/Fig14.1.mp4" type="video/mp4">
   </video>
 </div>
+
+:::
+:::
 
 ## Relationship to Span
 
@@ -417,13 +425,13 @@ In the figure, $\bf a_1, a_2,$ and $\bf a_3$, you can see that all three points 
 :::
 
 :::{.fragment}
-Now, in the most general case, four points will _not_ line in a plane.  In other words, the span of three vectors in $\mathbb{R}^3$ can be the whole space $\mathbb{R}^3$.
+Now, in the most general case, four points will _not_ lie in a plane.  In other words, the span of three vectors in $\mathbb{R}^3$ can be the whole space $\mathbb{R}^3$.
 :::
 :::
 
-## Relationship to Span
+## Consistency and Span
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -432,10 +440,10 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        Let \(A\) be an \(m \times n\) matrix.  Then the following statements are logically equivalent.  That is, for a particular \(A,\) either they are all true or they are all false.
+        Let \(A\) be an \(m \times n\) matrix.  Then the following statements are logically equivalent.  
             <ol>
             <li> For each \(\bf b\) in \(\mathbb{R}^m,\) the equation \(A{\bf x} = {\bf b}\) has a solution.</li>
-            <li> Each \(\bf b\) in \(\mathbb{R}^m\) is a linear combination of the columns of \(A\)</li>
+            <li> Each \(\bf b\) in \(\mathbb{R}^m\) is a linear combination of the columns of \(A.\)</li>
             <li> The columns of \(A\) span \(\mathbb{R}^m\).</li>
             <li> \(A\) has a pivot position in every row. </li>
         </p>
@@ -445,11 +453,9 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-:::{.fragment}
+<!-- :::{.fragment}
 Notice that we started by thinking about a matrix equation (and an augmented matrix,) but we ended by making statements about $A$ alone.
-
-This is the first time we are studying the property of a matrix itself; we will study many properties of matrices on their own as we progress.
-:::
+::: -->
 :::
 
 ## Key Ideas
@@ -460,5 +466,5 @@ This is the first time we are studying the property of a matrix itself; we will 
 
 - A consistent system with no free variables has a unique solution. Otherwise, there are infinitely many solutions.
 
-- When $A \bf {x} = \bf {b}$ has a solution for each $\bf b \in \mathbb{R^m},$ the columns of $A$ span $\mathbb{R^M}.$
+- When $A \bf {x} = \bf {b}$ has a solution for each $\bf b \in \mathbb{R}^m,$ the columns of $A$ span $\mathbb{R}^m.$
 :::
