@@ -1,0 +1,486 @@
+---
+title: "LU Factorization"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+## Learning Objectives
+
+::::{style="font-size: .8em"}
+In this lecture we will learn how to use Gauss-Jordan elimination for matrix factorization. The name of the technique that we will explore today is LU factorication.
+
+In the future lectures, we will discuss other factorization techniques such as QR factorization and SVD.
+::::
+
+## Matrix Factorization
+
+:::{style="font-size: .8em"}
+Just as multiplication can be generalized from scalars to matrices, factorization can also be generalized from scalars to matrices.
+
+A _factorization_ of a matrix $A$ is an equation that expresses $A$ as a product of two or more matrices.  
+
+$$
+A = BC.
+$$
+
+The essential difference with what we have done so far is that we have been given factors $(B$ and $C)$ and then computed their product $A$.  
+
+When factorizing, you are given $A$, and you want to find the $B$ and $C$ that meet specific conditions.
+:::
+
+## Matrix Factorization
+
+:::{style="font-size: .8em"}
+There are a number of reasons one may want to factor (or _decompose_) a matrix.
+
+1. Recasting $A$ into a form that makes computing with $A$ __faster__.
+2. Recasting $A$ into a form that makes working with $A$ __easier__.
+3. Recasting $A$ into a form that __exposes important properties__ of $A$.
+
+For the rest of this week, we'll work with LU factorization that addresses the first case. In the future, we will study factorizations to address the other two cases.
+:::
+
+## LU Factorization Problem
+
+:::{style="font-size: .8em"}
+Consider this:  You are given an $m\times n$ matrix $A$ and an $m \times p$ matrix $B$. 
+
+You want to find $X \in \mathbb{R}^{n\times p}$ such that:
+
+$$
+A X = B. 
+$$
+
+Instead of the usual matrix equation $A\mathbf{x} = \mathbf{b}$, now $X$ and $B$ are matrices.
+<br><br>
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>  
+        Given \(A\) and \(B\), how can we solve for \(X\) using techniques we already know? How long does this take?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## LU Factorization Problem
+
+:::{style="font-size: .8em"}
+Let $X = [\mathbf{x_1} \mathbf{x_2} \dots \mathbf{x_p}],$ and $B = [\mathbf{b_1} \mathbf{b_2} \dots \mathbf{b_p}]$.
+
+Then:
+
+$$
+\begin{align*}
+A{\bf x_1} &= {\bf b_1} \\
+A{\bf x_2} &= {\bf b_2} \\
+&\;\vdots \\
+A{\bf x_p} &= {\bf b_p}
+\end{align*}
+$$
+
+There are $p$ linear systems to solve. Each linear system is conceptually a separate problem.
+
+If we perform Gauss-Jordan Elimination on each of the separate systems, the total cost is $\sim p \cdot \frac{2}{3}n^3$ flops.
+:::
+
+## LU Factorization Problem
+
+:::{style="font-size: .8em"}
+If the matrix $A$ is square and invertible, then you can solve these systems by first computing $A^{-1}$ and then computing:
+
+$$
+\begin{align*}
+{\bf x_1} &= A^{-1}{\bf b_1} \\
+{\bf x_2} &= A^{-1}{\bf b_2} \\
+& \;\vdots \\
+{\bf x_p} &= A^{-1}{\bf b_p}
+\end{align*}
+$$
+
+Or, more concisely:
+
+$$ 
+X = A^{-1}B
+$$
+
+This is a faster technique if $p > 3$, because it exploits the fact that every linear system has the _same matrix $A$._
+
+:::
+
+## LU Factorization Problem
+
+:::{style="font-size: .8em"}
+The biggest cost is computing the inverse matrix $A^{-1}$, which requires about $2n^3$ flops (three times as many as a single Gauss-Jordan Elimination).
+
+What if we could solve all these systems while performing Gauss-Jordan Elimination only _once?_
+<br><br>
+
+
+__LU factorization__ allows us to do exactly this. LU factorization also has a close connection to Gauss-Jordan Elimination.
+
+In fact, _Gauss-Jordan Elimination is really a matrix factorization!_
+:::
+
+## Calculating LU Factorization
+
+:::{style="font-size: .8em"}
+The LU factorization can be applied to a matrix of any size (i.e., not only square matrices).
+
+An LU factorization of $A$ constructs two matrices:
+
+$$
+A = \begin{array}{cc}
+\left[\begin{array}{cccc}1&0&0&0\\ *&1&0&0\\ *&*&1&0\\ *&*&*&1\end{array}\right]&
+\left[\begin{array}{ccccc}\blacksquare&*&*&*&*\\0&\blacksquare&*&*&*\\0&0&0&\blacksquare&*\\0&0&0&0&0\end{array}\right]\\
+L&U\\
+\end{array}
+$$
+
+Stars ($*$) denote arbitrary entries, and blocks ($\blacksquare$) denote nonzero entries.
+:::
+
+## Calculating LU Factorization
+
+:::{style="font-size: .8em"}
+$L$ is a lower triangular square matrix of size $m \times m$, and it has 1s on the diagonal.   This is called a __unit lower triangular__ matrix (hence its name $L$).
+
+$U$ is in row echelon form, and it has the same $m \times n$ shape as $A$.   This is an __upper triangular__ matrix (hence its name $U$).
+<br><br>
+
+LU factorization only considers echelon form, not reduced echelon form. So, $\blacksquare$ entries in $U$ don't have to be 1, and we don't have to worry about the backsubstitution step in Gauss-Jordan elimination _for now_.
+:::
+
+## Calculating LU Factorization
+
+:::{style="font-size: .8em"}
+The fact that $U$ is in row echelon form may suggest to you (correctly!) that we could get it from $A$ by a sequence of row operations.
+
+LU factorization is possible for any matrix $A$ that can be converted into echelon form:
+
+- Without needing to interchange (or swap) two rows.
+- With addition operations that only add a multiple of one row to another row _below_ it.
+
+If you consider any elementary matrix that performs scaling or adding a multiple of a row to another row below it, then the corresponding matrices are both lower triangular matrices!
+:::
+
+## Calculating LU Factorization
+
+:::{style="font-size: .7em"}
+__Example.__
+
+$$
+\begin{array}{rl}
+E_2 = \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&5\end{array}\right], & E_2 A = \left[\begin{array}{rrr}a&b&c\\d&e&f\\5g&5h&5i\end{array}\right],\\ \\
+E_3 = \left[\begin{array}{rrr}1&0&0\\0&1&0\\-4&0&1\end{array}\right], & E_3 A = \left[\begin{array}{rrr}a&b&c\\d&e&f\\g-4a&h-4b&i-4c\end{array}\right]. 
+\end{array}
+$$
+
+$E_3$ is a unit lower triangular matrix.
+
+A scaling matrix like $E_2$ is lower triangular, but it is _not_ unit lower triangular: some of its diagonal entries are not 1s.
+
+We never need scaling operations to produce echelon form.
+:::
+
+## Calculating LU Factorization
+
+:::{style="font-size: .6em"}
+If $A$ can be converted into echelon form $U$ without row interchanges/swaps, then there is a set of unit lower triangular elementary matrices $E_1, \dots, E_p$
+
+$$
+E_p\cdots E_2 E_1 A = U.
+$$
+
+<br>
+
+We know that elementary matrices are invertible, and the product of invertible matrices is invertible, so:
+
+$$
+\begin{align*}
+A &= (E_p\cdots E_2 E_1)^{-1} U \\
+  &= E_1^{-1} E_2^{-1} \cdots E_p^{-1} U.
+\end{align*}
+$$
+
+<br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  
+        The product of unit lower triangular matrices is unit lower triangular. Additionally, the inverse of a unit lower triangular matrix is unit lower triangular.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Calculating LU Factorization
+
+:::{style="font-size: .8em"}
+We have rewritten Gauss-Jordan Elimination as:
+
+$$
+U = L^{-1}A
+$$
+
+and shown that $L$ is unit lower triangular.
+
+Here,
+
+- $U$ is the row echelon form of $A$.
+- $L^{-1}$ captures the row reductions that transform $A$ to row echelon form.
+- $L$ is the inverse of $L^{-1}$.
+:::
+
+## Finding L
+
+:::{style="font-size: .8em"}
+Recall that the motivation for developing the LU factorization is that it is more efficient than matrix inversion. So we don't want to have to invert and multiply all these elementary matrices in the standard way to find $L$.
+
+Here we have some good news:
+
+- Inverting each elementary row operation is simple, in fact much easier than general matrix inversion. (We have already seen examples of this.)
+- Multiplying elementary row operations is also simple: just apply the elementary row operation indicated by the left matrix to the right matrix.
+:::
+
+## Finding L
+
+:::{style="font-size: .6em"}
+Example:
+
+$$
+\begin{array}{rcccl}
+E_2^{-1} E_3^{-1} &=& 
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&1/5\end{array}\right]
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\4&0&1\end{array}\right]
+&=&
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\\color{red}{4/5}&\color{red}{0}&\color{red}{1/5}\end{array}\right]\\
+E_3^{-1} E_2^{-1}  &=& 
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\4&0&1\end{array}\right]
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&1/5\end{array}\right]
+&=&
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\\color{red}{4}&\color{red}{0}&\color{red}{1/5}\end{array}\right]
+\end{array}
+$$
+
+```{python}
+#| echo: true
+import numpy as np
+E2inv = np.array([[1,0,0],[0,1,0],[0,0,1/5]])
+E3inv = np.array([[1,0,0],[0,1,0],[4,0,1]])
+print("E2inv * E3inv ="); print(E2inv @ E3inv)
+print("\nE3inv * E2inv ="); print(E3inv @ E2inv)
+```
+:::
+
+## LU Algorithm
+
+:::{style="font-size: .8em"}
+1. Perform Gauss-Jordan elimination, and keep track of all the elementary row operations performed along the way. (For now, we're only considering matrices $A$ that do not require row interchange/swapping operations in Gauss-Jordan elimination.)
+
+2. Calculate $L = (E_p\cdots E_1)^{-1}$ = $E_1^{-1}\cdots E_p^{-1}$. In other words, $L$ includes all of the row operations that would _transform $U$ into $A$_. This requires doing the inverse of each row operation from step 1, and in the inverse order.
+:::
+
+## Computational Costs of LU Factorization{.really-smaller-title}
+
+:::{style="font-size: 1em"}
+Let's measure the cost of LU factorization:
+
+1. Gauss-Jordan elimination itself has a flop count of $\frac{2}{3} n^3$.
+
+2. The second step takes only $O(n^2)$ work, since inversion and multiplication are faster with elementary matrices than with  matrices.
+<br><br>
+
+Hence, we approximate the costs of LU by $\frac{2}{3} n^3$ flops.
+
+:::
+
+## Using LU Factorization
+
+:::{style="font-size: .8em"}
+Once you have the LU factorization of a matrix $A = LU$, then the system $A{\bf x} = {\bf b}$ (for any ${\bf b}$) can be solved __quickly__ -- specifically, in time that is proportional to $n^2$.
+
+<br>
+We can write these two LU Factorization steps as:
+
+When $A = LU$, the equation $A{\bf x} = {\bf b}$ can be written as $L(U{\bf x}) = {\bf b}.$  
+
+<br>
+
+Let's take this apart, and write ${\bf y}$ for $U{\bf x}$.  Then we can find ${\bf x}$ by solving the pair of equations:
+
+$$
+L{\bf y} = {\bf b},
+$$
+
+$$
+U{\bf x} = {\bf y}.
+$$
+
+:::
+
+## Using LU Factorization
+
+:::{style="font-size: .8em"}
+The idea is that we first solve $L{\bf y} = {\bf b}$ for ${\bf y},$ then solve $U{\bf x} = {\bf y}$ for ${\bf x}.$
+
+<br>
+
+:::{.center-text}
+<img src="images/inverses/lu-factor.jpeg" width=1000 />
+
+:::
+
+The key observation: _each equation is fast to solve_ because $L$ and $U$ are each triangular. 
+:::
+## Using LU Factorization
+
+:::{style="font-size: .8em"}
+__Example.__ Given the following LU factorization of $A$:
+
+$$
+A = \left[\begin{array}{rrrr}3&-7&-2&2\\-3&5&1&0\\6&-4&0&-5\\-9&5&-5&12\end{array}\right] = 
+\left[\begin{array}{rrrr}1&0&0&0\\-1&1&0&0\\2&-5&1&0\\-3&8&3&1\end{array}\right]
+\left[\begin{array}{rrrr}3&-7&-2&2\\0&-2&-1&2\\0&0&-1&1\\0&0&0&-1\end{array}\right] = LU
+$$
+
+use this LU factorization of $A$ to solve $A{\bf x} = {\bf b}$, where ${\bf b} = \left[\begin{array}{r}-9\\5\\7\\11\end{array}\right].$
+:::
+
+
+## Using LU Factorization
+
+:::{style="font-size: .6em"}
+Find ${\bf x}$ such that $A {\bf x} = LU{\bf x} = {\bf b}$. WE solve this outside in: first find ${\bf y}$ such that $L{\bf y} = {\bf b}$, then find ${\bf x}$ such that $U{\bf x} = {\bf y}$. <br>
+
+To solve $L{\bf y} = {\bf b},$ note that the arithmetic takes place only in the augmented column (column 5).   The zeros below each pivot in $L$ are created automatically by the choice of row operations.
+
+$$
+[L\;\; {\bf b}] = \left[\begin{array}{rrrr|r}1&0&0&0&-9\\-1&1&0&0&5\\2&-5&1&0&7\\-3&8&3&1&11\end{array}\right] \sim
+\left[\begin{array}{rrrr|r}1&0&0&0&-9\\0&1&0&0&-4\\0&0&1&0&5\\0&0&0&1&1\end{array}\right] = [I\;{\bf y}].
+$$
+
+Next, for $U{\bf x} = {\bf y}$ (the "backward" phase) the row reduction is again streamlined:
+
+$$
+[U\;\;{\bf y}] =  \left[\begin{array}{rrrr|r}3&-7&-2&2&-9\\0&-2&-1&2&-4\\0&0&-1&1&5\\0&0&0&-1&1\end{array}\right] \sim
+\left[\begin{array}{rrrr|r}1&0&0&0&3\\0&1&0&0&4\\0&0&1&0&-6\\0&0&0&1&-1\end{array}\right].
+$$
+
+:::
+
+## Using LU Factorization
+
+:::{style="font-size: .8em"}
+Both the forward and backward phases of solving a system as $L(U{\bf x}) = {\bf b}$ have flop counts of $\sim 2n^2$. 
+
+Therefore the time consuming step is actually doing the LU factorization, which as we've seen is essentially Gauss-Jordan Elimination, and therefore requires $\sim\frac{2}{3}n^3$ flops.
+
+Hence we have found that by using the LU factorization, one can solve a series of systems all involving the same $A$ with a cost of about $\frac{2}{3}n^3$ flops. 
+
+By contrast: 
+
+- Doing Gauss-Jordan Elimination would require $\frac{2}{3}n^3$ flops _for each_ of the $p$ linear systems.
+- Using the matrix inverse would require $2n^3$ flops to invert the matrix.
+
+:::
+
+## Using LU Factorization
+
+:::{style="font-size: .6em"}
+__Example.__ Find the $LU$ factorization of the following matrix $A$.
+
+$$
+A = \begin{bmatrix} 2 & 4 & 2 \\ 1 & 5 & 2 \\ 4 & -1 & 9 \end{bmatrix} 
+$$
+
+We can start by performing row operations to convert $A$ to a row echelon form $U$. Just to show what's going on, I'm going to write out each elementary row operation and its corresponding elementary row matrix.
+
+- $R_2 \gets R_2 - \frac{1}{2} \cdot R_1$
+
+$$
+{\begin{bmatrix} 1 & 0 & 0 \\ -1/2 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}} {\begin{bmatrix} 2 & 4 & 2 \\ 1 & 5 & 2 \\ 4 & -1 & 9 \end{bmatrix}} = \begin{bmatrix} 2 & 4 & 2 \\ 0 & 3 & 1 \\ 4 & -1 & 9 \end{bmatrix}
+$$
+
+:::
+
+## Using LU Factorization
+
+:::{style="font-size: .5em"}
+- $R_3 \gets R_3 - 2 \cdot R_1$
+
+$$
+{\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ -2 & 0 & 1 \end{bmatrix}} \begin{bmatrix} 2 & 4 & 2 \\ 0 & 3 & 1 \\ 4 & -1 & 9 \end{bmatrix} = \begin{bmatrix} 2 & 4 & 2 \\ 0 & 3 & 1 \\ 0 & -9 & 5 \end{bmatrix}
+$$
+
+- $R_3 \gets R_3 + 3 \cdot R_2$
+
+$$
+{\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 3 & 1 \end{bmatrix}} \begin{bmatrix} 2 & 4 & 2 \\ 0 & 3 & 1 \\ 0 & -9 & 5 \end{bmatrix} = \begin{bmatrix} 2 & 4 & 2 \\ 0 & 3 & 1 \\ 0 & 0 & 8 \end{bmatrix} = U
+$$
+
+<br>
+
+$$
+E_1 = \begin{bmatrix} 1 & 0 & 0 \\ 1/2 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix} \quad
+E_2 = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ -2 & 0 & 1 \end{bmatrix} \quad
+E_3 = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 3 & 1 \end{bmatrix}
+$$
+
+<br>
+
+$$
+E= E_3 E_2 E_1
+$$
+
+:::
+
+## Using LU Factorization
+
+:::{style="font-size: .7em"}
+We know that a composite matrix can be inverted in two ways: $(E_3E_2E_1)^{-1}$ or $E_3^{-1} E_2^{-1} E_1^{-1}.$ Either way you get:
+
+$$
+E^{-1} = L = \begin{bmatrix} 1 & 0 & 0 \\ 1/2 & 1 & 0 \\ 2 & -3 & 1 \end{bmatrix}.
+$$
+
+And now we can confirm that $LU = A:$
+
+$$
+\begin{bmatrix} 1&0&0\\1/2&1&0\\2&-3&1 \end{bmatrix} \;\; \begin{bmatrix} 2 & 4 & 2 \\ 0 & 3 & 1 \\ 0 & 0 & 8 \end{bmatrix} = \begin{bmatrix} 2 & 4 & 2 \\ 1 & 5 & 2 \\ 4 & -1 & 9 \end{bmatrix}
+$$
+
+Now we have our three elementary matrices, we can create $L.$ Remember that $EA=U$, so $L=E^{-1}.$
+:::
+
+## Key Ideas
+
+:::{style="font-size: .8em"}
+- LU Factorization allows us to write a matrix as a product of unit lower triangular and upper triangular matrices, L and U respectively
+
+- The steps <br>1. Perform Gauss-Jordan elimination while keeping track of the elementary row operations performed along the way.<br>2. Calculate $L = (E_p\cdots E_1)^{-1}$ = $E_1^{-1}\cdots E_p^{-1}.$
+
+- LU factorization costs $\frac{2}{3}n^3$ flops.
+
+:::
