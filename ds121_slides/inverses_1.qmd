@@ -22,7 +22,7 @@ In the last lecture we introduced linear transformations. Today we will talk abo
 
 ## Determinants
 
-:::{style="font-size: .7em;"}
+:::{style="font-size: .8em;"}
 
 In a linear transformation, the "size" of a shape can grow or shrink.
 
@@ -38,16 +38,14 @@ dm.plotShape(A @ note,'r')
 ```
 
 :::
-
-Let's see how the area (or volume) of a shape gets affected by a linear transformation from matrix $A$. The factor by which the area (or volume) changes is known as the determinant of $A$, $\text{det}(A)$
-
+If $A$ is the standard matrix of a linear transformation $T$. The factor by which the area changes due to $T$ is known as the determinant of $A$, $\text{det}(A).$
 :::
 
 ## Determinants
 
-:::{style="font-size: .7em;"}
+:::{style="font-size: .8em;"}
 
-Because of linearity, we can just ask what happens to the unit square (or cube, hypercube, etc). All other areas will scale similarly.
+Because of linearity, we simply ask what happens to the unit square (or cube, hypercube, etc). All other areas will scale similarly.
 
 :::{.center-text}
 ```{python}
@@ -63,17 +61,14 @@ dm.plotSquare(A @ square);
 :::
 :::
 
-## Determinants of $2x2$ Matrices
+## 2nd Order Determinants
 
-:::{style="font-size: .7em;"}
+:::{style="font-size: .8em;"}
 
-Let's denote the matrix of general 2-dimensional linear transformations as:
+Let's denote the matrix of a2D linear transformations as: 
+$A = \begin{bmatrix} a & b \\ c & d \end{bmatrix}.$
 
-$$
-A = \begin{bmatrix} a & b \\ c & d \end{bmatrix}
-$$
-
-Below is what happens to the unit square. The goal is to find an equation that is in terms of $a, b, c,$ and $d;$ which determines the blue diamond areas.
+Our goal is to describe the area of the blue diamond in terms of $a, b, c,$ and $d$.
 
 :::{.center-text}
 ```{python}
@@ -91,13 +86,12 @@ plt.text(v1[0]+0.2, v1[1]+0.1, '(a, c)', size = 12)
 plt.text((v1+v2)[0]+0.1, (v1+v2)[1]+0.1, '(a+b, c+d)', size = 12)
 plt.text(v2[0]-0.5, v2[1]+0.1, '(b, d)', size = 12);
 ```
-
 :::
 :::
 
-## Determinants of $2x2$ Matrices
+## 2nd Order Determinants
 
-:::{style="font-size: .5em;"}
+:::{style="font-size: .8em;"}
 
 :::{.center-text}
 ```{python}
@@ -134,21 +128,13 @@ plt.text(v2[0]+0.1, v2[1]-0.15, '(b, d)', size = 12);
 
 :::
 
-- The large rectangle has sides $(a+b)$ and $(c+d)$, so its area is $(a+b)(c+d)$.
-- We need to subtract $bd$ (red triangles), $ac$ (gray triangles), and $2bc$ (green rectangles).
-
-:::{.fragment}
-So, the area of the blue diamond is:
-
-$$
-(a+b)(c+d) - bd - ac - 2bc = ad - bc.
-$$
-:::
+The large rectangle has area is $(a+b)(c+d)$. We subtract $bd$ (red triangles), $ac$ (gray triangles), and $2bc$ (green rectangles) from it.
+Thus, the area of the blue diamond is: $(a+b)(c+d) - bd - ac - 2bc = ad - bc.$
 :::
 
-## Determinants of $2x2$ Matrices
+## 2nd Order Determinants
 
-:::{style="font-size: .7em;"}
+:::{style="font-size: .8em;"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -157,9 +143,9 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>  
-For any linear transformation \(\mathbb{R}^2 \to \mathbb{R}^2\) represented by the \(2 \times 2\) matrix
+For any linear transformation \(\mathbb{R}^2 \to \mathbb{R}^2\) represented by
 
-&emsp;&emsp;&emsp;&emsp;\(A = \begin{bmatrix} a & b \\ c & d \end{bmatrix},\)<br>
+\(A = \begin{bmatrix} a & b \\ c & d \end{bmatrix},\)
 
 the area of a unit square (or any shape) is scaled by a factor of \(\det(A) = ad-bc\).
         </p>
@@ -187,16 +173,14 @@ display(HTML(html_content))
 ```
 
 :::{.fragment}
-Consider when $A$ is the matrix of a projection.
-
-The unit square has been collapsed onto the $x$-axis, resulting in a shape with area of zero.
+Recall that when $A$ is the matrix of a projection, the unit square collapses onto the $x$-axis, resulting in a shape with area of zero.
 :::
 :::
 
-## Determinants of $2x2$ Matrices
+## 2nd Order Determinants
 
-:::{style="font-size: .6em;"}
-This is confirmed by the determinant, which is 
+:::{style="font-size: .8em;"}
+This is confirmed by the determinant:
 
 $$
  \det\left(\begin{bmatrix}1 & 0 \\ 0 & 0\end{bmatrix}\right) = (1 \cdot 0) - (0 \cdot 0) = 0.
@@ -207,7 +191,7 @@ $$
 A = np.array(
     [[1,0],
      [0,0]])
-print("A = "); print(A)
+#print("A = "); print(A)
 ax = dm.plotSmallSetup()
 dm.plotSquare(square)
 dm.plotSquare(A @ square,'r')
@@ -222,9 +206,9 @@ ax.arrow(0.0,1.0,0,-0.9,head_width=0.15, head_length=0.1, length_includes_head=T
 ## Determinants
 
 :::{style="font-size: .8em;"}
-The determinant can be defined for _any_ $n\times n$ square matrix.
+The determinant can be defined for _any_ square matrix.
 
-Here is a way to calculate the determinant of any square matrix. It is based on the elementary row operations from Gauss-Jordan elimination.
+Here is a way to calculate the determinant based on the elementary row operations from Gauss-Jordan elimination.
 
 :::{.fragment}
 ```{python}
@@ -234,9 +218,9 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        Let \(A\) be a <em>square</em> \(n\times n\) matrix, and let \(U\) be any echelon form obtained from \(A\) by row replacements and row interchanges -- without using any row scalings! Also, let \(r\) be the number of such row interchanges. <br> <br>
+        Let \(A\) be an \(n\times n\) matrix, and let \(U\) be any echelon form obtained from \(A\) by row replacements and row interchanges -- without row scalings. Let \(r\) be the number of such row interchanges. <br> <br>
         
-        Then the <b>determinant</b> of \(A\), written as \(\det A\), equals \((-1)^r\) times the product of the diagonal entries \(u_{11},\dots,u_{nn}\) in \(U\).
+        Then the <b>determinant</b> of \(A\), written as \(\det (A)\), equals \((-1)^r\) times the product of the diagonal entries \(u_{11},\dots,u_{nn}\) in \(U\).
         </p>
     </div>
     """
@@ -251,7 +235,7 @@ display(HTML(html_content))
 
 :::{style="font-size: .8em;"}
 
-__Example.__  Compute $\det A$ for $A = \begin{bmatrix}1&5&0\\2&4&-1\\0&-2&0\end{bmatrix}.$
+Compute $\det (A)$ for $A = \begin{bmatrix}1&5&0\\2&4&-1\\0&-2&0\end{bmatrix}.$
 
 :::{.fragment}
  The following row reduction uses _one_ row interchange:
@@ -262,20 +246,20 @@ $$
 \begin{bmatrix}1&5&0\\0&-2&0\\\color{red}{0}&\color{red}{0}&\color{red}{-1}\end{bmatrix}.
 $$
 
-So $\det A$ equals $(-1)^1(1)(-2)(-1) = -2.$  
+Hence, $\det (A)$ equals $(-1)^1(1)(-2)(-1) = -2.$  
 
-The remarkable thing is that _any other_ way of computing the echelon form gives the same determinant.
+Any other way of computing the echelon form gives the same determinant.
 :::
 :::
 
 ## Determinants
 
-:::{style="font-size: .6em;"}
+:::{style="font-size: .8em;"}
 Some useful facts about determinants:
 
-1. $\det AB = (\det A) (\det B).$
-2. $\det A^{\top} = \det A.$
-3. If $A$ is triangular, then $\det A$ is the product of the entries on the main diagonal of $A$.
+1. $\det (AB) = \det (A) \det (B).$
+2. $\det (A)^{\top} = \det (A).$
+3. If $A$ is triangular, then $\det (A)$ is the product of the entries on the main diagonal of $A$.
 
 ```{python}
 from IPython.core.display import HTML
@@ -295,7 +279,7 @@ display(HTML(html_content))
 ```
 
 
-:::{.fragment}
+<!-- :::{.fragment}
 
 $$
 \det(\mathbf{A}) = \det \left( 
@@ -315,7 +299,7 @@ $$
 \right).
 $$
 
-:::
+::: -->
 :::
 
 ## Existence and Uniqueness
@@ -323,6 +307,7 @@ $$
 :::{style="font-size: .8em;"}
 
 Recall some of the linear transformations of $\mathbb{R}^2$:
+
 - Dilations and contractions
 - Rotations
 - Reflections
@@ -331,15 +316,13 @@ Recall some of the linear transformations of $\mathbb{R}^2$:
 
 Some of these transformations map multiple inputs to the same output, and some are incapable of generating certain outputs.
 
-For example, the _projections_ above can send different points to the same point.
-
-We need terminology to understand these properties of linear transformations.
+We need additional terminology to understand these properties of linear transformations.
 
 :::
 
-## One to One
+## One-to-One
 
-:::{style="font-size: .6em;"}
+:::{style="font-size: .8em;"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -359,7 +342,13 @@ If $T$ is one-to-one, then for each $\mathbf{b},$ the equation $T(\mathbf{x}) = 
 
 Hence, the concept of one-to-one is asking a _uniqueness_ question about solutions to the equation $T(\mathbf{x}) = \mathbf{b}$ for all $\mathbf{b}.$
 
-<img src = "/images/inverses/onto.jpeg" width=800 />
+:::
+
+## One-to-One
+
+:::{style="font-size: .8em;" .center-y}
+
+<img src = "/images/inverses/onto.jpeg" width=1000 />
 
 :::
 
@@ -382,11 +371,9 @@ display(HTML(html_content))
 ```
 In other words, $T$ is onto if every element of its codomain is in its range.
 
-<br>
 
 If $T$ is onto, then for each $\mathbf{b},$ the equation $T(\mathbf{x}) = \mathbf{b}$ has either 1 or infinitely many solutions.
 
-<br>
 
 Hence, the concept of onto is asking an _existence_ question about solutions to the equation $T(\mathbf{x}) = \mathbf{b}$ for all $\mathbf{b}.$
 
@@ -395,7 +382,7 @@ Hence, the concept of onto is asking an _existence_ question about solutions to 
 
 ## Onto
 
-:::{style="font-size: .6em;"}
+:::{style="font-size: .8em;"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -416,17 +403,17 @@ display(HTML(html_content))
 
 :::
 
-:::{.fragment}
+<!-- :::{.fragment}
 Here, we see that $T$ maps points in $\mathbb{R}^2$ to a plane lying _within_ $\mathbb{R}^3$. That is, the range of $T$ is a strict subset of the codomain of $T$.
 
 So $T$ is _not onto_ $\mathbb{R}^3$.
-:::
+::: -->
 
 :::
 
-## One-to-one and Onto
+## One-to-One and Onto
 
-:::{style="font-size: .6em;"}
+:::{style="font-size: .8em;"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -489,7 +476,7 @@ Let's apply the concept of inverses to linear transformations -- that is, functi
 ## Inverse of a Linear Transformation{.smaller-title}
 
 
-:::{style="font-size:.8em"}
+:::{style="font-size:0.9em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -532,11 +519,11 @@ display(HTML(html_content))
 ```
 <br>
 
-__Proof.__ In this case, it is easier to reason about the contrapositive statement: if a transformation $T$ is not one-to-one or is not onto, then it cannot be invertible. This is called a _proof by contradiction_.
+<!-- __Proof.__ In this case, it is easier to reason about the contrapositive statement: if a transformation $T$ is not one-to-one or is not onto, then it cannot be invertible. This is called a _proof by contradiction_. -->
 
 :::
 
-## Inverse of a Linear Transformation{.smaller-title}
+<!-- ## Inverse of a Linear Transformation{.smaller-title}
 
 
 :::{style="font-size:.8em"}
@@ -553,11 +540,11 @@ since the left sides of the two equations are equal but the right sides are not.
 :::{.fragment}
 - Suppose that $T$ is not onto, meaning that there exists some $y \in \mathbb{R}^n$ that is not in the range of $T$. Hence for any transformation $S$ it is the case that $T(S({\bf y})) \neq {\bf y}$, so $T$ is not invertible.
 :::
-:::
+::: -->
 
 ## Inverse of a Matrix
 
-:::{style="font-size:.6em"}
+:::{style="font-size:.8em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -566,9 +553,8 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
- An \(n \times n\) matrix \(A\) is called <b>invertible</b> if there exists a matrix $C$ such that
-
- &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(AC = I \mbox{  and  } CA = I,\)
+ An \(n \times n\) matrix \(A\) is called <b>invertible</b> if there exists a matrix \(C\) such that
+\(AC = I \mbox{  and  } CA = I,\)
 
 where \(I\) is the \(n \times n\) identity matrix. In this case, \(C\) is called the <b>inverse</b> of \(A\).
         </p>
@@ -594,21 +580,11 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-<br>
-
-:::{.fragment}
-__Example.__ If $A = \left[\begin{array}{rr}2&5\\-3&-7\end{array}\right]$ and $C = \left[\begin{array}{rr}-7&-5\\3&2\end{array}\right]$, 
-
-then: $AC = \left[\begin{array}{rr}2&5\\-3&-7\end{array}\right]\left[\begin{array}{rr}-7&-5\\3&2\end{array}\right] = \left[\begin{array}{rr}1&0\\0&1\end{array}\right],$ and: $CA = \left[\begin{array}{rr}-7&-5\\3&2\end{array}\right]\left[\begin{array}{rr}2&5\\-3&-7\end{array}\right] = \left[\begin{array}{rr}1&0\\0&1\end{array}\right],$
-
-so we conclude that $C = A^{-1}$, and both $A$ and $C$ are invertible (i.e., nonsingular) matrices.
 :::
-:::
-
 
 ## Inverse of a Matrix
 
-:::{style="font-size:.6em"}
+:::{style="font-size:.8em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -628,25 +604,27 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-<br>
+Hence, the inverse of a matrix exists only for some square matrices.
+:::
 
-:::{.fragment}
-So, the inverse of a matrix does not exist for all matrices.
+
+## Inverse of a Matrix
+
+:::{style="font-size:.8em;" }
 
 :::{.center-text}
-<img src="images/inverses/inverse.png" width=600 />
+<img src="images/inverses/inverse.png" width=900 />
 
-:::
 :::
 :::
 
 
 ## Inverse of a Matrix
 
-:::{style="font-size: .6em"}
-__Example.__ Let $A = \left[\begin{array}{rr}0&-1\\1&0\end{array}\right]$ and $B = \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix}$. Show that $B$ is the inverse of $A$.
+:::{style="font-size: .8em"}
+Let $A = \left[\begin{array}{rr}0&-1\\1&0\end{array}\right]$ and $B = \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix}$. Show that $B$ is the inverse of $A$.
 
-You can calculate $AB$ and $BA$ algebraically, but it is easier to reason about this problem geometrically. Note that $A$ and $B$ corresponds to counterclockwise rotations by 90 and 270 degrees, respectively. Hence:
+You can calculate $AB$ and $BA$ algebraically, but it is easier to reason about this problem geometrically. Note that $A$ and $B$ corresponds to counterclockwise rotations by 90 and 270 degrees, respectively. 
 
 - $AB$ corresponds to performing a 270 degree rotation followed by a 90 degree rotation. The result is a 360 degree rotation -- that is, every vector ends up back where it started, which is the identity transformation. Hence, $AB = I$.
 
@@ -655,9 +633,9 @@ You can calculate $AB$ and $BA$ algebraically, but it is easier to reason about 
 
 ## Inverse of a Matrix
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 
-__Example.__ Consider the projection onto the $x_2$ axis $A = \left[\begin{array}{rr}0&0\\0&1\end{array}\right].$
+Consider the projection onto the $x_2$ axis $A = \left[\begin{array}{rr}0&0\\0&1\end{array}\right].$
 
 :::{.columns}
 :::{.column .center-text}
@@ -665,7 +643,7 @@ __Example.__ Consider the projection onto the $x_2$ axis $A = \left[\begin{array
 A = np.array(
     [[0,0],
      [0,1]])
-print("A = "); print(A)
+#print("A = "); print(A)
 ax = dm.plotSmallerSetup()
 dm.plotSquare(square)
 dm.plotSquare(A @ square)
@@ -675,7 +653,7 @@ ax.arrow(1.0,0.0,-0.9,0,head_width=0.15, head_length=0.1, length_includes_head=T
 :::
 
 :::{.column .incremental}
-It is __not__ invertible. There are many equivalent ways to reach this conclusion:
+It is _not_ invertible. There are many equivalent ways to reach this conclusion:
 
 - The mapping $T$ is not one-to-one.  (There are many values ${\bf x}$ that give the same $A{\bf x}.$)
 - The mapping $T$ is not onto $\mathbb{R}^2.$ (Only a subset of $\mathbb{R}^2$ can be output by $T$).
@@ -686,7 +664,7 @@ It is __not__ invertible. There are many equivalent ways to reach this conclusio
 
 ## Inverse of a Matrix
 
-:::{style="font-size: .7em"}
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -695,14 +673,13 @@ def generate_html():
     <div class="purple-box">
         <p>
 <ol>
-<li>If \(A\) is an invertible matrix, then \(A^{-1}\) is invertible, and</li> <br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\((A^{-1})^{-1} = A.\)
+<li>If \(A\) is an invertible matrix, then \(A^{-1}\) is invertible, and \((A^{-1})^{-1} = A.\)
 <br>
-<li>If \(A\) is an invertible matrix, then so is \(A^{\top},\) and the inverse of \(A^{\top}\) is the transpose of \(A^{-1}.\)</li> <br>
+<li>If \(A\) is an invertible matrix, then so is \(A^{\top},\) and the inverse of \(A^{\top}\) is the transpose of \(A^{-1}:\)</li> 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\((A^{\top})^{-1} = (A^{-1})^{\top}.\)
 
 <br>
-<li>If \(A\) and \(B\) are \(n\times n\) invertible matrices, then so is \(AB,\) and the inverse of \(AB\) is the product of the inverses of \(A\) and \(B\) in the reverse order.  </li> <br>
+<li>If \(A\) and \(B\) are \(n\times n\) invertible matrices, then so is \(AB.\) The inverse of \(AB\) is the product of the inverses of \(A\) and \(B\) in the reverse order:  </li> <br>
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\((AB)^{-1} = B^{-1}A^{-1}.\)
         </p>
     </div>
