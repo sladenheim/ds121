@@ -1,0 +1,512 @@
+---
+title: "Column and Null Spaces"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+Today we will talk about bases and dimensions of subspaces. We will define those concepts first for a general subspace. Then we will apply them to column spaces and null spaces.
+
+We will also learn a new theorum, the so-called Rank-Nullity theorum, and add new statements to IMT.
+:::
+
+## Basis for a Subspace
+
+:::{style="font-size: .6em"}
+Consider the subspace $H$ described by $\text{Span}\{a_1, a_2, a_3\}$ with
+
+$$
+{\bf a_1} = \begin{bmatrix} -8 \\ 8 \\ 5 \end{bmatrix}, \quad
+{\bf a_2} = \begin{bmatrix} 3 \\ 2 \\ -2 \end{bmatrix}, \quad
+{\bf a_3} = \begin{bmatrix} 7.5 \\ 5 \\ -5 \end{bmatrix} = 2.5 {\bf a_2}
+$$
+
+:::{.center-text}
+```{python}
+import laUtilities as ut
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy as sp
+
+qr_setting = None
+
+fig = ut.three_d_figure((7, 4), fig_desc = 'H = Span{a1, a2, a3}',
+                        xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10, qr = qr_setting)
+a1 = [-8.0, 8.0, 5.0]
+a2 = [3.0,  2.0, -2.0]
+a3 = 2.5 * np.array(a2)
+fig.text(a1[0]+.5, a1[1]+.5, a1[2]+.5, r'$\bf a_1$', 'a_1', size=18)
+fig.text(a3[0]+.5, a3[1]+.5, a3[2]+.5, r'$\bf a_3$', 'a_3', size=18)
+fig.text(a2[0]+.5, a2[1]+.5, a2[2]+.5, r'$\bf a_2$', 'a_2', size=18)
+fig.plotSpan(a1, a2,'Green')
+fig.plotPoint(a1[0], a1[1], a1[2],'r')
+fig.plotPoint(a3[0], a3[1], a3[2],'r')
+fig.plotPoint(a2[0], a2[1], a2[2],'r')
+# fig.plotPoint(a3[0], a3[1], a3[2],'r')
+fig.text(0.1, 0.1, -3, r'$\bf 0$', '0', size=12)
+fig.plotPoint(0, 0, 0, 'b')
+fig.set_title(r'$H$ = Span$\{{\bf a}_1, {\bf a}_2, {\bf a}_3\}$')
+fig.text(9, -9, -7, r'H', 'H', size = 16)
+```
+:::
+:::
+
+## Basis for a Subspace
+
+:::{style="font-size: .8em"}
+Since $a_3$ is a scalar multiple of $a_2,$ the most concise way of writing $H$ is
+
+:::{.center-text style="font-size: 1em"}
+$H=\text{Span}\{a_1,a_2\}$ or equivalently, $H=\text{Span}\{a_1,a_3\}$
+:::
+
+In other words, $\{a_1, a_2\}$ forms a basis for $H$ and so does $\{a_1,a_3\}$.
+
+:::{.center-text}
+```{python}
+fig = ut.three_d_figure((7, 5), fig_desc = 'Bases of H are {a1, a2} or {a1, a3}.',
+                        xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10, qr = qr_setting)
+a1 = [-8.0, 8.0, 5.0]
+a2 = [3.0,  2.0, -2.0]
+a3 = 2.5 * np.array(a2)
+fig.text(a1[0]+.5, a1[1]+.5, a1[2]+.5, r'$\bf a_1$', 'a_1', size=18)
+fig.text(a3[0]+.5, a3[1]+.5, a3[2]+.5, r'$\bf a_3$', 'a_3', size=18)
+fig.text(a2[0]+.5, a2[1]+.5, a2[2]+.5, r'$\bf a_2$', 'a_2', size=18)
+fig.plotSpan(a1, a2,'Green')
+fig.plotPoint(a1[0], a1[1], a1[2],'r')
+fig.plotPoint(a3[0], a3[1], a3[2],'r')
+fig.plotPoint(a2[0], a2[1], a2[2],'r')
+fig.plotLine([[0, 0, 0], a3], 'r', '--')
+fig.plotLine([[0, 0, 0], a1], 'r', '--')
+# fig.plotPoint(a3[0], a3[1], a3[2],'r')
+fig.text(0.1, 0.1, -3, r'$\bf 0$', '0', size=12)
+fig.plotPoint(0, 0, 0, 'b')
+fig.set_title(r'Bases of $H$ are $\{{\bf a}_1, {\bf a}_2\}$ or $\{{\bf a}_1, {\bf a}_3\}$')
+fig.text(9, -9, -7, r'H', 'H', size = 16)
+```
+:::
+:::
+
+## Basis for a Subspace
+
+:::{style="font-size: .8em"}
+A **basis** for a subsapce $H$ of $\mathbb{R^n}$ is a linearly independent set in $H$ that spans $H.$
+
+Note that $\{a_1, a_2, a_3\}$ is not a basis for $H,$ because $a_2$ and $a_3$ are not linearly independent.
+
+Furthermore, $\{a_1\}$ is also not a basis for $H,$ because it does not span $H.$
+:::
+
+## Basis for a Subspace
+
+:::{style="font-size: .6em"}
+__Example.__  The columns of __any__ invertible $n\times n$ matrix form a basis for $\mathbb{R}^n.$  
+
+This is because, by the Invertible Matrix Theorem, they are linearly independent, and they span $\mathbb{R}^n.$
+
+<br>
+
+We could use the identity matrix, $I.$  It's columns are $\mathbf{e}_1, \dots, \mathbf{e}_n.$
+
+The set $\{\mathbf{e}_1,\dots,\mathbf{e}_n\}$ is called the __standard basis__ for $\mathbb{R}^n.$
+
+:::{.center-text}
+```{python}
+fig = ut.three_d_figure((7, 6), fig_desc = 'The Standard Basis for R3',
+                        xmin = -1.2, xmax = 1.2, ymin = -1.2, ymax = 1.2, zmin = -1.2, zmax = 1.2, qr = qr_setting)
+e1 = [1, 0, 0]
+e2 = [0, 1, 0]
+e3 = [0, 0, 1]
+origin = [0, 0, 0]
+fig.ax.quiver(e1, e2, e3, e1, e2, e3, length=1.0, color='Red')
+fig.plotLine([[0, 0, 0], [0, 1, 0]], color='Red')
+fig.plotLine([[0, 0, 0], [0, 0, 1]], color='Red')
+fig.plotLine([[0, 0, 0], [1, 0, 0]], color='Red')
+fig.text(1, 0, -0.5, r'${\bf e_1}$', 'e1', size=16)
+fig.text(0.2, 1, 0, r'${\bf e_2}$', 'e2', size=16)
+fig.text(0, 0.2, 1, r'${\bf e_3}$', 'e3', size=16)
+# plotting the axes
+fig.plotIntersection([0, 0, 1, 0], [0, 1, 0, 0])
+fig.plotIntersection([0, 0, 1, 0], [1, 0, 0, 0])
+fig.plotIntersection([0, 1, 0, 0], [1, 0, 0, 0])
+fig.set_title(r'The Standard Basis for $\mathbb{R}^3$',size=14);
+```
+:::
+:::
+
+## Dimension of a Subspace
+
+:::{style="font-size: .8em"}
+It can be shown that if a subspace $H$ has a basis of $p$ vectors, then _every_ basis of $H$ must consist of exactly $p$ vectors. 
+That is, for a given $H$, the number $p$ is a special number.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>The <em>dimension</em> of a nonzero subspace \(H,\) denoted by \(\dim H,\) is the number of vectors in any basis for \(H.\)<br>
+        The dimension of the zero subspace \(\{{\bf 0}\}\) is defined to be zero.</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+We can now say _with precision_ things we've previously said informally.   
+
+For example, a plane through the origin ${\bf 0}$ is two-dimensional, and a line through ${\bf 0}$ is one-dimensional.
+
+:::
+
+## Basis for a Nullspace
+
+:::{style="font-size: .6em"}
+Let us explain how to find a basis for a nullspace based on an example.
+
+__Example.__  Find a basis for the null space of the matrix
+
+$$
+A = \begin{bmatrix}-3&6&-1&1&-7\\1&-2&2&3&-1\\2&-4&5&8&-4\end{bmatrix}.
+$$
+
+__Solution.__  We would like to describe the set of all solutions of $A\mathbf{x} = {\bf 0}.$
+
+We start by performing Gaussian elimination on the augmented matrix:
+
+$$
+\left[ \begin{array}{c|c} A & {\bf 0} \end{array}\right] \sim \left[\begin{array}{ccccc|c}1&-2&0&-1&3&0\\0&0&1&2&-2&0\\0&0&0&0&0&0\end{array}\right], \;\;\;
+\begin{array}{rrrrrcl}x_1&-2x_2&&-x_4&+3x_5&=&0\\&&x_3&+2x_4&-2x_5&=&0\\&&&&0&=&0\end{array}
+$$
+
+$x_1$ and $x_3$ are basic, and $x_2, x_4,$ and $x_5$ are free.
+:::
+
+## Basis for a Nullspace
+
+:::{style="font-size: .8em"}
+So the general solution is:
+
+$$
+\begin{array}{rcl}x_1&=&2x_2 + x_4 -3x_5,\\
+x_3&=&-2x_4 + 2x_5.\end{array}
+$$
+
+Now, what we want to do is write the solution set as a _weighted combination of vectors._
+
+This is a neat trick -- we are creating a vector equation.
+
+The key idea is that the _free variables will become the weights._
+:::
+
+## Basis for a Nullspace
+
+:::{style="font-size: .6em"}
+$$
+\begin{aligned}
+\begin{bmatrix}x_1\\x_2\\x_3\\x_4\\x_5\end{bmatrix} 
+&= \begin{bmatrix}2x_2 + x_4 - 3x_5\\x_2\\-2x_4 + 2x_5\\x_4\\x_5\end{bmatrix} \\
+&= x_2\begin{bmatrix}2\\1\\0\\0\\0\end{bmatrix} 
++ x_4\begin{bmatrix}1\\0\\-2\\1\\0\end{bmatrix} 
++ x_5\begin{bmatrix}-3\\0\\2\\0\\1\end{bmatrix} \\
+&= x_2\mathbf{u} + x_4\mathbf{v} + x_5\mathbf{w}.
+\end{aligned}
+$$
+
+This expression describes the entire solution set of $A\mathbf{x} = {\bf 0}.$ So ${\operatorname{Nul}}\ A$ is the set of all linear combinations of $\mathbf{u}, \mathbf{v},$ and ${\bf w}$.  That is, ${\operatorname{Nul}}\ A$ is the subspace spanned by $\{\mathbf{u}, \mathbf{v}, {\bf w}\}.$
+:::
+
+## Basis for a Nullspace
+
+:::{style="font-size: .6em"}
+This construction automatically makes $\mathbf{u}, \mathbf{v},$ and ${\bf w}$ _linearly independent_. Since each weight appears by itself in one position, the only way for the whole weighted sum to be zero is if every weight is zero -- this is  linear independence. 
+
+So $\{\mathbf{u}, \mathbf{v}, {\bf w}\}$ is a _basis_ for ${\operatorname{Nul}}\ A.$
+
+Conclusion: by finding a parametric description of the solution of the equation $A\mathbf{x} = {\bf 0},$ we can construct a basis for the nullspace of $A$.
+
+<br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What is the dimension of \(\operatorname{Nul} A\)</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<br>
+
+:::{.fragment}
+It is 3. To find the dimension of $\operatorname{Nul} A$, _count the number of free variables_ in $A \bf{x} = 0$.
+:::
+:::
+
+## Basis of a Column Space
+
+:::{style="font-size: .7em"}
+To find a basis for the column space, we have an easier starting point.
+
+We know that the column space is the span of the matrix columns. So, we can choose matrix columns to make up the basis.
+
+But remember that a basis must be a _minimum-sized set_ of vectors that span the column space. So the question is: _which_ columns should we choose?
+
+__Example.__ Suppose we have a matrix $B$ that happens to be in _reduced echelon form:_
+
+$$
+B = \begin{bmatrix}1&0&-3&5&0\\0&1&2&-1&0\\0&0&0&0&1\\0&0&0&0&0\end{bmatrix}.
+$$
+:::
+
+## Basis of a Column Space
+
+:::{style="font-size: .7em"}
+Denote the columns of $B$ by $\mathbf{b}_1,\dots,\mathbf{b}_5$.
+
+Note that $\mathbf{b}_3 = -3\mathbf{b}_1 + 2\mathbf{b}_2$ and $\mathbf{b}_4 = 5\mathbf{b}_1-\mathbf{b}_2.$
+
+So any combination of $\mathbf{b}_1,\dots,\mathbf{b}_5$ is actually just a combination of $\mathbf{b}_1, \mathbf{b}_2,$ and $\mathbf{b}_5.$
+
+That is, $\{\mathbf{b}_1, \mathbf{b}_2, \mathbf{b}_5\}$ spans ${\operatorname{Col}}\ B$. This means that _there is no combination of columns 1, 2, and 5 that yields the zero vector, other than the trivial combination._
+
+We conclude that the pivot columns of $B$ form a basis for $\operatorname{Col} B$
+
+:::{.fragment}
+So, for matrices in reduced row echelon form, we have a simple rule for the basis of the column space:
+    
+> Choose the columns that hold the pivots, or in other words the columns corresponding to the _basic variables_.
+
+Hopefully now the term "basic variable" makes sense!
+:::
+:::
+
+## Basis of a Column Space
+
+:::{style="font-size: .7em"}
+Next, we'll show that this idea generalizes even to matrices that aren't in reduced echelon form. The pivot columns of $A$ form a basis for ${\operatorname{Col}}\ A$ _for any_ $A$.
+
+<br>
+
+To see this, suppose that $A\mathbf{x} = {\bf 0}$ for some nonzero vector $\mathbf{x}$. This says that there is a linear dependence relation between some of the columns of $A$.
+
+If any of the entries in $\mathbf{x}$ are zero, then those columns do not participate in the linear dependence relation.
+
+When we row-reduce $A$ to its reduced echelon form $B$, the columns are changed, but the equations $A\mathbf{x} = {\bf 0}$ and $B\mathbf{x} = {\bf 0}$ have the same solution set.  
+:::
+
+## Basis of a Column Space
+
+:::{style="font-size: .6em"}
+The columns of $A$ and the columns of $B$ _have exactly the same dependence relationships_ as the columns of $B$.
+
+Specifically:
+
+1. If some set of columns of $B$ spans the column space of $B$ (meaning that the remaining columns can be written as a linear combination of the columns in the span), then the same columns of $A$ span the column space of $A$.
+
+2. If some set of columns of $B$ are linearly independent (meaning that no non-zero combination of these columns yields the zero vector), then the same columns of $A$ are linearly independent.
+
+In other words:
+
+> If some columns of $B$ are a basis for ${\operatorname{Col}}\ B$, then the corresponding columns of $A$ are a basis for ${\operatorname{Col}}\ A$.
+:::
+
+## Basis of a Column Space
+
+:::{style="font-size: .6em"}
+__Example.__ Consider the matrix $A$:
+
+$$
+A = \begin{bmatrix}1&3&3&2&-9\\-2&-2&2&-8&2\\2&3&0&7&1\\3&4&-1&11&-8\end{bmatrix}
+$$
+
+To find its basis, we simply need to look at the basis for its reduced row echelon form.
+
+It turns out that $A$ is row equivalent to the matrix $B$ that we considered in the previous example. Recall that a basis for ${\operatorname{Col}}\ B$ was columns 1, 2, and 5.
+
+So a basis for ${\operatorname{Col}}\ A$ is:
+
+$$
+\left\{\begin{bmatrix}1\\-2\\2\\3\end{bmatrix},\begin{bmatrix}3\\-2\\3\\4\end{bmatrix},\begin{bmatrix}-9\\2\\1\\-8\end{bmatrix}\right\}
+$$
+:::
+
+## Basis of a Column Space
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>The pivot columns of matrix \(A\) form a basis for the column space of \(A\).</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Be careful here though..
+
+- we compute the reduced row echelon form of $A$ to find which columns are pivot columns, but...
+- we use the __columns of $A$ itself__ as the basis for ${\operatorname{Col}}\ A$!
+:::
+
+## Matrix Rank
+
+:::{style="font-size: .8em"}
+Now that we know how to find the basis of a column space, we can measure its dimension. This term is so important that we give it a special name.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>The <b>rank</b> of a matrix, denoted by \(\operatorname{Rank}A\), is the dimension of the column space of A.</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Since the pivot columns of $A$ form a basis for $\operatorname{Col} A,$ the rank of $A$ is just the number of pivot columns in $A$ -- or in other words, the number of basic variables in a linear system of the form $A {\bf x} = {\bf b}$.
+:::
+
+## Matrix Rank
+
+:::{style="font-size: .7em"}
+__Example.__  Determine the rank of the matrix
+
+$$
+A = \begin{bmatrix}2&5&-3&-4&8\\4&7&-4&-3&9\\6&9&-5&2&4\\0&-9&6&5&-6\end{bmatrix}.
+$$
+
+__Solution.__ Reduce $A$ to an echelon form. One result is:
+
+$$
+\begin{bmatrix}\fbox{2}&5&-3&-4&8\\0&\fbox{-3}&2&5&-7\\0&0&0&\fbox{4}&-6\\0&0&0&0&0\end{bmatrix}.
+$$
+
+Hence the matrix $A$ has 3 pivot columns, so $\operatorname{Rank} A = 3.$
+
+:::
+
+## Rank-Nullity Theorum
+
+:::{style="font-size: .6em"}
+Consider a matrix $A$ of any size $m \times n$. We know that:
+
+-  $\dim\operatorname{Nul}\ A$ = the number of free variables in $A\mathbf{x} = {\bf 0}$,  which is the number of non-pivot columns in $A$.
+
+- $\dim\operatorname{Col}\ A$ = the number of basis variables in $A\mathbf{x} = {\bf 0}$, which is the number of pivot columns.
+
+So we can now make this important connection:
+
+$$
+\begin{array}{rcl}
+\dim\operatorname{Nul}\ A + \dim\operatorname{Col}\ A &= &\mbox{number of non-pivot columns of $A$ + number of pivot columns of $A$}\\
+&= &\mbox{number of columns of $A$}.
+\end{array}
+$$
+
+This relationship involving dimension is true even though the two subspaces themselves live in different spaces: $\operatorname{Nul}\ A \subset \mathbb{R}^n$ and $\operatorname{Col}\ A \subset \mathbb{R}^m$.
+:::
+
+## Rank-Nullity Theorum
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>If a matrix \(A\) has \(n\) columns, then \(\operatorname{Rank} A + \dim\operatorname{Nul}\)</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Let's think about a matrix $A$ and the associated linear transformation $T(x) = Ax$.
+
+- If matrix $A$ has $n$ columns, $A$'s column space _could_ have a dimension as high as $n$. Equivalently, $T$'s range _could_ have dimension as high as $n$.
+
+- _However,_ if $A$ "throws away" a nullspace of dimension $p$, it _reduces_ the column space of $A$ to $n-p$. Meaning, the dimension of $T$'s range is reduced to $n-p$.
+:::
+
+## Extending the Invertible Matrix Theorum{.really-smaller-title}
+
+:::{style="font-size: 1em"}
+The above arguments show that when $A$ has $n$ columns, then the "larger" that the column space is, the "smaller" that the null space is. (Where "larger" means "has more dimensions.")
+
+Let's consider what this means when $A$ is a square $n\times n$ matrix.
+
+- On one "extreme," the column space of $A$ could have maximum dimension -- i.e., $\dim\operatorname{Col}\ A= n.$
+
+- Recall that the IMT said that an $n\times n$ matrix is invertible if and only if its columns are linearly independent, and if and only if its columns span $\mathbb{R}^n$.
+
+We can now see that an $n\times n$ matrix is invertible if and only if the columns of $A$ form a basis for $\mathbb{R}^n.$
+:::
+
+## Extending the Invertible Matrix Theorum{.really-smaller-title}
+
+:::{style="font-size: 1em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>Let \(A\) be a square \(n\times n\) matrix.  Then the following statements are each equivalent to the statement that \(A\) is an invertible matrix:
+        <ol start="1">
+        <li>The columns of \(A\) form a basis for \(\mathbb{R}^n.\)</li>
+        <li>\(\operatorname{Col} A = \mathbb{R}^n.\)</li>
+        <li>\(\dim\operatorname{Col} A = n.\)</li>
+        <li>\(\operatorname{Rank} A = n.\)</li>
+        <li>\(\operatorname{Nul} A = \{{\bf 0}\}.\)</li>
+        <li>\(\dim\operatorname{Nul} A = 0.\)</li>
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Hence, if we know that a square matrix $A$ is -- or isn't -- invertible, then we now know 16 additional facts about $A$! (Ten from the original IMT statement, and six more from this new theorem.)
+:::
+
+## Key Ideas
+
+:::{style="font-size: .8em"}
+
+- A basis for a subspace $H\in \mathbb{R^n}$ is an independent set in $H$ that spans $H$.
+
+- The dimension of a subspace $H$ is the number of vectors in any basis for $H$.
+
+- A basis for the nullspace of $A$ is obtained from a parametric description of $A \bf{x} = 0$.
+
+- A basis for the column space of $A$ is formed by the pivot columns of $A.$
+
+- $\dim\operatorname{Nul} A + \dim\operatorname{Col} A =$ number of columns of $A$.
+:::
