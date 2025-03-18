@@ -1,0 +1,381 @@
+---
+title: "Column and Null Spaces"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+In the last lecture we discussed bases and dimensions of subaspaces. Today we will procide a geometric interpretation of a basis. In fact, we will see a connection between a basis and a coordiante system of a subspace.
+
+<br>
+
+Finally, we will also introduce the concept of an isomorphism.
+:::
+
+## Space Geometry
+
+:::{style="font-size: .6em"}
+Let's look at the geometry of space in a new way, using our new notion of a __basis__.
+
+A geometric coordinate system gives a _unique name_ to each point in the plane (or in any vector space). Traditionally, we label points using the standard basis. 
+
+:::{.center-text}
+```{python}
+import laUtilities as ut
+import demoUtilities as dm
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy as sp
+
+
+ax = dm.plotSetup(-3,3,-3,3,size=(6,6))
+ax.plot([0],[1],'ro',markersize=8)
+ax.arrow(0, 0, 1, 0, head_width=0.2, head_length=0.2, length_includes_head = True)
+ax.arrow(0, 0, 0, 1, head_width=0.2, head_length=0.2, length_includes_head = True)
+ax.text(0.25,1,'(0,1)',size=20)
+ax.plot([1],[0],'ro',markersize=8)
+ax.text(1.25,0.25,'(1,0)',size=20)
+ax.plot([-1],[2],'ro',markersize=8)
+ax.text(-1.5,2.25,'(-1,2)',size=20);
+```
+:::
+:::
+
+## Space Geometry
+
+:::{style="font-size: .8em"}
+We write any point in space using coordinates, like $(-1, 2)$, but what do these coordinates represent? 
+
+In our standard basis, the point $(-1, 2)$ means to walk $-1$ in the direction of ${\bf e_1}$ and then $2$ in the direction of ${\bf e_2}$. In other words,
+
+$$
+(-1, 2) = -1 {\bf e_1} + 2 {\bf e_2}.
+$$
+
+The standard basis spans $\mathbb{R}^n$. But it is far from the only basis that spans $\mathbb{R}^n$; there are plenty of other options, and we can build a geometric system from any of them.
+
+<br>
+
+The Invertible Matrix Theorem says that _any_ set of $n$ linearly independent vectors spans all of $\mathbb{R}^n$.
+:::
+
+## Space Geometry
+
+:::{style="font-size: .6em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+         If we are given a basis for \(H\), then each vector in \(H\) can be written in <em>only one way</em> as a linear combination of the basis vectors.
+         </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+__Proof.__ Suppose $\mathcal{B}\ = \{\mathbf{b}_1,\dots,\mathbf{b}_p\}$ is a basis for $H,$ and suppose a vector $\mathbf{x}$ in $H$ can be generated in two ways, say
+
+$$
+\mathbf{x} = c_1\mathbf{b}_1+\cdots+c_p\mathbf{b}_p \quad \text{and}
+\quad
+\mathbf{x} = d_1\mathbf{b}_1+\cdots+d_p\mathbf{b}_p.
+$$
+
+Then, subtracting gives
+
+$$
+{\bf 0} = \mathbf{x} - \mathbf{x} = (c_1-d_1)\mathbf{b}_1+\cdots+(c_p-d_p)\mathbf{b}_p.
+$$
+
+Now, since $\mathcal{B}$ is a basis, we know that the vectors $\{\mathbf{b}_1\dots\mathbf{b}_p\}$ are linearly independent.
+
+So by the definition of linear independence, the weights in the above expression must all be zero. That is, $c_j = d_j$ for all $j$. 
+
+As a result, the two representations must be the same.
+:::
+
+
+## Space Geometry
+
+:::{style="font-size: .6em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+         Suppose the set \(\mathcal{B}\ = \{\mathbf{b}_1,\dots,\mathbf{b}_p\}\) is a basis for the subspace \(H\). 
+         </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<br>
+
+For each $\mathbf{x}$ in $H$, the __coordinates of $\mathbf{x}$ relative to the basis $\mathcal{B}$__ are the weights $c_1,\dots,c_p$ such that $\mathbf{x} = c_1\mathbf{b}_1+\cdots+c_p\mathbf{b}_p$. 
+
+The vector in $\mathbb{R}^p$
+
+$$
+[\mathbf{x}]_\mathcal{B} = \begin{bmatrix}c_1\\\vdots\\c_p\end{bmatrix}
+$$
+
+is called the __coordinate vector of $\mathbf{x}$ (relative to $\mathcal{B}$)__ or the __$\mathcal{B}$-coordinate vector of $\mathbf{x}$.__
+:::
+
+## Space Geometry
+
+:::{style="font-size: .5em"}
+__Example.__ In $\mathbb{R}^2$, let's look at the point ${\bf x} = \begin{bmatrix}1\\6\end{bmatrix}$ plotted in the standard basis and relative to a new basis:
+
+$$
+\mathcal{B} = \left\{\begin{bmatrix}1\\0\end{bmatrix}, \begin{bmatrix}1\\2\end{bmatrix}\right\}. 
+$$
+
+:::{.columns}
+
+:::{.column}
+
+:::{.center-text}
+```{python}
+# standard basis
+xmin = -6.0 
+xmax = 6.0 
+ymin = -2.0
+ymax = 8.0
+
+b0 = [1, 0]
+b1 = [1, 2]
+
+fig = ut.two_d_figure('Dummylabel', xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, size=(4.5,3.5))
+for x in np.linspace(ymin, ymax, int(ymax-ymin+1)):
+    fig.plotLinEqn(0., 1., x, alpha=0.3)
+for y in np.linspace(xmin, xmax, int(xmax-xmin+1)):
+    fig.plotLinEqn(1., 0., y, alpha=0.3)
+fig.plotLinEqn(1., 0, 0, color = 'k')
+fig.plotLinEqn(0, 1, 0, color = 'k')
+fig.plotPoint(0, 0, 'k')
+fig.ax.text(0+.1, 0-.1, r'$\bf 0$', size = 12, horizontalalignment='left', verticalalignment='top')
+fig.plotPoint(1, 0, 'r')
+fig.ax.text(1+.1, 0-.1, r'${\bf e}_1$', size = 12, horizontalalignment='left', verticalalignment='top')
+fig.plotPoint(0, 1, 'r')
+fig.ax.text(0+.1, 1-.1, r'${\bf e}_2$', size = 12, horizontalalignment='left', verticalalignment='top')
+fig.plotPoint(b1[0], b1[1], 'g')
+fig.ax.text(b1[0]+.1, b1[1]-.1, r'${\bf b}_2$', size = 12, horizontalalignment='left', verticalalignment='top')
+fig.plotPoint(1, 6, 'b')
+fig.ax.text(1+.1, 6-.1, r'${\bf x}$', size = 12, horizontalalignment='left', verticalalignment='top')
+fig.ax.axis('off')
+fig.ax.set_title(r'Standard Basis.  $\mathbf{x}$ = (1, 6)', size = 16);
+```
+:::
+
+Notice that the _location_ of $\mathbf{x}$ relative to the origin does not change.  
+:::
+
+:::{.column}
+
+:::{.center-text}
+```{python}
+# B-basis
+fig = ut.two_d_figure('Dummylabel', xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, size=(4.5,3.5))
+m = b1[1]/b1[0]
+upper_intercept = ymax - m * xmin
+upper_intercept = b1[1] * np.ceil(upper_intercept / b1[1])
+lower_intercept = ymin - m * xmax
+lower_intercept = b1[1] * np.floor(lower_intercept / b1[1])
+for yint in np.linspace(lower_intercept, upper_intercept, int((upper_intercept-lower_intercept)/b1[1])+1):
+    fig.plotLinEqn(-b1[1], b1[0], yint, color = 'g', alpha=0.3)
+for y in np.linspace(ymin, ymax, int(((ymax-ymin)/b1[1])+1)):
+    fig.plotLinEqn(0., 1., y, color = 'g', alpha=0.3)
+fig.plotLinEqn(b1[1], -b1[0], 0, color = 'k')
+fig.plotLinEqn(b0[1], -b0[0], 0, color = 'k')
+fig.plotPoint(0, 0, 'k')
+fig.ax.text(0+.1, 0-.1, r'$\bf 0$', size = 12, horizontalalignment='left', verticalalignment='top')
+fig.plotPoint(1, 0, 'g')
+fig.ax.text(1+.1, 0-.1, r'${\bf b}_1$', size = 12, horizontalalignment='left', verticalalignment='top')
+fig.plotPoint(b1[0], b1[1], 'g')
+fig.ax.text(b1[0]+.1, b1[1]-.1, r'${\bf b}_2$', size = 12, horizontalalignment='left', verticalalignment='top')
+fig.plotPoint(1, 6, 'b')
+fig.ax.text(1+.1, 6-.1, r'${\bf x}$', size = 12, horizontalalignment='left', verticalalignment='top')
+fig.ax.axis('off')
+fig.ax.set_title('B-Basis. $[\mathbf{x}]_\mathcal{B}$ = (-2, 3)', size = 16);
+```
+:::
+
+Now using the $\mathcal{B}$-basis, we get _different coordinates_. These are $[\mathbf{x}]_\mathcal{B} = \begin{bmatrix}-2\\3\end{bmatrix}$.
+
+:::
+
+:::
+:::
+
+## Coordinates of a Point in a Basis{.smaller-title}
+
+:::{style="font-size: .9em"}
+Suppose we are given a particular basis.  How do we find the coordinates of a point in that basis?
+
+<br>
+
+**Example.**
+Let $\mathbf{v}_1 = \begin{bmatrix}3\\6\\2\end{bmatrix}, \mathbf{v}_2 = \begin{bmatrix}-1\\0\\1\end{bmatrix}, \mathbf{x} = \begin{bmatrix}3\\12\\7\end{bmatrix},$ and $\mathcal{B} = \{\mathbf{v}_1,\mathbf{v}_2\}.$
+
+<br>
+
+Then $\mathcal{B}$ is a basis for $H$ = Span$\{\mathbf{v}_1,\mathbf{v}_2\}$ because $\mathbf{v}_1$ and $\mathbf{v}_2$ are linearly independent.
+
+We want to determine if $\mathbf{x}$ is in $H$, and if it is, find the coordinate vector of $\mathbf{x}$ relative to $\mathcal{B}.$
+:::
+
+## Coordinates of a Point in a Basis{.smaller-title}
+
+:::{style="font-size: .7em"}
+If $\mathbf{x}$ is in $H,$ then the following vector equation is consistent:
+
+$$
+c_1\begin{bmatrix}3\\6\\2\end{bmatrix} + c_2\begin{bmatrix}-1\\0\\1\end{bmatrix} = \begin{bmatrix}3\\12\\7\end{bmatrix}.
+$$
+
+The scalars $c_1$ and $c_2,$ if they exist, are the $\mathcal{B}$-coordinates of $\mathbf{x}.$
+
+Row operations show that
+
+$$
+\left[ \begin{array}{cc|c}3&-1&3\\6&0&12\\2&1&7\end{array} \right] \sim \left[ \begin{array}{cc|c}1&0&2\\0&1&3\\0&0&0\end{array}\right].
+$$
+
+The reduced row echelon form shows that the system is consistent, so $\mathbf{x}$ is in $H$.
+
+Furthermore, it shows that $c_1 = 2$ and $c_2 = 3,$ so
+
+$$
+[\mathbf{x}]_\mathcal{B} = \begin{bmatrix}2\\3\end{bmatrix}.
+$$
+
+:::
+
+## Coordinates of a Point in a Basis{.smaller-title}
+
+:::{style="font-size: .6em"}
+
+:::{.center-text}
+```{python}
+#
+qr_setting = None
+fig = ut.three_d_figure((7, 7), fig_desc = 'Basis-B coordinate system on the subspace H', figsize = (6, 5),
+                        xmin = -1, xmax = 10, ymin = -1, ymax = 10, zmin = -1, zmax = 14, qr = qr_setting)
+v = [3.0, 6, 2]
+u = [-1,  0, 1]
+#
+v = np.array([2, 0.5, 0.5])
+u = np.array([1.,  2,   1])
+fig.text(v[0], v[1]-0.75, v[2]-2, r'$\bf v_1$', 'v1', size=16)
+fig.text(u[0]-0.5, u[1], u[2]+2, r'$\bf v_2$', 'v2', size=16)
+fig.text(3*u[0]+2*v[0], 3*u[1]+2*v[1], 3*u[2]+2*v[2]+1, r'$\bf 2v_1+3v_2$', '2 v1 + 3 v2', size=16)
+# plotting the span of v
+fig.plotSpan(u, v, 'Green')
+# blue grid lines
+fig.plotPoint(0, 0, 0, 'y')
+fig.plotPoint(u[0], u[1], u[2], 'b')
+fig.plotPoint(2*u[0], 2*u[1], 2*u[2],'b')
+fig.plotPoint(3*u[0], 3*u[1], 3*u[2], 'b')
+fig.plotLine([[0, 0, 0], 4*u], color='b')
+fig.plotLine([v, v+4*u], color='b')
+fig.plotLine([2*v, 2*v+3*u], color='b')
+fig.plotLine([3*v, 3*v+2.5*u], color='b')
+# red grid lines
+fig.plotPoint(v[0], v[1], v[2], 'r')
+fig.plotPoint(2*v[0], 2*v[1], 2*v[2], 'r')
+fig.plotPoint(3*v[0], 3*v[1], 3*v[2], 'r')
+fig.plotLine([[0, 0, 0], 3.5*v], color='r')
+fig.plotLine([u, u+3.5*v], color='r')
+fig.plotLine([2*u, 2*u+3.5*v], color='r')
+fig.plotLine([3*u, 3*u+2*v], color='r')
+#
+fig.plotPoint(3*u[0]+2*v[0], 3*u[1]+2*v[1], 3*u[2]+2*v[2], color='m')
+# plotting the axes
+fig.plotIntersection([0,0,1,0], [0,1,0,0], color='Black')
+fig.plotIntersection([0,0,1,0], [1,0,0,0], color='Black')
+fig.plotIntersection([0,1,0,0], [1,0,0,0], color='Black')
+fig.set_title('Basis-B coordinate system on the subspace H', size=16)
+```
+:::
+
+_Important:_ Don't be confused because the "coordinate axes" are not perpendicular. Really, _they don't need to be._
+
+As long as the independent vectors span the space, there is only _one_ way to express any point in terms of them.
+
+Thus, every point has a unique coordinate.
+:::
+
+## Isomorphisms
+
+:::{style="font-size: .8em"}
+Another important idea is that, although points in $H$ are in $\mathbb{R}^3$, they are completely determined by their coordinate vectors, which belong to $\mathbb{R}^2.$
+
+That is, the grid in the previous figure makes $H$ "look like" $\mathbb{R}^2.$
+
+The correspondence $\mathbf{x} \mapsto [\mathbf{x}]_\mathcal{B}$ is one-to-one correspondence between $H$ and $\mathbb{R}^2$ that _preserves linear combinations_.
+
+In our example, $\begin{bmatrix}3\\12\\7\end{bmatrix}\mapsto\begin{bmatrix}2\\3\end{bmatrix}$.
+:::
+
+## Isomorphisms
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+         When we have a one-to-one correspondence between two subspaces that preserves linear combinations, we call such a correspondence an <b>isomorphism,</b> and we say that \(H\) is <b>isomorphic</b> to \(\mathbb{R}^2.\)
+         </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<br>
+
+In general, if $\mathcal{B}\ = \{\mathbf{b}_1,\dots,\mathbf{b}_p\}$ is a basis for $H$, then the mapping $\mathbf{x} \mapsto [\mathbf{x}]_\mathcal{B}$ is a one-to-one correspondence that makes $H$ look and act the same as $\mathbb{R}^p.$   
+
+<br>
+
+This is _even through the vectors in $H$ themselves may have more than $p$ entries._
+:::
+
+## Key Ideas
+
+:::{style="font-size: .8em"}
+
+- A basis provides a coordinate system for a subspace.
+
+<br>
+
+- Suppose the set $\mathcal{B}\ = \{\mathbf{b}_1,\dots,\mathbf{b}_p\}$ is a basis for the subspace $H$. <br>For each $\mathbf{x}$ in $H$, the coordinates of $\mathbf{x}$ relative to the basis $\mathcal{B}$ are the weights $c_1,\dots,c_p$ such that $\mathbf{x} = c_1\mathbf{b}_1+\cdots+c_p\mathbf{b}_p$. 
+
+<br>
+
+- When we have a one-to-one correspondence between two subspaces that preserves linear combinations, we call such a correspondence an isomorphism.
+:::
