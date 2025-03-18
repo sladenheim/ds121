@@ -1,0 +1,541 @@
+---
+title: "Column and Null Spaces"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+To a newcomer, matrix calculations involve a lot of numbers. To you, they involve vectors.
+
+This lecture moves from numbers and vectors to the third (and highest!) level of understanding of linear algebra. Instead of individual columns, we will look at "spaces" of vectors. We will discuss vector spaces and subspaces.
+
+The most important subspaces are tied directly to a matrix $A$ and are known as column and null spaces. They will be the main topic of the upcoming lectures.
+:::
+
+## Vector Spaces
+
+<!-- super special rare .55 em appearance to get text all in one line. -->
+:::{style="font-size: .8em"}
+Example of a vector space: $\mathbb{R}^2 = \Bigg\{ \begin{bmatrix}a_1\\ a_2\end{bmatrix}\text{ such that } a_1, a_2 \in \mathbb{R} \Bigg\}$ with usual addition and scalar multiplication.
+
+The above notation tells us that $\mathbb{R}^2$ consists of all vectors with two real components (or simply "2D-plane").
+
+::: {.columns}
+::: {.column width="50%"}
+:::{.center-text}
+<img src="/images/spaces/real-numbers.png" width=550 />
+:::
+:::
+::: {.column width="50%"}
+$$
+\begin{bmatrix}
+    1 \\ 2
+\end{bmatrix}, \begin{bmatrix}
+    -41 \\ \frac{3}{5}
+\end{bmatrix},
+\begin{bmatrix}
+    \sqrt{2} \\ -\pi
+\end{bmatrix},
+\begin{bmatrix}
+    0 \\ 1
+\end{bmatrix},
+\begin{bmatrix}
+    0 \\ 0
+\end{bmatrix}\in \mathbb{R}^2
+$$
+:::
+:::
+:::
+
+
+## Vector Spaces
+
+:::{style="font-size: .8em"}
+Example of a vector space: $\mathbb{R}^3 = \left\{ \begin{bmatrix}a_1\\ a_2\\ a_3 \end{bmatrix}\text{ such that } a_1, a_2, a_3 \in \mathbb{R} \right\}$ with usual addition and scalar multiplication.
+
+The above notation tells us that $\mathbb{R}^3$ consists of all vectors with three real components.
+<!-- 
+$$
+\begin{bmatrix}
+    0 \\ 1 \\ 2 
+\end{bmatrix}, \begin{bmatrix}
+    -41 \\ \frac{3}{5} \\ -\sqrt{13} 
+\end{bmatrix},
+\begin{bmatrix}
+    \sqrt{2} \\ -\pi \\ \frac{7}{9}
+\end{bmatrix},
+\begin{bmatrix}
+    0 \\ 1 \\ 0
+\end{bmatrix}, 
+\begin{bmatrix}
+    0 \\ 0 \\ 0
+\end{bmatrix} \in \mathbb{R}^3
+$$ -->
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <span class="label">Euclidean Space \(\mathbb{R}^n\)</span>
+        <p>The space \(\mathbb{R}^n\) consists of all column vectors \(\mathbf{v}\) with \(n\) components. For Euclidean vector spaces we always assume usual addition and scalar multiplication.</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+In this course, we only consider Euclidean vector spaces.
+:::
+
+## Vector Spaces
+
+:::{style="font-size: .65em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <span class="label">Vector Space</span>
+        <p>
+        A <b>vector space</b> is a set of vectors together with rules for vector addition and scalar multiplication. The set of vectors must be <em>closed</em> under these two operations. That is, the addition and the scalar multiplication must produce vectors that are in the space. And the eight conditions listed below must be satisfied.
+        
+        <ol>
+        <li> \(\mathbf{x} + \mathbf{y} = \mathbf{y} + \mathbf{x}\)</li>
+        <li> \(\mathbf{x} + (\mathbf{y} + \mathbf{z}) = (\mathbf{x}+\mathbf{y})+\mathbf{z}\)</li>
+        <li> There is a unique "zero" vector such that \(\mathbf{x}+\mathbf{0} = \mathbf{x}\) for all \(\mathbf{x}\)</li>
+        <li> For each \(\mathbf{x}\) there is a unique vector \(-\mathbf{x}\) such that \(\mathbf{x}+(-\mathbf{x})=\mathbf{0}\)</li>
+        <li> 1 times \(\mathbf{x}\) equals \(\mathbf{x}\)</li>
+        <li> \((c_1c_2)\mathbf{x} = c_1(c_2\mathbf{x})\)</li>
+        <li> \(c(\mathbf{x}+\mathbf{y}) = c\mathbf{x}+c\mathbf{y}\)</li>
+        <li> \((c_1+c_2)\mathbf{x} = c_1\mathbf{x}+c_2\mathbf{x}\)</li>
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Vector Spaces
+
+:::{style="font-size: .7em"}
+$\Bigg\{\begin{bmatrix}a_1 \\ a_2\end{bmatrix} \text{ such that } a_1, a_2 \in \mathbb{R}^+\Bigg\}$ with usual addition and scalar multiplication is not a vector space.
+
+:::{.center-text}
+<img src="images/spaces/not-vector-1.png" width=460/>
+
+:::
+:::
+
+## Vector Spaces
+
+:::{style="font-size: .75em"}
+$\Bigg\{\begin{bmatrix}a_1 \\ a_2\end{bmatrix} \text{ such that } a_1, a_2 \in \mathbb{R}^+\Bigg\}$ with usual addition and scalar multiplication is not closed under scalar multiplication.
+
+:::{.center-text}
+<img src="images/spaces/not-vector-2.png" width=500/>
+
+:::
+:::
+
+## Subspaces
+
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <span class="label">Euclidean Subspace</span>
+        <p>  
+        A <b>subspace of</b> \(\mathbb{R}^n\) is any set \(H\) of vectors in \(\mathbb{R}^n\) that satisfies three properties:
+        <ol start="1">
+        <li> The zero vector is in \(H\).</li>
+        <li> For each \(\mathbf{u}\) and \(\mathbf{v}\) in \(H\), the sum \(\mathbf{u} + \mathbf{v}\) is in \(H\).</li>
+        <li>For each \(\mathbf{u}\) in \(H\) and each scalar \(c,\) the vector \(c\mathbf{u}\) is in \(H\).</li>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+Another way of stating properties 2 and 3 is that $H$ is _closed_ under addition and scalar multiplication.
+
+<br>
+
+Each subspace is a vector space in its own right.
+
+<!-- This is the reason why the lecture notes focus on subspaces, while I will be talking about vector spaces as well this week. -->
+
+:::
+
+## Every Span Is a Subspace
+
+:::{style="font-size:.8em"}
+For example, take $\mathbf{v}_1$ and $\mathbf{v}_2$ in $\mathbb{R}^n$,  and let $H$ = Span$\{\mathbf{v}_1, \mathbf{v}_2\}.$ 
+
+Then $H$ is a subspace of $\mathbb{R}^n$.
+
+:::{.center-text}
+```{python}
+import laUtilities as ut
+qr_setting = None
+import numpy as np
+
+fig = ut.three_d_figure((7, 1), fig_desc = 'Span{v1, v2}, a subspace.',
+                        xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10, qr = qr_setting)
+a1 = [-8.0, 8.0, 5.0]
+a2 = [3.0,  2.0, -2.0]
+a3 = 2.5 * np.array(a2)
+fig.text(a1[0]+.5, a1[1]+.5, a1[2]+.5, r'$\bf v_1$', 'v_1', size=20)
+fig.text(a3[0]+.5, a3[1]+.5, a3[2]+.5, r'$\bf v_2$', 'v_2', size=20)
+fig.plotSpan(a1, a2,'Green')
+fig.plotPoint(a1[0], a1[1], a1[2],'r')
+fig.plotPoint(a3[0], a3[1], a3[2],'r')
+# fig.plotPoint(a3[0], a3[1], a3[2],'r')
+#fig.text(a1[0], a1[1], a1[2], r'$\bf v_1$', 'a_1', size=20)
+fig.text(0.1, 0.1, -3, r'$\bf 0$', '0', size=12)
+fig.plotPoint(0, 0, 0, 'b')
+fig.set_title(r'Span{$v_1, v_2$}, a subspace.')
+fig.text(9, -9, -7, r'$\bf H$', 'H', size = 20)
+```
+:::
+Let us see why $H$ satisfies the definition of a subspace.
+:::
+
+## Every Span Is a Subspace
+
+:::{style="font-size: .8em"}
+__Property 1.__ The zero vector is in $H$.
+
+$$
+{\bf 0} = 0\mathbf{v}_1 + 0\mathbf{v}_2\text{ is in Span}\{\mathbf{v}_1, \mathbf{v}_2\}.
+$$
+
+__Property 2.__ For any two vectors ${\bf u}, {\bf v} \in H$, their sum is also in $H$.
+
+If $\mathbf{u} = s_1\mathbf{v}_1 + s_2\mathbf{v}_2,$ and $\mathbf{v} = t_1\mathbf{v}_1 + t_2\mathbf{v}_2,$ then their sum
+$$
+\mathbf{u} + \mathbf{v} = (s_1+t_1)\mathbf{v}_1 + (s_2+t_2)\mathbf{v}_2 \in H.
+$$
+
+__Property 3.__ For any vector ${\bf u} \in H$ and scalar $c \in \mathbb{R}$, the vector $c\mathbf{u}$ is in $H$.
+
+$$
+c\mathbf{u} = c(s_1\mathbf{v}_1 + s_2\mathbf{v}_2) = (cs_1\mathbf{v}_1 + cs_2\mathbf{v}_2) \in H.
+$$
+
+
+We refer to Span$\{\mathbf{v}_1,\dots,\mathbf{v}_p\}$ as _the subspace spanned by_ $\mathbf{v}_1,\dots,\mathbf{v}_p.$
+:::
+
+## Subspaces
+
+:::{style="font-size: .8em"}
+Here is another subspace - a line:
+
+:::{.center-text}
+```{python}
+fig = ut.three_d_figure((7, 2), fig_desc = 'Span{v1}, another subspace.',
+                        xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10, qr = qr_setting)
+v = [ 4.0, 4.0, 2.0]
+fig.text(v[0]+.5, v[1]+.5, v[2]+.5, r'$\bf v_1$', 'v1', size=20)
+fig.text(-9, -7, -9, r'Span{$\bf v_1$}', 'Span{v1}', size=16)
+fig.text(0.2, 0.2, -4, r'$\bf 0$', '0', size=12)
+# plotting the span of v
+# this is based on the reduced echelon matrix that expresses the system whose solution is v
+fig.plotIntersection([1, 0, -v[0]/v[2], 0], [0, 1, -v[1]/v[2], 0], '-', 'Red')
+fig.plotPoint(v[0], v[1], v[2], 'r')
+fig.plotPoint(0, 0, 0, 'b')
+# plotting the axes
+fig.plotIntersection([0, 0, 1, 0], [0, 1, 0, 0])
+fig.plotIntersection([0, 0, 1, 0], [1, 0, 0, 0])
+fig.plotIntersection([0, 1, 0, 0], [1, 0, 0, 0])
+fig.set_title(r'Span {$v_1$}, another subspace.')
+```
+
+
+Is _any_ line a subspace?
+:::
+:::
+
+## Subspaces
+
+:::{style="font-size: .8em"}
+How about this line?
+
+:::{.center-text}
+```{python}
+ax = ut.plotSetup()
+ut.centerAxes(ax)
+ax.plot([-6,6],[4.33,0.33],'b-')
+ax.text(-4,3,'$L$',size=20);
+```
+
+:::
+
+In fact, a line $L$ not through the origin _fails all three_ requirements for a subspace:
+
+First of all, $L$ does not contain the zero vector.
+:::
+
+## Subspaces
+
+:::{style="font-size: .7em"}
+
+:::{.columns}
+
+:::{.column width="50%"}
+$L$ is not closed under addition.
+```{python}
+ax = ut.plotSetup()
+ut.centerAxes(ax)
+ax.arrow(0,0,1,2,head_width=0.2, head_length=0.2,length_includes_head = True)
+ax.arrow(0,0,4,1,head_width=0.2, head_length=0.2,length_includes_head = True)
+ax.plot([4,5],[1,3],'--')
+ax.plot([1,5],[2,3],'--')
+ax.plot([-6,6],[4.33,0.33],'b-')
+ax.text(5.25,3.25,r'${\bf u}$+${\bf v}$',size=16)
+ax.text(1.5,2.5,r'${\bf u}$',size=16)
+ax.text(4.75,1,r'${\bf v}$',size=16)
+ax.text(-4,3,'$L$',size=20)
+ut.plotPoint(ax,5,3)
+ax.plot(0,0,'');
+```
+:::
+
+:::{.column width="50%"}
+$L$ is not closed under scalar multiplication.
+
+```{python}
+ax = ut.plotSetup()
+ut.centerAxes(ax)
+line = np.array([[-6,6],[4.33,0.33]])
+w = .3 * line[:,0] + .7 * line[:,1]
+ut.plotPoint(ax,w[0],w[1],'k')
+ax.arrow(0,0,w[0],w[1],head_width=0.2, head_length=0.2,length_includes_head = True)
+w_ext = np.array([w, 1.75*w]).T
+ax.plot(w_ext[0], w_ext[1], '--')
+ax.plot(line[0], line[1],'b-')
+ax.text(w[0],w[1]-0.5,r'${\bf w}$',size=16)
+ax.text(w_ext[0,1], w_ext[1,1]-0.5, r'$\alpha{\bf w}$', size=16)
+ut.plotPoint(ax,w_ext[0,1],w_ext[1,1],'r')
+ax.text(-4,3,'$L$',size=20);
+```
+:::
+
+<br>
+
+However, any line, plane, or hyperplane through the origin _is_ a subspace.
+
+:::
+:::
+
+## Column Space
+
+:::{style="font-size: .8em"}
+Every matrix has associated with it two vector spaces:  __column space__ and  __null space.__ Let us start with the column space.
+
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> 
+         The <b>column space</b> of a matrix \(A\) is the set \({\operatorname{Col}}\ A\) of all linear combinations of the columns of \(A\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+If $A$ = $[\mathbf{a}_1 \;\cdots\; \mathbf{a}_n]$, with columns in $\mathbb{R}^m,$ then ${\operatorname{Col}}\ A$ is the same as $\text{Span}\{\mathbf{a}_1,\dots,\mathbf{a}_n\}$. Hence, ${\operatorname{Col}}\ A$ is a subspace and a vector space.
+
+The column space of an $m\times n$ matrix is a subspace of $\mathbb{R}^m.$  
+Note that ${\operatorname{Col}}\ A$ equals $\mathbb{R}^m$ only when the columns of $A$ span $\mathbb{R}^m.$  Otherwise, ${\operatorname{Col}}\ A$ is only part of $\mathbb{R}^m.$
+:::
+
+## Column Space
+
+:::{style="font-size: .8em"}
+Algebraic view: for a linear system $A\mathbf{x} = \mathbf{b}$, ${\operatorname{Col}}\ A$ is the set of all $\mathbf{b}$ for which the system has a solution. 
+
+<div style="margin-bottom: 0.5em;"> </div> 
+
+Geometric view: for  linear transformation $T: \mathbb{R}^n\rightarrow\mathbb{R}^m$ with standard matrix $A$, ${\operatorname{Col}}\ A$ is the _range_ of $T.$
+
+:::{.center-text}
+```{python}
+fig = ut.three_d_figure((7, 3), fig_desc = 'Column Space of A = [a1, a2, a3].',
+                        xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10, qr = qr_setting)
+a1 = [-8.0, 8.0, 5.0]
+a2 = [3.0,  2.0, -2.0]
+a3 = 2.5 * np.array(a2)
+fig.text(a1[0]+.5, a1[1]+.5, a1[2]+.5, r'$\bf a_1$', 'a_1', size=18)
+fig.text(a3[0]+.5, a3[1]+.5, a3[2]+.5, r'$\bf a_3$', 'a_3', size=18)
+fig.text(a2[0]+.5, a2[1]+.5, a2[2]+.5, r'$\bf a_2$', 'a_2', size=18)
+fig.plotSpan(a1, a2,'Green')
+fig.plotPoint(a1[0], a1[1], a1[2],'r')
+fig.plotPoint(a3[0], a3[1], a3[2],'r')
+fig.plotPoint(a2[0], a2[1], a2[2],'r')
+# fig.plotPoint(a3[0], a3[1], a3[2],'r')
+fig.text(0.1, 0.1, -3, r'$\bf 0$', '0', size=12)
+fig.plotPoint(0, 0, 0, 'b')
+fig.set_title(r'Column Space of $A = [{\bf a}_1, {\bf a}_2, {\bf a}_3]$')
+fig.text(9, -9, -7, r'Col $A$', 'H', size = 16)
+```
+:::
+:::
+
+## Null Space
+
+:::{style="font-size: .8em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> 
+         The <b>null space</b> (or  <b>kernel</b>) of a matrix \(A\) is the set \({\operatorname{Nul}}\ A\) of all solutions of the <i>homogenous</i> equation \(A \bf{x} = 0\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Geometric view: ${\operatorname{Nul}}\ A$ is the set of all vectors that are mapped to the zero vector by $A$.
+
+Algebraic view: the set of all solutions of $A\mathbf{x} = {\bf 0}$.
+
+To test whether a vector $\mathbf{v}$ is in ${\operatorname{Nul}}\ A$, simply compute $A\mathbf{v}$ and see if the result is zero.
+
+When $A$ has $n$ columns, a solution of $A\mathbf{x} = {\bf 0}$ is a vector in $\mathbb{R}^n$. Hence, the null space of $A$ is a subset of $\mathbb{R}^n$.
+:::
+
+## Null Space
+
+:::{style="font-size: .8em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> 
+         The null space of an \(m\times n\) matrix \(A\) is a subspace of \(\mathbb{R}^n\).   
+
+Equivalently, the set of all solutions of a system \(A\mathbf{x} = {\bf 0}\) of \(m\) homogeneous linear equations in \(n\) unknowns is a subspace of \(\mathbb{R}^n.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+__Proof.__ To prove this theorem, we must show that ${\operatorname{Nul}}\ A$ satisfies the 3 properties of a subspace.
+<br><br>
+
+_Property 1._ The zero vector is in ${\operatorname{Nul}}\ A$.
+
+&emsp;&emsp;We can calculate the matrix-vector product 
+$$
+A{\bf 0} = 0 \cdot {\bf a_1} + 0 \cdot {\bf a_2} + \cdots + 0 \cdot {\bf a_n} = {\bf 0}.
+$$
+:::
+
+
+## Null Space
+
+:::{style="font-size: .8em"}
+_Property 2._ The sum of two vectors in ${\operatorname{Nul}}\ A$ is in ${\operatorname{Nul}}\ A.$
+
+&emsp;&emsp;Take two vectors $\mathbf{u}$ and $\mathbf{v}$ that are in ${\operatorname{Nul}}\ A.$  
+
+&emsp;&emsp;By definition $A\mathbf{u} = {\bf 0}$ and $A\mathbf{v} = {\bf 0}.$
+
+&emsp;&emsp;Then $\mathbf{u} + \mathbf{v}$ is in ${\operatorname{Nul}}\ A$ because 
+$$
+A(\mathbf{u} + \mathbf{v}) = A\mathbf{u} + A\mathbf{v} = {\bf 0} + {\bf 0} = {\bf 0}.
+$$
+<br>
+
+_Property 3._ Any scalar multiple of a vector in ${\operatorname{Nul}}\ A$ is in ${\operatorname{Nul}}\ A.$
+
+&emsp;&emsp;Take a vector $\mathbf{v}$ that is in ${\operatorname{Nul}}\ A.$  Then $A(c\mathbf{v}) = cA\mathbf{v} = c{\bf 0} = {\bf 0}.$
+:::
+
+## Column and Null Spaces
+
+:::{style="font-size: .8em"}
+Note that the two subspaces ${\operatorname{Col}}\ A$ and ${\operatorname{Nul}}\ A$ live in different "universes."
+
+For an $m\times n$ matrix, 
+
+* the column space is a subset of the codomain $\mathbb{R}^m$ (all vectors have $m$ entries), 
+* while the null space is a subset of the domain $\mathbb{R}^n$ (all vectors have $n$ entries).
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p> 
+        We are given three different vectors \(\bf{b_1, b_2, b_3}\) \(\in \mathbb{R}^2.\)<br>Construct a matrix so that the equations \(A \bf{x} = \bf{b_1}\) and \(A \bf{x} = \bf{b_2}\) are solvable, but \(A \bf{x} = \bf{b_3}\) is not solvable.<br>How can you decide if this is possible? How could you construct \(A\)?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Column and Null Spaces
+
+:::{style="font-size: .8em"}
+We want to have $\bf b_1$ and $\bf b_2$ in the column space of $A.$ Then $A \bf{x} = \bf{b_1}$ and $A \bf{x} = \bf{b_2}$ will be solvable. The quickest way is to make  $\bf b_1$ and $\bf b_2$ the two columnns of $A.$ Then the solutions are $\bf{x} = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $\bf{x} = \begin{bmatrix} 0 \\ 1 \end{bmatrix}.$
+<br><br>
+
+We don't want $A \bf{x} = \bf{b_3}$ to be solvable. So we will not make the column space larger. Keeping only the columns of $b_1$ and $b_2,$ the question is:
+
+Is $A \bf{x} = \begin{bmatrix} \bf{b_1} & \bf{b_2}\end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \bf{b_3}$ solvable?
+:::
+
+## Column and Null Spaces
+
+:::{style="font-size: .8em"}
+That is, is $\bf{b_3}$ a combination of $\bf b_1$ and $\bf b_2$?
+<br><br>
+
+If the answer is _no_, we have the desired $A.$
+<br><br>
+
+If the answer is _yes_, then it is not possible to construct $A.$ <br>
+When the column space contains $\bf b_1$ and $\bf b_2$, it will have to contain all their linear combinations. <br>
+So $\bf{b_3}$ would necessarily be in that column space and $A \bf{x} = \bf{b_3}$ would necessarily be solvable.
+:::
+
+## Key Ideas
+
+:::{style="font-size: .8em"}
+
+- $\mathbb{R}^n$ contains all column vectors with $n$ components.
+
+- $A$ subsapce containing $\bf{u}$ and $\bf{v}$ must contain $c \mathbf{u} + d \mathbf{v}.$
+
+- The combinations of the columns of $A$ form its column space. The column space is spanned by the columns.
+
+- The nullspace of $A$ contains all solutions to $A \bf{x} = 0.$
+:::
