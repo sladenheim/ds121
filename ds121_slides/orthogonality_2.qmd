@@ -1,0 +1,762 @@
+---
+title: "QR Decomposition"
+author: "CDS DS 121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+To be determined at a later date.
+:::
+
+## Orthonormal Sets
+
+:::{style="font-size: .8em"}
+Orthogonal sets are very useful. They become even more useful if we __normalize__ the vectors in the set.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A set \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) is an <b>orthonormal set</b> if it is an orthogonal set of <b>unit</b> vectors (that is: vectors of norm 1).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<br>
+
+If $W$ is the subspace spanned by such as a set, then  $\{\mathbf{u}_1,\dots,\mathbf{u}_p\}$ is an __orthonormal basis__ for $W$ since the set is automatically linearly independent.
+
+<br>
+
+**_Simple_ Example:** standard basis $\{\mathbf{e}_1, \dots,\mathbf{e}_n\}$ for $\mathbb{R}^n$.  
+
+:::
+
+
+## Orthonormal Matrices
+
+:::{style="font-size: .5em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        An \(m\times n\) matrix \(U\) has orthonormal columns if and only if \(U^{\top} U = I\) (where \(I\) denotes the \(n \times n\) identity matrix).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Let $U = [\mathbf{u}_1\;\mathbf{u}_n\; \cdots \; \mathbf{u}_n]$ denote the column vectors of $U$. Then:
+
+$$
+\begin{eqnarray*}
+U^\top U &=& \begin{bmatrix}
+\cdots & \cdots & {\bf u}_1^\top & \cdots & \cdots \\
+\cdots & \cdots & {\bf u}_2^\top & \cdots & \cdots \\
+&& \vdots && \\
+\cdots & \cdots & {\bf u}_n^\top & \cdots & \cdots
+\end{bmatrix}
+\left[\begin{array}{cccc}\begin{array}{c}\vdots\\\vdots\\{\bf u_1}\\\vdots\\\vdots\end{array}&\begin{array}{c}\vdots\\\vdots\\{\bf u_2}\\\vdots\\\vdots\end{array}&\dots&\begin{array}{c}\vdots\\\vdots\\{\bf u_n}\\\vdots\\\vdots\end{array}\\\end{array}\right] \\
+&=&
+\begin{bmatrix}
+\mathbf{u}_1^\top \mathbf{u}_1&\mathbf{u}_1^\top \mathbf{u}_2& \cdots & \mathbf{u}_1^\top \mathbf{u}_n\\
+\mathbf{u}_2^\top \mathbf{u}_1&\mathbf{u}_2^\top \mathbf{u}_2& \cdots & \mathbf{u}_2^\top \mathbf{u}_n\\
+\vdots & \vdots & \ddots & \vdots \\
+\mathbf{u}_n^\top \mathbf{u}_1&\mathbf{u}_n^\top \mathbf{u}_2& \cdots & \mathbf{u}_n^\top \mathbf{u}_n
+\end{bmatrix}
+\end{eqnarray*}
+$$
+
+Every diagonal entry of this matrix equals 1 because each $\mathbf{u}_i$ is a unit vector so $\mathbf{u}_i^\top \mathbf{u}_i = 1$.
+
+Every non-diagonal entry of this matrix equals 0 because each pair of vectors $\mathbf{u}_i$ and $\mathbf{u}_j$ are orthogonal, so $\mathbf{u}_i^\top \mathbf{u}_j = 0$.
+
+So $U^\top U = I.$
+
+:::
+
+## Orthonormal Transformations
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        Let \(U\) by an \(m\times n\) matrix with orthonormal columns, and let \(\mathbf{x}\) and \(\mathbf{y}\) be in \(\mathbb{R}^n.\)  Then:
+<ol start=1>
+<li> \(\Vert U\mathbf{x}\Vert = \Vert\mathbf{x}\Vert.\)</li>
+<li> \((U\mathbf{x})^\top (U\mathbf{y}) = \mathbf{x}^\top \mathbf{y}.\)</li>
+<li> \((U\mathbf{x})^\top (U\mathbf{y}) = 0\;\mbox{if and only if}\; \mathbf{x}^\top \mathbf{y} = 0.\)</li>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+We can combine Properties 1 and 3 to make an important statement.
+
+> For orthonormal $U$, the linear transformation $\mathbf{x}\mapsto U\mathbf{x}$ preserves lengths and orthogonality.
+:::
+
+## Orthonormal Transformations
+
+:::{style="font-size: .8em"}
+So for an orthonromal matrix, lengths of vectors, and therefore the __distances between points__ is not changed by the action of $U$.
+
+Notice as well that $U$ is $m \times n$ -- it may not be square.  
+
+<br>
+
+So, it may map vectors from one vector space to an entirely different vector space -- __but__ the distances between points will not be changed!
+
+:::{.center-text}
+<img src="/images/orthogonality/orthonormal-to-u.png" />
+
+:::
+:::
+
+## Orthonormal Transformations
+
+:::{style="font-size: .8em"}
+Also, the orthogonality of vectors will not be changed!
+:::
+
+:::{.center-text}
+<img src="/images/orthogonality/orthonormal-to-u-2.png" width=1000 />
+
+:::
+
+## Orthonormal Transformations
+
+:::{style="font-size: .8em"}
+Note that we cannot in general construct an orthonormal map from a higher dimension to a lower one.
+
+For example, three orthonormal vectors in $\mathbb{R}^3$ cannot be mapped to three orthonormal vectors in $\mathbb{R}^2$.
+
+<br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+<em>Why</em> is this impossible?  What is it about the definition of an orthonormal set that prevents this?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Orthonormal Transformations
+
+:::{style="font-size: .8em"}
+An $m \times n$ matrix with orthonormal (or even orthogonal) columns must have $m \geq n$.
+
+__Example.__  Let $U = \begin{bmatrix}1/\sqrt{2}&2/3\\1/\sqrt{2}&-2/3\\0&1/3\end{bmatrix}$ and $\mathbf{x} = \begin{bmatrix}\sqrt{2}\\3\end{bmatrix}.$ 
+
+Verify that $U$ has orthogonal columns and that $\Vert Ux\Vert = \Vert x\Vert.$
+
+<br>
+
+We can use our earlier theorem to check that $U$ has orthonormal columns.
+
+$$
+U^{\top} U = \begin{bmatrix}1/\sqrt{2}&1/\sqrt{2}&0\\2/3&-2/3&1/3\end{bmatrix}\begin{bmatrix}1/\sqrt{2}&2/3\\1/\sqrt{2}&-2/3\\0&1/3\end{bmatrix} = \begin{bmatrix}1&0\\0&1\end{bmatrix}.
+$$
+:::
+
+## Orthonormal Transformations
+
+:::{style="font-size: .8em"}
+Next, let's verify that $\Vert Ux\Vert = \Vert x\Vert.$
+
+$$
+U\mathbf{x} = \begin{bmatrix}1/\sqrt{2}&2/3\\1/\sqrt{2}&-2/3\\0&1/3\end{bmatrix}\begin{bmatrix}\sqrt{2}\\3\end{bmatrix} = \begin{bmatrix}3\\-1\\1\end{bmatrix}
+$$
+
+As a result,
+
+$$
+\begin{eqnarray*}
+\Vert\mathbf{x}\Vert &=& \sqrt{2+9} &=& \sqrt{11} \\
+\Vert U\mathbf{x}\Vert &=& \sqrt{9 + 1 + 1} &=& \sqrt{11}.
+\end{eqnarray*}
+$$
+:::
+
+## Square Orthonormal Matrices
+
+:::{style="font-size: .8em"}
+One of the most useful transformation matrices is obtained when the columns of the matrix are orthonormal _and_ the matrix is __square__.
+
+<br>
+
+These matrices map vectors in $\mathbb{R}^n$ to new locations in the same space, while preserving lengths, distances and orthogonality.
+
+<br>
+
+Now, consider when $U$ is square, and has orthonormal columns.
+
+<br>
+
+Then $U^{\top} U = I$ implies that $U^{-1} = U^{\top} .$  
+:::
+
+## Square Orthonormal Matrices
+
+:::{style="font-size: .6em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        Let \(U\) be an \(n \times n\) matrix if \(U^{\top} U = I\). That is, \(U\) is called <b>orthogonal</b> if it has ortho<u>normal</u> columns.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+A example of an orthogonal matrix is a __rotation__ matrix:
+    
+$$
+{\displaystyle T ={\begin{bmatrix}\cos \theta &-\sin \theta \\\sin \theta &\cos \theta \\\end{bmatrix}}.}
+$$ 
+
+<br>
+
+Using trigonometric identities, you should be able to convince yourself that
+
+$$
+T^\top T =  I
+$$
+
+and hopefully you can visualize how $T$ preserves lengths and orthogonality.
+:::
+
+## QR Factorization
+
+:::{style="font-size: .8em"}
+
+If we combine the Gram-Schmidt procedure with the idea of orthonormalization, it leads to a new form of matrix factorization!
+
+<br>
+
+By applying Gram-Schmidt to the column vectors of a matrix and keeping track of the operations performed along the way, we have a new method for factoring matrices!
+
+:::
+
+## QR Factorization
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        Let \(A\) be an \(m \times n\) matrix <em>with linearly independent columns</em> (so it must be that \(m \geq n\)). Then, the <b>QR factorization</b> \(A = QR\) satisfies:
+<ol>
+<li> \(Q\) is an \(m \times n\) matrix whose column vectors are orthonormal,</li>
+<li> \(R\) is an upper triangular \(n \times n\) matrix.</li>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+$$
+\begin{array}{cc} \left[\begin{array}{ccccc}*&*&*\\*&*&*\\*&*&*\\ *&*&* \\ *&*&* \end{array}\right] = & \left[\begin{array}{ccccc} | & | & | \\ | & | & | \\{\bf u_1} & {\bf u_2} & {\bf u_3} \\ | & | & | \\ | & | & | \end{array}\right] &
+\left[\begin{array}{ccccc}*&*&*\\0&*&*\\0&0&*\end{array}\right]\\
+A&Q&R\\
+\end{array}
+$$
+:::
+
+## QR Factorization
+
+:::{style="font-size: .6em"}
+To calculate QR factorization:
+
+1. Find the columns of $Q$ by using Gram-Schmidt orthogonalization on the colums of $A$ and then normalizing each column individually.
+2. Calculate $R = Q^\top A$ as the matrix containing the inner products of the columns of $Q$ and $A$, as shown below in the $3 \times 3$ case.
+
+<br>
+
+$$
+R =
+\begin{bmatrix} {\bf u}_1^\top {\bf a}_1 & {\bf u}_1^\top {\bf a}_2 & {\bf u}_1^\top {\bf a}_3 \\ {\bf u}_2^\top {\bf a}_1 & {\bf u}_2^\top {\bf a}_2 & {\bf u}_2^\top {\bf a}_3 \\ {\bf u}_3^\top {\bf a}_1 & {\bf u}_3^\top {\bf a}_2 & {\bf u}_3^\top {\bf a}_3 \end{bmatrix}
+= \begin{bmatrix} {\bf u}_1^\top {\bf a}_1 & {\bf u}_1^\top {\bf a}_2 & {\bf u}_1^\top {\bf a}_3 \\ 0 & {\bf u}_2^\top {\bf a}_2 & {\bf u}_2^\top {\bf a}_3 \\ 0 & 0 & {\bf u}_3^\top {\bf a}_3 \end{bmatrix}
+$$
+
+<br>
+
+Note that Gram-Schmidt guarantees that ${\bf u}_i^\top {\bf a}_j = 0$ when $i > j$, which is why this matrix is upper triangular.
+:::
+
+## Computing QR Factorization
+
+:::{style="font-size: .8em"}
+Here is Python code that computes the QR factorization of a matrix based on the Gram-Schmidt algorithm.
+:::
+
+<br>
+
+```{python}
+import numpy as np
+```
+```{python}
+#| echo: true
+def GramSchmidt(A):
+    m, n = A.shape
+    Q = np.zeros([m,n], dtype=np.float64)
+    R = np.zeros([n,n], dtype=np.float64)
+    for j in range(n):
+        v = A[:,j]                       # take each column vector in A
+        for i in range(j):
+            R[i,j] = np.dot(Q[:,i], A[:,j])
+            v = v - (R[i,j] * Q[:,i])    # subtract projection from 
+                                         # previous vectors
+        R[j,j] = np.linalg.norm(v)
+        Q[:, j] = v / R[j,j]             # insert as a column of Q
+    return Q, R
+```
+
+## Computing QR Factorization
+
+:::{style="font-size: .6em"}
+__Example.__ Let's use this code to factor a matrix we LU factorized in a previous lecture.
+
+$$
+A = \left[\begin{array}{rrrr}3&-7&-2&2\\-3&5&1&0\\6&-4&0&-5\\-9&5&-5&12\end{array}\right]
+$$
+:::
+
+```{python}
+#| echo: true
+A = np.array([[3,-7,-2,2],
+             [-3,5,1,0],
+             [6,-4,0,-5],
+             [-9,5,-5,12]])
+Q, R = GramSchmidt(A)
+print("Q =",Q)
+print("R =",R)
+```
+
+## Computing QR Factorization
+
+:::{style="font-size: .6em"}
+`Numpy` includes a built-in command to calculate QR factorization. Note that:
+
+- Gram-Schmidt is just one algorithm that can be used to compute a QR factorization; there are others.
+- Some QR factorizations decompose $A$ into an $m \times m$ matrix $Q$ followed by an $m \times n$ matrix $R$ instead.
+
+Let's use the built-in method `np.linalg.qr` on the same matrix $A$ as before. We will get a similar result.
+
+```{python}
+#| echo: true
+import numpy as np
+A = np.array([[3,-7,-2,2],
+             [-3,5,1,0],
+             [6,-4,0,-5],
+             [-9,5,-5,12]])
+Qnew, Rnew = np.linalg.qr(A)
+print(Qnew)
+print(Rnew)
+```
+:::
+
+## Computing QR Factorization
+
+:::{style="font-size: .6em"}
+We can use `Numpy` to check that columns of $Q$ are orthonormal.
+:::
+
+<br>
+
+```{python}
+#| echo: true
+for i in range(Q.shape[1]):
+    for j in range(i,Q.shape[1]):
+        print("the inner product between columns", i, "and", j,"is", Q[:,i].dot(Q[:,j]))
+
+# remember that Python's rows and columns are 0-indexed!
+```
+
+## Computing QR Factorization
+
+:::{style="font-size: .6em"}
+
+Another way to perform this same check is to compute $Q^\top Q$! (For easier reading, this time let's also round to the 12th digit after the decimal point; this suffices to truncate the floating-point arithmetic errors.)
+:::
+
+<br>
+
+```{python}
+#| echo: true
+print((Q.T @ Q).round(12))
+```
+
+:::{style="font-size: .6em"}
+
+<br>
+
+This is a very useful property! It means we can take the inverse of $Q$ very efficiently, without using the typical (slow) matrix inverse algorithm.
+:::
+
+## Solving linear systems with QR factorization{.really-really-smaller-title}
+
+QR matrix factorization is a valuable tool that has many computational and data science applications.
+
+> "One algorithm in numerical linear algebra is more important than all the others: QR factorization."$\;$ -[Trefethen](https://people.maths.ox.ac.uk/trefethen/text.html), page 48
+
+Let's use QR factorization to make it faster to solve linear systems.
+
+Given the QR factorization of a matrix $A$, we can then solve the linear system $A {\bf x} = {\bf b}$ by rewriting it as:
+
+$$\begin{align*}
+A {\bf x} &= {\bf b} \\
+QR {\bf x} &= {\bf b} \\
+Q^\top Q R {\bf x} &= Q^\top {\bf b} \\
+R {\bf x} &= Q^\top {\bf b},\\
+\end{align*}
+$$
+
+where the last step uses the fact that $Q^{-1} = Q^\top$.
+
+Because $R$ is upper triangular, solving this system only requires the (fast) backsubstitution step rather than the entirety of Gauss-Jordan elimination. In other words: we get the same speedup as in LU factorization.
+
+## Solving linear systems with QR factorization{.really-really-smaller-title}
+
+Solve the following system of equations using QR factorization.
+
+$$
+\underbrace{\begin{bmatrix} 0 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 2 & 1 \end{bmatrix}}_A \begin{bmatrix}x_1 \\ x_2 \\ x_3 \end{bmatrix} = \underbrace{\begin{bmatrix} 2 \\ 3 \\ 4 \end{bmatrix}}_{{\bf b}}.
+$$
+
+<br>
+
+The three column vectors of $A$ are ${\bf a}_1 = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}$, ${\bf a}_2 = \begin{bmatrix} 1 \\ 1 \\ 2 \end{bmatrix}$, and ${\bf a}_3 = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}$.
+
+## Solving linear systems with QR factorization{.really-really-smaller-title}
+
+:::{style="font-size: .8em"}
+Let's apply Gram-Schmidt to find the corresponding orthogonal (not orthonormal!) set.
+
+$$
+\begin{eqnarray*}
+{\bf v}_1 &=& {\bf a}_1 = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} \\ \\ \\
+{\bf v}_2 &=& {\bf a}_2 - \mbox{proj}_{{\bf v}_1}({\bf a}_2) = \begin{bmatrix} 1 \\ 1 \\ 2 \end{bmatrix} - \frac{0\cdot1 + 1\cdot1 + 1\cdot2}{0 + 1^2 + 1^2} \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} = \begin{bmatrix} 1 \\ -1/2 \\ 1/2 \end{bmatrix} \\ \\ \\
+{\bf v}_3 &=& {\bf a}_3 - \mbox{proj}_{{\bf v}_1}({\bf a}_3) - \mbox{proj}_{{\bf v}_2}({\bf a}_3)\\
+&=& \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} - \frac{0\cdot1+1\cdot1+1\cdot1}{2} \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{1\cdot1+1\cdot(-1/2)+1\cdot1/2}{1 + (1/2)^2 + (1/2)^2} \begin{bmatrix} 1 \\ -1/2 \\ 1/2 \end{bmatrix} \\
+&=& \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} - \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{2}{3} \begin{bmatrix} 1 \\ -1/2 \\ 1/2 \end{bmatrix} \\
+&=& \begin{bmatrix} 1/3 \\ 1/3 \\ -1/3 \end{bmatrix}.
+\end{eqnarray*}
+$$
+:::
+
+## Solving linear systems with QR factorization{.really-really-smaller-title}
+
+It is easy to check that all three of ${\bf v}_1, {\bf v}_2, {\bf v}_3$ are pairwise orthogonal to each other. Let's normalize each of the vectors, and call the resulting column vectors ${\bf u}_1, {\bf u}_2, {\bf u}_3$. We can use these columns to form the orthonormal matrix:
+
+$$
+Q = \begin{bmatrix}  0 & 2/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & -1/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & 1/\sqrt{6} & -1/\sqrt{3} \end{bmatrix}.
+$$
+
+<br>
+
+Next, we calculate the upper triangular matrix:
+
+$$R = \begin{bmatrix} {\bf u}_1^\top {\bf a}_1 & {\bf u}_1^\top {\bf a}_2 & {\bf u}_1^\top {\bf a}_3 \\ 0 & {\bf u}_2^\top {\bf a}_2 & {\bf u}_2^\top {\bf a}_3 \\ 0 & 0 & {\bf u}_3^\top {\bf a}_3 \end{bmatrix} =
+\begin{bmatrix}
+2/\sqrt{2} & 3/\sqrt{2} & 2/\sqrt{2} \\
+0 & 3/\sqrt{6} & 2/\sqrt{6} \\
+0 & 0 & 1/\sqrt{3}
+\end{bmatrix}.
+$$
+
+It is easy to check that $A = Q R$.
+
+## Solving linear systems with QR factorization{.really-really-smaller-title}
+
+Now let's return to our problem. In order to solve $A {\bf x} = {\bf b}$, it suffices to find the solutions for $R {\bf x} = Q^\top {\bf b}$.
+
+$$
+\begin{eqnarray*}
+\begin{bmatrix}
+2/\sqrt{2} & 3/\sqrt{2} & 2/\sqrt{2} \\
+0 & 3/\sqrt{6} & 2/\sqrt{6} \\
+0 & 0 & 1/\sqrt{3}
+\end{bmatrix}
+\begin{bmatrix}x_1 \\ x_2 \\ x_3 \end{bmatrix}
+&=&
+\begin{bmatrix}  0 & 1/\sqrt{2} & 1/\sqrt{2} \\ 2/\sqrt{6} & -1/\sqrt{6} & 1/\sqrt{6} \\ 1/\sqrt{3} & 1/\sqrt{3} & -1/\sqrt{3} \end{bmatrix}
+\begin{bmatrix} 2 \\ 3 \\ 4 \end{bmatrix} \\
+\begin{bmatrix}
+2/\sqrt{2} & 3/\sqrt{2} & 2/\sqrt{2} \\
+0 & 3/\sqrt{6} & 2/\sqrt{6} \\
+0 & 0 & 1/\sqrt{3}
+\end{bmatrix}
+\begin{bmatrix}x_1 \\ x_2 \\ x_3 \end{bmatrix}
+&=& \begin{bmatrix} 7/\sqrt{2} \\ 5/\sqrt{6} \\ 1/\sqrt{3} \end{bmatrix}.
+\end{eqnarray*}
+$$
+
+Because $R$ is upper-triangular, this matrix equation is already in row echelon form. From the last row it is clear that $x_3 = 1$, then substituting that into the middle row gives us $x_2 = 1$, and finally in the top row we find that $x_1 = 1$ as well.
+
+So the solution is:
+
+$$
+{\bf x} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}.
+$$
+
+## Solving linear systems with QR factorization{.really-really-smaller-title}
+
+While this process was tedious, note that we never computed a matrix inverse or Gauss-Jordan elimination. 
+
+<br>
+
+For this reason, QR factorization is a __fundamentally different way of solving linear systems__ than the other methods we have seen so far in class, such as:
+
+- Gauss-Jordan elimination/LU factorization or
+- left-multiplying both sides by the inverse of the original matrix $A$.
+
+<br>
+
+Algorithmically, QR factorization in general for an $n \times n$ matrix can be performed in about $\frac{2}{3} n^3$ floating point operations.
+
+This is similar to Gauss-Jordan elimination but faster than matrix inversion.
+
+## Projecting onto Subspaces
+
+:::{style="font-size: .8em"}
+So far when discussing orthogonality and projections, we have developed methods for finding the point in a 1D subspace that is closest to a given point.   
+
+<br>
+
+In this final part of the week, we will generalize the idea of "closest point" to the case of an __arbitrary__ subspace.   
+
+<br>
+
+This leads to two theorems: 
+
+1. The __Orthogonal Decomposition Theorem__ 
+2. The __Best Approximation Theorem.__
+:::
+## Projecting onto Subspaces
+
+:::{style="font-size: .6em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+    <span class="label">The Orthogonal Decomposition Theorum:</span>
+        <p>
+        Let \(W\) be a subspace of \(\mathbb{R}^n\).  Then each \(\mathbf{y}\) in \(\mathbb{R}^n\) can be written uniquely in the form \(\mathbf{y} = \hat{\mathbf{y}} + \mathbf{z}\) where \(\hat{\mathbf{y}}\) is in \(W\) and 
+        \(\mathbf{z}\) is orthogonal to every vector in \(W\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.center-text}
+```{python}
+qr_setting = None
+import laUtilities as ut
+
+fig = ut.three_d_figure((8, 1), 'Projection of y onto Subspace W',
+                        -15, 15, -15, 15, -15, 15, (6,4), qr = qr_setting)
+a2 = np.array([5.0,-13.0,-3.0])
+a1 = np.array([1,-2.0,3])
+v = -3*a1 + a2
+y = np.array([12.0, 8.0, -5.0])
+A = np.array([a1, a2]).T
+#
+# plotting the span of v
+fig.plotSpan(a1, a2, 'Green')
+#
+yhat = A.dot(np.linalg.inv(A.T.dot(A))).dot(A.T).dot(y)
+fig.plotPoint(yhat[0], yhat[1], yhat[2], 'b')
+fig.text(yhat[0]+0.5, yhat[1]+0.5, yhat[2]+0.5, r'$\mathbf{\hat{y}}$', 'y-hat', size=18)
+#
+fig.plotPoint(y[0], y[1], y[2],'b')
+fig.text(y[0]+0.5, y[1]+0.5, y[2]+0.5, r'$\bf y$', 'y', size=18)
+#
+#
+m2 = (y + yhat) / 2
+m2 = m2 + [0,1,0]
+fig.text(m2[0], m2[1], m2[2], r'$\bf y - \hat{\bf y}$', '||y - y-hat||', size=18)
+
+#
+wpos = -4.5*a1 
+fig.text(wpos[0], wpos[1], wpos[2], r'$W$', 'W', size=22)
+#
+# lines
+fig.plotLine([y, yhat], 'b')
+#ut.plotPoint3d(ax,0,0,0,'b')
+fig.ax.view_init(azim=57.0,elev=-75.0)
+fig.hideAxes() 
+fig.plotPerpSym(yhat, y, a2-2*a1, 2.5)
+fig.set_title(r'Projection of $\mathbf{y}$ onto Subspace $W$', 
+              'Projection of y onto Subspace W', size = 16)
+```
+:::
+
+Just as in the case of a 1D subspace (in the last lecture), we say that $\hat{\mathbf{y}}$ is the __orthogonal projection of $\mathbf{y}$ onto $W$__ and write $\hat{\mathbf{y}} = \mbox{proj}_W \mathbf{y}.$
+
+:::
+
+## Projecting onto Subspaces
+
+:::{style="font-size: .8em"}
+This is a generalization of orthogonal projection onto a 1-dimensional subspace (i.e., a line) that we saw in the previous lecture.
+
+
+:::{.center-text}
+```{python}
+#
+import matplotlib.pyplot as plt
+
+ax = ut.plotSetup(-3,11,-1,7,(5,3))
+ut.centerAxes(ax)
+plt.axis('equal')
+u = np.array([4.,2])
+y = np.array([6, 8])
+yhat = (y.T.dot(u)/u.T.dot(u))*u
+z = y-yhat
+ut.plotLinEqn(1.,-2.,0.)
+ut.plotVec(ax,y)
+ut.plotVec(ax,yhat)
+ax.text(yhat[0]+0.3,yhat[1]-0.5,r'$\mathbf{\hat{y}}$',size=20)
+ax.text(y[0],y[1]+0.8,r'$\mathbf{y}$',size=20)
+mm = (y + yhat)/2
+ax.text(mm[0]+.1,mm[1],r'$\mathbf{y - \hat{y}}$',size=20)
+ax.text(11,4.5,r'$L$',size=20)
+perpline1, perpline2 = ut.perp_sym(yhat, y, np.array([0,0]), 0.75)
+plt.plot(perpline1[0], perpline1[1], 'k', lw = 1)
+plt.plot(perpline2[0], perpline2[1], 'k', lw = 1)
+ax.plot([y[0],yhat[0]],[y[1],yhat[1]],'b--');
+```
+
+:::
+
+Given any orthogonal basis $\{\mathbf{u_1}, \mathbf{u_2}, \ldots, \mathbf{u_d}\}$ for the $d$-dimensional subspace $W$, $\hat{\mathbf{y}} = \mbox{proj}_W \mathbf{y}$ is the sum of the projections onto each of the basis vectors.
+
+$$
+\hat{\mathbf{y}} = \mbox{proj}_{\mathbf{u_1}} \mathbf{y} + \mbox{proj}_{\mathbf{u_2}} \mathbf{y} + \cdots + \mbox{proj}_{\mathbf{u_d}} \mathbf{y}.
+$$
+
+:::
+
+## Projecting onto Subspaces
+
+:::{style="font-size: .5em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+    <span class="label">The Best Approximation Theorum:</span>
+        <p>
+        Let \(W\) be a subspace of \(\mathbb{R}^n\), let \(\mathbf{y}\) be any vector in \(\mathbb{R}^n\), and let \(\hat{\mathbf{y}}\) be the orthogonal projection of \(\mathbf{y}\) onto \(W\).  Then <b>\(\hat{\mathbf{y}}\) is the closest point in \(W\) to \(\mathbf{y}\)</b>, in the sense that \(\Vert \mathbf{y}-\hat{\mathbf{y}} \Vert < \Vert \mathbf{y} - \mathbf{v} \Vert\) for all \(\mathbf{v}\) in \(W\) distinct from \(\hat{\mathbf{y}}\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+Proof in the notes.
+
+:::{.center-text}
+```{python}
+#
+fig = ut.three_d_figure((8, 2), 'Comparison of v to the projection of y',
+                        -12, 12, -12, 12, -12, 12, (8,5), qr = qr_setting)
+a2 = np.array([5.0,-13.0,-3.0])
+a1 = np.array([1,-2.0,3])
+v = -3*a1 + a2
+y = np.array([12.0, 8.0, -5.0])
+A = np.array([a1, a2]).T
+#
+# plotting the span of v
+fig.plotSpan(a1, a2, 'Green')
+#
+yhat = A.dot(np.linalg.inv(A.T.dot(A))).dot(A.T).dot(y)
+fig.plotPoint(yhat[0], yhat[1], yhat[2], 'b')
+fig.text(yhat[0]+0.5, yhat[1]+0.5, yhat[2]+0.5, r'$\mathbf{\hat{y}}$', 'y-hat', size=18)
+#
+fig.plotPoint(y[0], y[1], y[2],'b')
+fig.text(y[0]+0.5, y[1]+0.5, y[2]+0.5, r'$\bf y$', 'y', size=18)
+#
+fig.plotPoint(v[0], v[1], v[2], 'b')
+fig.text(v[0]-1.5, v[1]-1.5, v[2]-1.5, r'$\bf v$', 'v', size=18)
+#
+m1 = (y + v) / 2
+m1 = m1 + [2,-6,0]
+fig.text(m1[0], m1[1], m1[2], r'$\Vert \bf y - \bf v\Vert$', '||y - v||', size=18)
+m2 = (y + yhat) / 2
+m2 = m2 + [0,1,0]
+fig.text(m2[0], m2[1], m2[2], r'$\Vert \bf y - \hat{\bf y}\Vert$', '||y - y-hat||', size=18)
+m3 = (yhat + v) / 2
+m3 = m3 + [-1,0,-4]
+fig.text(m3[0], m3[1], m3[2], r'$\Vert \hat{\bf y} - \bf v\Vert$', '||y - v||', size=18)
+#
+wpos = -4.5*a1 
+fig.text(wpos[0], wpos[1], wpos[2], r'$W$', 'W', size=22)
+#
+# lines
+fig.plotLine([y, yhat], 'b')
+fig.plotLine([v, yhat], 'b')
+fig.plotLine([y, v], 'b')
+#ut.plotPoint3d(ax,0,0,0,'b')
+fig.ax.view_init(azim=57.0,elev=-69.0)
+fig.hideAxes() 
+fig.set_title(r'Relationship of $\mathbf{y}$ to $\hat{\mathbf{y}} = \operatorname{Proj}_W \mathbf{y}$', 
+              'Relationship of y Proj_W y', size = 16)
+```
+:::
+
+:::
+
+## Key Takeaways
+
+TBD
