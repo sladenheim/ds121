@@ -1,6 +1,6 @@
 ---
 title: "Orthogonality and Projection"
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         math: true
@@ -12,12 +12,14 @@ format:
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
-To be determined at a later date.
+In this lecture, we will deepen our understanding of the geometry of vectors and matrices. 
+
+We will explore the concept of orthogonality between two vectors in greater detail and introduce the notion of projection. Additionally, we will introduce the Gram-Schmidt orthogonalization procedure, which transforms any basis into an orthogonal one. In the future, we will apply the Gram-Schmidt process to perform a new type of matrix factorization known as QR factorization.
 :::
 
 ## Orthogonal Sets
 
-:::{style="font-size: .5em"}
+:::{style="font-size: .8em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -26,9 +28,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        A set of vectors \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) in \(\mathbb{R}^n\) is said to be an <b>orthogonal set</b> if each pair of distinct vectors from the set is orthogonal, i.e.,<br>
-
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(\mathbf{u}_i^\top \mathbf{u}_j = 0\;\;\mbox{whenever}\;i\neq j.\)
+        A set of vectors \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) in \(\mathbb{R}^n\) is said to be an <b>orthogonal set</b> if each pair of distinct vectors from the set is orthogonal, i.e., \(\mathbf{u}_i^\top \mathbf{u}_j = 0\;\;\mbox{if}\;i\neq j.\)
         </p>
     </div>
     """
@@ -38,14 +38,18 @@ display(HTML(html_content))
 
 
 
-__Example.__  Show that $\{\mathbf{u}_1,\mathbf{u}_2,\mathbf{u}_3\}$ is an orthogonal set, where
+We are going to show that $\{\mathbf{u}_1,\mathbf{u}_2,\mathbf{u}_3\}$ is an orthogonal set, where
+:::
+:::{style="font-size: .6em"}
 
 $$
 \mathbf{u}_1 = \begin{bmatrix}3\\1\\1\end{bmatrix},\;\;\mathbf{u}_2=\begin{bmatrix}-1\\2\\1\end{bmatrix},\;\;\mathbf{u}_3=\begin{bmatrix}-1/2\\-2\\7/2\end{bmatrix}.
 $$
-
-__Solution.__ Take the inner product of each pair of distinct vectors.
-
+:::
+:::{style="font-size: .8em"}
+We take the inner product of each pair of distinct vectors:
+:::
+:::{style="font-size: .6em"}
 $$
 \begin{eqnarray*}
 \mathbf{u}_1^\top \mathbf{u}_2 &=& 3(-1) + 1(2) + 1(1)       &=& 0, \\
@@ -53,15 +57,14 @@ $$
 \mathbf{u}_2^\top \mathbf{u}_3 &=& -1(-1/2) + 2(-2) + 1(7/2) &=& 0.
 \end{eqnarray*}
 $$
-
-Each pair of distinct vectors is orthogonal, and so $\{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$ is an orthogonal set.  
-
-In three-space they describe three lines that we say are __mutually perpendicular.__
+:::
+:::{style="font-size: .8em"}
+Hence, $\{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$ is an orthogonal set. 
 :::
 
 ## Orthogonal Sets
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 
 :::{.center-text}
 ```{python}
@@ -106,8 +109,6 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-
-Proof is in the notes.
 :::
 
 ## Orthogonal Basis
@@ -135,7 +136,7 @@ $$
 \mathbf{u}_2 = \begin{bmatrix} 8/3\\ 1/3\\ 2/3 \end{bmatrix}.
 $$
 
-Since, $\mathbf{u}_1^\top \mathbf{u}_2 = 0,$ they form an orthognal basis for subspace $W = \mbox{Span}\{\mathbf{u}_1,\mathbf{u}_2\}.$
+Since, $\mathbf{u}_1^\top \mathbf{u}_2 = 0,$ they form an orthognal basis for subspace $\mbox{Span}\{\mathbf{u}_1,\mathbf{u}_2\}.$
 :::
 
 ## Orthogonal Basis
@@ -185,14 +186,14 @@ fig.plotPerpSym(2*u, v+2*u, 3*u, 1)
 fig.plotPerpSym(np.array([0, 0, 0])+v, 2*v, v+u, 1)
 fig.plotPerpSym(u+v, 2*v+u, v+2*u, 1)
 #
-fig.set_title(r'Orthogonal Basis on the subspace $H$', 'Orthogonal Basis on the subspace H', size=16)
+# fig.set_title(r'Orthogonal Basis on the subspace $H$', 'Orthogonal Basis on the subspace H', size=16)
 ```
 :::
 
 ## Orthogonal Basis
 
 :::{style="font-size: .8em"}
-To compute the coordinates of $\mathbf{y}$ in terms of basis $[\mathbf{y}]_\mathcal{B}$, we need to solve the linear system:
+To compute the coordinates of $\mathbf{y}$ in terms of basis $\mathcal{B} = \{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$, $[\mathbf{y}]_\mathcal{B}$, we need to solve the linear system:
 
 $$
 c_1 \mathbf{u}_1 + c_2\mathbf{u}_2 + c_3\mathbf{u}_3 = \mathbf{y}
@@ -213,7 +214,7 @@ However, in an orthogonal basis the coordinates of any point can be computed mor
 
 ## Orthogonal Basis
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -221,7 +222,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        Let \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) be an orthogonal basis for a subspace \(H\) of \(\mathbb{R}^n\).<br>For each \(\mathbf{y}\) in \(H\), the weights of the linear combination \(c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p = \mathbf{y}\) are given by \(c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^{\top} \mathbf{u}_j}\;\;\;j = 1,\dots,p\)
+        Let \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) be an orthogonal basis for a subspace \(H\) of \(\mathbb{R}^n\). For each \(\mathbf{y}\) in \(H\), the weights of the linear combination \(c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p = \mathbf{y}\) are given by \(c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^{\top} \mathbf{u}_j}\) with \(j = 1,\dots,p.\)
 
         </p>
     </div>
@@ -240,16 +241,15 @@ $$\begin{align*}
 \end{align*}
 $$
 
-Since $\mathbf{u}_1^\top \mathbf{u}_1$ is not zero (why?), the equation above can be solved as $c_1 = \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}$
-
+Since $\mathbf{u}_1^\top \mathbf{u}_1$ is not zero, the equation above can be solved as $c_1 = \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}.$
 To find any other $c_j,$ compute $\mathbf{y}^\top \mathbf{u}_j$ and solve for $c_j$.
 
 :::
 
 ## Orthogonal Basis
 
-:::{style="font-size: .6em"}
-__Example.__  The set $S$ that we saw earlier, i.e.,
+:::{style="font-size: .8em"}
+The set $S$ that we saw earlier, 
 
 $$
 \mathbf{u}_1 = \begin{bmatrix}3\\1\\1\end{bmatrix},\;\;\mathbf{u}_2=\begin{bmatrix}-1\\2\\1\end{bmatrix},\;\;\mathbf{u}_3=\begin{bmatrix}-1/2\\-2\\7/2\end{bmatrix},
@@ -305,28 +305,26 @@ fig.set_title(r'${\bf y}$ in an Orthogonal Basis', 'y in an Orthogonal Basis', s
 
 ## Orthogonal Basis
 
-:::{style="font-size: .6em"}
-__Solution.__  Compute
+:::{style="font-size: .8em"}
+Compute
 
 $$
 \mathbf{y}^\top \mathbf{u}_1 = 11,\;\;\;\mathbf{y}^\top \mathbf{u}_2 = -12,\;\;\;\mathbf{y}^\top \mathbf{u}_3 = -33,
 $$
 
 $$
-\mathbf{u}_1^\top \mathbf{u}_1 = 11,\;\;\;\mathbf{u}_2^\top \mathbf{u}_2 = 6,\;\;\;\mathbf{u}_3^\top \mathbf{u}_3 = 33/2
+\mathbf{u}_1^\top \mathbf{u}_1 = 11,\;\;\;\mathbf{u}_2^\top \mathbf{u}_2 = 6,\;\;\;\mathbf{u}_3^\top \mathbf{u}_3 = 33/2.
 $$
-
-So,
 
 $$
 \begin{align*}
-\mathbf{y} &= \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}\mathbf{u}_1 + \frac{\mathbf{y}^\top \mathbf{u}_2}{\mathbf{u}_2^\top \mathbf{u}_2}\mathbf{u}_2 + \frac{\mathbf{y}^\top \mathbf{u}_3}{\mathbf{u}_3^\top \mathbf{u}_3}\mathbf{u}_3 \\
+\Rightarrow \mathbf{y} &= \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}\mathbf{u}_1 + \frac{\mathbf{y}^\top \mathbf{u}_2}{\mathbf{u}_2^\top \mathbf{u}_2}\mathbf{u}_2 + \frac{\mathbf{y}^\top \mathbf{u}_3}{\mathbf{u}_3^\top \mathbf{u}_3}\mathbf{u}_3 \\
 &= \left(\frac{11}{11}\right)\mathbf{u}_1 + \left(\frac{-12}{6}\right)\mathbf{u}_2 + \left(\frac{-33}{33/2}\right)\mathbf{u}_3 \\
 &= \mathbf{u}_1 - 2\mathbf{u}_2 - 2 \mathbf{u}_3.
 \end{align*}
 $$
 
-Hence, $[{\bf y}]_{\mathcal{B}} = \begin{bmatrix} 1 \\ -2 \\ -2 \end{bmatrix}$.
+Hence, $[{\bf y}]_{\mathcal{B}} = \begin{bmatrix} 1 & -2 & -2 \end{bmatrix}^\top$.
 
 :::
 
@@ -334,21 +332,16 @@ Hence, $[{\bf y}]_{\mathcal{B}} = \begin{bmatrix} 1 \\ -2 \\ -2 \end{bmatrix}$.
 
 :::{style="font-size:.8em"}
 
-Finding the coordinates of $\mathbf{y}$ in the orthogonal basis is efficient because:
+Finding the coordinates of $\mathbf{y}$ in the orthogonal basis is efficient because
 
-- There are $n$ inner products, each of which require $2n$ flops.
-
-- Each coefficient $c_i$ can be found separately, so with enough computers available to work in parallel, you can perform the calculation in linear time.
+- There are $n$ inner products, each requiring $2n$ flops.
+- Each coefficient $c_i$ can be calculated separately, allowing for parallel computation in linear time.
 
 :::
 
 ## Orthogonal Projection
 
-:::{style="font-size: .6em"}
-A projection decomposes a vector into the sum of other vectors.
-
-Suppose we start with two nonzero vectors $\mathbf{y}$ and $\mathbf{u}$ in $\mathbb{R}^n$.
-
+:::{style="font-size: .8em"}
 :::{.center-text}
 ```{python}
 import matplotlib.pyplot as plt
@@ -365,12 +358,12 @@ ax.text(2*pt[0],-0.75,r'$\mathbf{u}$',size=20)
 ax.text(pt[0]+0.1,pt[1]+0.2,r'$\mathbf{y}$',size=20);
 ```
 :::
+Suppose we have nonzero vectors $\mathbf{y}$ and $\mathbf{u}$ in $\mathbb{R}^n$.
+The goal of projection is to "decompose" $\mathbf{y}$ into the sum of two vectors $\mathbf{y} = \hat{\mathbf{y}} + \mathbf{z}$ such that
 
-Our goal is to "decompose" $\mathbf{y}$ into the sum of two vectors $\mathbf{y} = \hat{\mathbf{y}} + \mathbf{z}$ such that
+- $\hat{\mathbf{y}}$ is the __orthogonal projection of $\mathbf{y}$ onto $\mathbf{u}$__: $\hat{\mathbf{y}} = \alpha\mathbf{u}$ for some scalar $\alpha$.
 
-- $\hat{\mathbf{y}}$ is a multiple of $\mathbf{u}$: $\hat{\mathbf{y}} = \alpha\mathbf{u}$ for some scalar $\alpha$. We call this the __orthogonal projection of $\mathbf{y}$ onto $\mathbf{u}$.__
-
-- $\mathbf{z}$ is orthogonal to $\mathbf{u}$. We call this the __component of $\mathbf{y}$ orthogonal to $\mathbf{u}.$__
+- $\mathbf{z}$ is the __component of $\mathbf{y}$ orthogonal to $\mathbf{u}$__: it is orthogonal to $\mathbf{u}$. 
 :::
 
 ## Orthogonal Projection
@@ -408,24 +401,20 @@ Note $\mathbf{y} - \alpha\mathbf{u} = \mathbf{y}-\hat{\mathbf{y}} = \mathbf{z}.$
 
 ## Orthogonal Projection
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 Now $\mathbf{z} = \mathbf{y} - \alpha{\mathbf{u}}$ is orthogonal to $\mathbf{u}$ if and only if
 
 $$
 \begin{align*}
 0 &= (\mathbf{y} - \alpha\mathbf{u})^\top \mathbf{u}\\
 &= \mathbf{y}^\top \mathbf{u} - (\alpha\mathbf{u})^\top \mathbf{u} \\
-&= \mathbf{y}^\top \mathbf{u} - \alpha(\mathbf{u}^\top \mathbf{u})
+&= \mathbf{y}^\top \mathbf{u} - \alpha(\mathbf{u}^\top \mathbf{u}).
 \end{align*}
 $$
 
-Hence,  $\mathbf{z}$ is orthogonal to $\mathbf{u}$ happens if and only if 
+Hence,  $\mathbf{z}$ is orthogonal to $\mathbf{u}$ happens if and only if $\alpha = \frac{\mathbf{y}^\top \mathbf{u}}{\mathbf{u}^\top \mathbf{u}}.$
 
-$$
-\alpha = \frac{\mathbf{y}^\top \mathbf{u}}{\mathbf{u}^\top \mathbf{u}}
-$$
-
-and since $\hat{\mathbf{y}} = \alpha\mathbf{u}$,
+Since $\hat{\mathbf{y}} = \alpha\mathbf{u}$,
 
 $$
 \hat{\mathbf{y}} = \frac{\mathbf{y}^\top \mathbf{u}}{\mathbf{u}^\top \mathbf{u}}\mathbf{u}.
@@ -435,7 +424,7 @@ $$
 
 ## Projections onto Subspaces
 
-:::{style="font-size: .5em"}
+:::{style="font-size: .8em"}
 
 :::{.center-text}
 ```{python}
@@ -464,36 +453,31 @@ plt.plot(perpline2[0], perpline2[1], 'k', lw = 1);
 ```
 :::
 
-When calculating this projection, the direction of ${\bf u}$ is important but its magnitude is not.
-
-- Geometrically: if we scale $\mathbf{u}$ by any amount, we do not change the location of $\hat{\mathbf{y}}.$
-
-- Algebraically: replace $\mathbf{u}$ with $c\mathbf{u}$ and recompute $\hat{\mathbf{y}}$:
-    $$
-    \hat{\mathbf{y}} = \frac{\mathbf{y}^{\top} c\mathbf{u}}{c\mathbf{u}^{\top} c\mathbf{u}}c\mathbf{u} = \frac{\mathbf{y}^{\top} \mathbf{u}}{\mathbf{u}^{\top} \mathbf{u}}\mathbf{u}.
-    $$
+When calculating the projection, only the direction of ${\bf u}$ is important.
 :::
 
 ## Projections onto Subspaces
 
 :::{style="font-size: .8em"}
-So, the projection of $\mathbf{y}$ is determined by the __subspace__ $L$ that is spanned by $\mathbf{u},$ the line through $\mathbf{u}$ and the origin.
+- Geometrically: if we scale $\mathbf{u}$, we do not change the location of $\hat{\mathbf{y}}.$
+
+- Algebraically: replace $\mathbf{u}$ with $c\mathbf{u}$ and recompute $\hat{\mathbf{y}}$: $\hat{\mathbf{y}} = \frac{\mathbf{y}^{\top} c\mathbf{u}}{c\mathbf{u}^{\top} c\mathbf{u}}c\mathbf{u} = \frac{\mathbf{y}^{\top} \mathbf{u}}{\mathbf{u}^{\top} \mathbf{u}}\mathbf{u}.$
+
+Therefore, the projection of $\mathbf{y}$ is determined by the __subspace__ $L$ that is spanned by $\mathbf{u},$ the line through $\mathbf{u}$ and the origin.
 
 <br>
 
-Hence sometimes $\hat{\mathbf{y}}$ is denoted by $\mbox{proj}_L \mathbf{y}$ and is called the __orthogonal projection of $\mathbf{y}$ onto $L$.__
+Hence, sometimes $\hat{\mathbf{y}}$ is denoted by $\mbox{proj}_L \mathbf{y}$ and is called the __orthogonal projection of $\mathbf{y}$ onto $L$:__
 
 $$
 \hat{\mathbf{y}} = \mbox{proj}_L \mathbf{y} = \frac{\mathbf{y}^{\top} \mathbf{u}}{\mathbf{u}^{\top} \mathbf{u}}\mathbf{u}.
 $$
 :::
 
-## Projections onto Subspaces
+## Projections onto Subspaces{.smaller-title}
 
-:::{style="font-size: .6em"}
-__Example.__  Let $\mathbf{y} = \begin{bmatrix}7\\6\end{bmatrix}$ and $\mathbf{u} = \begin{bmatrix}4\\2\end{bmatrix}.$  
-
-Find the orthogonal projection of $\mathbf{y}$ onto $\mathbf{u}.$  Then write $\mathbf{y}$ as the sum of two orthogonal vectors, one in Span$\{\mathbf{u}\}$, and one orthogonal to $\mathbf{u}.$
+:::{style="font-size: .8em"}
+Let $\mathbf{y} = \begin{bmatrix}7\\6\end{bmatrix}$ and $\mathbf{u} = \begin{bmatrix}4\\2\end{bmatrix}.$  We are going to find the orthogonal projection of $\mathbf{y}$ onto $\mathbf{u}$ and write $\mathbf{y}$ as the sum of a vector in Span$\{\mathbf{u}\}$ and a vector orthogonal to $\mathbf{u}.$
 
 :::{.center-text}
 ```{python}
@@ -526,15 +510,15 @@ ax.plot([0,z[0]],[0,z[1]],'b-');
 
 ## Projections onto Subspaces
 
-:::{style="font-size: .6em"}
-__Solution.__  Compute
+:::{style="font-size: .8em"}
+First, we compute the inner products:
 
 $$
-\mathbf{y}^\top \mathbf{u} = \begin{bmatrix}7&6\end{bmatrix}\begin{bmatrix}4\\2\end{bmatrix} = 40
+\mathbf{y}^\top \mathbf{u} = \begin{bmatrix}7&6\end{bmatrix}\begin{bmatrix}4\\2\end{bmatrix} = 40,
 $$
 
 $$
-\mathbf{u}^\top \mathbf{u} = \begin{bmatrix}4&2\end{bmatrix}\begin{bmatrix}4\\2\end{bmatrix} = 20
+\mathbf{u}^\top \mathbf{u} = \begin{bmatrix}4&2\end{bmatrix}\begin{bmatrix}4\\2\end{bmatrix} = 20.
 $$
 
 The orthogonal projection of $\mathbf{y}$ onto $\mathbf{u}$ is
@@ -544,32 +528,29 @@ $$
 $$
 
 $$
-=\frac{40}{20}\mathbf{u} = 2\begin{bmatrix}4\\2\end{bmatrix} = \begin{bmatrix}8\\4\end{bmatrix}
+=\frac{40}{20}\mathbf{u} = 2\begin{bmatrix}4\\2\end{bmatrix} = \begin{bmatrix}8\\4\end{bmatrix}.
 $$
 
 :::
 
 ## Projections onto Subspaces
 
-:::{style="font-size: .6em"}
-And the component of $\mathbf{y}$ orthogonal to $\mathbf{u}$ is
+:::{style="font-size: .8em"}
+The component of $\mathbf{y}$ orthogonal to $\mathbf{u}$ is
 
 $$
 \mathbf{y}-\hat{\mathbf{y}} = \begin{bmatrix}7\\6\end{bmatrix} - \begin{bmatrix}8\\4\end{bmatrix} = \begin{bmatrix}-1\\2\end{bmatrix}.
 $$
 
-So 
-
+We can write
 $$
 \begin{array}{ccccc}
-\mathbf{y} &=& \hat{\mathbf{y}} &+& \mathbf{z} \\
+\mathbf{y} &=& \hat{\mathbf{y}} &+& \mathbf{z}. \\
 \begin{bmatrix}7\\6\end{bmatrix} &=& \begin{bmatrix}8\\4\end{bmatrix} &+& \begin{bmatrix}-1\\2\end{bmatrix}
-\end{array}
+\end{array}.
 $$
 
-<br>
-
-Furthermore, $\hat{\mathbf{y}}$ and $\mathbf{z}$ are orthogonal. We can quickly check this for ourselves using the inner product.
+Furthermore, $\hat{\mathbf{y}}$ and $\mathbf{z}$ are orthogonal. We can quickly check this for ourselves using the inner product:
 
 $$
 \hat{\mathbf{y}}^\top \mathbf{z} = 8(-1) + 4(2) = -8 + 8 = 0.
@@ -584,7 +565,7 @@ $$
 
 Recall from geometry that given a line and a point $P$, the closest point on the line to $P$ is given by the perpendicular from $P$ to the line.
 
-So this gives an important interpretation of $\hat{\mathbf{y}}$: it is __the closest point to $\mathbf{y}$ in the subspace $L$.__
+Hence, $\hat{\mathbf{y}}$ is __the closest point to $\mathbf{y}$ in the subspace $L$.__
 
 :::{.center-text}
 ```{python}
@@ -635,14 +616,13 @@ $$
 
 ## Projections onto Subspaces
 
-:::{style="font-size:.6em"}
-Let's combine two observations.
+:::{style="font-size:.8em"}
 
 1. To decompose a vector $\mathbf{y}$ into a linear combination of vectors $\{\mathbf{u}_1,\dots,\mathbf{u}_p\}$ in a orthogonal basis, we compute
 
     $$\begin{align*}
-    \mathbf{y} &= c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p\text{, where}\\
-    c_j &= \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^\top \mathbf{u}_j}
+    \mathbf{y} &= c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p\text{, where }
+    c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^\top \mathbf{u}_j}.
     \end{align*}$$
 
 2. The projection of $\mathbf{y}$ onto the subspace spanned by any $\mathbf{u}$ is
@@ -651,13 +631,13 @@ $$
 \mbox{proj}_L \mathbf{y} = \frac{\mathbf{y}^\top \mathbf{u}}{\mathbf{u}^\top \mathbf{u}}\mathbf{u}.
 $$
 
-So a decomposition like $\mathbf{y} = c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p$ is really decomposing $\mathbf{y}$ into __a sum of orthogonal projections onto one-dimensional subspaces.__
+A decomposition like $\mathbf{y} = c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p$ is decomposing $\mathbf{y}$ into _a sum of orthogonal projections onto one-dimensional subspaces._
 
 :::
 
 ## Projections onto Subspaces
 
-:::{style="font-size:.6em"}
+:::{style="font-size:.8em"}
 For example, let's look at $\mathbb{R}^2$, and suppose that we are given two orthogonal vectors $\mathbf{u}_1$ and $\mathbf{u}_2$, so together they span $\mathbb{R}^2.$
 
 Then any $\mathbf{y} \in \mathbb{R}^2$ can be written in the form
@@ -667,13 +647,13 @@ $$
 \underbrace{\frac{\mathbf{y}^\top \mathbf{u}_2}{\mathbf{u}_2^\top \mathbf{u}_2}\mathbf{u}_2}_{\text{projection of $\mathbf{y}$ onto the subspace spanned by $\mathbf{u}_2$}}
 $$
 
-So this equation expresses $\mathbf{y}$ as the sum of its projections onto the (orthogonal) axes determined by $\mathbf{u}_1$ and $\mathbf{u}_2$.
+Thus, $\mathbf{y}$ is expressed as the sum of its projections onto the (orthogonal) axes determined by $\mathbf{u}_1$ and $\mathbf{u}_2$.
 
 :::
 
 ## Projections onto Subspaces
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 Hence, coordinates are projections onto the axes!
 
 :::{.center-text}
@@ -712,20 +692,24 @@ Here is another way to think about the Gram-Schmidt process.
 
 ## Graham-Schmidt Orthogonalization{.really-smaller-title}
 
-**Example.** Apply the Gram-Schmidt process to the following three vectors in $\mathbb{R}^3$ to produce an orthogonal set.
+We are going to apply the Gram-Schmidt process to the following three vectors in $\mathbb{R}^3$ to produce an orthogonal set:
 
 $$
-{\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} \qquad 
-{\bf v_2} = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix} \qquad 
+{\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}, \qquad 
+{\bf v_2} = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix}, \qquad 
 {\bf v_3} = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}.
 $$
 
-Note that these vectors $\{ {\bf v_1}, {\bf v_2}, {\bf v_3} \}$ do not form an orthogonal set. For example, ${\bf v}_{\bf 1}^\top {\bf v_2} = 1$, not zero.
+Note that these vectors $\{ {\bf v_1}, {\bf v_2}, {\bf v_3} \}$ do not form an orthogonal set. 
+
+For example, ${\bf v}_{\bf 1}^\top {\bf v_2} = 1$, not zero.
+<br><br>
+
+The first step of the Gram-Schmidt process is simple: ${\bf u_1} = {\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}.$
 
 ## Graham-Schmidt Orthogonalization{.really-smaller-title}
 
-:::{style="font-size: .7em"}
-The first step of the Gram-Schmidt process is simple:${\bf u_1} = {\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}.$
+:::{style="font-size: .9em"}
 
 Next, we need to calculate only the part of ${\bf v_2}$ that is orthogonal to ${\bf u_1}$.
 
@@ -747,22 +731,22 @@ $$
 
 ## Graham-Schmidt Orthogonalization{.really-smaller-title}
 
-Finally, we calculate $\bf{u_3}$
+Finally, we calculate $\bf{u_3}$:
 
 $$
 \begin{align*}
 {\bf u}_3 &= {\bf v}_3 - \mbox{proj}_{{\bf u}_1}({\bf v}_3) - \mbox{proj}_{{\bf u}_2}({\bf v}_3) \\
 &= \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{{\bf v_3}^\top {\bf u_1}}{{\bf u_1}^\top {\bf u_1}}\begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} - \frac{{\bf v_3}^\top {\bf u_2}}{{\bf u_2}^\top {\bf u_2}}\begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix} \\
 &= \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{1}{2} \cdot \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} - \frac{1/2}{3/2} \cdot \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix} \\
-&= \begin{bmatrix} -2/3 \\ 2/3 \\ 2/3 \end{bmatrix}
+&= \begin{bmatrix} -2/3 \\ 2/3 \\ 2/3 \end{bmatrix}.
 \end{align*}
 $$
 
 ## Graham-Schmidt Orthogonalization{.really-smaller-title}
 
-It is not difficult to confirm that $\bar{u_3}$ is orthogonal to $bar{u_2}$ and $\bar{u_1}$
+It is not difficult to confirm that $\mathbf{u}_3$ is orthogonal to $\mathbf{u}_2$ and $\mathbf{u}_1.$
 
-Therefore, $\{ {\bf u_1}, {\bf u_2}, {\bf u_3} \}$ is an orthogonal set, as desired.
+Therefore, $\{ {\bf u_1}, {\bf u_2}, {\bf u_3} \}$ is an orthogonal set.
 
 ```{python}
 from IPython.core.display import HTML
@@ -782,8 +766,20 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-Proof by induction: in the notes.
+Proof: see the notes for a proof by induction.
 
 ## Key Takeaways
 
-TBD.
+:::{style="font-size: .8em"}
+
+- An orthogonal set consists of vectors that are pairwise orthogonal. It is linearly independent.
+<!-- 
+- An orthogonal basis is a basis that is also an orthogonal set. -->
+
+- The coordinates of $\mathbf{y}$ in the orthogonal basis $\{\mathbf{u}_1,\dots,\mathbf{u}_p\}$ are given by $c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^{\top} \mathbf{u}_j}.$ Finding them is computationally efficient.
+
+- The projection into $\mathbf{u}$ decomposes a vector into the sum of its orthogonal projection into $\mathbf{u}$ and the component orthogonal to $\mathbf{u}$.
+
+- The Gram-Schmidt process is an algorithm that transforms any basis into an orthogonal basis, a basis that is also an orthogonal set.
+
+:::
