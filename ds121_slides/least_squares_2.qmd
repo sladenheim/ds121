@@ -816,8 +816,9 @@ $$
 and it will have one row for each house in the data set, with $y$ the sale price of the house.
 :::
 
-<!-- ## Multiple Regression in Practice
+## Multiple Regression in Practice{.smaller-title}
 
+:::{style="font-size: .8em"}
 We will use data from housing sales in Ames, Iowa from 2006 to 2009:
 
 ```{python}
@@ -827,15 +828,19 @@ We will use data from housing sales in Ames, Iowa from 2006 to 2009:
 df = pd.read_csv('data/ames-housing-data/train.csv')
 ```
 
+<br>
+
 ```{python}
 #| echo: true
 #| error: true
 # visualize the data
 df[['LotArea', 'GrLivArea', 'Fireplaces', 'FullBath', 'HalfBath', 'GarageArea', 'TotalBsmtSF', 'SalePrice']].head()
 ```
+:::
 
-## Multiple Regression in Practice
+## Multiple Regression in Practice{.smaller-title}
 
+:::{style="font-size: .8em"}
 Step 1: divide the independent variables from the dependent variable.
 ```{python}
 #| echo: true
@@ -864,9 +869,12 @@ $$
 #| error: true
 beta_hat = np.linalg.inv(X.T @ X) @ X.T @ y
 ```
+:::
 
-## Multiple Regression in Practice
 
+## Multiple Regression in Practice{.smaller-title}
+
+:::{style="font-size: .8em"}
 What does our model tell us?
 ```{python}
 #| echo: true
@@ -875,6 +883,7 @@ print(beta_hat)
 ```
 
 We see that we have:
+
 * $\beta_0$: Intercept of -\$29,233
 * $\beta_1$: Marginal value of one square foot of Lot Area: \$18
 * $\beta_2$: Marginal value of one square foot of Gross Living Area: \$39
@@ -883,13 +892,14 @@ We see that we have:
 * $\beta_5$: Marginal value of one additional half bath: \$16,283
 * $\beta_6$: Marginal value of one square foot of Garage Area: \$91
 * $\beta_7$: Marginal value of one square foot of Basement Area: \$51
+:::
 
+## Multiple Regression in Practice{.smaller-title}
 
-## Multiple Regression in Practice
-
+:::{style="font-size: .6em"}
 Is our model doing a good job?  
 
-There are many statistics for testing this question, but we'll just look at the predictions versus the ground truth.
+There are many statistics for testing this question, but we'll just look at the predictions versus the ground truth. 
 
 For each house we compute its predicted sale value according to our model:
 
@@ -904,14 +914,12 @@ $$
 y_hat = X @ beta_hat
 ```
 
-## Multiple Regression in Practice
-
 And for each house, we'll plot its predicted versus actual sale value:
 
 ```{python}
 #| error: true
 # plot of (X, Y) samples and the linear regression based on y_hat
-plt.figure()
+plt.figure(figsize = (12,4))
 plt.plot(y, y_hat, '.')
 plt.xlabel('Actual Sale Price')
 plt.ylabel('Predicted Sale Price')
@@ -920,9 +928,27 @@ plt.plot([0, 500000], [0, 500000], '-', label='yhat = y')
 plt.legend(loc = 'best');
 ```
 
+:::
+
+## Multiple Regression in Practice{.smaller-title}
+
+```{python}
+#| error: true
+# plot of (X, Y) samples and the linear regression based on y_hat
+plt.figure(figsize = (12,4))
+plt.plot(y, y_hat, '.')
+plt.xlabel('Actual Sale Price')
+plt.ylabel('Predicted Sale Price')
+plt.title('Linear Model Predictions of House Prices')
+plt.plot([0, 500000], [0, 500000], '-', label='yhat = y')
+plt.legend(loc = 'best');
+```
+
+:::{style="font-size: .8em"}
 We see that the model does a reasonable job for house values less than about \$250,000. 
 
-For a better model, we'd want to consider more features of each house, and perhaps some additional functions such as polynomials as components of our model. -->
+For a better model, we'd want to consider more features of each house, and perhaps some additional functions such as polynomials as components of our model.
+:::
 
 ## Multiple Regression in Practice{.smaller-title}
 
@@ -932,6 +958,8 @@ Note that this initial figure is just used to show an initial check that our est
 <br>
 
 To test our model properly, we should __hold out__ some of the data so that it isn't used to produce the model at all, and then gauge how well our model has done at estimating sales prices on them.
+
+<br>
 
 We can use the __sum of squared residuals__ to measure the error in the model's estimation capability.
 :::
