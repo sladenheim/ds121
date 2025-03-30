@@ -1,5 +1,5 @@
 ---
-title: "Least Squares"
+title: Least Squares
 author: "CDS DS 121<br>Boston University"
 format: 
     revealjs:
