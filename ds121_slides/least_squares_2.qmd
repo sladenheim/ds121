@@ -1,6 +1,6 @@
 ---
 title: Linear Regression
-author: "CDS DS 121<br>Boston University"
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         math: true
@@ -10,6 +10,17 @@ format:
         highlight-style: github
 ---
 
+## Learning Objectives
+:::{style="font-size: .8em"}
+In this lecture, we will delve into the specifics of linear regression, a method that we previously explored during our discussions on supervised learning.
+
+
+We will start by applying the least squares method to derive the best-fit line for a given set of data points. We will utilize the knowledge of least squares to analyze and solve problems involving simple linear regression. 
+
+Finally, we will extend the principles of simple linear regression to multiple linear regression. 
+:::
+
+
 ## Modeling via Regression
 
 :::{style="font-size: .8em"}
@@ -17,9 +28,9 @@ One of the most fundamental kinds of machine learning is the construction of a m
 
 A model is a concise description of a dataset or a real-world phenomenon.
 
-<br>
-
 For example, an equation can be a model if we use the equation to describe something in the real world.
+
+<br>
 
 The most common form of modeling is __regression__, which means constructing an equation that describes the relationships among variables.
 :::
@@ -45,10 +56,8 @@ If the label $y$ is...
 
 ## Modeling via Regression
 
-:::{style="font-size: .6em"}
-For example, we may look at these points and observe that they approximately lie on a line.
-
-So we could decide to __model__ this data using a line.
+:::{style="font-size: .7em"}
+If we observe that these points approximately lie on a line, we could decide to _model_ this data using a line.
 
 :::{.center-text}
 ```{python}
@@ -70,10 +79,8 @@ ax.plot(xlin, ylin, 'ro', markersize=6);
 :::
 ## Modeling via Regression
 
-:::{style="font-size: .6em"}
-We may look at these points and decide to model them using a quadratic function.
-
-<br>
+:::{style="font-size: .7em"}
+We may decide to model these points using a quadratic function.
 
 :::{.center-text}
 ```{python}
@@ -88,10 +95,10 @@ ax.plot(xquad, yquad, 'ro', markersize=6);
 :::
 :::
 
-## Modeling via Regression
+<!-- ## Modeling via Regression
 
-:::{style="font-size: .6em"}
-And we may look at these points and decide to model them using a logarithmic function.
+:::{style="font-size: .65em"}
+And we may decide to model these points using a logarithmic function.
 
 :::{.center-text}
 ```{python}
@@ -104,39 +111,35 @@ ylog = log[0] + log[1] * np.log(xlog) + np.random.normal(scale = 1.5, size = 100
 ax.plot(xlog, ylog, 'ro', markersize=6);
 ```
 :::
-:::
+::: -->
 
 ## Modeling via Regression
 
 :::{style="font-size: .8em"}
-Clearly, none of these datasets agrees perfectly with the proposed model. 
+Clearly, none of these datasets agrees perfectly with the proposed model. So how do we find the _best_ linear function (or quadratic function) given the data?
 
-<br>
-
-So the question arises:
-
-How do we find the _best_ linear function (or quadratic function, or logarithmic function) given the data?
-:::
-
-## Linear Models
-
-:::{style="font-size: .5em"}
-:::{.columns}
-
-:::{.column}
-Terminology used for regression:
+The answer to this comes from linear regression. Let us start by introducing the terminology required for regression:
+<!-- 
+Terminology used for regression: -->
 
 * Some values are referred to as "independent" and,
 * Some values are referred to as "dependent."
 * The independent variables are collected into the __design matrix__ $X.$
 * The dependent variables are collected into an __observation__ vector $\mathbf{y}.$
 * The parameters of the model (for any kind of model) are collected into a __parameter__ vector $\beta.$
+:::
 
+## Modeling via Regression
+
+:::{style="font-size: .8em"}
+:::{.columns}
+
+:::{.column}
 The basic regression task is: 
 
-* given a set of independent variables 
-* and the associated dependent variables, 
-* estimate the parameters of a model (such as a line, parabola, etc) that describes how the dependent variables are related to the independent variables.
+Given a set of independent variables 
+and the associated dependent variables, 
+estimate the parameters of a model (such as a line, parabola, etc) that describes how the dependent variables are related to the independent variables.
 :::
 
 :::{.column}
@@ -164,21 +167,20 @@ $$
 y = \beta_0 + \beta_1 x.
 $$
 
-<br>
 
 This is the most commonly used type of model, particularly in fields like economics, psychology, biology, etc.
+The reason it is so commonly used is that experimental data often produce points $(x_1, y_1), \dots, (x_n,y_n)$ that seem to lie close to a line.   
 
 <br>
 
-The reason it is so commonly used is that experimental data often produce points $(x_1, y_1), \dots, (x_n,y_n)$ that seem to lie close to a line.   
+We want to determine the parameters $\beta_0, \beta_1$ that define a line that is as "close" to the points as possible.
+
+Suppose we have a line $y = \beta_0 + \beta_1 x$.   For each data point $(x_j, y_j),$ there is a point $(x_j, \beta_0 + \beta_1 x_j)$ that is the point on the line with the same $x$-coordinate.
 :::
 
 ## Fitting a Line to Data
 
-:::{style="font-size: .6em"}
-We want to determine the parameters $\beta_0, \beta_1$ that define a line that is as "close" to the points as possible.
-
-Suppose we have a line $y = \beta_0 + \beta_1 x$.   For each data point $(x_j, y_j),$ there is a point $(x_j, \beta_0 + \beta_1 x_j)$ that is the point on the line with the same $x$-coordinate.
+:::{style="font-size: .8em"}
 
 :::{.center-text}
 <img src="images/least_squares/regression-line.jpeg" width = 600/>
@@ -208,17 +210,12 @@ The __least-squares line__ is the line $y = \beta_0 + \beta_1x$ that minimizes t
 The coefficients $\beta_0, \beta_1$ of the line are called __regression coefficients.__
 :::
 
-## Regression and Least-Squares
+## Regression and Least Squares
 
-:::{style="font-size: .6em"}
-:::{.center-text style="font-size: 1.1em"}
+:::{style="font-size: .8em"}
 Let's imagine for a moment that the data fit a line perfectly.
-:::
 
-:::{.columns}
-
-:::{.column}
-Then, if each of the data points happened to fall exactly on the line, the parameters $\beta_0$ and $\beta_1$ would satisfy the equations
+Then, if each of the data points happened to fall exactly on the line, the parameters $\beta_0$ and $\beta_1$ would satisfy the equations:
 
 $$
 \beta_0 + \beta_1 x_1 = y_1 
@@ -238,7 +235,10 @@ $$
 $$
 :::
 
-:::{.column}
+
+## Regression and Least Squares
+
+:::{style="font-size: .8em"}
 We can write this system as the following matrix equation:
 
 $$
@@ -246,13 +246,12 @@ X\mathbf{\beta} = \mathbf{y},
 $$ 
 
 $$
-X=\begin{bmatrix}1&x_1\\1&x_2\\\vdots&\vdots\\1&x_n\end{bmatrix},\;\;\mathbf{\beta} = \begin{bmatrix}\beta_0\\\beta_1\end{bmatrix},\;\;\mathbf{y}=\begin{bmatrix}y_1\\y_2\\\vdots\\y_n\end{bmatrix}
+X=\begin{bmatrix}1&x_1\\1&x_2\\\vdots&\vdots\\1&x_n\end{bmatrix},\;\;\mathbf{\beta} = \begin{bmatrix}\beta_0\\\beta_1\end{bmatrix},\;\;\mathbf{y}=\begin{bmatrix}y_1\\y_2\\\vdots\\y_n\end{bmatrix}.
 $$
 :::
-:::
-:::
 
-## Regression and Least-Squares
+
+## Regression and Least Squares
 
 :::{style="font-size: .8em"}
 If the data points don't actually lie exactly on a line: 
@@ -268,16 +267,14 @@ $$
 $$
 
 :::{.center-text style="font-size: 1.1em"}
-__The sum of squares of the residuals__ is __exactly__ the __square of the distance between the vectors $X\mathbf{\beta}$ and $\mathbf{y}.$__
+_The sum of squares of the residuals is exactly the square of the distance between the vectors $X\mathbf{\beta}$ and $\mathbf{y}.$_
 :::
 :::
 
-## Regression and Least-Squares
+## Regression and Least Squares
 
-:::{style="font-size: .6em"}
-This is a least-squares problem, $A\mathbf{x} = \mathbf{b},$ just with different notation.
-
-> Computing the least-squares solution of $X\mathbf{\beta} = \mathbf{y}$ is equivalent to finding the $\mathbf{\beta}$ that determines the least-squares line.
+:::{style="font-size: .8em"}
+This is a least-squares problem, $A\mathbf{x} = \mathbf{b},$ just with different notation. That is, computing the least-squares solution of $X\mathbf{\beta} = \mathbf{y}$ is equivalent to finding the $\mathbf{\beta}$ that determines the least-squares line.
 
 :::{.center-text}
 ```{python}
@@ -294,15 +291,13 @@ plt.text(-9,3,r'$y = \beta_0 + \beta_1x$',size=20);
 :::
 :::
 
-## Regression and Least-Squares
+## Regression and Least Squares
 
 :::{style="font-size: .8em"}
 :::{.columns}
 
 :::{.column}
-__Example 1.__ 
-
-Find the equation $y = \beta_0 + \beta_1 x$ of the least-squares line that best fits:
+__Example 1.__  Find the equation $y = \beta_0 + \beta_1 x$ of the least-squares line that best fits:
 
 :::{.center-text}
 | x | y |
@@ -317,7 +312,7 @@ Find the equation $y = \beta_0 + \beta_1 x$ of the least-squares line that best 
 :::{.column}
 ```{python}
 #
-ax = ut.plotSetup(0, 10, 0, 4, size = (7, 7))
+ax = ut.plotSetup(0, 10, 0, 3.5, size = (7, 6))
 ut.centerAxes(ax)
 pts = np.array([[2,1], [5,2], [7,3], [8,3]]).T
 ax.plot(pts[0], pts[1], 'ro', markersize = 10);
@@ -328,16 +323,15 @@ plt.ylabel('y', size = 20);
 :::
 :::
 
-## Regression and Least-Squares
+## Regression and Least Squares
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 __Solution.__ Use the $x$-coordinates of the data to build the design matrix $X$, and the $y$-coordinates to build the observation vector $\mathbf{y}$:
 
 $$
 X = \begin{bmatrix}1&2\\1&5\\1&7\\1&8\end{bmatrix},\;\;\;\mathbf{y}=\begin{bmatrix}1\\2\\3\\3\end{bmatrix}
 $$
 
-<br>
 
 To obtain the least-squares line, find the least-squares solution to $X\mathbf{\beta} = \mathbf{y}.$
 
@@ -346,29 +340,28 @@ To obtain the least-squares line, find the least-squares solution to $X\mathbf{\
 We do this by solving the __normal equation__ with new notation:
 
 $$
-X^\top X\mathbf{\beta} = X^\top \mathbf{y}
+X^\top X\mathbf{\beta} = X^\top \mathbf{y}.
 $$
 :::
 
-## Regression and Least-Squares
+## Regression and Least Squares
 
-:::{style="font-size: .4em"}
-We compute:
-    
+:::{style="font-size: .8em"}
 $$
-X^\top X = \begin{bmatrix}1&1&1&1\\2&5&7&8\end{bmatrix}\begin{bmatrix}1&2\\1&5\\1&7\\1&8\end{bmatrix} = \begin{bmatrix}4&22\\22&142\end{bmatrix}
+X^\top X = \begin{bmatrix}1&1&1&1\\2&5&7&8\end{bmatrix}\begin{bmatrix}1&2\\1&5\\1&7\\1&8\end{bmatrix} = \begin{bmatrix}4&22\\22&142\end{bmatrix},
 $$
 
 $$
-X^\top \mathbf{y} =  \begin{bmatrix}1&1&1&1\\2&5&7&8\end{bmatrix}\begin{bmatrix}1\\2\\3\\3\end{bmatrix} = \begin{bmatrix}9\\57\end{bmatrix}
+X^\top \mathbf{y} =  \begin{bmatrix}1&1&1&1\\2&5&7&8\end{bmatrix}\begin{bmatrix}1\\2\\3\\3\end{bmatrix} = \begin{bmatrix}9\\57\end{bmatrix}.
 $$
 
-The normal equations are:
-    
-$$
-\begin{bmatrix}4&22\\22&142\end{bmatrix}\begin{bmatrix}\beta_0\\\beta_1\end{bmatrix} = \begin{bmatrix}9\\57\end{bmatrix}
-$$
+The normal equations are: $\begin{bmatrix}4&22\\22&142\end{bmatrix}\begin{bmatrix}\beta_0\\\beta_1\end{bmatrix} = \begin{bmatrix}9\\57\end{bmatrix}.$
 
+:::
+
+## Regression and Least Squares
+
+:::{style="font-size: .8em"}
 Solving, we get:
     
 $$
@@ -380,18 +373,15 @@ $$
 $$
 
 $$
-= \begin{bmatrix}2/7\\5/14\end{bmatrix}
+= \begin{bmatrix}2/7\\5/14\end{bmatrix}.
 $$
 :::
 
-## Regression and Least-Squares
 
-:::{style="font-size: .6em"}
-So the least-squares line has the equation
+## Regression and Least Squares
 
-$$
-y = \frac{2}{7} + \frac{5}{14}x.
-$$
+:::{style="font-size: .8em"}
+So the least-squares line has the equation $y = \frac{2}{7} + \frac{5}{14}x.$
 
 :::{.center-text}
 ```{python}
@@ -406,15 +396,15 @@ plt.text(6,1.5, r'$y = \frac{2}{7} + \frac{5}{14}x$', size=24);
 :::
 :::
 
-## Regression and Least-Squares
+<!-- ## Regression and Least Squares
 
-:::{style="font-size: .6em"}
-:::{.columns}
-:::{.column}
+:::{style="font-size: .8em"}
 
 __Example 2.__ Say I have a 10 year old car I want to sell. To find the ideal price, I surveyed the prices and ages of cars for sale in my neighborhood.
+:::
 
 :::{.center-text}
+:::{style="font-size: .6em"}
 | Car age | Selling price |
 |---|---|
 | 1 | 23,650 |
@@ -431,12 +421,53 @@ __Example 2.__ Say I have a 10 year old car I want to sell. To find the ideal pr
 | 16 | 3,950 |
 | 17 | 5,250 |
 :::
+::: -->
+
+## Regression and Least Squares
+
+:::{style="font-size: .8em"}
+
+__Example 2.__ Say I have a 10 year old car I want to sell. To find the ideal price, I surveyed the prices and ages of cars for sale in my neighborhood.
 :::
 
+<br> 
+
+:::{.columns}
 :::{.column}
+:::{style="font-size: .6em"}
+| Car age | Selling price |
+|---|---|
+| 1 | 23,650 |
+| 2 | 19,988 |
+| 3 | 20,998 |
+| 3 | 20,448 |
+| 4 | 15,700 |
+| 5 | 25,985 |
+| 6 | 16,964 |
+:::
+:::
+:::{.column}
+:::{style="font-size: .6em"}
+| Car age | Selling price |
+|---|---|
+| 10 | 15,000 |
+| 11 | 11,500 |
+| 14 | 7,950 |
+| 14 | 9,000 |
+| 16 | 3,950 |
+| 17 | 5,250 |
+:::
+:::
+:::
+
+
+
+## Regression and Least Squares
+
+:::{style="font-size: .8em"}
 ```{python}
-#| echo: true
-ax = ut.plotSetup(0, 20, 0, 25000, size = (5, 5))
+#| echo: false
+ax = ut.plotSetup(0, 20, 0, 25000, size = (12, 6))
 ut.centerAxes(ax)
 cars = np.array([[1,23650], [2,19988], [3,20998], [3,20448], [4, 15700], [5, 25985], [6, 16964], [10, 15000], [11, 11500], [14, 7950], [14, 9000], [16, 3950], [17, 5250]]).T
 ax.plot(cars[0], cars[1], 'ro', markersize = 10);
@@ -445,17 +476,10 @@ plt.ylabel('selling price ($)', size = 20);
 ```
 :::
 
-:::
-:::
-
-## Regression and Least-Squares
+## Regression and Least Squares
 
 :::{style="font-size: .8em"}
-__Solution.__ 
-
-First we need to set up our design matrix $X$, which contains the independent variable (age), and our observation vector $\mathbf{y}$, which contains our dependent variable (price).
-
-<br>
+__Solution.__ First we need to set up our design matrix $X$, which contains the independent variable (age), and our observation vector $\mathbf{y}$, which contains our dependent variable (price).
 
 ```{python}
 #| echo: true
@@ -469,7 +493,7 @@ print(X)
 ```
 :::
 
-## Regression and Least-Squares
+## Regression and Least Squares
 
 :::{style="font-size: .8em"}
 Now that we have $X$ and $\mathbf{y}$, we want to solve for $\beta$. We can again use the normal equations to do this.
@@ -486,14 +510,25 @@ beta_hat = np.linalg.inv(X.T @ X) @ X.T @ prices
 print(beta_hat)
 ```
 
-<br>
+```{python}
+from IPython.core.display import HTML
 
-What does $\beta$ tell us about car prices?
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+       What does \(\beta\) tell us about car prices?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
 :::
 
-## Regression and Least-Squares
+## Regression and Least Squares
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 Using this model, we can estimate prices of cars we did not train the model on. For example, with this model if my car was 10 years old, I might charge \$12,900.
 
 ```{python}
@@ -503,7 +538,7 @@ print(pred_price)
 ```
 
 ```{python}
-#| echo: true
+#| echo: false
 ax = ut.plotSetup(0, 20, 0, 25000, size = (12, 3))
 ut.centerAxes(ax)
 ax.plot(cars[0], cars[1], 'ro', markersize = 10);
@@ -516,22 +551,16 @@ plt.ylabel('selling price ($)', size = 20);
 
 ## General Linear Model
 
-:::{style="font-size: .6em"}
-Another way that the inconsistent linear system is often written is to collect all the residuals into a __residual vector.__ 
-
-Then an exact equation is
+:::{style="font-size: .8em"}
+Another way that the inconsistent linear system is often written is to collect all the residuals into a __residual vector:__ 
 
 $$
-y = X\mathbf{\beta} + {\mathbf\epsilon}
+y = X\mathbf{\beta} + {\mathbf\epsilon}.
 $$
 
-Any equation of this form is referred to as a __linear model.__ 
+Any equation of this form is referred to as a __linear model.__ In this formulation, the goal is to minimize the length of $\epsilon$ -- that is, minimize $\Vert\epsilon\Vert.$
 
-In this formulation, the goal is to minimize the length of $\epsilon$ -- that is, minimize $\Vert\epsilon\Vert.$
-
-In some cases, one would like to fit data points with something other than a straight line.  
-
-In this case, the matrix equation is still $X\mathbf{\beta} = \mathbf{y}$, but the specific form of $X$ changes from one problem to the next.
+When one would like to fit data points with something other than a straight line, the matrix equation is still $X\mathbf{\beta} = \mathbf{y}$, but the specific form of $X$ changes from one problem to the next.
 
 <br>
 
@@ -544,22 +573,16 @@ $$
 
 ## Least-Squares Fitting
 
-:::{style="font-size: .6em"}
-Most models have parameters, and the object of __model fitting__ is to to fix those parameters.
+:::{style="font-size: .8em"}
+Most models have parameters, and the object of _model fitting_ is to to fix those parameters.
 
 In model fitting, the parameters are the unknown.  A central question for regression is whether the model is _linear_ in its parameters.
 
-For example, the model $y = \beta_0 \cdot e^{-\beta_1 x}$ is __not__ linear in its parameters.  
+For example, the model $y = \beta_0 \cdot e^{-\beta_1 x}$ is _not_ linear in its parameters, but $y = \beta_0 \cdot e^{-2 x}$ _is_ linear in its parameters.
 
 <br>
 
-The model $y = \beta_0 \cdot e^{-2 x}$ __is__ linear in its parameters.
-
-<br>
-
-For a model that is linear in its parameters, an observation is a linear combination of (arbitrary) known functions.
-
-In other words, a model that is linear in its parameters is
+For a model that is linear in its parameters, an observation is a linear combination of (arbitrary) known functions:
 
 $$y = \beta_0 \: f_0(x) + \beta_1 \: f_1(x) + \dots + \beta_n \: f_n(x)$$
 
@@ -600,18 +623,12 @@ where $\epsilon_1$ is the residual error between the observed value $y_1$ and th
 
 ## Least-Squares Fitting
 
-:::{style="font-size: .5em"}
+:::{style="font-size: .8em"}
 
-:::{.columns}
-
-:::{.column}
 Each data point determines a similar equation:
 
 $$
 y_1 = \beta_0 + \beta_1x_1 + \beta_2x_1^2 + \epsilon_1
-$$
-$$
-y_2 = \beta_0 + \beta_1x_2 + \beta_2x_2^2 + \epsilon_2
 $$
 $$
 \vdots
@@ -619,18 +636,16 @@ $$
 $$
 y_n = \beta_0 + \beta_1x_n + \beta_2x_n^2 + \epsilon_n
 $$
-:::
 
-:::{.column}
-This system can be written as a matrix equation of the form $\mathbf{y} = X\mathbf{\beta} + \mathbf{\epsilon}.$
+This system can be written as a matrix equation of the form $\mathbf{y} = X\mathbf{\beta} + \mathbf{\epsilon}:$
 
 $$
-\begin{bmatrix}y_1\\y_2\\\vdots\\y_n\end{bmatrix} = \begin{bmatrix}1&x_1&x_1^2\\1&x_2&x_2^2\\\vdots&\vdots&\vdots\\1&x_n&x_n^2\end{bmatrix} \begin{bmatrix}\beta_0\\\beta_1\\\beta_2\end{bmatrix} + \begin{bmatrix}\epsilon_1\\\epsilon_2\\\vdots\\\epsilon_n\end{bmatrix}
+\begin{bmatrix}y_1\\y_2\\\vdots\\y_n\end{bmatrix} = \begin{bmatrix}1&x_1&x_1^2\\1&x_2&x_2^2\\\vdots&\vdots&\vdots\\1&x_n&x_n^2\end{bmatrix} \begin{bmatrix}\beta_0\\\beta_1\\\beta_2\end{bmatrix} + \begin{bmatrix}\epsilon_1\\\epsilon_2\\\vdots\\\epsilon_n\end{bmatrix}.
 $$
-:::
-:::
+
 :::
 
+## Least-Squares Fitting
 :::{.center-text}
 ```{python}
 #
@@ -638,7 +653,7 @@ m = np.shape(xquad)[0]
 X = np.array([np.ones(m), xquad,xquad**2]).T
 beta = np.linalg.inv(X.T @ X) @ X.T @ yquad
 #
-ax = ut.plotSetup(-10, 10, -10, 20, size = (8, 5))
+ax = ut.plotSetup(-10, 10, -10, 20, size = (10, 7))
 ut.centerAxes(ax)
 xplot = np.linspace(-10, 10, 50)
 yestplot = beta[0] + beta[1]  * xplot + beta[2] * xplot**2
@@ -649,29 +664,26 @@ ax.plot(xquad, yquad, 'ro', markersize = 8);
 
 ## Multiple Regression
 
-:::{style="font-size: .6em"}
-Suppose an experiment involves two independent variables -- say, $u$ and $v$, -- and one dependent variable, $y$.
-
-A linear equation for predicting $y$ from $u$ and $v$ has the form
+:::{style="font-size: .8em"}
+Suppose an experiment involves two independent variables -- say, $u$ and $v$, -- and one dependent variable, $y$. A linear equation for predicting $y$ from $u$ and $v$ has the form
 
 $$
-y = \beta_0 + \beta_1 u + \beta_2 v
+y = \beta_0 + \beta_1 u + \beta_2 v.
 $$
 
-<br>
 
 Since there is more than one independent variable, this is called __multiple regression.__
 
 Such system has the form $\mathbf{y} = X\mathbf{\beta} + \epsilon,$ where
 
 $$
-\mathbf{y} = \begin{bmatrix}y_1\\y_1\\\vdots\\y_n\end{bmatrix},\;\;X = \begin{bmatrix}1&u_1&v_1\\1&u_2&v_2\\\vdots&\vdots&\vdots\\1&u_n&v_n\end{bmatrix},\;\;\mathbf{\beta}=\begin{bmatrix}\beta_0\\\beta_1\\\beta_2\end{bmatrix},\;\;\epsilon = \begin{bmatrix}\epsilon_1\\\epsilon_2\\\vdots\\\epsilon_n\end{bmatrix}
+\mathbf{y} = \begin{bmatrix}y_1\\y_1\\\vdots\\y_n\end{bmatrix},\;\;X = \begin{bmatrix}1&u_1&v_1\\1&u_2&v_2\\\vdots&\vdots&\vdots\\1&u_n&v_n\end{bmatrix},\;\;\mathbf{\beta}=\begin{bmatrix}\beta_0\\\beta_1\\\beta_2\end{bmatrix},\;\;\epsilon = \begin{bmatrix}\epsilon_1\\\epsilon_2\\\vdots\\\epsilon_n\end{bmatrix}.
 $$
 :::
 
 ## Multiple Regression
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 A more general prediction equation might have the form
 
 $$
@@ -694,7 +706,7 @@ with $f_0,\dots,f_k$ any sort of known functions and $\beta_0, \ldots,\beta_k$ u
 :::{.center-text}
 ```{python}
 #
-fig = ut.three_d_figure((9, 8), 'multivariate regression example', 
+fig = ut.three_d_figure((8, 8), 'multivariate regression example', 
                        -7, 7, -7, 7, -8, 8,
                         equalAxes = False, figsize = (7, 7), qr = qr_setting)
 np.random.seed(6)
@@ -711,7 +723,6 @@ coords = P @ np.array([xc,yc,np.zeros(npts)])
 coords[2] += np.random.normal(scale = 1, size = npts)
 for i in range(coords.shape[-1]):
     fig.plotPoint(coords[0,i],coords[1,i], coords[2,i], 'r')
-fig.set_title('Terrain Data for Multiple Regression', 'Terrain Data for Multiple Regression', size = 20)
 fig.ax.set_zlabel('y')
 fig.ax.set_xlabel('u')
 fig.ax.set_ylabel('v')
@@ -727,7 +738,7 @@ fig.ax.view_init(azim=30, elev = 15)
 :::{.center-text}
 ```{python}
 #
-fig = ut.three_d_figure((9, 9), 'multivariate regression example with fitted plane', 
+fig = ut.three_d_figure((8,8), 'multivariate regression example with fitted plane', 
                        -7, 7, -7, 7, -8, 8,
                         equalAxes = False, figsize = (7, 7), qr = qr_setting)
 np.random.seed(6)
@@ -744,7 +755,6 @@ coords = P @ np.array([xc,yc,np.zeros(npts)])
 coords[2] += np.random.normal(scale = 1, size = npts)
 for i in range(coords.shape[-1]):
     fig.plotPoint(coords[0,i],coords[1,i], coords[2,i], 'r')
-fig.set_title('Multiple Regression Fit to Data', 'Multiple Regression Fit to Data', size = 20)
 fig.ax.set_zlabel('y')
 fig.ax.set_xlabel('u')
 fig.ax.set_ylabel('v')
@@ -758,16 +768,13 @@ fig.ax.view_init(azim=30, elev = 30)
 
 ## Multiple Regression
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 The linear model for multiple regression has the same abstract form as the model for the simple regression.
+<!-- 
+We can see that there the general principle is the same across all the different kinds of linear models. -->
 
-We can see that there the general principle is the same across all the different kinds of linear models.
+Once $X$ is defined, the normal equations for $\mathbf{\beta}$ have the same matrix form, no matter how many variables are involved. Thus, for any linear model where $X^{\top} X$ is invertible, the least squares $\hat{\mathbf{\beta}}$ is given by $(X^{\top} X)^{-1}X^{\top} \mathbf{y}$.
 
-Once $X$ is defined properly, the normal equations for $\mathbf{\beta}$ have the same matrix form, no matter how many variables are involved.
-
-Thus, for any linear model where $X^{\top} X$ is invertible, the least squares $\hat{\mathbf{\beta}}$ is given by $(X^{\top} X)^{-1}X^{\top} \mathbf{y}$.
-
-<br>
 
 ```{python}
 from IPython.core.display import HTML
@@ -775,7 +782,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <span class="label">Theorum</span>
+        <span class="label">Theorem</span>
         <p>Let \(X\) be an \(m\times n\) matrix.  The following statements are equivalent:
 <ol start=1>
 <li>The equation \(X\mathbf{\beta} = \mathbf{y}\) has a unique least-squares solution for each \(\mathbf{y}\) in \(\mathbb{R}^m.\)</li>
@@ -790,14 +797,42 @@ display(HTML(html_content))
 ```
 :::
 
+
 ## Multiple Regression in Practice{.smaller-title}
 
-:::{style="font-size: .6em"}
-A typical application of linear models is predicting house prices.   Linear models have been used for this problem for decades, and when a municipality does a value assessment on your house, they typically use a linear model.
+:::{style="font-size: .8em"}
+A typical application of linear models is predicting house prices. We can consider various measurable attributes of a house (its "features") as the independent variables, and the most recent sale price of the house as the dependent variable. For our case study, we will use the features:
 
-We can consider various measurable attributes of a house (its "features") as the independent variables, and the most recent sale price of the house as the dependent variable.
+:::{.columns}
 
-For our case study, we will use the features:
+:::{.column}
+* Lot Area (sq ft)
+* Gross Living Area (sq ft)
+* Number of Fireplaces
+* Number of Full Baths
+::::
+
+:::{.column}
+* Number of Half Baths
+* Garage Area (sq ft)
+* Basement Area (sq ft)
+::: 
+
+The design matrix will have 8 columns (including the constant for the intercept):
+
+$$
+X\beta = \mathbf{y}
+$$
+
+and it will have one row for each house in the data set, with $y$ the sale price of the house.
+:::
+::: 
+
+
+<!-- ## Multiple Regression in Practice{.smaller-title}
+
+:::{style="font-size: .8em"}
+A typical application of linear models is predicting house prices. We can consider various measurable attributes of a house (its "features") as the independent variables, and the most recent sale price of the house as the dependent variable.For our case study, we will use the features:
 
 * Lot Area (sq ft), 
 * Gross Living Area (sq ft), 
@@ -807,14 +842,14 @@ For our case study, we will use the features:
 * Garage Area (sq ft), 
 * Basement Area (sq ft)
 
-So our design matrix will have 8 columns (including the constant for the intercept):
+The design matrix will have 8 columns (including the constant for the intercept):
 
 $$
 X\beta = \mathbf{y}
 $$
 
 and it will have one row for each house in the data set, with $y$ the sale price of the house.
-:::
+::: -->
 
 ## Multiple Regression in Practice{.smaller-title}
 
@@ -826,14 +861,6 @@ We will use data from housing sales in Ames, Iowa from 2006 to 2009:
 #| error: true
 # read and parse the raw data
 df = pd.read_csv('data/ames-housing-data/train.csv')
-```
-
-<br>
-
-```{python}
-#| echo: true
-#| error: true
-# visualize the data
 df[['LotArea', 'GrLivArea', 'Fireplaces', 'FullBath', 'HalfBath', 'GarageArea', 'TotalBsmtSF', 'SalePrice']].head()
 ```
 :::
@@ -841,7 +868,7 @@ df[['LotArea', 'GrLivArea', 'Fireplaces', 'FullBath', 'HalfBath', 'GarageArea', 
 ## Multiple Regression in Practice{.smaller-title}
 
 :::{style="font-size: .8em"}
-Step 1: divide the independent variables from the dependent variable.
+Step 1: separate the independent variables from the dependent variable.
 ```{python}
 #| echo: true
 #| error: true
@@ -896,34 +923,30 @@ We see that we have:
 
 ## Multiple Regression in Practice{.smaller-title}
 
-:::{style="font-size: .6em"}
+:::{style="font-size: .8em"}
 Is our model doing a good job?  
 
 There are many statistics for testing this question, but we'll just look at the predictions versus the ground truth. 
-
 For each house we compute its predicted sale value according to our model:
 
 $$
-\hat{\mathbf{y}} = X\hat{\beta}
+\hat{\mathbf{y}} = X\hat{\beta}.
 $$
 
 
 ```{python}
-#| echo: true
+#| echo: false
 #| error: true
 y_hat = X @ beta_hat
 ```
 
-And for each house, we'll plot its predicted versus actual sale value:
-
 ```{python}
 #| error: true
 # plot of (X, Y) samples and the linear regression based on y_hat
-plt.figure(figsize = (12,4))
+plt.figure(figsize = (12,3.5))
 plt.plot(y, y_hat, '.')
 plt.xlabel('Actual Sale Price')
 plt.ylabel('Predicted Sale Price')
-plt.title('Linear Model Predictions of House Prices')
 plt.plot([0, 500000], [0, 500000], '-', label='yhat = y')
 plt.legend(loc = 'best');
 ```
@@ -950,7 +973,7 @@ We see that the model does a reasonable job for house values less than about \$2
 For a better model, we'd want to consider more features of each house, and perhaps some additional functions such as polynomials as components of our model.
 :::
 
-## Multiple Regression in Practice{.smaller-title}
+<!-- ## Multiple Regression in Practice{.smaller-title}
 
 :::{style="font-size: .6em"}
 Note that this initial figure is just used to show an initial check that our estimations seem close to reality. It isn't good practice to test the model on the training data itself.
@@ -962,8 +985,13 @@ To test our model properly, we should __hold out__ some of the data so that it i
 <br>
 
 We can use the __sum of squared residuals__ to measure the error in the model's estimation capability.
+::: -->
+
+## Key Ideas
+:::{style="font-size: .8em"}
+- Simple linear regression finds parameters $\beta_0$ and $\beta_1$ that bring the line $y = \beta_0 + \beta_1 x$ as close to the data points as possible. The obtained line is called the least-squares line. 
+- The least-squares solution for linear regression is a solution of the normal equations.
+-  A general form of a multiple regression model is 
+
+$$y = \beta_0 \: f_0(\mathbf x) + \beta_1 \: f_1(\mathbf x) + \cdots + \beta_k \: f_k(\mathbf x).$$
 :::
-
-## Key Takeaways
-
-TBD
