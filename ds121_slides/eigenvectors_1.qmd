@@ -1,6 +1,6 @@
 ---
-title: Eigenvalues and Eigenvectors
-author: "CDS DS 121<br>Boston University"
+title: Markov Chains
+author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
         math: true
@@ -14,15 +14,15 @@ format:
 
 :::{style="font-size: .8em"}
 
-- Model a linear dynamical system as a __Markov chain__, and determine its long-term steady state and how long it takes to reach it.
+Today, we will introduce Markov chains, special mathematical systems where your current state depends solely on your previous state. We will define them from a linear algebra perspective, connecting these systems to vectors and matrices.
 
-- Define __eigenvalues__ and __eigenvalues__, and calculate them using the characteristic polynomial.
+In addition, we will explore special properties of Markov chains called steady states. Steady states are unique conditions where the probabilities of being in each state remain constant over time, regardless of the initial state.  We will describe how to find these steady states, providing insights into how Markov chains behave in the long run.
 
 :::
 
 ## Markov Chains
 
-:::{style="font-size: .5em"}
+:::{style="font-size: .8em"}
 :::{.center-text}
 Andrei Markov, 1856 - 1922, St Petersburg.
 
@@ -30,9 +30,8 @@ Andrei Markov, 1856 - 1922, St Petersburg.
 
 :::
 
-In the early 1900s, Andrei Markov introduced the study of __stochastic systems in which one transitions between states, and the future state depends only on the current state__. 
+In the early 1900s, Andrei Markov introduced the study of _stochastic systems in which one transitions between states, and the future state depends only on the current state_. 
 
-In his research, Markov examined the sequence of letters in Pushkin’s Eugene Onegin, focusing on the pattern of consonants and vowels. He found that the likelihood of the next letter being a consonant or a vowel depended only on the preceding letter.
 :::
 
 ## Markov Chains
@@ -44,10 +43,36 @@ We refer to the systems that were introduced by Markov as _Markov chains_ when t
 
 - the state space is discrete: the set of states is finite (or countably infinite) and at a certain time the system can only be in one state.
 
-Markov chains have proven to be incredibly useful. For instance, they are used for analyzing stock price movements and the dynamics of animal populations. Moreover, Markov chains have applications in computer science, physics, biology, economics, and finance.
+<br>
+
+Markov chains have proven to be incredibly useful. For instance, they are used for analyzing stock price movements, the dynamics of animal populations, and the PageRank algorithm.
 :::
 
-## Markov Chains
+## PageRank
+:::{style="font-size: .8em"}
+ PageRank is an algorithm used by Google to rank web pages in their search engine results.
+
+
+<style>
+  .resized-image {
+    width: 20%; /* Adjust this percentage to your desired size */
+  }
+</style>
+
+<div style="text-align: center;">
+  <img src="images/page_rank.png" alt="Disk CPU" class="resized-image">
+</div>
+<!-- ::: {.antique-center-image}
+![](images/page_rank.png){fig-align="right" width=50%}
+::: -->
+
+- Web pages are the states. 
+- Each link between web pages has an associated probability, representing the likelihood of transitioning from one page to another.
+
+<!-- The PageRank algorithm determins the long-term importance of each page. -->
+:::
+
+<!-- ## Markov Chains
 
 :::{style="font-size: .8em"}
 This week, we will study Markov chains as an application of linear algebra. You will see how the concepts we use, such as vectors and matrices, get applied to a particular problem. 
@@ -55,7 +80,7 @@ This week, we will study Markov chains as an application of linear algebra. You 
 <br>
 
 In DS122, you will study Markov Chains as an application of probability.
-:::
+::: -->
 
 ## Markov Chains
 
@@ -65,7 +90,19 @@ To model Markov chains we perform the following steps:
 * we define some vector that describes the state of the system, and 
 * we formulate a rule that tells us how to compute the next state of the system based on the current state of the system.
 
-So we would say that the state of the system at time $k$ is a vector ${\bf x_k} \in \mathbb{R}^n,$ and
+This situation is so common that it goes by many names:
+
+* _dynamical system_,
+
+* _recurrence relation,_  
+
+* _difference equation._
+:::
+
+## Markov Chains
+
+:::{style="font-size: .8em"}
+Mathematically, we define the state of the system at time $k$ is a vector ${\bf x_k} \in \mathbb{R}^n,$ and
 
 $$
 {\bf x_{k+1}} = T({\bf x_k}),\;\;\;\mbox{for time}\;k=0,1,2...
@@ -73,32 +110,28 @@ $$
 
 where $T: \mathbb{R}^n \rightarrow \mathbb{R}^n.$
 
-The vector ${\bf x_k}$ is called the _state vector._
+The vector ${\bf x_k}$ is called the __state vector__.
+
+When $T$ is a linear transformation, we find the state vector at time $k+1$ as
+
+$$
+{\bf x_{k+1}} = A{\bf x_k},
+$$
+
+where $A \in \mathbb{R}^{n\times n}.$   
+
+This is a __linear difference equation__.
 :::
 
-## Markov Chains
 
-:::{style="font-size: .8em"}
-This situation is so common that it goes by many names:
-
-* In physics, this is called a _dynamical system_.  
-    * Here, ${\bf x_k}$ might represent the position and velocity of a particle.
-    
-* When studying algorithms, this is called a _recurrence relation._  
-    * Here, ${\bf x_k}$ might represent the number of steps needed to solve a problem of size $k$.
-    
-* Most commonly, this is called a _difference equation._
-    * The reason for this terminology is that it is a discrete analog of a differential equation in $k$.
-:::
-
-## Markov Chains
+<!-- ## Markov Chains
 
 :::{style="font-size: .8em"}
 Of course, we are going to be particularly interested in the case where $T$ is a linear transformation.   
 
 <br>
 
-Then we know that we can write the difference equation as:
+Then we know that we describe  as:
 
 $$
 {\bf x_{k+1}} = A{\bf x_k},
@@ -109,60 +142,59 @@ where $A \in \mathbb{R}^{n\times n}.$
 <br>
 
 This is a _linear difference equation._
-:::
+::: -->
 
-## Example of Markov Chain
-
-:::{style="font-size: .8em"}
-**Example:** population movement
-
-Suppose we are interested in the population of two regions, say the city and the suburbs.
-
-<br>
-
-For this simple example, we only concern ourselves with movements of people between the two regions (no immigration, emigration, birth, death, etc).
-:::
-
-## Example of Markov Chain
+## Population Distribution
 
 :::{style="font-size: .8em"}
+<!-- **Example:** population movement -->
+
+Suppose we are interested in the population of two regions, say the city and the suburbs. For this simple example, we only concern ourselves with movements of people between the two regions (no immigration, emigration, birth, death, etc).
+
 Fix an initial year (say 2000) and let 
+:::
 
+:::{style="font-size: .6em"}
 $$
 \begin{eqnarray}
 {\bf x_0} &= \left[\begin{array}{ll}\mbox{population of the city in 2000}\\\mbox{population of the suburbs in 2000}\end{array}\right], \\
 {\bf x_1} &= \left[\begin{array}{ll}\mbox{population of the city in 2001}\\\mbox{population of the suburbs in 2001}\end{array}\right], \\
-{\bf x_2} &= \left[\begin{array}{ll}\mbox{population of the city in 2002}\\\mbox{population of the suburbs in 2002}\end{array}\right], \\
+{\bf x_2} &= \left[\begin{array}{ll}\mbox{population of the city in 2002}\\\mbox{population of the suburbs in 2002}\end{array}\right],\\
 \end{eqnarray}
 $$
-
+:::
+:::{style="font-size: .8em"}
 and so on.
 :::
 
-## Example of Markov Chain
+## Population Distribution
 
-:::{style="font-size: .6em"}
-Suppose that measurements have shown the following pattern: in any given year, 
+:::{style="font-size: .8em"}
+Suppose that in any given year 
 
 * 5% of the people living in the city move to the suburbs, and 
 * 3% of the people living in the suburbs move to the city.
 
 You can think of this as a matrix:
+:::
 
+:::{style="font-size: .6em"}
 $$
 \begin{array}{rcc}&\mbox{From City}&\mbox{From Suburbs}\\\mbox{To City}& .95&.03\\\mbox{To Suburbs}&.05&.97\end{array}
 $$
+:::
 
-<br>
-
+:::{style="font-size: .8em"}
 This matrix transitions one state into another:
+:::
 
+:::{style="font-size: .6em"}
 $$
 \left[\begin{array}{cc}\mbox{city pop. in 2001}\\\mbox{suburb pop. in 2001}\end{array}\right] =\left[\begin{array}{rr}.95&.03\\.05&.97\end{array}\right] \left[\begin{array}{cc}\mbox{city pop. in 2000}\\\mbox{suburb pop. in 2000}\end{array}\right].
 $$
 :::
 
-## Stochastic Matrices
+## Population Distribution
 :::{style="font-size: .8em"}
 Let's denote the update rule matrix as $P$:
 
@@ -176,12 +208,13 @@ Note that $P$ has two special properties, due to the fact that the total number 
 
 - Each of its columns adds up to 1.
 - Each of its entries is non-negative.
+
+This leads to a number of definitions.
 :::
-## Stochastic Matrices
 
-:::{style="font-size: .6em"}
-This leads to three definitions:
+## Markov Chains
 
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -196,7 +229,6 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-
 <br>
 
 ```{python}
@@ -213,7 +245,6 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-
 <br>
 
 ```{python}
@@ -232,59 +263,59 @@ display(HTML(html_content))
 ```
 :::
 
-## Stochastic Matrices
+## Markov Chains
 
 :::{style="font-size: .8em"}
-So we think of a probability vector ${\bf x}$ as describing how things are "distributed" across various categories -- the fraction of items that are in each category. The probability vector ${\bf x_0}$ describes the initial distribution and is called _initial state vector_.
+A probability vector ${\bf x}$ describs how things are "distributed" across various categories -- the fraction of items that are in each category. 
 
 <br>
 
-And we think of the stochastic matrix $P$ as describing how things "redistribute" themselves at each time step.
+The probability vector ${\bf x_0}$ describes the initial distribution and is called __initial state vector__.
+
+<br>
+
+The stochastic matrix $P$ describes how things "redistribute" themselves at each time step.
 :::
 
-## Stochastic Matrices
+## Population Distribution
 :::{style="font-size: .8em"}
-__Example:__ 
 
 Suppose that in the year 2000, the population of the city is 600,000 and the population of the suburbs is 400,000.  
 
 What is the distribution of the population in 2001?  In 2002?  In 2010?
-:::
-## Stochastic Matrices
-:::{style="font-size: .8em"}
-__Solution.__ First, we convert the population distribution to a probability vector.  This is done by simply dividing by the sum of the vector elements.
+
+First, we convert the population distribution to a probability vector by dividing it by the sum of the vector elements.
 
 $$
 \frac{1}{600,000 + 400,000}\left[\begin{array}{rr}600,000\\400,000\end{array}\right] = \left[\begin{array}{rr}0.60\\0.40\end{array}\right].
 $$
+:::
 
+
+## Population Distribution
+:::{style="font-size: .8em"}
 Then the distribution of population in 2001 is:
 
 $$
 {\bf x_{1}} = P{\bf x_0} = \left[\begin{array}{rr}.95&.03\\.05&.97\end{array}\right]\left[\begin{array}{rr}0.60\\0.40\end{array}\right] = \left[\begin{array}{rr}0.582\\0.418\end{array}\right].
 $$
 
-In other words: there will be 582,000 people in the city, and 418,000 people in the suburbs.
-:::
-## Stochastic Matrices
-:::{style="font-size: .8em"}
+There will be 582,000 people in the city, and 418,000 people in the suburbs.
+
 And the distribution of the population in 2002 is:
 
 $$
 {\bf x_{2}} = P{\bf x_1} = \left[\begin{array}{rr}.95&.03\\.05&.97\end{array}\right]\left[\begin{array}{rr}0.582\\0.418\end{array}\right] = \left[\begin{array}{rr}0.565\\0.435\end{array}\right].
 $$
 
-<br>
-
 Note that another way we could have written this is:
-
 $$
 {\bf x_{2}} = P{\bf x_1} = P(P{\bf x_0}) = P^2 {\bf x_0}.
 $$
 :::
 
-## Stochastic Matrices
-
+## Population Distribution
+:::{style="font-size: .8em"}
 To answer the question for 2010, i.e., $k=10$, we note that 
 
 $$
@@ -315,16 +346,15 @@ x_10 = P_10 @ x_0
 print(x_10)
 ```
 :::
-So we find that after 10 years, only about 47% of the population will remain in the city.
+So after 10 years, only about 47% of the population will remain in the city.
+:::
 
-## Predicting a Distant Future
+## Population Distribution
 
 :::{style="font-size: .8em"}
 We noticed that the population of the city is going down.
 
 <br>
-
-__Question.__ 
 
 Will this pattern continue forever? In the "long run," will everyone eventually live in the suburbs?
 
@@ -369,7 +399,7 @@ The components of ${\bf x_k}$ don't seem to be changing much past about $k = 50.
 
 <br>
 
-In fact, we can confirm that the this system would be stable at $\mathbf{q}$ by noting that:
+We can confirm that the this system would be stable at $\mathbf{q}$ by noting that:
 
 $$
 P{\bf q} = \left[\begin{array}{rr}.95&.03\\.05&.97\end{array}\right]\left[\begin{array}{r}.375\\.625\end{array}\right] = \left[\begin{array}{r}.35625+.01875\\.01875+.60625\end{array}\right] = \left[\begin{array}{r}.375\\.625\end{array}\right] = {\bf q}.
@@ -385,16 +415,13 @@ This calculation is exact.  So it seems that:
 * the sequence of vectors is approaching $\left[\begin{array}{r}3/8 \\ 5/8 \end{array}\right]$ as a limit, and 
 * when they get to that point, they will stabilize there.
 
-For example, if the total population of the region is 1 million, then eventually the populations would stabilize at 375,000 people in the city and 625,000 people in the suburbs.
+Starting with the total population of 1 million, the populations would eventually stabilize at 375,000 people in the city and 625,000 people in the suburbs.
 
 Then the population counts would _stay the same in all future years_. Note that individual people would continue to move between the city and the suburbs, but they would do so in equal amounts.
 :::
 
 ## Steady-State Vectors
 :::{style="font-size: .8em"}
-This convergence to a "steady state" is quite remarkable.  Is this a general phenomenon?
-
-<br>
 
 ```{python}
 from IPython.core.display import HTML
@@ -403,8 +430,8 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>
-        If \(P\) is a stochastic matrix, then a <b>steady-state vector</b> (or <b>equilibrium vector</b>) for \(P\) is a probability vector \(\bf q\)  such that:
-        \(P{\bf q} = {\bf q}.\)
+        If \(P\) is a stochastic matrix, then a <b>steady-state vector</b> (or <b>equilibrium vector</b>) for \(P\) is a probability vector \(\bf q\)  such that: 
+         \(P{\bf q} = {\bf q}.\)
         </p>
     </div>
     """
@@ -414,35 +441,31 @@ display(HTML(html_content))
 
 <br>
 
-It can be shown that __every stochastic matrix has at least one steady-state vector.__ But it may not be unique: some matrices have more than one steady-state vector.
+It can be shown that _every stochastic matrix has at least one steady-state vector._ 
 
-(You will study this phenomenon in more detail in DS 122.)
+<br>
+
+A steady-state vector may not be unique: some matrices have more than one steady-state vector.
+
 :::
 
-## Finding the Steady State
+<!-- ## Finding the Steady State
 :::{style="font-size: .8em"}
-This leads to two questions:
+This leads to the following questions:
 
 1. _Can we compute the steady state directly?_ So far we have guessed what the steady state is, and then checked.  
 
 2. _How do we know_ (a) if a Markov Chain has a unique steady state, and (b) whether it will always converge to that steady state?
-:::
+::: -->
 
-## Finding the Steady State
+## Finding Steady State
 :::{style="font-size: .8em"}
 
-Let's start by thinking about how to compute the steady-state directly.
+Can we compute the steady-state directly?
 
 <br>
 
-__Example:__  
-
 Let $P = \left[\begin{array}{rr}.6&.3\\.4&.7\end{array}\right].$  Find a steady-state vector for $P$.
-:::
-## Finding the Steady State
-:::{style="font-size: .8em"}
-
-__Solution:__ 
 
 Let's simply solve the equation $P{\bf x} = {\bf x}.$
 
@@ -457,27 +480,20 @@ $$
 
 Now, $P-I$ is a matrix, so this is a linear system that we can solve.
 :::
-## Finding the Steady State
+## Finding Steady State
 :::{style="font-size: .8em"}
 $$
 P-I = \left[\begin{array}{rr}.6&.3\\.4&.7\end{array}\right] - \left[\begin{array}{rr}1&0\\0&1\end{array}\right] = \left[\begin{array}{rr}-.4&.3\\.4&-.3\end{array}\right].
 $$
 
-<br>
 
 To find all solutions of $(P-I){\bf x} = {\bf 0},$ we row reduce the augmented matrix:
 
 $$
 \left[\begin{array}{rr|r}-.4&.3&0\\.4&-.3&0\end{array}\right] \sim \left[\begin{array}{rr|r}-.4&.3&0\\0&0&0\end{array}\right] \sim \left[\begin{array}{rr|r}1&-3/4&0\\0&0&0\end{array}\right].
 $$
-:::
 
-## Finding the Steady State
-
-:::{style="font-size: .8em"}
-So $x_1 = \frac{3}{4}x_2$ and $x_2$ is free. This means that there are an infinite set of solutions. 
-
-The general solution is $\left[\begin{array}{c}\frac{3}{4}x_2\\x_2\end{array}\right].$
+Hence, $x_1 = \frac{3}{4}x_2$ and $x_2$ is free. This means that there are an infinite set of solutions: $\left[\begin{array}{c}\frac{3}{4}x_2\\x_2\end{array}\right].$
 
 ```{python}
 from IPython.core.display import HTML
@@ -494,17 +510,17 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-<br>
+<!-- <br>
 
 :::{.fragment}
 Remember that our vectors ${\bf x}$ are _probability vectors._   So we are interested in the solution in which the vector elements are nonnegative and sum to 1.
+::: -->
 :::
-:::
-## Finding the Steady State
+## Finding Steady State
 :::{style="font-size: .8em"}
-The simple way to find this is to take any solution, and divide it by the sum of the entries (so that the sum then adds to 1.)  
+We are interested in the solution in which the vector elements are nonnegative and sum to 1. To find it we take any solution and divide it by the sum of the entries.
 
-Let's choose $x_2 = 1$, so the specific solution is:
+Let's choose $x_2 = 1$, then the specific solution is:
 
 $$
 \left[\begin{array}{r}\frac{3}{4}\\1\end{array}\right].
@@ -516,7 +532,7 @@ $$
 {\bf q} = \left[\begin{array}{r}\frac{3}{7}\\\frac{4}{7}\end{array}\right].
 $$
 :::
-## Finding the Steady State
+## Finding Steady State
 :::{style="font-size: .8em"}
 So, we have found how to solve a Markov Chain for its steady state:
 
@@ -531,28 +547,33 @@ Note that the calculation of the steady-state vector does _not_ depend on the in
 
 <br>
 
-This is a remarkable property of a Markov Chain:
-
-> It converges to a steady-state vector _no matter what state the chain starts in_.
+> A Markov chain converges to a steady-state vector _no matter what state the chain starts in_.
 
 <br>
 
 We say that the long-term behavior of the chain has "no memory of the starting state."
 :::
-## Convergence to a Steady State
+
+## Resource Allocation
 :::{style="font-size: .8em"}
-__Example:__  
 
 Consider a computer system that consists of a disk, a CPU, and a network interface. A set of jobs are loaded into the system.   Each job makes requests for service from each of the components of the system.
 <br>
 
 Jobs move between system components according to the following diagram.   
 :::
-## Convergence to a Steady State
 
-Missing Image
+<style>
+  .resized-image {
+    width: 40%; /* Adjust this percentage to your desired size */
+  }
+</style>
 
-## Convergence to a Steady State
+<div style="text-align: center;">
+  <img src="images/16-diskcpu.png" alt="Disk CPU" class="resized-image">
+</div>
+
+## Resource Allocation
 :::{style="font-size: .8em"}
 For example, after receiving service from the Disk, 70% of jobs return to the disk for another unit of service;  20% request service from the network interface;  and 10% request service from the CPU.
 
@@ -561,9 +582,9 @@ For example, after receiving service from the Disk, 70% of jobs return to the di
 It turns out that this Markov chain reaches a unique steady-state vector. What is it?
 :::
 
-## Convergence to a Steady State
+## Resource Allocation
 :::{style="font-size: .8em"}
-__Solution.__  From the diagram, the movement of jobs among components is given by:
+From the diagram, the movement of jobs among components is given by:
 
 $$
 \begin{array}{rccc}&\mbox{From Disk}&\mbox{From Net}&\mbox{From CPU}\\\mbox{To Disk}&0.70&0.10&0.30\\\mbox{To Net}&0.20&0.80&0.30\\\mbox{To CPU}&0.10&0.10&0.40\end{array}
@@ -576,34 +597,41 @@ P = \left[\begin{array}{rrr}0.70&0.10&0.30\\0.20&0.80&0.30\\0.10&0.10&0.40\end{a
 $$
 :::
 
-## Convergence to a Steady State
+## Resource Allocation
 :::{style="font-size: .8em"}
 We find the steady state of the system by solving $(P-I){\bf x} = {\bf 0}:$
-
+:::
+:::{style="font-size: .6em"}
 $$
 [P-I \mid {\bf 0}] = \left[\begin{array}{rrr|r}-0.30&0.10&0.30&0\\0.20&-0.20&0.30&0\\0.10&0.10&-0.60&0\end{array}\right] \sim \left[\begin{array}{rrr|r}1&0&-9/4&0\\0&1&-15/4&0\\0&0&0&0\end{array}\right].
 $$
 :::
 
-## Convergence to a Steady State
 :::{style="font-size: .8em"}
 Thus, the general solution of $(P-I){\bf x} = {\bf 0}$ is 
+:::
 
+:::{style="font-size: .6em"}
 $$
 x_1 = \frac{9}{4} x_3, \;\;\; x_2 = \frac{15}{4} x_3,\;\;\; x_3\;\mbox{free.}
 $$
+:::
 
-Since $x_3$ is free (there are infinitely many solutions) we can find a solution whose entries sum to 1.   This is:
+:::{style="font-size: .8em"}
+Since $x_3$ is free (there are infinitely many solutions) we can find a solution whose entries sum to 1:
+:::
 
+:::{style="font-size: .6em"}
 $$
 {\bf q} \approx \left[\begin{array}{r}.32\\.54\\.14\end{array}\right].
 $$
 :::
-## Convergence to a Steady State
+
+## Resource Allocation
 
 :::{style="font-size: .8em"}
 
-Again, the important fact here is that we did not have to concern ourselves with the state in which that the system started. The influence of the starting state is eventually lost!
+We did not have to concern ourselves with the state in which that the system started. The influence of the starting state is eventually lost!
 
 <br>
 
@@ -612,11 +640,12 @@ Let's demonstrate that computationally.   Let's say that at the start, all the j
 $$
 {\bf x}_0 = \left[\begin{array}{r}0\\0\\1\end{array}\right].
 $$
+
+Then let's look at how the three elements of the ${\bf x}$ vector evolve with time, by computing $P{\bf x}_0$, $P^2{\bf x}_0$, $P^3{\bf x}_0$, etc.
 :::
 
-## Convergence to a Steady State
+## Resource Allocation
 :::{style="font-size: .8em"}
-Then let's look at how the three elements of the ${\bf x}$ vector evolve with time, by computing $P{\bf x}_0$, $P^2{\bf x}_0$, $P^3{\bf x}_0$, etc.
 
 :::{.center-text}
 ```{python}
@@ -653,23 +682,16 @@ plt.tight_layout()
 :::
 :::
 
-## Convergence to a Steady State
+## Resource Allocation
 
 :::{style="font-size: .8em"}
 
-Notice how the system starts in the state
-$$
-\left[\begin{array}{r}0\\0\\1\end{array}\right],
-$$
+Notice how the system starts in the state $\left[\begin{array}{r}0\\0\\1\end{array}\right],$ but quickly reaches our predicted equilibrium state, $\left[\begin{array}{r}.32\\.54\\.14\end{array}\right].$
 
-but quickly reaches our predicted equilibrium state:
-$$
-\left[\begin{array}{r}.32\\.54\\.14\end{array}\right].
-$$
+Let's compare what happens if the system starts in a different state, say ${\left[\begin{array}{r}1\\0\\0\end{array}\right]}.$ The following figure shows graphically that even though the systems started differently, they quickly converge to the same steady state.
 :::
-## Convergence to a Steady State
+## Resource Allocation
 :::{style="font-size: .6em"}
-Now let's compare what happens if the system starts in a different state, say $\tiny{\left[\begin{array}{r}1\\0\\0\end{array}\right]}$. The following figure shows graphically that even though the systems started differently, they quickly converge to the same steady state.
 
 :::{.center-text}
 ```{python}
@@ -695,9 +717,9 @@ plt.tight_layout()
 ```
 :::
 :::
-## Convergence to a Steady State
-:::{style="font-size: .6em"}
-Although we have been showing each component converging separately, the entire state vector of the system can be thought of as evolving in space.
+## Resource Allocation
+:::{style="font-size: .8em"}
+The entire state vector of the system can be thought of as evolving in space.
 
 The figure below shows the movement of the state vector starting from six different initial conditions. It shows how regardless of the starting state, the eventual state is the same.
 :::
@@ -739,12 +761,12 @@ def anim(frame):
     * There are "states", and
     * Transition between states only depends on the current state.
 
-* Examples: population movement, jobs in a computer, consonants/vowels in a text...
+* Examples: population movement, jobs in a computer, ...
 
 * Such a system can be expressed in terms of a stochastic matrix and a probability vector.
 
 * Evolution of the system in time is described by matrix multiplication.
 
-* Using linear algebraic tools we can predict the steady state of such a system!
+* Using linear algebraic tools we can predict the steady state of such a system.
 
 :::
