@@ -1,0 +1,1079 @@
+---
+title: Diagonalization
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+Today we will talk about matrix diagonalization.
+
+<br>
+
+We will learn how to __diagonalize__ a square matrix, determine when this is even possible, and interpret it geometrically as a change of basis.
+
+<br>
+
+In addition, we will study the special properties that arise when diagonalizing a __symmetric__ matrix.
+:::
+
+## Diagonalization
+
+:::{style="font-size: .8em"}
+Given a _square_ matrix $A$, our goal for today is to find a factorization of $A$ is of the form 
+
+$$
+A = PDP^{-1}
+$$
+
+where:
+
+- $D$ and $P$ are square matrices of the same size as $A$,
+- $P$ is invertible (so that $P^{-1}$ exists), and
+- $D$ is a __diagonal__ matrix, meaning that it only has non-zero entries on the diagonal. (In other words, it is both an upper triangular and lower triangular matrix at the same time.)
+:::
+
+## Diagonalization
+
+:::{style="font-size: .6em"}
+Recall from last week that two $n \times n$ matrices $A$ and $B$ are said to be __similar__ if there is an invertible matrix $P$ such that $P^{-1}AP = B,$ or, equivalently, $A = PBP^{-1}$.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A square matrix $A$ is said to be <b>diagonalizable</b> if \(A\) is similar to a diagonal matrix.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<br> 
+
+That is, if we can find some invertible $P$ such that
+
+$$
+A = PDP^{-1}
+$$ 
+
+and $D$ is a diagonal matrix.
+
+<br>
+
+This factorization $A = PDP^{-1}$ allows us to represent $A$ in a form that exposes many interesting properties of $A$.
+
+Let's start by showing one benefit of this factorization: we can compute $A^k$ quickly for large values of $k$.
+:::
+
+## Powers of a Diagonal Matrix
+
+:::{style="font-size: .6em"}
+As a starting point, let's see how simple it is to take powers of a _diagonal_ matrix.
+
+<br>
+
+__Example.__ Consider taking the powers of the following diagonal matrix
+
+$$
+D = \begin{bmatrix}5&0\\0&3\end{bmatrix}.
+$$ 
+
+Note that $D^2 = \begin{bmatrix}5&0\\0&3\end{bmatrix}\begin{bmatrix}5&0\\0&3\end{bmatrix} = \begin{bmatrix}5^2&0\\0&3^2\end{bmatrix},$ and <tab>$D^3 = DD^2 = \begin{bmatrix}5&0\\0&3\end{bmatrix}\begin{bmatrix}5^2&0\\0&3^2\end{bmatrix} = \begin{bmatrix}5^3&0\\0&3^3\end{bmatrix}.$
+
+<br>
+
+So in general,
+
+$$
+D^k = \begin{bmatrix}5^k&0\\0&3^k\end{bmatrix} \;\;\;\mbox{for}\;k\geq1.
+$$
+:::
+
+## Extending to a General Matrix
+
+:::{style="font-size: .6em"}
+
+Now, let's extend this idea to apply also to any __diagonalizable__ matrix $A$.
+
+Once again, let's see this by example.
+
+ __Example.__ Let $A = \begin{bmatrix}7&2\\-4&1\end{bmatrix}.$ Find a formula for $A^k$. Use the fact that
+
+$$
+A = \underbrace{\begin{bmatrix}1&1\\-1&-2\end{bmatrix}}_{P} \underbrace{\begin{bmatrix}5&0\\0&3\end{bmatrix}}_{D} \underbrace{\begin{bmatrix}2&1\\-1&-1\end{bmatrix}}_{P^{-1}},
+$$
+
+which we show below using `Python`
+
+```{python}
+import numpy as np
+```
+
+```{python}
+#| echo: true
+P = np.array([[ 1,  1],
+              [-1, -2]])
+D = np.array([[ 5,  0],
+              [ 0,  3]])
+Pinv = np.array([[ 2,  1],
+                 [-1, -1]])
+assert(np.allclose(Pinv, np.linalg.inv(P))) # check that P and Pinv are inverses
+print(P @ D @ Pinv)                         # calculate A = P D P^{-1}
+```
+:::
+
+## Extending to a General Matrix
+
+:::{style="font-size: .5em"}
+__Solution.__  By associativity of matrix multiplication,
+
+$$
+\begin{align*}
+A^2 &= (PDP^{-1})(PDP^{-1}) \\
+&= PD(P^{-1}P)DP^{-1} \\
+&= PDDP^{-1} \\
+&= PD^2P^{-1}
+\end{align*}
+$$
+
+$$
+= \begin{bmatrix}1&1\\-1&-2\end{bmatrix}\begin{bmatrix}5^2&0\\0&3^2\end{bmatrix}\begin{bmatrix}2&1\\-1&-1\end{bmatrix}
+$$
+
+The same pattern occurs for $A^3$, $A^4$, and so on. In general, for $k\geq 1,$
+
+$$
+A^k = PD^kP^{-1}.
+$$
+
+For this particular matrix $A$, we find that
+
+$$
+\begin{align*}
+A^k &= P D^k P^{-1} \\
+&=\begin{bmatrix}1&1\\-1&-2\end{bmatrix}\begin{bmatrix}5^k&0\\0&3^k\end{bmatrix}\begin{bmatrix}2&1\\-1&-1\end{bmatrix} \\
+&=\begin{bmatrix}2\cdot5^k-3^k&5^k-3^k\\2\cdot3^k-2\cdot5^k&2\cdot3^k-5^k\end{bmatrix}.
+\end{align*}
+$$
+:::
+
+## The Need for Eigenvectors and Eigenvalues{.really-really-smaller-title}
+
+:::{style="font-size: 1.2em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        <span class="label">
+        The Diagonalization Theorum</span>
+        An \(n\times n\) matrix \(A\) is diagonalizable if and only if \(A\) has \(n\) <b>linearly independent</b> eigenvectors.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<br>
+
+In other words, $A$ is diagonalizable if and only if there are enough eigenvectors to form a basis of $\mathbb{R}^n$.  
+ 
+ <br>
+
+We call such a basis an __eigenvector basis__ or an __eigenbasis__ of $\mathbb{R}^n$.
+:::
+
+## The Need for Eigenvectors and Eigenvalues{.really-really-smaller-title}
+
+In fact, if there are $n$ linearly independent eigenvectors, then we can write $A = PDP^{-1}$ where:
+
+- The columns of $P$ are the $n$ linearly independent eigenvectors of $A$.
+- The __diagonal entries of $D$ are eigenvalues__ of $A$ that correspond, respectively, to the eigenvectors in $P$.
+
+<br>
+
+__Example.__ A $2 \times 2$ rotation matrix like
+
+$$
+\begin{bmatrix}
+0 & -1 \\
+1 & 0
+\end{bmatrix}
+$$
+
+is not diagonalizable, because we saw last week that it does not have any (real-valued) eigenvalues.
+
+## The Need for Eigenvectors and Eigenvalues{.really-really-smaller-title}
+
+:::{style="font-size: 1.2em"}
+__Proof ($\Rightarrow$ direction).__
+
+> If $A$ is diagonalizable, then it has $n$ linearly independent eigenvectors.
+
+<br>
+
+In this direction, we are given a matrix $A$ that is assumed to be diagonalizable, so it is possible to write $A$ in the form $A = PDP^{-1}$. If we right-multiply both sides of this equation by $P$, we find that
+
+$$
+AP = PD.
+$$
+
+<br>
+
+Also, it is given that $P$ is invertible, which means that its columns must be linearly independent (by the Invertible Matrix Theorem).
+:::
+
+## The Need for Eigenvectors and Eigenvalues{.really-really-smaller-title}
+
+Observe that if $P$ is any $n\times n$ matrix with columns $\mathbf{v}_1,\dots,\mathbf{v}_n,$ then
+
+$$
+AP = A[\mathbf{v}_1\;\mathbf{v}_2\;\cdots\;\mathbf{v}_n] = [A\mathbf{v}_1\;A\mathbf{v}_2\;\cdots\;A\mathbf{v}_n]
+$$
+
+<br>
+
+Next, note if $D$ is any diagonal matrix with diagonal entries $\lambda_1,\dots,\lambda_n,$ then
+
+$$
+PD =
+\begin{bmatrix}| & | & & | \\{\bf v}_1 &{\bf v}_2 & \cdots &{\bf v}_n \\ | & | & & | \\ | & |  & & | \end{bmatrix}
+\begin{bmatrix}\lambda_1&0&\cdots&0\\0&\lambda_2&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\0&0&\cdots&\lambda_n\end{bmatrix}
+= [\lambda_1\mathbf{v}_1\;\lambda_2\mathbf{v}_2\;\cdots\;\lambda_n\mathbf{v}_n].
+$$
+
+<br>
+
+Since we are given that $AP = PD$, the calculations above show that
+
+$$
+[A\mathbf{v}_1\;A\mathbf{v}_2\;\cdots\;A\mathbf{v}_n] = [\lambda_1\mathbf{v}_1\;\lambda_2\mathbf{v}_2\;\cdots\;\lambda_n\mathbf{v}_n].
+$$
+
+## The Need for Eigenvectors and Eigenvalues{.really-really-smaller-title}
+
+Equating columns, we find that
+
+$$
+A\mathbf{v}_1 = \lambda_1\mathbf{v}_1, \;\;\; A\mathbf{v}_2 = \lambda_2\mathbf{v}_2, \;\;\; \dots, \;\;\; A\mathbf{v}_n = \lambda_n\mathbf{v}_n.
+$$
+
+Because $A{\bf v_i}$ is scaling ${\bf v_i}$ by $\lambda_i$, we know ${\bf v_i}$ must be an eigenvector of $A$ and $\lambda_i$ must be its corresponding eigenvalue.
+
+<br>
+
+Hence, the columns of $P$ are eigenvectors of $A$. Additionally, we already showed that the columns of $P$ are linearly independent by the IMT.
+
+<br>
+
+Therefore: if $A$ is diagonalizable, then it has $n$ linearly independent eigenvectors.
+
+## The Need for Eigenvectors and Eigenvalues{.really-really-smaller-title}
+
+__Proof ($\Leftarrow$ direction).__
+
+> If $A$ has $n$ linearly independent eigenvectors, then $A$ is diagonalizable.
+
+Using the ideas from the first half of the proof, we now see how to _construct_ the diagonalization of $A$.
+
+- Let $P$ be a matrix whose columns are the $n$ linearly independent eigenvectors of $A$.
+- Let $D$ be a diagonal matrix whose diagonal entries are the corresponding eigenvalues $\lambda_1, \dots, \lambda_n$.
+
+Using the sequence of equations from earlier in reverse order, we can go from 
+
+$$
+A\mathbf{v}_1 = \lambda_1\mathbf{v}_1, \;\;\; A\mathbf{v}_2 = \lambda_2\mathbf{v}_2, \;\;\; \dots, \;\;\; A\mathbf{v}_n = \lambda_n\mathbf{v}_n
+$$
+
+to 
+
+$$
+AP = PD.
+$$
+
+Since the eigenvectors are given as linearly independent, $P$ is invertible (by the IMT) and so 
+
+$$
+A = PDP^{-1}.
+$$
+
+## The Need for Eigenvectors and Eigenvalues{.really-really-smaller-title}
+
+:::{style="font-size: 1.2em"}
+The takeaway is this:
+
+<br>
+
+Every $n\times n$ matrix having $n$ **linearly independent** eigenvectors can be factored into the product of 
+
+* a matrix $P$, 
+* a diagonal matrix $D$, and
+* the inverse of $P$ 
+
+... where $P$ holds the eigenvectors of $A$, and $D$ holds the eigenvalues of $A$.
+
+<br>
+
+This is the __eigendecomposition__ of $A$. It is quite fundamental!
+:::
+
+
+## How to Diagonalize
+
+:::{style="font-size: .8em"}
+Let's put this all together and show a four-step procedure to diagonalize a matrix: find eigenvalues, find eigenvectors, construct $P$, and construct $D$.
+
+<br>
+
+__Example.__  Diagonalize the following matrix, if possible.
+
+$$
+A = \begin{bmatrix}1&3&3\\-3&-5&-3\\3&3&1\end{bmatrix}
+$$
+
+<br>
+
+That is, find an invertible matrix $P$ and a diagonal matrix $D$ such that $A = PDP^{-1}.$
+:::
+
+## 1: Find the eigenvalues
+:::{style="font-size: .8em"}
+In this case, the characteristic equation turns out to involve a cubic polynomial that can be factored:
+
+$$
+\begin{align*}
+0 &= \det(A-\lambda I) \\
+&= \det\left( \begin{bmatrix}1 - \lambda &3&3\\-3&-5 - \lambda &-3\\3&3&1 - \lambda\end{bmatrix} \right) \\
+&= -\lambda^3 - 3\lambda^2 + 4 \\
+&= -(\lambda -1)(\lambda +2)^2.
+\end{align*}
+$$
+
+<br>
+
+So the eigenvalues are $\lambda = 1$ and $\lambda = -2$ (with algebraic multiplicity two).
+:::
+
+## 2: Find $n$ linearly independent eigenvectors{.really-really-smaller-title}
+
+_This is the step where we find out whether or not $A$ can be diagonalized._ The answer depends on whether we can form $n$ linearly independent eigenvectors.
+
+<br>
+
+In this example, we need _three_ linearly independent vectors because $A$ is a $3\times3$ matrix.
+
+Using our standard method (finding the nullspace of $A - \lambda I$) we find a basis for each eigenspace:
+
+Basis for $\lambda = 1$:
+
+- We must find the nullspace of
+$A - I = \begin{bmatrix}1-1&3&3\\-3&-5-1&-3\\3&3&1-1\end{bmatrix} = \begin{bmatrix}0&3&3\\-3&-6&-3\\3&3&0\end{bmatrix}$.
+
+- Note that this matrix has rank 2 so it has a nullspace of dimension 1.
+
+- Using Gauss-Jordan elimination, we can find a nonzero solution to the homogeneous equation $(A - I) {\bf v} = 0$, namely $\mathbf{v}_1 = \begin{bmatrix}1\\-1\\1\end{bmatrix}.$
+
+## 2: Find $n$ linearly independent eigenvectors{.really-really-smaller-title}
+
+Using the same technique, we can find the basis for $\lambda = -2$. It turns out that the result is:
+
+$$
+\mathbf{v}_2 = \begin{bmatrix}-1\\1\\0\end{bmatrix} \;\text{ and }\; \mathbf{v}_3 = \begin{bmatrix}-1\\0\\1\end{bmatrix}.
+$$
+
+At this point we must ensure that $\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3\}$ forms a linearly independent set.
+
+<br>
+
+These particular vectors in fact do. There are many ways to check this: 
+
+- you can use solve the homogeneous vector equation $c_1 {\bf v}_1 + c_2 {\bf v}_2 + c_3 {\bf v}_3 = {\bf 0}$ using Gauss-Jordan elimination, 
+
+- or you can apply any part of the Invertible Matrix Theorem.
+
+## 3: Construct $P$ from the Eigenvectors{.really-smaller-title}
+
+The order of the vectors is actually not important (yet).
+
+<br>
+
+:::{style="font-size: 1.5em"}
+$$
+P = [\mathbf{v}_1\;\mathbf{v}_2\;\mathbf{v}_3] = \begin{bmatrix}1&-1&-1\\-1&1&0\\1&0&1\end{bmatrix}.
+$$
+:::
+
+## 4: Construct $D$ with Corresponding Eigenvalues{.really-really-smaller-title}
+
+The order of eigenvalues must match the order of eigenvectors used in the previous step.
+
+<br>
+
+If an eigenvalue has multiplicity greater than 1, then repeat it the corresponding number of times.
+
+$$
+D = \begin{bmatrix}1&0&0\\0&-2&0\\0&0&-2\end{bmatrix}.
+$$
+
+<br>
+
+And we are done.   We have diagonalized $A$:
+
+$$
+A =  \begin{bmatrix}1&3&3\\-3&-5&-3\\3&3&1\end{bmatrix} =
+\underbrace{\begin{bmatrix}1&-1&-1\\-1&1&0\\1&0&1\end{bmatrix}}_{P} \:
+\underbrace{\begin{bmatrix}1&0&0\\0&-2&0\\0&0&-2\end{bmatrix}}_{D} \:
+\underbrace{\begin{bmatrix}1&-1&-1\\-1&1&0\\1&0&1\end{bmatrix}^{-1}}_{P^{-1}}
+$$
+
+## 4: Construct $D$ with Corresponding Eigenvalues{.really-really-smaller-title}
+
+We can check our work using Python.
+
+:::{style="font-size: 1.2em"}
+```{python}
+#| echo: true
+P = np.array([[ 1, -1, -1],
+              [-1,  1,  0],
+              [ 1,  0,  1]])
+D = np.array([[ 1,  0,  0],
+              [ 0, -2,  0],
+              [ 0,  0, -2]])
+print(P @ D @ np.linalg.inv(P))
+```
+:::
+
+<br>
+
+So, just as a reminder, we can now take powers of $A$ quite efficiently:
+
+$$
+A^{100} = \begin{bmatrix}1&-1&-1\\-1&1&0\\1&0&1\end{bmatrix}  \begin{bmatrix}1^{100}&0&0\\0&(-2)^{100}&0\\0&0&(-2)^{100}\end{bmatrix}\begin{bmatrix}1&-1&-1\\-1&1&0\\1&0&1\end{bmatrix}^{-1}
+$$
+
+## When Diagonalization Fails
+
+:::{style="font-size: .6em"}
+
+Let's look at another example, this time for a matrix that turns out not to be diagonalizable.
+
+__Example.__ Diagonalize the following matrix, if possible.
+
+$$
+A = \begin{bmatrix}2&4&3\\-4&-6&-3\\3&3&1\end{bmatrix}.
+$$
+
+<br>
+
+__Solution.__ Let's follow our 4-step procedure.
+
+In step 1, we calculate the eigenvalues of $A$. The characteristic equation of $A$ turns out to be the same as in the last example:
+
+$$
+0 = \det(A-\lambda I) = -(\lambda-1)(\lambda +2)^2.
+$$
+
+So, the eigenvalues are $\lambda = 1$ with multiplicity one, and $\lambda = -2$ with multiplicity two.
+:::
+
+## When Diagonalization Fails
+
+:::{style="font-size: .6em"}
+In step 2, we calculate the eigenvectors of $A$ by finding the nullspace of $A - \lambda I$.
+
+This time, it turns out that each of the matrices have rank 2.
+
+$$
+A - I = \begin{bmatrix}1&4&3\\-4&-7&-3\\3&3&0\end{bmatrix} \quad \text{and} \quad A + 2I = \begin{bmatrix}4&4&3\\-4&-4&-3\\3&5&1\end{bmatrix}
+$$
+
+<br>
+
+As a result, each eigenspace is only one-dimensional:
+
+Basis for $\lambda_1 = 1$: $\mathbf{v}_1 = \begin{bmatrix}1\\-1\\1\end{bmatrix}.$ Hence, the geometric multiplicity of $\lambda_1$ is 1.
+
+Basis for $\lambda_2 = -2$: $\mathbf{v}_2 = \begin{bmatrix}-1\\1\\0\end{bmatrix}.$ Hence, the geometric multiplicity of $\lambda_2$ is 1 as well.
+:::
+
+## When Diagonalization Fails
+
+:::{style="font-size: .8em"}
+
+There are no other eigenvalues, and every eigenvector of $A$ is a multiple of either $\mathbf{v}_1$ or $\mathbf{v}_2.$  
+
+<br>
+
+Hence, it is impossible to construct $n = 3$ linearly independent eigenvectors of $A$. 
+
+So we conclude that $A$ is __not__ diagonalizable.
+
+<br>
+
+In general, to be diagonalizable, the algebraic multiplicity of each eigenvalue has to be equal to its geometric multiplicity.
+:::
+
+## A Special Case
+
+:::{style="font-size: .6em"}
+
+There is an important situation in which we can conclude immediately that $A$ is diagonalizable, without explicitly constructing and testing the eigenspaces of $A$.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        An \(n\times n\) matrix with $n$ distinct eigenvalues has \(n\) linearly independent eigenvectors, and therefore is diagonalizable.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<br>
+
+__Example.__ Determine if the following matrix is diagonalizable.
+
+$$
+A = \begin{bmatrix}5&-8&1\\0&0&7\\0&0&-2\end{bmatrix}.
+$$
+
+__Solution.__
+
+- Since $A$ is (upper) triangular, its eigenvalues are $5, 0,$ and $-2$.
+- Since $A$ is a $3\times3$ with 3 distinct eigenvalues, $A$ is diagonalizable.
+:::
+
+## Diagonalization as Change of Basis{.smaller-title}
+
+
+We can now turn to a __geometric__ understanding of how diagonalization informs us about the properties of $A$.
+
+<br>
+
+Let's interpret the diagonalization $A = PDP^{-1}$ in terms of how $A$ acts as a linear operator.
+
+<br>
+
+In doing so, diagonalization has a specific interpretation: 
+
+> Diagonalization separates the influence of each vector component from the others.
+
+## Diagonalization as Change of Basis{.smaller-title}
+
+:::{style="font-size: .8em"}
+To see what this means, let's first consider an easier case: a diagonal matrix. When we multiply a vector $\mathbf{x}$ by a diagonal matrix $D$, the change to each component of $\mathbf{x}$ depends only on that component.
+
+That is, multiplying by a diagonal matrix simply __scales__ the components of the vector.
+
+<br>
+
+__Example.__ Let $D = \begin{bmatrix}5&0\\0&3\end{bmatrix}.$ Then, $D \begin{bmatrix}x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix}5x_1 \\ 3x_2 \end{bmatrix}.$
+
+<br>
+
+On the other hand, when we multiply by a matrix $A$ that has off-diagonal entries, the components of $\mathbf{x}$ affect each other.
+
+So diagonalizing a matrix allows us to bring intuition to its behavior as as linear operator.
+:::
+
+## Geometrically Interpreting Diagonalization{.really-really-smaller-title}
+
+
+:::{style="font-size: 1.2em"}
+Because $P$ is square and invertible, its columns form a basis for $\mathbb{R}^n$.  Let's call that basis $\mathcal{B} = \{\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n\}.$  
+
+Now let's think about matrix-vector multiplication as a change of basis -- that is, moving between the standard basis and the $\mathcal{B}$ basis.
+
+<br>
+
+Recall from Week 7 that if we have a vector ${\bf y}$ in the standard basis and we want to find its coordinates in the basis $\mathcal{B}$, then we can to solve the system of equations
+
+$$\mathbf{y} = P\mathbf{x} = x_1 {\bf p}_1 + x_2 {\bf p}_2 + \cdots + x_n {\bf p}_n$$
+
+to find a vector ${\bf x}$ such that ${\bf x} = [{\bf y}]_{\mathcal{B}}$.
+
+<br>
+
+:::
+
+## Geometrically Interpreting Diagonalization{.really-really-smaller-title}
+
+
+:::{style="font-size: 1.2em"}
+Since $P$ is invertible, we can use its inverse to solve this system of equations and find that ${\bf x} = P^{-1} {\bf y}$.
+
+Similarly, if we start with a vector ${\bf x}$ in the $\mathcal{B}$-basis and want to calculate its coordinates in the standard basis, we can compute ${\bf y} = P {\bf x}$.
+
+That is: ${\bf y}$ is the point (in the standard basis) that has coordinates ${\bf x}$ in the basis $\mathcal{B}$.
+
+:::
+
+## Geometrically Interpreting Diagonalization{.really-really-smaller-title}
+
+So we can interpret $A {\bf x} = PDP^{-1}\mathbf{x}$ as the following three step geometric transformation:
+
+_Step 1._ Compute the coordinates of $\mathbf{x}$ in the basis $\mathcal{B}$.   
+
+This is $P^{-1}\mathbf{x}.$
+
+<br>
+
+_Step 2._ Scale those coordinates according to the diagonal matrix $D$.   
+This is $DP^{-1}\mathbf{x}.$ (Remember that composition of matrices goes from right to left!)
+
+<br>
+
+_Step 3._ Find the point in the standad basis that has those scaled coordinates in the basis $\mathcal{B}.$ 
+
+This is $PDP^{-1}\mathbf{x}.$
+
+```{python}
+#| echo: true
+A = np.array([[ 1.86363636, 0.68181819],
+              [-0.22727273, 3.13636364]])
+
+P = np.array([[0.98058068, 0.51449576],
+              [0.19611614, 0.85749293]])
+D = np.array([[2, 0],
+              [0, 3]])
+
+np.allclose(A, P @ D @ np.linalg.inv(P))
+```
+
+
+## Geometrically Interpreting Diagonalization{.really-really-smaller-title}
+
+__Example.__ Let's visualize diagonalization geometrically.
+
+Consider a fixed-but-unwritten matrix $A$. Below shows how it transforms a point $\mathbf{x} = \begin{bmatrix}2.47\\1.25\end{bmatrix}$.
+
+```{python}
+import laUtilities as ut
+
+ax = ut.plotSetup(-1,6,-1,6,size=(12,5))
+ut.centerAxes(ax)
+v1 = np.array([5.0,1.0])
+v1 = v1 / np.sqrt(np.sum(v1*v1))
+v2 = np.array([3.0,5.0])
+v2 = v2 / np.sqrt(np.sum(v2*v2))
+p1 = 2*v1+v2
+p2 = 4*v1+3*v2
+ut.plotVec(ax, p1,'k')
+ut.plotVec(ax, p2,'k')
+ax.annotate('', xy=(p2[0], p2[1]),  xycoords='data',
+                xytext=(p1[0], p1[1]), textcoords='data',
+                size=15,
+                arrowprops={'arrowstyle': 'simple',
+                                'fc': '0.7', 
+                                'ec': 'none',
+                                'connectionstyle' : 'arc3,rad=-0.3'},
+                )
+ax.text(2.5,0.75,r'${\bf x}$',size=20)
+ax.text(5.2,2.75,r'$A{\bf x}$',size=20)
+ax.plot(0,0,'');
+```
+
+So far, we cannot say much about what the linear transformation $A$ does in general.
+
+## Geometrically Interpreting Diagonalization{.really-really-smaller-title}
+
+Now, let's compute $P^{-1}\mathbf{x}.$ Remember that the columns of $P$ are the eigenvectors of $A$.
+
+So $P^{-1}\mathbf{x}$ is the coordinates of the point $\mathbf{x}$ in the __eigenvector basis__:
+
+```{python}
+#
+ax = ut.plotSetup(-1,6,-1,6,size=(12,5))
+ut.centerAxes(ax)
+v1 = np.array([5.0,1.0])
+v1 = v1 / np.sqrt(np.sum(v1*v1))
+v2 = np.array([3.0,5.0])
+v2 = v2 / np.sqrt(np.sum(v2*v2))
+ut.plotVec(ax,v1,'b')
+ut.plotVec(ax,v2)
+ut.plotLinEqn(-v1[1],v1[0],0,color='b')
+ut.plotLinEqn(-v2[1],v2[0],0,color='r')
+for i in range(-4,8):
+    ut.plotLinEqn(-v1[1],v1[0],i*(v1[0]*v2[1]-v1[1]*v2[0]),format=':',color='b')
+    ut.plotLinEqn(-v2[1],v2[0],i*(v2[0]*v1[1]-v2[1]*v1[0]),format=':',color='r')
+p1 = 2*v1+v2
+p2 = 4*v1+3*v2
+ut.plotVec(ax, p1,'k')
+ax.text(2.5,0.75,r'${\bf x}$',size=20)
+ax.text(v2[0]-0.15,v2[1]+0.5,r'${\bf p_2}$',size=20)
+ax.text(v1[0]-0.15,v1[1]+0.35,r'${\bf p_1}$',size=20)
+ax.plot(0,0,'');
+```
+
+The coordinates of $\mathbf{x}$ in this basis are (2,1). In other words $P^{-1}\mathbf{x} = \begin{bmatrix}2\\1\end{bmatrix}.$
+
+## Geometrically Interpreting Diagonalization{.really-really-smaller-title}
+
+Now, we compute $DP^{-1}\mathbf{x}.$  Since $D$ is diagonal, this is just scaling each of the $\mathcal{B}$-coordinates.  
+
+In this example the eigenvalue corresponding to $\mathbf{p}_1$ is 2, and the eigenvalue corresponding to $\mathbf{p}_2$ is 3.
+
+```{python}
+#
+ax = ut.plotSetup(-1,6,-1,6,size=(12,4))
+ut.centerAxes(ax)
+v1 = np.array([5.0,1.0])
+v1 = v1 / np.sqrt(np.sum(v1*v1))
+v2 = np.array([3.0,5.0])
+v2 = v2 / np.sqrt(np.sum(v2*v2))
+#ut.plotVec(ax,v1,'b')
+#ut.plotVec(ax,v2)
+ut.plotLinEqn(-v1[1],v1[0],0,color='b')
+ut.plotLinEqn(-v2[1],v2[0],0,color='r')
+for i in range(-4,8):
+    ut.plotLinEqn(-v1[1],v1[0],i*(v1[0]*v2[1]-v1[1]*v2[0]),format=':',color='b')
+    ut.plotLinEqn(-v2[1],v2[0],i*(v2[0]*v1[1]-v2[1]*v1[0]),format=':',color='r')
+p1 = 2*v1+v2
+p2 = 4*v1+3*v2
+ut.plotVec(ax, p1,'k')
+ut.plotVec(ax, p2,'k')
+ax.annotate('', xy=(p2[0], p2[1]),  xycoords='data',
+                xytext=(p1[0], p1[1]), textcoords='data',
+                size=15,
+                #bbox=dict(boxstyle="round", fc="0.8"),
+                arrowprops={'arrowstyle': 'simple',
+                                'fc': '0.7', 
+                                'ec': 'none',
+                                'connectionstyle' : 'arc3,rad=-0.3'},
+                )
+ax.text(2.5,0.75,r'${\bf x}$',size=20)
+ax.text(5.2,2.75,r'$A{\bf x}$',size=20)
+ax.plot(0,0,'');
+```
+
+So the coordinates of $A\mathbf{x}$ in the basis $\mathcal{B}$ are 
+
+$$
+\begin{bmatrix}2&0\\0&3\end{bmatrix}\begin{bmatrix}2\\1\end{bmatrix} = \begin{bmatrix}4\\3\end{bmatrix}.
+$$
+
+## Geometrically Interpreting Diagonalization{.really-really-smaller-title}
+
+:::{style="font-size: .9em"}
+Now we convert back to the standard basis -- that is, we ask which point has coordinates (4,3) in basis $\mathcal{B}.$
+
+
+We rely on the fact that if $\mathbf{y}$ has coordinates $\mathbf{x}$ in the basis $\mathcal{B}$, then $\mathbf{y} = P\mathbf{x}.$ So $A\mathbf{x} = P\begin{bmatrix}4\\3\end{bmatrix} = PDP^{-1}\mathbf{x}.$
+
+```{python}
+#
+ax = ut.plotSetup(-1,6,-1,6,size=(12,5))
+ut.centerAxes(ax)
+v1 = np.array([5.0,1.0])
+v1 = v1 / np.sqrt(np.sum(v1*v1))
+v2 = np.array([3.0,5.0])
+v2 = v2 / np.sqrt(np.sum(v2*v2))
+#ut.plotVec(ax,v1,'b')
+#ut.plotVec(ax,v2)
+#ut.plotLinEqn(-v1[1],v1[0],0,color='b')
+#ut.plotLinEqn(-v2[1],v2[0],0,color='r')
+#for i in range(-3,8):
+#    ut.plotLinEqn(-v1[1],v1[0],i*(v1[0]*v2[1]-v1[1]*v2[0]),format=':',color='b')
+#    ut.plotLinEqn(-v2[1],v2[0],i*(v2[0]*v1[1]-v2[1]*v1[0]),format=':',color='r')
+p1 = 2*v1+v2
+p2 = 4*v1+3*v2
+#ut.plotVec(ax, p1,'k')
+ut.plotVec(ax, p2,'k')
+#ax.annotate('', xy=(p2[0], p2[1]),  xycoords='data',
+#                xytext=(p1[0], p1[1]), textcoords='data',
+#                size=15,
+#                #bbox=dict(boxstyle="round", fc="0.8"),
+#                arrowprops={'arrowstyle': 'simple',
+#                                'fc': '0.7', 
+#                                'ec': 'none',
+#                                'connectionstyle' : 'arc3,rad=-0.3'},
+#                )
+#ax.text(2.5,0.75,r'${\bf x}$',size=16)
+ax.text(5.2,2.75,r'$A{\bf x}$',size=20)
+ax.plot(0,0,'');
+```
+
+We find that $A\mathbf{x}$ = $PDP^{-1}\mathbf{x} = \begin{bmatrix}5.46\\3.35\end{bmatrix}.$
+:::
+
+
+## Geometrically Interpreting Diagonalization{.really-really-smaller-title}
+
+In conclusion: notice that the transformation $\mathbf{x} \mapsto A\mathbf{x}$ may be a complicated one in which each component of $\mathbf{x}$ affects each component of $A\mathbf{x}$.   
+
+However, by changing to the basis defined by the eigenspaces of $A$, the action of $A$ becomes simple to understand. 
+
+<br>
+
+Diagonalization of $A$ __changes to a basis in which the action of $A$ is particularly easy to understand and compute with.__
+
+<br>
+
+Remember that not all matrices are diagonalizable! This particular matrix factorization only applies to square matrices, and not even all square matrices.
+
+<br>
+
+Next week, we will design a generalization of diagonalization that does apply to all matrices. It is called __singular value decomposition__, and it is the strongest tool from linear algebra that we have been building up to in this course. We will then explore its data science applications.
+
+## Symmetric Matrices
+
+:::{style="font-size: .6em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        A symmetric matrix is a matrix \(A\) such that \(A^\top = A\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Note that if $A$ is an $m \times n$ matrix, then $A^\top$ is an $n \times m$ matrix. For these to be equal, a symmetric matrix __must__ be square.
+
+<br>
+
+__Example.__ Here are three __symmetric__ matrices:
+
+$$
+\begin{bmatrix}1&0\\0&-3\end{bmatrix},\;\;\;\;\begin{bmatrix}0&-1&0\\-1&5&8\\0&8&-7\end{bmatrix},\;\;\;\;\begin{bmatrix}a&b&c\\b&d&e\\c&e&f\end{bmatrix}
+$$
+
+Here are three __nonsymmetric__ matrices:
+
+$$
+\begin{bmatrix}1&-3\\3&0\end{bmatrix},\;\;\;\;\begin{bmatrix}1&3&0\\3&1&0\end{bmatrix},\;\;\;\;\begin{bmatrix}1&-4&0\\-6&1&-4\\0&-6&1\end{bmatrix}
+$$
+:::
+
+## Symmetric Matrices
+
+:::{style="font-size: .6em"}
+__Example.__ Another example of a symmetric matrix is $A^\top A$ (starting from _any_ matrix $A$, even a non-square matrix).
+
+Recall that $A^\top A$ is used within the normal equations $A^\top A\mathbf{x} = A^\top \mathbf{b}$ to solve the least-squares problem. Here is an example.
+
+```{python}
+#| echo: true
+A = np.array([[1, 2, 3],
+              [4, 5, 6]])
+print(A.T @ A)
+```
+
+<br>
+
+Given any matrix $A$, the matrix $A^\top A$ is always symmetric because
+
+$$
+(A^\top A)^\top = A^\top (A^\top)^\top = (A^\top A).
+$$
+
+In the remainder of this week, we'll see that symmetric matrices have properties that relate to both eigendecomposition and orthogonality.
+:::
+
+## Diagonalizing Symmetric Matrices{.smaller-title}
+
+:::{style="font-size: .8em"}
+Symmetric matrices have a number of interesting properties. For example, the eigenvectors of a symmetric matrix are __orthogonal__
+
+__Example.__ Diagonalize the following symmetric matrix:
+
+$$
+A = \begin{bmatrix}6&-2&-1\\-2&6&-1\\-1&-1&5\end{bmatrix}
+$$
+
+The characteristic equation of $A$ is
+
+$$\begin{align*}
+0 &= \det(A - \lambda I) \\
+&= -\lambda^3 + 17\lambda^2 -90\lambda + 144 \\
+&= -(\lambda-8)(\lambda-6)(\lambda-3)
+\end{align*}
+$$
+
+So the eigenvalues are 8, 6, and 3.
+:::
+
+## Diagonalizing Symmetric Matrices{.smaller-title}
+
+:::{style="font-size: .7em"}
+We construct a basis for each eigenspace, using our standard method of finding the nullspace of $A-\lambda I$:
+
+$$
+\lambda_1 = 8: \mathbf{v}_1 = \begin{bmatrix}-1\\1\\0\end{bmatrix};\;\;\;\;\lambda_2=6: \mathbf{v}_2 = \begin{bmatrix}-1\\-1\\2\end{bmatrix};\;\;\;\;\;\lambda_3=3: \mathbf{v}_3=\begin{bmatrix}1\\1\\1\end{bmatrix}.
+$$
+
+These three vectors form a basis for $\mathbb{R}^3.$
+
+<br>
+
+But here is the remarkable thing: these three vectors form an __orthogonal set.__ That is, any two eigenvectors are orthogonal. 
+
+$$\begin{align*}
+\mathbf{v}_1^\top \mathbf{v}_2 &= (-1)(-1) + (1)(-1) + (0)(2) = 0 \\
+\mathbf{v}_1^\top \mathbf{v}_3 &= (-1)(1) + (1)(1) + (0)(1) = 0 \\
+\mathbf{v}_2^\top \mathbf{v}_3 &= (-1)(1) + (-1)(1) + (2)(1) = 0
+\end{align*}
+$$
+
+As a result, $\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3\}$ form an __orthogonal basis__ for $\mathbb{R}^3.$
+:::
+
+## Diagonalizing Symmetric Matrices{.smaller-title}
+
+:::{style="font-size: .6em"}
+Let's normalize these vectors so they each have length 1:
+
+$$
+\mathbf{u}_1 = \begin{bmatrix}-1/\sqrt{2}\\1/\sqrt{2}\\0\end{bmatrix};\;\;\;\;\mathbf{u}_2 = \begin{bmatrix}-1/\sqrt{6}\\-1/\sqrt{6}\\2/\sqrt{6}\end{bmatrix};\;\;\;\;\; \mathbf{u}_3=\begin{bmatrix}1/\sqrt{3}\\1/\sqrt{3}\\1/\sqrt{3}\end{bmatrix}
+$$
+
+The orthogonality of the eigenvectors of a symmetric matrix is quite important.
+
+<br>
+
+To see this, let's write the diagonalization of $A$ in terms of these eigenvectors and eigenvalues:
+
+$$
+P = \begin{bmatrix}-1/\sqrt{2}&-1/\sqrt{6}&1/\sqrt{3}\\1/\sqrt{2}&-1/\sqrt{6}&1/\sqrt{3}\\0&2/\sqrt{6}&1/\sqrt{3}\end{bmatrix},\;\;\;\;D = \begin{bmatrix}8&0&0\\0&6&0\\0&0&3\end{bmatrix}.
+$$
+
+Then, $A = PDP^{-1}$ as usual.
+
+<br>
+
+Since $P$ is square and has orthonormal columns, $P$ is an __orthogonal__ matrix (AKA an __orthonormal__ matrix).
+
+That means $P^{-1} = P^\top$ and $A = PDP^\top.$
+:::
+
+## The Spectral Theorum
+
+:::{style="font-size: .6em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        If \(A\) is symmetric, then any two eigenvectors of \(A\) from different eigenspaces are orthogonal.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+__Proof.__ 
+
+Let $\mathbf{v}_1$ and $\mathbf{v}_2$ be eigenvectors that correspond to distinct eigenvalues, say, $\lambda_1$ and $\lambda_2.$  
+
+To show that $\mathbf{v}_1^\top \mathbf{v}_2 = 0,$ compute
+
+$$
+\begin{align*}
+\lambda_1\mathbf{v}_1^\top \mathbf{v}_2 &= (\lambda_1\mathbf{v}_1)^\top \mathbf{v}_2 \\
+&=(A\mathbf{v}_1)^\top \mathbf{v}_2 \\
+&=(\mathbf{v}_1^\top A^\top )\mathbf{v}_2 \\
+&=\mathbf{v}_1^\top (A^\top \mathbf{v}_2) \\
+&=\mathbf{v}_1^\top (A\mathbf{v}_2) \quad \gets \text{this is where we use the fact that $A$ is symmetric} \\
+&=\mathbf{v}_1^\top (\lambda_2\mathbf{v}_2) \\
+&=\lambda_2\mathbf{v}_1^\top \mathbf{v}_2
+\end{align*}
+$$
+:::
+
+## The Spectral Theorum
+
+:::{style="font-size: .8em"}
+
+So we conclude that $\lambda_1(\mathbf{v}_1^\top \mathbf{v}_2) = \lambda_2(\mathbf{v}_1^\top \mathbf{v}_2).$
+
+But $\lambda_1 \neq \lambda_2,$ so this can only happen if $\mathbf{v}_1^\top \mathbf{v}_2 = 0.$
+
+So $\mathbf{v}_1$ is orthogonal to $\mathbf{v}_2.$
+
+<br>
+
+The same argument applies to any other pair of eigenvectors with distinct eigenvalues.
+
+So any two eigenvectors of $A$ from different eigenspaces are orthogonal.
+:::
+
+## Orthogonal Diagonalization
+
+:::{style="font-size: .8em"}
+We can now introduce a special kind of diagonalizability:
+
+<br>
+
+An $n\times n$ matrix is said to be __orthogonally diagonalizable__ if there are an orthogonal matrix $P$ (with $P^{-1} = P^\top$) and a diagonal matrix $D$ such that 
+
+$$
+A = PDP^\top = PDP^{-1}
+$$
+
+<br>
+
+Such a diagonalization requires $n$ linearly independent and __orthonormal__ eigenvectors.
+
+When is this possible?
+:::
+
+## Orthogonal Diagonalization
+
+:::{style="font-size: .7em"}
+If $A$ is orthogonally diagonalizable, then
+
+$$
+A^\top  = (PDP^\top )^\top  = (P^\top )^\top D^\top P^\top  = PDP^\top  = A
+$$
+
+So $A$ is symmetric!
+
+<br>
+
+It turns out the converse is true.
+
+Hence we obtain the following theorem:
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        An \(n\times n\) matrix is orthogonally diagonalizable if and only if it is a symmetric matrix.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
