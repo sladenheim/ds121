@@ -1,0 +1,301 @@
+---
+title: Applications of SVD
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+Today we will continue our discussion of SVD. In particular, we will
+
+<br>
+
+- introduce a modified version of SVD, known as reduced SVD;
+- use SVD to approximate matrices;
+- introduce the concept of effective rank;
+- discuss image compression with SVD.
+
+
+:::
+
+## Reduced SVD
+
+:::{style="font-size: .8em"}
+Consider an $m \times n$ matrix $A$ with $m<n$. Its SVD looks as follows.
+:::
+
+:::{style="font-size: .6em"}
+$$
+\overbrace{\left[\begin{array}{ccccc}\phantom{\ddots}&\phantom{\ddots}&&&\\&&A&&\\&&&\phantom{\ddots}&\phantom{\ddots}\end{array}\right]}^{\large m \times n}
+%
+= \overbrace{\left[\begin{array}{ccc}\phantom{\ddots}&&\\&U&\\&&\phantom{\ddots}\end{array}\right]}^{\large m \times m}
+%
+\quad
+\overbrace{\left[\begin{array}{ccccc}\phantom{\ddots}&&&&\\&&\Sigma&&\\&&&&\phantom{\ddots}\end{array}\right]}^{\large m \times n}
+%
+\quad
+\overbrace{\left[\begin{array}{ccccc}\phantom{\ddots}&&&&\\&\phantom{\ddots}&&&\\&&V^\top&&\\&&&\phantom{\ddots}&\\&&&&\phantom{\ddots}\end{array}\right]}^{\large n \times n}
+$$
+:::
+
+## Reduced SVD
+
+:::{style="font-size: .8em"}
+Now, let's assume that the number of nonzero singular values $r$ is less than $m$. In the picture below, $r = 2$.
+:::
+
+:::{style="font-size: .6em"}
+$$
+\overbrace{\left[\begin{array}{ccccc}\phantom{\ddots}&\phantom{\ddots}&&&\\&&A&&\\&&&\phantom{\ddots}&\phantom{\ddots}\end{array}\right]}^{\large m \times n}
+%
+= \overbrace{\left[\begin{array}{ccc}\phantom{\ddots}&&\\&U&\\&&\phantom{\ddots}\end{array}\right]}^{\large m \times m}
+%
+\quad
+\overbrace{\left[\begin{array}{ccccc}\sigma_1&0&0&0&0\\0&\sigma_r&0&0&0\\0&0&0&0&0\end{array}\right]}^{\large m \times n}
+%
+\quad
+\overbrace{\left[\begin{array}{ccccc}\phantom{\ddots}&&&&\\&\phantom{\ddots}&&&\\&&V^\top&&\\&&&\phantom{\ddots}&\\&&&&\phantom{\ddots}\end{array}\right]}^{\large n \times n}
+$$
+:::
+:::{style="font-size: .8em"}
+In this case, we only need the $r$ leftmost columns of $U$, and the $r$ upper rows of $V^\top$ to represent $A$. That is because all values except $\sigma_1$ and $\sigma_r$ on the diagonal of $\Sigma$ are zero, so they do not contribute anything to $A$. 
+:::
+
+## Reduced SVD
+
+:::{style="font-size: .8em"}
+Therefore, we often work with the __reduced SVD__ of $A$.
+
+:::
+
+:::{style="font-size: .6em"}
+$$
+\overbrace{\left[\begin{array}{ccccc}\phantom{\ddots}&\phantom{\ddots}&&&\\&&A&&\\&&&\phantom{\ddots}&\phantom{\ddots}\end{array}\right]}^{\large m \times n}
+%
+= \overbrace{\left[\begin{array}{cc}\vdots&\vdots\\{\bf u}_1&{\bf u}_r\\\vdots&\vdots\end{array}\right]}^{\large m \times r}
+%
+\quad
+\overbrace{\left[\begin{array}{ccccc}\sigma_1&0\\0&\sigma_r\end{array}\right]}^{\large r \times r}
+%
+\quad
+\overbrace{\left[\begin{array}{ccccc}\cdots&\cdots&{\bf v}_1&\cdots&\cdots\\\cdots&\cdots&{\bf v}_r&\cdots&\cdots\end{array}\right]}^{\large r \times n}
+$$
+:::
+
+
+:::{style="font-size: .8em"}
+<br>
+Note that in the reduced SVD, $\Sigma$ is square and has all nonzero entries on its diagonal, so it can be inverted.
+:::
+
+## Reduced SVD
+
+:::{style="font-size: .8em"}
+We previously had an example with matrix $A$ whose (full) SVD was:
+
+$$A = \underbrace{\begin{bmatrix} -1/3 & 2/3 & -2/3 \\ -2/3 & 1/3 & 2/3 \\ 2/3 & 2/3 & 1/3 \end{bmatrix}}_{U} \underbrace{\begin{bmatrix} 15 & 0 \\ 0 & 3 \\ 0 & 0 \end{bmatrix}}_{\Sigma} \underbrace{\begin{bmatrix} -3/5 & 4/5 \\ 4/5 & 3/5 \end{bmatrix}}_{V^\top}.$$
+
+The reduced SVD of this matrix $A$ is:
+
+$$A = \begin{bmatrix} -1/3 & 2/3 \\ -2/3 & 1/3 \\ 2/3 & 2/3 \end{bmatrix} \begin{bmatrix} 15 & 0 \\ 0 & 3 \end{bmatrix} \begin{bmatrix} -3/5 & 4/5 \\ 4/5 & 3/5 \end{bmatrix}.$$
+
+:::
+
+
+## Matrix Approximation
+
+:::{style="font-size: .8em"}
+Recall that the rank of a matrix $A$ is the largest number of linearly independent columns of $A$.
+
+When $k < \operatorname{Rank}A$, the __rank-$k$ approximation__ to $A$ is the closest rank-$k$ matrix to $A$, i.e., 
+
+$$A^{(k)} =\operatorname{arg\,min}_{B \text{ with} \operatorname{Rank}B = k} \Vert A-B\Vert_F.$$
+
+Here the _Frobenius norm_ of a matrix $\Vert A \Vert_F = \sqrt{\sum_{i = 1}^{m} \sum_{j=1}^{n} a_{i,j}^2}$ is the matrix equivalent to the Euclidean norm of a vector.
+:::
+
+## Matrix Approximation
+:::{style="font-size: .8em"}
+The reason is that a rank-$k$ matrix may take up __much__ less space than the original $A$.
+
+$m\left\{\begin{array}{c}\;\\\;\\\;\\\;\\\;\end{array}\right.\;\;\overbrace{\left[\begin{array}{cccc}\begin{array}{c}\vdots\\\vdots\\{\bf a_1}\\\vdots\\\vdots\end{array}&\begin{array}{c}\vdots\\\vdots\\{\bf a_2}\\\vdots\\\vdots\end{array}&\dots&\begin{array}{c}\vdots\\\vdots\\{\bf a_n}\\\vdots\\\vdots\end{array}\\\end{array}\right]}^{\large n} =
+\overbrace{\left[\begin{array}{cc}\vdots&\vdots\\\vdots&\vdots\\\sigma_1\mathbf{u}_1&\sigma_k\mathbf{u}_k\\\vdots&\vdots\\\vdots&\vdots\end{array}\right]}^{\large k}
+\times
+\left[\begin{array}{ccccc}\dots&\dots&\mathbf{v}_1&\dots&\dots\\\dots&\dots&\mathbf{v}_k&\dots&\dots\end{array}\right]$
+
+The rank-$k$ approximation takes up space $(m+n)k$ while $A$ itself takes space $mn$. For example, if $k=10$ and $m = n = 1000$, then the rank-$k$ approximation takes space $20000/1000000 = 2\%$ of $A$.
+:::
+
+## Matrix Approximation
+:::{style="font-size: .8em"}
+How do we use SVD to find the best rank-$k$ approximation to $A$?
+
+<br>
+
+In terms of the SVD, the best rank-$k$ approximation to $A$ is formed by taking 
+
+* $U' =$ the $k$ leftmost columns of $U$, 
+* $\Sigma ' =$ the $k\times k$ upper left submatrix of $\Sigma$, and 
+* $(V')^\top =$ the $k$ upper rows of $V^{\top}$, 
+
+and constructing 
+
+$$A^{(k)} = U'\Sigma'(V')^\top.$$
+:::
+
+## Matrix Approximation
+:::{style="font-size: .8em"}
+For our running $3 \times 2$ example matrix 
+
+$$A = \begin{bmatrix}4.6 & -2.8 \\ 6.8 & -7.4 \\ -4.4 & 9.2\end{bmatrix}.$$
+
+of rank 2, its best rank-1 approximation is
+
+$$A^{(1)} = \begin{bmatrix} -1/3 & 2/3 \\ -2/3 & 1/3 \\ 2/3 & 2/3 \end{bmatrix} \begin{bmatrix} 15 & 0 \\ 0 & \color{red}{{\bf 0}} \end{bmatrix} \begin{bmatrix} -3/5 & 4/5 \\ 4/5 & 3/5 \end{bmatrix} = \begin{bmatrix} 3 & -4 \\ 6 & -8 \\ -6 & 8 \end{bmatrix}.$$
+:::
+
+
+## Effective Rank
+
+:::{style="font-size: .8em"}
+When working with measurement data (i.e., measurements of real-world objects), we find that data is often approximately low-rank. We say that such data has low __effective rank.__
+
+Such data can often be well approximated by a low-rank matrix.
+
+Classic examples include:
+
+- measurements of human preferences such as movie ratings, social networks,
+
+- images, movies, sound recordings,
+
+- genomics, biological data,
+
+- medical records,
+
+- text documents.
+:::
+
+## Image Compression
+
+:::{style="font-size: .8em"}
+Image data can often be simplified to a low-rank approximation with only a small loss. 
+
+:::{.columns}
+
+:::{.column width="50%"}
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+boat = np.loadtxt('data/boat/boat.dat')
+import matplotlib.cm as cm
+plt.figure()
+plt.imshow(boat,cmap = cm.Greys_r)
+plt.axis('off');
+plt.show()
+```
+:::
+
+:::{.column width="50%"}
+We can think of this as a $512\times 512$ matrix $A$ whose entries are 1-byte grayscale values (numbers between 0 and 255). 
+
+<br>
+
+The rank of $A$ is 512. 
+
+But its _effective_ rank is low.
+:::
+:::
+:::
+
+
+## Image Compression
+
+:::{style="font-size: .8em"}
+Let’s look at the singular values $A$. We compute $A = U\Sigma V^\top$ and look at the values on the diagonal of $\Sigma.$ This is often called the matrix’ "spectrum.”
+
+:::{.columns}
+
+:::{.column width="10%"}
+
+:::
+:::{.column width="90%"}
+```{python}
+u, s, vt = np.linalg.svd(boat, full_matrices = False)
+plt.plot(s)
+plt.xlabel('$k$', size = 16);
+plt.ylabel(r'$\sigma_k$', size = 16);
+plt.show()
+```
+:::
+:::
+
+:::
+
+## Image Compression
+
+:::{style="font-size: .8em"}
+Based on the plot above, its effective rank is perhaps 40. In fact, the error when we approximate $A$ by a rank 40 matrix is only around 10%.
+
+Let's find the closest rank-40 matrix. We can do this quite easily using the SVD. We simply construct our approximation of $A$ using only the first 40 columns of $U$ and top 40 rows of $V^\top$.
+
+:::{.columns}
+
+:::{.column width="15%"}
+
+:::
+:::{.column width="85%"}
+```{python}
+u, s, vt = np.linalg.svd(boat, full_matrices = False)
+s[40:] = 0
+boatApprox = u @ np.diag(s) @ vt
+plt.figure(figsize=(9,6))
+plt.subplot(1,2,1)
+plt.imshow(boatApprox,cmap = cm.Greys_r)
+plt.axis('off')
+plt.title('Rank 40 Boat')
+plt.subplot(1,2,2)
+plt.imshow(boat,cmap = cm.Greys_r)
+plt.axis('off')
+plt.title('Rank 512 Boat');
+plt.show()
+```
+:::
+:::
+
+:::
+
+## Effective Rank
+:::{style="font-size: .8em"}
+This general principle is what makes image, video, and sound compression effective.  
+
+When you 
+
+* watch HDTV, or 
+* listen to an MP3, or 
+* look at a JPEG image, 
+
+these signals have been compressed using the fact that they are effectively low-rank matrices.
+:::
+
+## Key Ideas
+
+:::{style="font-size: .8em"}
+The reduced singular value decomposition of a rank-$r$ matrix $A$ has the form:
+
+$$A = U\Sigma V^\top$$
+
+where 
+
+1. $U$ is $m\times r$
+2. The columns of $U$ are mutually orthogonal and unit length, ie., $U^\top U = I$.
+3. $V$ is $n\times r$.
+4. The columns of $V$ are mutually orthogonal and unit length, ie., $V^\top V = I$.
+5. The matrix $\Sigma$ is an $r\times r$ diagonal matrix, whose diagonal values are $\sigma_1 \geq \sigma_2 \geq \dots \geq \sigma_r > 0$.
+:::

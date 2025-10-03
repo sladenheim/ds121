@@ -7,19 +7,24 @@ format:
         css: 
         - styles.css
         html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+
 ---
 
 ## Learning Objectives
 ::::{style="font-size: .8em"}
-Today we will continue talking about vectors. We will start by re-introducing the concept of a dot (or inner) product of two vectors. The inner product allows us to explore vector geometry, including
 
-:::{.incremental}
+- Definition of dot (or inner) product 
+- Vector geometry:
 
-- vector _length_
-- the _distance_ between two vectors
-- the cosine of the _angle_ between two vectors
-- vector _orthogonality_
-:::
+    - vector _**length**_
+    - the _**distance**_ between two vectors
+    - the cosine of the _**angle**_ between two vectors
+    - vector _**orthogonality**_
+
 ::::
 
 ## Inner Product
@@ -31,14 +36,15 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
+    <span class="label">Inner (dot) product</span>
         <p>
-        Let \(\mathbf{u}, \mathbf{v} \in \mathbb{R}^n\) be \(n\)-dimensional column vectors. 
-        The <b>inner product</b> (or <b>dot product</b>) of \(\mathbf{u}\) and \(\mathbf{v}\) 
-        is the number \(\mathbf{u}^{\top} \mathbf{v}\) such that:
+        Let \(\small{\mathbf{u}, \mathbf{v} \in \mathbb{R}^n}\) be \(\small{n}\)-dimensional column vectors. 
+        The <b>inner product</b> (or <b>dot product</b>) of \(\small{\mathbf{u}}\) and \(\small{\mathbf{v}}\) 
+        is the number \(\small{\mathbf{u}^{\top} \mathbf{v}}\) such that:
         </p>
         <p>
         \[
-          \mathbf{u}^{\top} \mathbf{v} = 
+          \small{\mathbf{u}^{\top} \mathbf{v} = 
           [u_1 \, u_2 \, \ldots \, u_n]
           \begin{bmatrix}
             v_1 \\
@@ -47,7 +53,7 @@ def generate_html():
             v_n
           \end{bmatrix}
           = u_1 v_1  + \cdots + u_n v_n
-          = \sum_{i=1}^{n} u_i v_i.
+          = \sum_{i=1}^{n} u_i v_i.}
         \]
         </p>
     </div>
@@ -58,53 +64,86 @@ display(HTML(html_content))
 
 ```
 
-The inner product is also denoted by $\mathbf{u} \cdot \mathbf{v}$.
+__Remark__: The inner product is also denoted by $\small{\mathbf{u} \cdot \mathbf{v}}$.
 
 ::::
+
+:::{.notes}
+NUMBER!
+
+Do they know Sigma notation?
+:::
 
 ## Inner Product
 
 ::::{style="font-size: .8em"}
-Let us look at some examples.
-
- The vectors 
-$\mathbf{u} = \begin{bmatrix}4 \\ 2\end{bmatrix}$ 
+__Example__: The vectors $\small{\mathbf{u} = \begin{bmatrix}4 \\ 2\end{bmatrix}}$ 
 and 
-$\mathbf{v} = \begin{bmatrix}-1 \\ 2\end{bmatrix}$ 
+$\small{\mathbf{v} = \begin{bmatrix}-1 \\ 2\end{bmatrix}}$ 
 have a zero dot product:
-$$\mathbf{u} \cdot \mathbf{v} 
+$$\small{\mathbf{u} \cdot \mathbf{v} 
 = \begin{bmatrix}4 \\ 2\end{bmatrix}
 \cdot
 \begin{bmatrix}-1 \\ 2\end{bmatrix}
-= -4 + 4 = 0.
-$$
+= -4 + 4 = 0.}$$
+
+__Example__:
+Assume that we have three goods to buy and sell. Their prices are known per unit.
+
+- Price vector $\small{\mathbf{p} =\mathbf{\begin{bmatrix} p_1 \\ p_2 \\ p_3 \end{bmatrix}}}.$ 
+<!-- for each unit — this is the price vector $\small{\mathbf{p}}$.  -->
+- Quantities vector $\small{\mathbf{q} = \mathbf{\begin{bmatrix} q_1 \\ q_2 \\ q_3 \end{bmatrix}}}$. 
+
 
 ::::
+
+:::{.notes}
+Buy Negative
+
+Sell Positive
+
+:::
 
 ## Inner Product
 
 ::::{style="font-size: .8em"}
 
-Dot products enter in economics and data science. Assume that we have three goods to buy and sell. Their prices are 
-$\mathbf{\begin{bmatrix} p_1 \\ p_2 \\ p_3 \end{bmatrix}}$ 
-for each unit — this is the price vector $\mathbf{p}$. The quantities we buy or sell are 
-$\mathbf{q} = \mathbf{\begin{bmatrix} q_1 \\ q_2 \\ q_3 \end{bmatrix}}$. 
-They are positive when we sell, negative when we buy. Selling $q_1$ units at the price $p_1$ brings $q_1 p_1$.
+<!-- Dot products enter in economics and data science.  -->
+__Example (continued)__: The quantities are positive when we sell, negative when we buy. 
 
-The total income is the inner product of $\mathbf{q}$ and $\mathbf{p}$:
+Selling $\small{q_1}$ units at the price $\small{p_1}$ brings $\small{q_1 p_1}$.
 
-$$
-\text{Income} = 
+The total income is the inner product of $\small{\mathbf{q}}$ and $\small{\mathbf{p}}$:
+
+$$\small{\text{Income} = 
 \begin{bmatrix} q_1 & q_2 & q_3 \end{bmatrix}
 \begin{bmatrix} 
 p_1 \\ 
 p_2 \\ 
 p_3 
 \end{bmatrix}
-= q_1 p_1 + q_2 p_2 + q_3 p_3.
-$$
+= q_1 p_1 + q_2 p_2 + q_3 p_3.}$$
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What does it mean if the inner product of \(\small{\mathbf{q}}\) and \(\small{\mathbf{p}}\) is equal to zero?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
 
 ::::
+
+:::{.notes}
+You have sold some items and used that money to buy others. Result: breaking even: no profit or loss.
+:::
 
 <!-- ::::{.fragment .center-text style="font-size: .75em"}
 
@@ -135,6 +174,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
+    <span class="label">Properties of inner products</span>
         <p>Let \(\mathbf{u}\), \(\mathbf{v}\), and \(\mathbf{w}\) be vectors in \( \mathbb{R}^n \), and let \( c \) be a scalar. Then:</p>
         <ul>
             <li><b>\( \mathbf{u}^{\top} \mathbf{v} = \mathbf{v}^{\top} \mathbf{u} \)</b> <em>(symmetry)</em></li>
@@ -149,7 +189,24 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-With the inner product at our disposal, let's start talking about vector geometry.
+<!-- With the inner product at our disposal, let's start talking about vector geometry. -->
+
+<br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Can you explain why the inner product is symmetric?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
 ::::
 
 ## Vector Lengths
@@ -158,7 +215,7 @@ With the inner product at our disposal, let's start talking about vector geometr
 
 How do we measure the length of a vector?
 
-:::{.center-text .fragment}
+:::{.center-text}
 
 ```{python}
 import matplotlib.pyplot as plt
@@ -227,10 +284,16 @@ plt.show()
 ```
 
 :::
-:::{.fragment}
-In two dimensions, the length is $\sqrt{v_1^2 + v_2^2}$.
-:::
+
+In $\mathbb{R}^2$, the length is $\sqrt{v_1^2 + v_2^2}$.
+
 ::::
+
+:::{.notes}
+
+pi-THUH-gor-ee-uhn THEER-uhm
+
+:::
 
 ## Vector Lengths
 
@@ -238,7 +301,7 @@ In two dimensions, the length is $\sqrt{v_1^2 + v_2^2}$.
 
 What happens in $\mathbb{R}^3$?
 
-:::{.center-text .fragment}
+:::{.center-text}
 ```{python}
 import numpy as np
 import matplotlib.pyplot as plt
@@ -347,22 +410,29 @@ plt.show()
 ```
 :::
 
-:::{.fragment style="font-size: .8em"}
 In $\mathbb{R}^3$, the length is $\sqrt{v_1^2 + v_2^2 + v_3^2}$.
 :::
+
+:::{.notes}
+
+pi-THUH-gor-ee-uhn THEER-uhm X 2
+
+DRAW!
+
 :::
 
 ## Vector Lengths
 
-:::{style="font-size: .75em"}
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
     <div class="purple-box">
+    <span class="label">Vector length (norm)</span>
         <p>
-        The <b>length</b> (or <b>norm</b>) of a vector \(\mathbf{v} = {\tiny \begin{bmatrix}v_1 \\v_2 \\\vdots \\v_n\end{bmatrix}} \in \mathbb{R}^n\) is the non-negative scalar \(\|\mathbf{v}\|\), defined by: 
+        The <b>length</b> (or <b>norm</b>) of a vector \(\mathbf{v} = {\tiny \begin{bmatrix}v_1 \\v_2 \\\vdots \\v_n\end{bmatrix}}\) is the non-negative scalar \(\|\mathbf{v}\|\), defined by: 
         \(\|\mathbf{v}\| = \sqrt{\mathbf{v} ^{\top} \mathbf{v}} = \sqrt{\sum_{i=1}^{n} v_i^2} = \sqrt{v_1^2 + v_2^2 + \cdots + v_n^2}\).
         </p>
     </div>
@@ -372,28 +442,37 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
+
+__Remark__: We also refer to $\|\mathbf{v}\|$ as the magnitude of $\mathbf{v}$. 
+
 :::
 
 :::{.fragment style="font-size: .8em"}
-We also refer to $\|\mathbf{v}\|$ as the magnitude of $\mathbf{v}$. 
+The length of a four-dimensional vector would be $\sqrt{v_1^2 + v_2^2 + v_3^2 + v_4^2}$. 
+
+__Example__: $\begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}$ has a length of $\sqrt{1^2 + 1^2 +1^2 +1^2}= 2$.
 :::
 
-:::{.fragment style="font-size: .8em"}
-The length of a four-dimensional vector would be $\sqrt{v_1^2 + v_2^2 + v_3^2 + v_4^2}$. That is, $\begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}$ has a length of $\sqrt{1^2 + 1^2 +1^2 +1^2}= 2$.
+:::{.notes}
+non-negative scalar
+
+Remember the non-negativity property: inner product with itself $\geq$ 0!
 :::
 
 ## Normalization to Unit Length
 
 :::{style="font-size: .8em"}
-The word _"unit"_ is always indicating that some measurement equals _"one."_ The _unit_ price is the price for _one_ item. A _unit_ cube has rides of length _one._
+The word _**"unit"**_ is always indicating that some measurement equals _**"one"**_. <br>
+The _**unit price**_ is the price for one item. A _**unit cube**_ has sides of length one.
 
-:::{.fragment style="font-size: 1em"}
+:::{style="font-size: 1em"}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
     <div class="purple-box">
+    <span class="label">Unit vector</span>
         <p>
         A <b>unit vector</b> \(\mathbf{u}\) is a vector whose length equals one. That is, \(\|\mathbf{u}\| = 1.\)
         </p>
@@ -406,29 +485,47 @@ display(HTML(html_content))
 ```
 :::
 
-:::{.fragment}
 For any scalar $c$, the length of $c\mathbf{v}$ is $|c|$ times the length of $\mathbf{v}$:  
 $$
 c\mathbf{v} = |c|\|\mathbf{v}\|.
 $$
-:::
-<br>
 
-:::{.fragment}
 If we divide a non-zero vector $\mathbf{v}$ by its length, we obtain a unit vector:
 $$
 \mathbf{u} = \frac{1}{\|\mathbf{v}\|}\mathbf{v}.
 $$
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>If \(\mathbf{u}\) is a unit vector, what is the length of \(-2\mathbf{u}\)?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
 :::
+
+:::{.notes}
+
+Use the property above with $c=\frac{1}{\|\mathbf{v}\|}$!
+
+Think of 1000 u! Simplify your computations!
+
 :::
 
 ## Normalization to Unit Length
 
 ::::{style="font-size: .8em"}
-**Example.** Let $\mathbf{v}= {\tiny\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}}$. Find the unit vector $\mathbf{u} \in \mathbb{R}^3$ in the _same direction_ as $\mathbf{v}$.
+**Example**: Let $\mathbf{v}= {\small\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}}$. Find the unit vector $\mathbf{u}$ in the same direction as $\mathbf{v}$.<br>
 
-:::{.fragment}
-**Solution.** _First,_ compute the length of $\mathbf{v}$:
+First, compute the length of $\mathbf{v}$:
 
 :::{.center-text}
 $\|\mathbf{v}\|^2 = \mathbf{v}^\top \mathbf{v} = (4)^2 + (-2)^2 + (2)^2 + (1)^2 = 25.$
@@ -437,13 +534,12 @@ $\|\mathbf{v}\| = \sqrt{25} = 5.$
 :::
 :::
 
-:::{.fragment}
-_Then,_ multiply $\mathbf{v}$ by $1/\|\mathbf{v}\|$ to obtain:
-
+::::{style="font-size: .8em"}
+Then, multiply $\mathbf{v}$ by $1/\|\mathbf{v}\|$ to obtain:
+::::
 :::{.center-text}
-$\mathbf{u} = \frac{1}{\|\mathbf{v}\|} \mathbf{v} = \frac{1}{5} \mathbf{v} = \frac{1}{5} \begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix} = \begin{bmatrix} \frac{4}{5} \\ \frac{-2}{5} \\ \frac{2}{5} \\ \frac{1}{5} \end{bmatrix}.$
-:::
-:::
+$\mathbf{u} = \frac{1}{\|\mathbf{v}\|} \mathbf{v} = \frac{1}{5} \mathbf{v} = \frac{1}{5} {\small\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}} = {\small\begin{bmatrix} \frac{4}{5} \\ \frac{-2}{5} \\ \frac{2}{5} \\ \frac{1}{5} \end{bmatrix}}.$
+
 ::::
 
 ## Distance
@@ -491,6 +587,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
+    <span class="label">Distance between vectors</span>
         <p>
         For <em>\(\mathbf{u}\)</em> and <em>\(\mathbf{v}\)</em> in \(\mathbb{R}^n\), the distance between \(\mathbf{u}\) and \(\mathbf{v}\), written as \(\text{dist}(\mathbf{u},\mathbf{v})\) is the length of the vector \(\mathbf{u}-\mathbf{v}\). That is,
         \[
@@ -507,6 +604,10 @@ display(HTML(html_content))
 
 ::::
 
+:::{.notes}
+Always non-negative!
+:::
+
 ## Distance 
 
 ::::{style="font-size: .8em"}
@@ -518,7 +619,7 @@ Consider $\mathbf{u} = \begin{bmatrix} 7 \\ 1 \end{bmatrix}$ and $\mathbf{v} = \
 import matplotlib.pyplot as plt
 import numpy as np
 
-u = np.array([6, 1])
+u = np.array([7, 1])
 
 v = np.array([3, 2])
 
@@ -584,20 +685,26 @@ plt.show()
 ```
 :::
 
-Geometrically, the distance between two vectors is the length of their difference.
+Geometrically, the distance between two vectors is the _**length of their difference**_.
 ::::
+
+:::{.notes}
+Multiply v by -1
+
+Use head-to-tail method
+:::
 
 ## Distance
 
 :::{style="font-size: .8em"}
-Algebraically, the distance between $\mathbf{u}$ and $\mathbf{v}$ in $\mathbb{R}^n$ follows the formula for Euclidian distance between two points.
+Algebraically, the distance between $\mathbf{u}$ and $\mathbf{v}$ in $\mathbb{R}^n$ follows the formula for Euclidean distance between two points.
 $$
-\text{dist}(\mathbf{u},\mathbf{v}) = \sqrt{(v_1 - u_1)^2 + (v_2 - u_2)^2 + \dots + (v_n - u_n)^2}.
+\text{dist}(\mathbf{u},\mathbf{v}) = {\small\sqrt{(v_1 - u_1)^2 + (v_2 - u_2)^2 + \dots + (v_n - u_n)^2}.}
 $$
 Which you can see is equal to:
 
 $$
-\|\mathbf{u} - \mathbf{v}\| = \sqrt{(\mathbf{u} - \mathbf{v})^\top (\mathbf{u} - \mathbf{v})} = \sqrt{\begin{bmatrix} u_1 - v_1 & \dots & u_n - v_n \end{bmatrix} \begin{bmatrix} u_1 - v_1 \\ \vdots \\ u_n - v_n \end{bmatrix}}.
+\|\mathbf{u} - \mathbf{v}\| = {\small\sqrt{(\mathbf{u} - \mathbf{v})^\top (\mathbf{u} - \mathbf{v})} = \sqrt{\begin{bmatrix} u_1 - v_1 & \dots & u_n - v_n \end{bmatrix} \begin{bmatrix} u_1 - v_1 \\ \vdots \\ u_n - v_n \end{bmatrix}}}.
 $$
 
 :::
@@ -667,7 +774,7 @@ plt.show()
 ```
 :::
 
-Draw the line conneting $\mathbf{u}$ and $\mathbf{v}$. Then $\mathbf{u}$ and $\mathbf{v}$ are perpendicular if and only if this is a right triangle, meaning that the Pythagorean theorem is satisfied.
+Draw the line conneting $\mathbf{u}$ and $\mathbf{v}$. Then $\mathbf{u}$ and $\mathbf{v}$ are perpendicular if and only if this forms a right triangle, satisfying the Pythagorean theorem.
 ::::
 ## Orthogonality
 
@@ -726,7 +833,23 @@ ax.set_aspect('equal', adjustable='box')
 plt.show()
 ```
 
-What is the length of the red side of the triangle?
+:::
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What is the length of the red side of the triangle?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
 :::
 ## Orthogonality
 :::{style="font-size: .8em"}
@@ -788,11 +911,17 @@ plt.show()
 ```
 :::
 
-So the blue and green lines are perpendicular if and only if:
+Hence, the blue and green lines are perpendicular if and only if:
 
 $$
-\|\mathbf{u}-\mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{u}\|^2.
+\|\mathbf{u}-\mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2.
 $$
+:::
+
+:::{.notes}
+
+pi-THUH-gor-ee-uhn THEER-uhm
+
 :::
 
 ## Orthogonality
@@ -812,29 +941,29 @@ $$
 $$
 :::
 
+:::{.notes}
+No assumption of orthogonality!
+:::
+
 ## Orthogonality
 <!-- Unable to get red color for latex expression -->
 :::{style="font-size: .8em"}
 
 We now have two equations for the square distance between $\mathbf{u}$ and $\mathbf{v}$.
 
-:::{.fragment}
 In general,
 
 $$
-\|\mathbf{u} - \mathbf{v} \|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2 - \mathbf{2 u^\top v}.
+\|\mathbf{u} - \mathbf{v} \|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2 - 2\mathbf{ u^\top v}.
 $$
-:::
-:::{.fragment}
 Assuming that $\mathbf{u}$ and $\mathbf{v}$ are orthogonal,
 
 $$
 \|\mathbf{u} - \mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2.
 $$
-:::
-:::{.fragment}
-Thus, if $\mathbf{u}$ is orthogonal to $\mathbf{v}$, then $\mathbf{u}^\top \mathbf{v}$.
-:::
+
+Thus, if $\mathbf{u}$ is orthogonal to $\mathbf{v}$, then $\mathbf{u}^\top \mathbf{v}=0$.
+
 :::
 
 ## Orthogonality
@@ -846,6 +975,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
+    <span class="label">Orthogonal vectors</span>
         <p>
         Two vectors \(\mathbf{u}\) and \(\mathbf{v}\) in \(\mathbb{R}^n\) are <b>orthogonal</b>, if \(\mathbf{u}^\top \mathbf{v} = 0\).
         </p>
@@ -856,17 +986,17 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
-:::{.fragment}
+__Remark__: The zero vector $\mathbf{0}$ is perpendicular to every vector $\mathbf{v}$ because $\mathbf{0}^\top\mathbf{v}$ is always zero.
+
 The inner product of $\mathbf{u}$ and $\mathbf{v}$ is zero when the angle $\theta$ between them is $90^\circ$. Then $\cos\theta = 0$.
-:::
 
-:::{.fragment}
-The zero vector $\mathbf{0}$ is perpendicular to every vector $\mathbf{v}$ because $\mathbf{0}^\top\mathbf{v}$ is always zero.
-:::
+Now suppose $\mathbf{u}^\top\mathbf{v}$ is not zero. 
 
-:::{.fragment}
-Now suppose $\mathbf{u}^\top\mathbf{v}$ is not zero. If $\mathbf{u}^\top\mathbf{v}$ is _positive_, the angle is less than $90^\circ$. If $\mathbf{u}^\top\mathbf{v}$ is _negative_, the angle is above $90^\circ$.
-:::
+- If $\mathbf{u}^\top\mathbf{v}$ is _**positive**_, the angle is less than $90^\circ$. 
+- If $\mathbf{u}^\top\mathbf{v}$ is _**negative**_, the angle is above $90^\circ$.
+
+
+
 ::::
 
 ## Angle Between Two Vectors
@@ -1051,10 +1181,14 @@ Note that $\frac{\mathbf{u}^\top}{\|\mathbf{u}\|}$ and $\frac{\mathbf{v}}{\|\mat
 :::
 :::
 
+:::{.notes}
+The length is not important!
+:::
+
 ## Angle Between Two Vectors
 
 ::::{style="font-size: .8em"}
-**Example.** Consider $\mathbf{u}=\begin{bmatrix} .8 \\ .6 \end{bmatrix}$, and $\mathbf{v}=\begin{bmatrix} .28 \\ .96 \end{bmatrix}.$
+**Example**: Consider $\mathbf{u}=\begin{bmatrix} .8 \\ .6 \end{bmatrix}$, and $\mathbf{v}=\begin{bmatrix} .28 \\ .96 \end{bmatrix}.$
 
 :::{.fragment}
 They are both unit vectors: $0.8^2 + 0.6^2 = 1$ and $0.28^2 + 0.96^2 = 1.$
@@ -1179,7 +1313,7 @@ print("Angle theta =", theta_degrees)
 ```
 :::
 
-## Key Ideas
+<!-- ## Key Ideas
 
 :::{.incremental style="font-size: .8em"}
 - The inner product $\mathbf{u}^\top \mathbf{v}$ multiplies each component $u_i$ by $v_i$ and sums all $u_i v_i$.
@@ -1187,4 +1321,4 @@ print("Angle theta =", theta_degrees)
 - The vector $\frac{\mathbf{v}}{\|\mathbf{v}\|}$ is a unit vector. Its length is 1.
 - The inner product $\mathbf{u}^\top \mathbf{v}$ is zero when $\mathbf{u}$ and $\mathbf{v}$ are orthogonal.
 - The cosine of $\theta$, the angle between $\mathbf{u}$ and $\mathbf{v}$, is given by $\cos\theta = \mathbf{\frac{\mathbf{u}^\top \mathbf{v}}{\|\mathbf{u}\|\|\mathbf{v}\|}}$.
-:::
+::: -->

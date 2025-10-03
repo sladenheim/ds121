@@ -7,8 +7,12 @@ format:
         css: 
         - styles.css
         html-math-method: mathjax
----
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
 
+---
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
@@ -18,7 +22,7 @@ Today we will revisit Gauss-Jordan elimination that should be familiar to you fr
 
 :::{.center-text}
 
-<img src="images/linearity/three-modes.jpeg" width=800 />
+<img src="images/linearity/three-modes.jpeg" width=600 />
 
 :::
 
@@ -545,7 +549,7 @@ $$
 \end{array}\right]
 $$
 
-In this diagram, the $\blacksquare$ symbols denote nonzero pivot positions, and the $*$ symbols can be any value.   
+In this diagram, the $\blacksquare$ symbols denote pivot positions, and the $*$ symbols can be any value.   
 :::
 
 ## Reduced Echelon Form
@@ -687,7 +691,7 @@ Input: an echelon form of $A$.
 We start at the top again, so let $i = 1$.  Repeat the following steps:
 
 1. If row $i$ is all zeros, or if $i$ exceeds the number of rows in $A,$ stop.
-2. If row $i$ has a nonzero pivot value, divide row $i$ by its pivot value.  This creates a 1 in the pivot position.
+2. If row $i$ has a pivot value, divide row $i$ by its pivot value.  This creates a 1 in the pivot position.
 3. Use row reduction operations to create zeros in all positions above the pivot.  
 4. Let $i = i+1.$
 :::
@@ -760,7 +764,7 @@ We can summarize the Elimination stage as, in the worst case:
     * add a multiple of row $i$ to all rows below it
 
 :::{.center-text}
-<img src="images/linearity/ge-1.jpeg" width = 500/>
+<img src="images/linearity/ge-1.jpeg" width = 400/>
 
 :::
 :::
@@ -827,11 +831,4 @@ Remember, we think about algorithms that run in $n^3$ time to be _slow_. We shou
 :::
 :::
 
-## Key Ideas
-
-:::{style="font-size: .8em" .incremental}
-
-- Gauss-Jordan elimination is a process that solves linear systems using elementary row operations. It has two stages: elimination and backsubstitution.
-
-- Gauss-Jordan elimination can be written as a systematic computer algorithm with flop count of $\frac{2}{3}n^3.$
-::: 
+ 

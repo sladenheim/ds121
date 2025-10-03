@@ -7,6 +7,11 @@ format:
         css: 
         - styles.css
         html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+
 ---
 
 ```{python}
@@ -32,20 +37,16 @@ An important goal of this course is to get computers to do matrix math with acce
 ## Computing Quickly and Accurately{.smaller-title}
 
 :::{style="font-size: .9em"}
-Data science is largely about manipulating matrices since almost all data can be represented as a matrix: time-series, structured data, images, and language (often represented as word embeddings).
+Data science is largely about manipulating matrices since almost all data can be represented as a matrix: time-series, structured data, images, and text.
 
-:::{.fragment}
-There are (at least) four things to keep in mind when choosing or designing an algorithm for vector and matrix computations:
+There are four main things to keep in mind when choosing or designing an algorithm for vector and matrix computations:
 
 - Speed
 - Memory Use
 - Accuracy/Stability
 - Scalability/Parallelization
-:::
 
-:::{.fragment}
 Often there will be trade-offs between these categories.
-:::
 
 :::
 

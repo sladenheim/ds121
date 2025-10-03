@@ -1,11 +1,244 @@
 ---
-title: "Introduction to Linear Algebra"
+title: "Introduction "
 number: "Lecture 1"
-author: "DS-121"
+author: "DS-121<br>Boston University"
 format: 
     revealjs:
         css: styles.css
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true 
 ---
+
+## Logistics
+:::{style="font-size: .8em"}
+
+_Lectures_
+
+685-725 Comm Ave CAS 522
+
+- Section A: MWF 9:05 AM -- 9:55 AM
+- Section B: MWF 10:10 AM - 11:00 AM
+
+_Discussions_
+
+ - A2: 888 Commonwealth Ave IEC B10, M 1:25 PM -- 2:15 PM
+ - B2: 64-86 Cummington Mall PSY B39, W  2:30 PM - 3:20 PM
+ - B3: 871 Commonwealth Ave CGS 313, W 3:35 PM - 4:25 PM
+
+:::
+
+:::{.notes}
+Welcome! 
+
+My name
+:::
+
+## Logistics
+:::{style="font-size: .8em"}
+
+_Teaching Staff_
+
+ - Instructor: Prof. Lisa Wobbes  <br>
+ - TF: Wanli Chen  <br>
+ - CAs: Sarah Rashed, Alyssa Tay, Yutong (Chris) Wu
+
+Please use private messages on Piazza for all email needs!
+:::
+
+:::{.notes}
+Some of them might join us.
+
+Wanli leads discussions
+:::
+
+## Getting Set Up
+:::{style="font-size: .8em"}
+
+_Platforms_
+
+- __Piazza__: https://piazza.com/bu/fall2025/ds121 <br>
+Check it weekly!
+- __Gradescope__: https://www.gradescope.com (Entry code: B3DKJ3)<br>
+
+- __Grasple__: https://app.grasple.com/#/courses/12988 
+
+_Resources_
+
+- __Lecture slides and notes__: Links are on Piazza<br>
+<!-- Slides reflect the latest content! -->
+
+_Programming environment_ 
+
+ - __Python__: Setup instructions are on Piazza
+
+:::
+
+:::{.notes}
+Has everyone been enrolled?
+
+Familiar with Piazza, Gradescope, Python?
+:::
+
+## Grasple
+:::{style="font-size: .75em"}
+
+- New addition to DS-121
+- 5-8 questions per homework assignment (HW 0: only 1 question)
+- Each question is worth 1 point on Grasple and 3 points for the assignment
+- Immediate digital feedback: layered structure
+- Grading: 
+    - Main question correct in 1 attempt: 100%
+    - Sub-question A correct, main question correct: 66%
+    - Sub-question A correct, main question incorrect: 33%
+    - Sub-question B correct, main question correct: 50%
+    - Sub-question B correct, main question incorrect: 25%
+    - Sub-question B incorrect: 0%
+
+:::
+
+:::{.notes}
+New exciting platform
+
+Draw the scheme
+
+:::
+
+## Grasple
+:::{style="font-size: .8em"}
+
+- Do **not** skip questions! 
+- Only your first attempt on each assignment counts
+- Report bugs directly to Yutong Wu or Prof. Wobbes
+
+:::{.center-text}
+<img src="images/Grasple.png" width=900/>
+:::
+
+- Share your feedback with us through the survey
+
+:::
+
+:::{.notes}
+Wanli will explain more
+
+Pilot year
+
+Future: integration with Gradescope
+:::
+
+
+## Course Grade
+:::{style="font-size: .8em"}
+_Computation_
+
+- 5% Participation
+- 15% Homework assignments
+- 15% Midterm 1
+- 15% Midterm 2 
+- 15% Midterm 3 
+- 35% Final exam
+
+_Participation_
+
+- Discussion Labs (3%): attend at least 9 out of 13
+- Homework 0 and Grasple Survey (2%)
+:::
+
+
+## Course Grade
+:::{style="font-size: .8em"}
+_Homework_
+
+- 8 homework assignments
+- Due at 11:59 pm on a Wednesday
+- Pen-and-paper mathematical questions and coding questions
+- Each assignment has questions on both Gradescope and Grasple
+- Questions during discussions and office hours are allowed and encouraged
+- Bonus quizzes during discussions
+- Clarity and correctness matter
+- No late submissions, no assignments are dropped
+
+:::
+
+## Course Grade
+:::{style="font-size: .8em"}
+_Exams_
+
+All exams are cumulative, with emphasis on material covered since the previous exam. Content may include lectures, discussion labs, homework, and required readings.
+
+- Midterm 1: __October 8, before class, CAS 522__ <br>
+Take-home exam. You must submit a hard copy. Late or digital submissions will not be accepted!
+- Midterm 2: __October 27, during class, CAS 522__ <br>
+In-person exam
+- Midterm 3: __November 17, during class, CAS 522__ <br>
+In-person exam
+- Final exam: __December 15-19__ <br>
+In-person exam
+:::
+
+:::{.notes}
+Compromise between 2 and 3 midterms
+:::
+
+## Policies
+:::{style="font-size: .8em"}
+_Regrade requests_
+
+- Up to one week after the grade is posted 
+- Submission via Gradescope 
+
+_Collaboration Policy_
+
+- No copying (or allowing to copy)
+- No searching for answers
+- Disclose collaboration and sources
+
+_Learning Environment_
+
+- Inclusive environment for individuals of all genders, races, cultures, abilities, and sexual orientations
+
+
+:::
+
+:::{.notes}
+Please be respectful to your fellow students and the teaching staff
+:::
+
+## General Information
+:::{style="font-size: .8em"}
+
+_Office Hours_
+
+- Schedule is on Piazza under Resources/Staff 
+- Any changes will be announced on Piazza
+
+_Accommodations_
+
+- Only through Office for Disability Services (ODS) 
+
+:::
+
+:::{.notes}
+My OH: CDS 1401 at 3:30 pm
+:::
+
+## General Information
+:::{style="font-size: .8em"}
+
+__More details, including the weekly schedule, can be found in the syllabus.__
+
+:::{.center-text}
+<img src="images/Piazza_DS121.png" width=900/>
+:::
+:::
+
+:::{.notes}
+Where to find the syllabus
+
+Read the academic code of conduct 
+:::
+
 
 ## Why Linear Algebra?   
 
@@ -13,8 +246,19 @@ format:
 ![](/images/image1.jpeg)
 :::
 
+:::{style="font-size: .8em"}
+
+
 ::: {.center-text}
 Linear algebra, probability/statistics, and optimization are the mathematical pillars of machine learning.
+:::
+
+:::
+
+:::{.notes}
+DS-121: Linear algebra
+
+DS-122: Probability/statistics, and optimization
 :::
 
 
@@ -33,9 +277,21 @@ Linear algebra enables powerful machine learning techniques such as k-means for 
 :::
 :::
 
+:::{.notes}
+k-means: customer segmentation, document clustering
+
+PageRank: number and quality of links to other pages
+
+PCA: image compression, facial recognition
+:::
+
 ## Why Linear Algebra?
 
-:::{.columns}
+:::{.center-text}
+<img src="images/PCA_genes_Europe.png" width=700/>
+:::
+
+<!-- :::{.columns}
 ::: {.column width="50%"}
 ![](images/PCA_genes_Europe.png){fig-align="left" width=110%}
 :::
@@ -43,6 +299,14 @@ Linear algebra enables powerful machine learning techniques such as k-means for 
 ::: {.column width="50%"}
 ![](images/Handwritten_digits.png){fig-align="right" width=110%}
 :::
+::: -->
+
+:::{.notes}
+Data: 3000 x 500 k
+
+Genes mirror geography
+
+Application?
 :::
 
 ## What is Linear Algebra?
@@ -64,19 +328,26 @@ It involves understanding and manipulating multi-dimensional data through concep
 :::
 :::
 
+:::{.notes}
+Vectors, matrices, linear systems, and linear transformations
+
+Understanding and manipulating **multi-dimensional** data
+
+:::
+
 ## Three Modes of Thinking
 
 :::{.incremental}
 <span style="font-size: 0.8em;">
-- **Algebraic thinking**: how to correctly manipulate symbols in a consistent logical framework.
+- **Algebraic thinking**: how to correctly _manipulate symbols_ in a consistent logical framework.
 </span>
 
 <span style="font-size: 0.8em;">
-- **Geometric thinking**: learning to extend familiar two- and three-dimensional concepts to higher dimensions.
+- **Geometric thinking**: learning to _extend_ familiar two- and three-dimensional concepts _to higher dimensions_.
 </span>
 
 <span style="font-size: 0.8em;">
-- **Computational thinking**: understanding the relationship between abstract algebraic machinery and actual computations which efficiently arrive at the correct answer.
+- **Computational thinking**: understanding the _relationship between abstract algebraic machinery and actual computations_ which _efficiently_ arrive at the correct answer.
 </span>
 
 :::{.fragment}
@@ -92,30 +363,34 @@ Integrating these three concepts is _essential_ for using linear algebra in data
 ![](images/01-modes.jpg)
 :::
 
-## Three Modes of Vector ${\bf v}$
+## Three Modes of Vector $\mathbf{v}$
 :::{.incremental}
 <span style="font-size: 0.8em;">
-- **Algebraically:** a vector $\mathbf{v}$ is an abstract object that permits addition ${\bf v} + {\bf w}$ and multiplication by a constant or *scalar* $c$ to form $c {\bf v}$.
+- **Algebraically:** a vector $\mathbf{v}$ is an abstract _object_ that permits addition ${\bf v} + {\bf w}$ and multiplication by a constant or *scalar* $c$ to form $c {\bf v}$.
 </span>
 
 <span style="font-size: 0.8em;">
-- **Computationally:** a vector is an ordered list of real numbers.
+- **Computationally:** a vector is an ordered _list_ of real numbers.
 </span>
 
 <span style="font-size: 0.8em;">
   $$
-  \large \begin{array}{ccc}
+  \small{\begin{array}{ccc}
   {\bf u} = \left[\begin{array}{r}3\\-1\end{array}\right] &
   {\bf v} = \left[\begin{array}{c}2\\2\end{array}\right] &
   {\bf w} = \left[\begin{array}{c}-2\\-1\end{array}\right]
-  \end{array}
+  \end{array}}
   $$
 </span>
 :::
 
-## Three Modes of Vector V
+:::{.notes}
+Complex numbers are not the focus
+:::
+
+## Three Modes of Vector $\mathbf{v}$
 <span style="font-size: 0.8em;">
-- **Geometrically:** a vector is a point in $n$-dimensional space.
+- **Geometrically:** a vector is a _point_ (or an arrow) in $n$-dimensional space.
 </span>
 
 :::{.center-text}
@@ -152,7 +427,7 @@ plt.show()
 ```
 :::
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
-<span style="font-size: 0.8em;">
+<span style="font-size: 0.75em;">
 Let us consider the well known Iris Dataset.
 </span>
 
@@ -167,6 +442,16 @@ print(iris.feature_names)
 ```
 :::{center-text}
 ![](images/01-iris.png)
+:::
+
+:::{.notes}
+Ronald Fisher, 1936
+
+SEE-puhl
+
+PET-uhl
+
+VUR-sih-kull-ur seh-TOE-zuh vur-JIN-ih-kuh
 :::
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
@@ -194,6 +479,14 @@ print(A)
 
 :::
 
+:::{.notes}
+SEE-puhl
+
+PET-uhl
+
+VUR-sih-kull-ur seh-TOE-zuh vur-JIN-ih-kuh
+:::
+
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
 
 <span style="font-size: .8em;">This dataset might look random to the human eye. However, if we plot its attributes we can see that there is structure within the data.</span>
@@ -213,6 +506,8 @@ plt.xlabel(iris.feature_names[x_index])
 plt.ylabel(iris.feature_names[y_index]);
 ```
 :::
+
+
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
 
@@ -239,6 +534,15 @@ We can make the following observations.
   - We should be able to decompose this $150 \times 4$ matrix into simpler matrices.
 </span>
 
+:::{.notes}
+Compressible: the same physics and biology laws
+
+SEE-puhl PET-uhl VUR-sih-kull-ur seh-TOE-zuh vur-JIN-ih-kuh
+
+What makes a matrix **simple**?
+:::
+
+
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
 
 <span style="font-size: 0.8em;">
@@ -260,10 +564,17 @@ What makes a matrix _simple_?
 </span>
 :::
 
+:::{.notes}
+What number is simpler, 6 or 3? Why?
+:::
+
+
+
+
 ## Matrix Decomposition
 <span style="font-size: 0.8em;">
 - $A = L U$ - Gauss-Jordan Elimination <br>
-- $A = Q R$ - Gram-Schmidt orthogonalization <br>
+- $A = Q R$ - Gram-Schmidt Orthogonalization <br>
 - $A = U \Sigma V$ - Singular Value Decomposition or SVD
 </span>
 
@@ -278,4 +589,10 @@ Many techniques in this course involve dealing with high-dimensional datasets fo
 
 :::{.center-text}
 ![](images/01-spurious.png)
+:::
+
+:::{.notes}
+Low intrinsic dimensionality: physical or mathematical structure
+
+Caution!
 :::

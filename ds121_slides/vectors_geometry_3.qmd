@@ -3,9 +3,15 @@ title: "Classification with <br> K-Nearest Neighbors"
 author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
+        math: true
         css: 
         - styles.css
         html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+
 ---
 
 ```{python}
@@ -19,67 +25,97 @@ import sklearn.metrics as metrics
 ## Learning Objectives
 
 ::::{style="font-size: .8em"}
-In the last lecture, we explored vector geometry, including vector length, distance, and the angle between two vectors.
+- Types of machine learning algorithms:
+    - Supervised vs unsupervised models
+    - Regression vs classification
+    - Parametric vs nonparamteric models
+- $k$-nearest neighbors ($k$-NN):
+    - Hard vs soft classification
+    - Model selection
+    - Challenges
+
+<!-- In the last lecture, we explored vector geometry, including vector length, distance, and the angle between two vectors.
 
 :::{.fragment}
 Today, we will build on that foundation by connecting the concept of distance between vectors to a widely used machine learning algorithm known as k-nearest neighbors ($k$-NN). Before diving into $k$-NN, we will discuss different types of ML methods.
 :::
 
 :::{.fragment}
-By the end of this lecture, you will understand how vector distances are applied in $k$-NN, be able to differentiate between various ML approaches, and recognize the challenges posed by high-dimensional data.
-:::
+By the end of this lecture, you will understand how vector distances are applied in $k$-NN, be able to differentiate between various ML approaches, and recognize the challenges posed by high-dimensional data. -->
 
 ::::
 
 ## Types of Machine Learning Algorithms {.smaller}
 
 ::::{style="font-size: 1.2em"}
-Encoding data into vectors allows us to use vector geometry to uncover structure in the data. This is the objective of many data science algorithms.
+Vector encoding uses geometry to reveal data structure, a core objective in data science.
 ::::
 
 <img src="images/vectors_ds/image_types.jpg" />
 
+:::{style="font-size: 1.2em"  }
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What kinds of machine learning algorithms do you know?
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+:::{.notes}
+Classification: DS minor vs major
+
+Clustering: handwritten digits
+:::
+
 ## Supervised vs. Unsupervised Learning {.smaller}
 
-:::{style="font-size: 1.2em" .center-y}
+:::{style="font-size: 1.2em"  }
 - __Supervised__ methods:  data items have labels, and we want to learn a function that correctly assigns labels to new data items.
 - __Unsupervised__ methods:  data items do not have labels, and we want to learn a function that extracts  important patterns from the data.
 
-:::{.fragment}
-In this class, we think of the data $\mathbf{x}$ as a vector. We refer to the components of $\mathbf{x}$ as **features**.
+In this class, we think of the data as a vector $\mathbf{x}$. We refer to the entries of $\mathbf{x}$ as **features**.
+
 :::
+
+:::{.notes}
+Regression and classification fall into the supervised learning domain.
 :::
 
 
 ## Supervised Learning
-:::{style="font-size: 0.8em" .center-y}
+:::{style="font-size: 0.8em"}
 Let us write the supervised learning problem more precisely.
 
-- You are given some example data, which we'll think of abstractly as tuples $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,N\}$.  
+- Given: **Training data** $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,N\}$.  
 
-- Your goal is to learn a rule that allows you to predict $y_j$ for some $\mathbf{x_j}$ that is not in the example data you were given.
-:::
+- Goal: Find a rule that allows to predict $y_j$ for a new $\mathbf{x_j}$.
 
+- Assumption: labels $y_i$ have some _**dependence**_ on the features in $\mathbf{x_i}.$
 
-## Supervised Learning
-
-::::{style="font-size: .8em" .center-y}
-The collection $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,N\}$ is called the __training data.__
-
-:::{.fragment}
-Our assumption here is that the labels $y_i$ have some _dependence_ on the features in $\mathbf{x_i}$. For this reason, we sometimes say that:
+For this reason, we sometimes say that:
 
 - the features in the $\mathbf{x_i}$ vectors are the __independent variables__, and
 - the label $y_i$ is the target or __dependent variable__.
 :::
 
-::::
+:::{.notes}
+Set of N tuples
+:::
+
 
 
 ## Supervised Learning
 
-:::{style="font-size: .8em" .center-y}
-Machine learning relies on the following two principles:
+:::{style="font-size: .8em"  }
+Machine learning relies on the following principles:
 
 1. There is a set of functions ("rules") that could be used to predict $y_i$ from $\mathbf{x}_i$. In this case, the goal of learning is to find the "right" function.
 
@@ -87,27 +123,33 @@ Machine learning relies on the following two principles:
 :::
 
 
-## Regression vs. Classification
+## Regression 
 
-::::{style="font-size: .8em" .center-y}
+::::{style="font-size: .8em"  }
 If $y$ is a continuous (numeric) value, then the problem is called __regression.__ 
 
-:::{.incremental}
-- For example, in predicting housing prices, the features $x_{i1}, x_{i2}, x_{i3}, \ldots$ could be a vector containing lot size, square footage, number of bathrooms, etc. of a collection of houses, and $y_i$ could be the sale price of house $i$.
+- For example, in predicting housing prices, the features could be lot size, square footage, number of bathrooms, etc.  and the labels could be the sale price of the house.
 
-- In the regression case, you will usually be satisfied if your prediction is __close__ to the true $y$ value... it usually need not be exact to be useful.
-:::
+- Predictions are useful as long as they are _**close**_ to the true value. They don't need to be exact.
+
+<!-- - For example, in predicting housing prices, the features $x_{i1}, x_{i2}, x_{i3}, \ldots$ could be a vector containing lot size, square footage, number of bathrooms, etc. of a collection of houses, and $y_i$ could be the sale price of house $i$. -->
+
 ::::
 
+:::{.notes}
+Advertising and sales
+:::
 
-## Regression vs. Classification
 
-::::{style="font-size: .8em" .center-y}
-If $y$ is a discrete value (a label, for example) then the problem is called __classification.__
+## Classification
+
+::::{style="font-size: .8em"  }
+If $y$ is a discrete value (a color, for example) then the problem is called __classification.__
 
 - For example, in image recognition, the features $\mathbf{x}$ could be a vector that represents the pixels of the image, and $y$ could be a label such as "tiger," "tree," etc.
     
-- In the classification case, you will usually be satisfied if your predicted label is accurate _most_ of the time... it usually need not be 100% accurate to be useful.
+- Predictions are useful as long as they are accurate _**most of the time**_. They do need not be 100% accurate.
+ 
 ::::
 
 
@@ -115,49 +157,49 @@ If $y$ is a discrete value (a label, for example) then the problem is called __c
 
 ## Parametric vs. Nonparametric Models {.smaller}
 
-::::{style="font-size: 1.2em" .center-y}
+::::{style="font-size: 1.2em"  }
 Another way in which different machine learning models can vary is in the number of training parameters that exist.
 
-- If the model has a _fixed_ number of parameters, no matter the size of the training dataset, then it is called **parametric**.
-- If the number of parameters _grows_ with the data, the model is called **nonparametric**.
+- If the model has a _**fixed**_ number of parameters, no matter the size of the training dataset, then it is called **parametric**.
+- If the number of parameters _**grows**_ with the data, the model is called **nonparametric**.
 ::::
+
+:::{.notes}
+Parametric: linear regression
+:::
 
 
 ## Parametric vs. Nonparametric Models {.smaller}
 
-::::{style="font-size: 1.2em" .center-y}
-:::{.fragment}
+::::{style="font-size: 1.2em"  }
+
 Parametric models have 
 
-* the advantage of often being faster to use, 
-* but the disadvantage of making strong assumptions about the nature of data distributions.
-:::
+* are often _**faster**_, 
+* but make _**strong assumptions**_ about the nature of data distributions.
 
-:::{.fragment}
+
 Nonparametric models are
 
-* more flexible,
-* but can be computationally intractable for large datasets.
-:::
+* more _**flexible**_,
+* but can be _**computationally intractable**_ for large datasets.
 ::::
 
 
 ## K-Nearest Neighbors 
 
-::::{style="font-size: .8em" .center-y}
-$k$NN is an example of a supervised, non-parametric classifier.
+::::{style="font-size: .8em"  }
+$k$NN is an example of a supervised, nonparametric classifier.
 
-:::{.fragment}
-Like any classifier, $k$NN is trained by providing it a set of labeled data, and the goal is to classify future data points that aren't already labeled.
+It is trained using labeled data, with the goal of classifying new, unlabeled data points.
 
-However, at _training_ time, the classifier does very little. It just stores away the training data. This is what makes it non-parametric.
-:::
-
-:::{.fragment}
-At _classification_ time, it simply "looks at" the $k$ points in the training set that are nearest to the test input point $\mathbf{x}$, and makes a decision based on the labels on those points.
+- During training, $k$NN simply stores the training data. This minimal processing is what makes it nonparametric.
+- During classification, it:
+     - Finds the $k$ nearest neighbors to the input point $\mathbf{x}$ in the training set.
+    - Makes a prediction based on the labels of those neighbors.
 
 By "nearest" we usually mean in Euclidean distance.
-:::
+
 ::::
 
 ## K-Nearest Neighbors
@@ -186,6 +228,10 @@ plt.axis('off')
 plt.title('Training Points: 2 Classes');
 plt.show()
 ```
+:::
+
+:::{.notes}
+N=13
 :::
 
 ## K-Nearest Neighbors
@@ -244,6 +290,9 @@ plt.title('2-Nearest-Neighbor');
 plt.show()
 ```
 :::
+:::{.notes}
+How can we solve the issue with the indeterminate result?
+:::
 
 ## K-Nearest Neighbors
 
@@ -268,38 +317,45 @@ plt.show()
 ## K-Nearest Neighbors
 
 ::::{style="font-size: .8em"}
-Note that $k$-Nearest Neighbors can do either _hard_ or _soft_ classification.
-
-:::{.fragment}
-As a **hard classifier**, it returns the majority vote of the labels on the $k$ Nearest Neighbors (which may be indeterminate, as above). This is the primary method that we will consider in this course.
-
-It is also reasonable to weight the votes of neighborhood points according to their distance from $x$.
-:::
-
-:::{.fragment}
+Note that $k$-Nearest Neighbors can do either _**hard**_ or _**soft**_ classification.
+<br><br>
+As a **hard classifier**, it returns the majority vote of the labels on the $k$ nearest neighbors (which may be indeterminate). 
+<br><br>
 As a **soft classifier** it returns:
     
 $$ 
 p(x = c\,|\,\mathbf{x}, k) = \frac{\text{number of points in neighborhood with label } c}{k} 
 $$
-:::
 ::::
+
+:::{.notes}
+It is also reasonable to weight the votes of neighborhood points according to their distance from $x$.
+
+Return back to the previous slide: Result of soft classification?
+
+P(red) = 1/3
+
+P(blue) = 2/3
+:::
 
 ## Model Selection for K-NN
 
 ::::{style="font-size: .8em"}
-The variable $k$ itself is called a __hyperparameter__. That is: it is a parameter that must be set _before_ the model parameters themselves can be learned.
+The variable $k$ itself is called a __hyperparameter__. That is, it is a parameter that must be set _**before**_ the model parameters themselves can be learned.
 <br><br>
 
 
-Each choice of $k$ results in a different model. The complexity of the resulting model is therefore controlled by the hyperparameter $k$.
+Each choice of $k$ results in a different model. Hence, the complexity of the model is controlled by the hyperparameter $k$.
 <br><br>
 
 
-:::{.fragment}
-Let's see what happens if we apply $k$-nearest neighbors to a dataset with different choices of $k$.
-:::
+
+Let us see what happens if we apply $k$-nearest neighbors to a dataset with different choices of $k$.
 ::::
+
+:::{.notes}
+For each k a different model
+:::
 
 ## Model Selection for K-NN
 
@@ -326,7 +382,7 @@ plt.show()
 ## Model Selection for K-NN
 
 :::{style="font-size: .8em"}
-Let us vary $k$ and observe the change in model complexity.
+Let us vary $k$ and observe the change in decision boundaries.
 
 
 ```{python}
@@ -351,7 +407,7 @@ for i, k in enumerate([1, 5, 25]):
     axs[i].set_title(f'Decision Regions for $k$ = {k}');
 ```
 
-:::{.fragment}
+
 ```{python}
 from IPython.core.display import HTML
 
@@ -367,38 +423,41 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 :::
-:::
 
 ## Challenges for K-NN
 
 ::::{.columns style="font-size: .8em"}
-:::{.incremental .column width="40%"}
+:::{.column width="40%"}
 - The computational cost grows with the size of the training data
 - Data scaling is required
 - The curse of dimensionality
 :::
 
 :::{.column width="60%" .center-text}
-<img src="/images/vectors_ds/curse.jpeg" width=400/>
+<img src="/images/vectors_ds/curse.jpeg" width=300/>
 
 :::
 ::::
 
+:::{.notes}
+2. Dataset uses 2 features: annual income is $ and number of children
+
+Without scaling 1 dollar has the same effect as 1 child
+:::
+
 ## The Curse of Dimensionality
 
-::::{style="font-size: .8em" .center-y}
-The _curse of dimensionality_ refers to serious issues that occur when using geometric algorithms in high dimensions.
+::::{style="font-size: .8em"  }
+The __curse of dimensionality__ refers to serious issues that occur when using geometric algorithms in high dimensions.
 
-:::{.fragment}
 There are various aspects of the curse that affect $k$-NN.
 
 1. Points are far apart in high dimensions.
 2. Points tend to all be at similar distances in high dimension.
-:::
 
-:::{.fragment}
+
+
 Let's analyze these two claims in more detail.
-:::
 ::::
 
 ## The Curse of Dimensionality
@@ -406,17 +465,17 @@ Let's analyze these two claims in more detail.
 ::::{style="font-size: .8em"}
 __1. Points are far apart in high dimension.__
 
-$k$-NN relies on having "close" points to the test point $x$, requiring _dense training data_. 
+$k$-NN relies on having "close" points to the test point $x$, requiring _**dense training data**_. 
 
 However, as the dimension $d$ of $\mathbb{R}^d$ increases, the space grows exponentially, making points rarely close. 
-In order for two points to be close in $\mathbb{R}^d$, they must be close in _each_ of the $d$ dimensions.
+In order for two points to be close in $\mathbb{R}^d$, they must be close in _**each**_ of the $d$ dimensions.
 
 Hence, it becomes hard for the algorithm to find points that are close.
 ::::
 
 ## The Curse of Dimensionality
 
-::::{style="font-size: .8em" .center-y}
+::::{style="font-size: .8em"  }
 __2. Points tend to all be at similar distances in high dimension.__
 
 Let's say points are uniformly distributed in space, so that the number of points in a region is proportional to the region's volume.  
@@ -428,6 +487,14 @@ Consider the volume of a hypersphere with radius 1 around a point (say, $x$). Fo
 
 ::::
 
+:::{.notes}
+
+- 2D circle $\pi r^2$
+- 3D sphere $\frac{4}{3}\pi r^3$
+- 4D hypersphere
+
+:::
+
 ## The Curse of Dimensionality
 
 ::::{style="font-size: .8em" .columns}
@@ -435,13 +502,9 @@ Consider the volume of a hypersphere with radius 1 around a point (say, $x$). Fo
 :::{.column}
 Let's also ask how many points are within a slightly smaller distance than the radius of the hypersphere. Let's say 0.99.  
 
-:::{.fragment}
 The new distance can be thought of as $1 - \epsilon$ for some small $\epsilon$.
-:::
 
-:::{.fragment}
 The number of points then of course is proportional to $k_d (1-\epsilon)^d$.
-:::
 :::
 
 :::{.center-text .column}
@@ -469,20 +532,15 @@ plt.title('Hypersphere in $d$ dimensions\nVolume is $k_d \,r^d$');
 ::::{style="font-size: .8em"}
 What is the fraction $f_d$ of all the points within the unit distance but not within the distance of 0.99?
 
-:::{.fragment}
 $$ 
 f_d = \frac{k_d 1^d - k_d (1-\epsilon)^d}{k_d 1^d} = 1 - (1-\epsilon)^d.
 $$
-:::
 
-:::{.fragment}
 As $d$ approaches infinity, $f_d$ approaches 1. This means that most points are about the same distance from the point $x$.
 <!-- Too much vertical whitespace for matplotlib plot so this is quick fix. -->
 
 :::{.center-text}
 <img src="/images/vectors_ds/inscribed-circle.png" width=300 />
-
-:::
 
 :::
 
@@ -555,15 +613,3 @@ For $k$-NN the implication of the curse of dimensionality is that in high dimens
 This leads to ineffectiveness of $k$-NN in higher dimensions.
 ::: -->
 
-## Key Ideas
-
-:::{.incremental style="font-size: .8em"}
-- The main difference between supervised and unsupervised methods is that the former ones require labeled data.
-
-- The main difference between parametric and non-parametric models is that parametric models have a fixed number of parameters no matter the size of the training set.
-
-- Classification algorithms work with data that has discrete labels.
-
-- $k$-NN is an example of a supervised, non-parametric classifier. It classifies new unlabeled points by looking at its $k$ closest neighbors.
-
-- One of the main challanges for $k$-NN is formed by the curse of dimensionality.
