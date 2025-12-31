@@ -1,0 +1,468 @@
+---
+title: "Introduction to $k$-Means Clustering"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+
+---
+
+## Learning Objectives
+
+::::{style="font-size: .8em;"}
+
+- Similarity and dissimilarity
+    - Metric
+    - Cosine similarity
+- Clustering
+- $k$-means clustering
+    - Centroid
+    - Cost function
+    - Algorithm
+::::
+
+## Similarity and Dissimilarity
+
+::::{style="font-size: .8em;"}
+Working with data, we can encounter a wide variety of data objects:
+
+::::{.columns}
+
+:::{.column width="60%"}
+<img src="/images/vectors_ds/data-objects.png" style="width:576px; height:372.6px;"/>
+
+:::
+
+:::{.column width="40%"}
+
+:::{style="font-size: .9em"}
+* Records of users
+* Graphs
+* Images
+* Videos
+* Text (webpages, books)
+* Strings (DNA sequences)
+* Timeseries
+* ...
+:::
+:::
+
+::::
+
+We are naturally interested in how _**similar**_ or _**dissimilar**_ two objects of the same type are.
+::::
+
+## Similarity and Dissimilarity
+
+::::{style="font-size: .8em;" .center-y}
+_**A dissimilarity function takes two objects as input, and returns a large value when the two objects are not very similar.**_
+<br><br>
+Often we put restrictions on the dissimilarity function.
+One of the most common is that it must be a _**metric**_.
+<br><br>
+A metric is commonly called a _**distance**_. We will mainly work with Euclidian distance.
+::::
+
+:::{.notes}
+Each distance is a metric
+
+Not each metric is a distance
+:::
+
+## Similarity and Dissimilarity
+
+::::{style="font-size: .8em;" }
+::::{.columns}
+
+:::{.column width="65%"}
+The dissimilarity $d(x, y)$ between two objects $x$ and $y$ is a
+__metric__ if <br>
+
+* $d(x, y) = 0 \leftrightarrow x == y\;\;\;\;\;\;\;\;$ 
+* $d(x, y) > 0 \leftrightarrow x \neq y\;\;\;\;\;\;\;\;\;\;$
+* $d(x, y) = d(y, x)\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;$ 
+* $d(x, y) \leq d(x, z) + d(z, y)\;\;$ 
+:::
+
+:::{.column width="35%"}
+<img src="/images/vectors_ds/Triangle.png"/>
+:::
+::::
+::::
+
+
+## Cosine Similarity
+
+::::{style="font-size: .8em"}
+
+Suppose we are given two documents $d_1$ and $d_2.$ How can we find out if they are similar?
+
+
+Consider both $d_1$ and $d_2$ as a "bag of words."
+
+To describe $d_1$, we construct a vector $\mathbf{x}\in\mathbb{R}^n$ that counts the frequency of occurrence of certain words in $d_1.$
+
+$$
+\mathbf{x}=\begin{bmatrix}3\\7\\4\\ \vdots \\ 20 \end{bmatrix} \leftarrow \begin{bmatrix} \text{dog} \\ \text{cat} \\ \text{house} \\ \vdots \\ \text{door} \end{bmatrix}
+$$
+
+We do the same for $d_2$ to obtain $\mathbf{y} \in \mathbb{R}^n$.
+
+::::
+
+
+## Cosine Similarity
+
+::::{style="font-size: .8em"}
+To decide whether the documents are similar, we simply ask if $\mathbf{x}$ and $\mathbf{y}$ point in the same direction.
+
+The cosine of the angle between the two document-vectors is simply:
+
+$$
+\cos(\theta_{\mathbf{x}, \mathbf{y}}) = \frac{\mathbf{x}^{\top} \mathbf{y}}{\Vert\mathbf{x}\Vert \Vert\mathbf{y}\Vert}
+$$
+
+This value is _**large**_ when $\mathbf{x} \approx \mathbf{y}.$  So it is a _**similarity**_ function.
+
+<br>
+
+Note: We often use $1-\cos(\theta_{\mathbf{x}, \mathbf{y}})$ to convert this similarity function into a dissimilarity function.
+
+::::
+
+:::{.notes}
+cos(0) = 1
+
+cos(pi/2) = 0
+
+Cosine similarity is not a metric: doesn't satisfy the triangle inequality
+:::
+
+## Clustering
+
+::::{style="font-size: .8em"}
+What if rather than having 2 documents, we have a million documents?
+
+Clustering is an _**unsupervised learning technique**_ that offers a more systematic approach to find similar documents.
+
+::::{.columns}
+
+:::{.column width="65%"}
+Informally, a **clustering** is:
+
+:::{style="font-size: .9em"}
+> a grouping of data objects, such that the objects within a group are similar (or near) to one another and dissimilar (or far) from the objects in other groups.
+:::
+:::
+
+:::{.column width="35%"}
+<img src="/images/vectors_ds/clusters.png"/>
+
+:::
+::::
+
+A clustering algorithm _**minimizes intra-cluster distances**_ and _**maximizes inter-cluster distances**_.
+
+
+::::
+
+## Clustering
+
+::::{style="font-size: .8em"}
+In this course, we will focus on _**partitional clustering**_.
+
+In a _**partitional clustering**_, the points are divided into a set of non-overlapping groups. That is, each point belongs only to one cluster, and the set of clusters covers all points.
+
+
+:::{.center-text}
+<img src="/images/vectors_ds/partitional-clustering.png" width = 600/>
+
+
+:::
+::::
+
+:::{.notes}
+Hierarchical, density-based
+:::
+
+##  $k$-Means Clustering
+
+::::{style="font-size: .8em"}
+Consider the following image. Each color in the image is represented by an integer. Typically we might use 24 bits for each integer (8 bits for R, G, and B).
+
+Now cluster the pixels by their color value, and replace each pixel by its cluster center. Because there are a smaller number of colors used, we can use fewer bits for each pixel.
+
+::::{style="font-size: .8em"}
+
+
+:::{.center-text}
+<img src="/images/vectors_ds/girl.jpeg" width = 350/>
+
+:::
+::::
+::::
+
+:::{.notes}
+In digital images, each color is typically made by combining three basic colors: Red, Green, and Blue.
+
+Each of these three colors is stored using 8 bits.
+
+With 8 bits, you can represent $2^8=256$ different values (from 0 to 255).
+
+$2^8 \cdot 2^8 \cdot 2^8 = 16,777,216$ colors
+:::
+
+##  $k$-Means Clustering
+
+:::{style="font-size: .8em"}
+
+Here, we use 4 bits (16 colors) for a compression ratio around 6$\times$.
+:::
+
+:::{.center-text}
+<img src="/images/vectors_ds/4bit-compressed-girl.png" width = 650/>
+
+:::
+
+##  $k$-Means Clustering
+
+:::{style="font-size: .8em"}
+
+Here, we use 3 bits (8 colors) for a compression ratio around 8$\times$.
+:::
+
+:::{.center-text}
+<img src="/images/vectors_ds/3bit-compressed-girl.png" width = 650/>
+
+:::
+
+##  $k$-Means Clustering
+
+:::{style="font-size: .8em"}
+Here, we use 2 bits (4 colors) for a compression ratio around 12$\times$.
+:::
+
+:::{.center-text}
+<img src="/images/vectors_ds/2bit-compressed-girl.png" width = 650/>
+
+:::
+
+##  $k$-Means Clustering
+
+:::{style="font-size: .8em"}
+Finally, we use 1 bit (2 colors) for a compression ratio around 24$\times$.
+:::
+
+:::{.center-text}
+<img src="/images/vectors_ds/1bit-compressed-girl.png" width = 650/>
+
+:::
+
+##  $k$-Means Clustering
+
+::::{style="font-size: .8em"}
+Here is a clustering of the colors within this image of a yellow flower, based on the red-ness and green-ness of each pixel in the image.
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+<img src="/images/vectors_ds/yellow-flower.png" width = 420/>
+
+:::
+
+:::{.column width="50%"}
+<img src="/images/vectors_ds/flower-clustering.png" width = 420/>
+
+:::
+
+::::
+
+##  $k$-Means Clustering
+
+::::{style="font-size: .8em"}
+To properly define the  $k$-means problem, we need to introduce the concept of the centroid of a dataset.
+
+Given $n$ different vectors ${\bf x_1},\ldots,{\bf x_n}$ each with the same dimension $d$, the _**centroid**_ (called _**center**_ or _**mean**_) is the average of the vectors taken componentwise.
+
+$$
+\overline{\mathbf{x}} = \frac{1}{n}\sum_i {\bf x_i}.
+$$
+
+In other words: the centroid is the "center of mass" of the dataset.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box" style="text-align: left;">
+        <p>
+       Find the centroid of
+        \(\small \begin{bmatrix} 1 \\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\ 3 \end{bmatrix}, \begin{bmatrix} 6 \\ 2 \end{bmatrix}.\)
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+::::
+
+:::{.notes}
+$\small \begin{bmatrix} 3 \\ 2 \end{bmatrix}$
+
+:::
+
+<!-- ##  $k$-Means Clustering
+
+::::{style="font-size: .8em" .center-y}
+
+:::{.fragment}
+We define the **sample variance** of a dataset $\{{\bf x_1},\ldots,{\bf x_n}\}$ as:
+    
+$$
+\operatorname{Var}(X) = \frac{1}{n}\sum_i\Vert \mathbf{x}_i - \overline{\mathbf{x}}\Vert^2. 
+$$
+
+In other words, the sample variance of the set of points is the average squared distance from each point to the centroid. 
+:::
+:::: -->
+
+
+##  $k$-Means Clustering
+
+::::{style="font-size: .8em"}
+
+_**Assumptions**_: 
+
+- data points ${\bf x_1},\ldots,{\bf x_n}$ in $\mathbb{R}^d$ are given
+- the number of clusters $k$ is given
+
+_**$k$-means problem**_:
+
+Find $k$ centroids $\mathbf{c_1}, \dots, \mathbf{c_k}$, so that the sum of squared Euclidean distances between each point and its assigned center (called _**the cost function**_) is minimized. That is, the $k$ centroids minimize
+
+$$
+\sum_{i=1}^n \Vert \mathbf{x_i} -\mathbf{c_j}\Vert^2,
+$$
+
+where $j \in \{1, 2, ..., k\}$ is the index of the centroid closest to $\mathbf{x_i}.$
+::::
+
+
+<!-- ##  $k$-Means Clustering
+
+::::{style="font-size: .8em"}
+Equivalently, we can think in terms of the partition itself.
+
+Consider the set $X = \{{\bf x_1}, \dots, {\bf x_n}\}$ where ${\bf x_i} \in \mathbb{R}^d$. The problem here is to:
+
+1. Find $k$ points $\mathbf{c_1}, \dots, \mathbf{c_k}$, and
+
+2. Partition the set $X$ into $k$ different subsets $\{X_1, \dots, X_k\}$ by assigning each point ${\bf x_i}$ to its nearst cluster center, in such a way as to minimize the cost
+    $$ 
+    \sum_{i=1}^n \min_j \Vert \mathbf{x_i} - \mathbf{c_j} \Vert^2 = \sum_{j=1}^k \sum_{\mathbf{x} \in X_j} \Vert \mathbf{x} - \mathbf{c_j} \Vert^2.
+    $$ -->
+<!-- :::: -->
+
+
+
+##  $k$-Means Clustering
+
+::::{style="font-size: .8em" .columns}
+:::{.column width="70%"}
+
+How hard is it to solve this problem?
+
+* $k=1$ and $k=n$ are easy special cases (why?)
+* However, this problem is _**NP-hard**_ if the dimension of the data is at least 2
+    * As a result, we don't expect that there is any exact, efficient algorithm in general 
+
+
+
+Nonetheless, there is a simple algorithm that works quite well in practice!
+
+
+This algorithm was voted among the _**top-10 algorithms**_ in data mining!
+
+:::
+
+:::{.column width="30%" .center-text}
+<img src="/images/vectors_ds/top-algorithms-book.png" />
+:::
+::::
+
+:::{.notes}
+
+NP-hard refers to a class of problems that are at least as hard as the hardest problems in NP 
+
+NP (Nondeterministic Polynomial time): That means if someone gives you a solution, you can check whether it's correct quickly (efficiently)
+
+:::
+
+##  $k$-Means Clustering
+
+::::{style="font-size: .8em;"}
+Here is the $k$-means algorithm for $X = \{{\bf x_1}, \dots, {\bf x_n}\}$ where ${\bf x_i} \in \mathbb{R}^d$:
+
+1. Pick $k$ cluster centers $\{{\bf c_1}, \dots, {\bf c_k}\}$.  These can be chosen randomly, or by some deterministic method.
+2. For each $j$ between 1 and $k$, define the cluster $X_j$ as the set of points in $X$ that are closest to center ${\bf c_j}$.
+3. For each $j$ between 1 and $k$, redefine ${\bf c_j}$ to be the center of mass of cluster $X_j$.
+4. Repeat steps 2 and 3 until convergence.
+
+We refer to steps 2 and 3 as an iteration of the $k$-means algorithm.
+
+::::
+
+:::{.notes}
+k is a hyperparamer
+
+Convergence: no point changes clusters and all the centroids remain the same
+:::
+
+##  $k$-Means Clustering
+
+:::{.center-text}
+<img src="/images/vectors_ds/cluster-plots.png" />
+
+:::
+
+:::{.notes}
+Each figure shows centroids in the beginning of the iteration
+:::
+
+##  $k$-Means Clustering
+
+::::{style="font-size: .6em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p> Consider the following dataset: \({\small\begin{bmatrix} -2 \\ 10 \end{bmatrix}, \begin{bmatrix} 1 \\ 10 \end{bmatrix}, \begin{bmatrix} 0 \\ 10 \end{bmatrix}, \begin{bmatrix} 2 \\ 10 \end{bmatrix}, \begin{bmatrix} 4 \\ 10 \end{bmatrix}.}\) <br><br>
+        The number of clusters is equal to 2 (i.e., \(k=2\)). In the beginning of the 1st iteration, we initialize the cluster centers at \(\small\begin{bmatrix} 1 \\ 10 \end{bmatrix}\) and \(\small\begin{bmatrix} 4 \\ 10 \end{bmatrix}\).
+        <ol type="a">
+            <li>Provide the list of points in the cluster associated with the center at \(\small\begin{bmatrix}1 \\ 10 \end{bmatrix}\) in the 1st iteration.</li>
+            <li>Provide the cluster centers at the end of the 1st iteration.</li>
+            <li>Continue iterating until convergence. How many iterations were needed for the algorithm to complete?</li>
+            <li>Provide the centers of the final clusters.</li>
+            <li>Provide the lists of the final clusters.</li>
+        </ol>
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+::::
+

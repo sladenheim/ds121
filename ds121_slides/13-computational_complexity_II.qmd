@@ -1,0 +1,450 @@
+---
+title: "Computational Complexity"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+
+---
+
+```{python}
+import numpy as np
+```
+
+## Learning Objectives
+
+:::{style="font-size:.8em"}
+- Cost of an algorithm (continued)
+    - Big-O notation
+    - Parallelization
+- Computational errors
+    - Rounding error
+    - Absolute
+    - Relative
+    - Machine epsilon
+- Principles of approximate computing
+
+:::
+
+## Big-O Notation
+
+:::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  <span class="label">Big-O notation</span>
+        Let \(f\) and \(g\) be real-valued functions. We say that \(f(x)\) is \(O(g(x))\) if there are constants \(c\) and \(k\) so that
+        $$|f(x)| \leq cg(x)$$
+        for all \(x > k.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+__Remark__: We read this as "$f$ is big-O of $g$" or "$g$ assymptotically dominates $f$."
+
+__Remark__: The constants $c$ and $k$ are called __witnesses__. Only one pair of witnesses is needed.
+
+__Example__: $f(x) = x^2+3x$ is $O(x^2),$ because for $x>1$, $|x^2+3x| \leq 4 x^2.$
+:::
+
+## Big-O Notation
+:::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What is the computational cost of matrix multiplication <code>C = A @ B</code>, given two \(n \times n\) matrices?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+ -  Matrix-matrix multiplication involves computing $A \mathbf{b}_i$  for each of the $n$  columns in matrix $B.$ 
+-  Matrix-vector multiplication costs $2n^2$ operations.
+- Therefore, matrix-matrix multiplication costs $n \times 2n^2 = 2n^3$ operations.
+- For matrices of size $10{,}000 \times 10{,}000$, this results in $2 \times 10^{12}$ operations (2 teraflops).
+- In Big-O notation, this is $O(n^3),$ which is considered slow.
+- When possible, we should seek faster algorithms with complexity $O(n^2)$ or $O(n).$
+
+:::
+
+## Cost of an Algorithm
+:::{style="font-size:.8em"}
+_**What is the most efficient way to compute $A^2{\bf x}$?**_
+
+Here are the choices:
+
+I. First compute $A^2$, then compute $(A^2){\bf x}$
+
+II. First compute $A{\bf x}$, then compute $A(A{\bf x})$
+
+:::{.fragment}
+I. First compute $A^2$, then compute $(A^2){\bf x}$:
+
+- Cost: $2n^3 + 2n^2$
+- Runtime for $n = 10,000$ rows: about 2 Trillion flops
+
+II. First compute $A{\bf x}$, then compute $A(A{\bf x})$: 
+
+- Cost: $2n^2 + 2n^2 = 4n^2$
+- Runtime for $n = 10,000$ rows: 4 Million flops ${\large \checkmark}$
+:::
+:::
+
+## Parallelization
+
+:::{style="font-size:.8em"}
+Although matrix multiplication is computationally demanding, it is _**highly parallel**_.
+
+
+- Each entry of the product can be computed independently: no entry depends on the computation of others.
+- If multiple processors have access to both matrices, the work can be divided cleanly.
+
+- With $n$ processors, each can compute one column $A\mathbf{b}_i$ independently.
+- No coordination between processors is needed.
+- Parallel execution reduces time from $2n^3$ to $2n^2$.
+
+:::
+
+## Costs of an Algorithm
+:::{style="font-size:.8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Provide the exact flop count for the computation of \(\mathbf{z}\) when \(\mathbf{z} = (A-B)\mathbf{x}+C\mathbf{y}.\) Here, \(A, B,\) and \(C\) are \(k\times m\) matrices, and \(\mathbf{x}\) and \(\mathbf{y}\) are \(m \times 1\) vectors.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+:::{.notes}
+    - $km$ flops are needed to find $A-B.$
+    - $k(2m-1)$ flops are needed to compute the product of $A-B$ and $\mathbf{x}$.
+    - $k(2m-1)$ flops are needed for the product of $c$ and $\mathbf{y}$.
+    - $k$ flops are needed for the sum of $(A-B)\mathbf{x}$ and $C\mathbf{y}$.
+    - The total number of flops is equal to $5km-k.$ 
+\end{itemize}
+:::
+
+## Rounding Errors
+:::{style="font-size:.8em"}
+A floating point is an approximation of some particular real number.
+
+
+- Floating point numbers cannot be arbitrarily large or small. Numbers can be as large as $1.79 \times 10^{308}$ and as small as $2.23 \times 10^{-308}$.
+
+- There are discrete gaps between floating point numbers. For instance, the interval $[1,2]$ is represented by discrete subset:
+    $$
+    1, \: 1+2^{-52}, \: 1+2 \times 2^{-52},\: 1+3 \times 2^{-52},\: \ldots, 2
+    $$
+
+Floats are discrete but not equidistant:
+
+:::{.center-text}
+<img src="/images/vector_matrix_algebra/fltscale-wh.png" width = 1000/>
+
+:::
+
+:::
+
+## Rounding Errors
+
+:::{style="font-size:.8em"}
+Generally when we try to store a real number in a computer, what we wind up storing is the nearest floating point number that the computer can represent.
+
+What does "nearest" mean? It means "rounded to the nearest representable value."
+
+Let's say we have a particular real number $x, x\in \mathbb{R}.$
+
+**Rounding** $x$ means that $x$ will be replaced with the floating point number closest to $x,$ which is called $fl(x).$ 
+
+The error caused by this process is called **rounding error,** and $fl(x)$ is written as
+
+$$
+fl(x) = x(1 + \varepsilon).
+$$
+
+
+:::
+
+## Absolute and Relative Errors
+:::{style="font-size:.8em"}
+The **abolute error** is defined as:
+
+$$  
+|x - fl(x)|.
+$$
+
+The **relative error** is defined as:
+
+$$  
+\frac{\left|x - fl(x)\right|}{|x|}.
+$$
+
+$\text{Note:}\quad 
+\frac{\left|x - fl(x)\right|}{|x|} = \frac{|\varepsilon x|}{|x|}= |\varepsilon|. 
+$
+
+It can be shown that $|\varepsilon| \leq 1.11 \times 10^{-16} \approx 2^{-53} .$
+
+
+$2^{-53}$ is known as __machine epsilon__ for double precision. It is typically denoted by $\varepsilon_{machine}$.
+:::
+
+## Machine Epsilon
+:::{style="font-size:.8em"}
+
+Machine epsilon is half the distance between 1 and the next larger floating point number. 
+
+The total distance between $1$ and the next larger floating point number is denoted as $\epsilon$ (yet another epsilon).
+
+`Numpy` can show your computer's epsilon.
+
+```{python}
+#| echo: true
+print(np.finfo(float).eps)
+print(np.finfo(float).eps == 2**-52)
+```
+
+This value $10^{-16}$ is an important one to remember.
+
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+<!-- Not using 8em font size to compensate because really smaller title applies font to whole slide.. maybe raw html instead of css? -->
+
+:::{style="font-size: 1em"}
+Here are 3 principles to keep in mind when computing with floating point numbers.
+
+1. Compare floating point numbers for closeness, not equality.
+2. Relative error can be magnified during subtractions.
+3. Beware of ill-conditioned problems.
+
+Let's discuss each of these principles in more detail.
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+<!-- Not using 8em font size to compensate because really smaller title applies font to whole slide.. maybe raw html instead of css? -->
+
+:::{style="font-size: 1em"}
+ _**Compare floating point numbers for closeness, not equality.**_
+
+Two floating point computations that should yield the same result mathematically, may not do so due to rounding error.
+
+However, _**in general, if two numbers should be equal, the relative error of the difference in the floating point should be small.**_
+
+Instead of asking whether two floating numbers are _**equal**_, we should ask if they are _**close**_  meaning that the relative error of their difference is small.
+
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+:::{style="font-size: 1em"}
+
+Let's try an example.
+
+
+```{python}
+#| echo: true
+a = 7
+b = 1/10
+c = 1/7
+r1 = a * b * c
+r2 = b * c * a
+print(r1)
+print(r2)
+np.abs(r1-r2)/r1
+```
+
+```{python}
+#| echo: true
+# The wrong way to check equality
+print(r1 == r2)
+```
+
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+Both 1/70 and 0.1 _cannot_ be stored exactly in a floating point representation.    
+
+
+More importantly, the rounding errors are different for the two numbers. So, when you round $1/70$ to its closest floating point representation and then multiply that by $7$, you yield a number whose closest floating point representation is _not_ 1.
+
+However, that floating point representation is very _close_ to 0.1.
+
+
+Let's look at the difference: 1.3877787807814457e-16.
+
+This is about $-1\cdot 10^{-17}.$
+
+
+In other words $-1 \cdot 10^{-17} = -0.0000000000000001$.
+
+Compared to 0.1, this is a very small number.  The relative error abs(-0.0000000000000001 / 0.1) is about $10^{-16}.$
+
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+```{python}
+#| echo: true
+# A better way to check equality
+np.finfo('float')
+print(np.abs(r1 -  r2)/np.max([r1, r2]) < np.finfo('float').eps)
+```
+
+This test is needed often enough that `numpy` has a function that implements it:
+
+```{python}
+#| echo: true
+np.isclose(r1, r2)
+```
+
+The matrix version of this function is called `allclose`. It applies an `isclose` check for each entry in the matrix.
+
+```{python}
+#| echo: true
+A = np.random.rand(2,2)
+B = np.random.rand(2,2)
+C = np.random.rand(2,2)
+
+(A @ B) @ C == A @ (B @ C)
+```
+
+```{python}
+#| echo: true
+np.allclose((A @ B) @ C, A @ (B @ C))
+```
+
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+_**Relative error can be magnified during subtractions.**_ If two numbers have errors in the 9th significant digit, but the first 8 significant digits cancel out, then all of a sudden the relative error is large.
+
+```{python}
+#| echo: true
+a = 1.23456789
+b = 1.2345678
+trueDiff = 0.00000009
+calcDiff = a - b
+print("True difference:", trueDiff)
+print("Calculated diff:", calcDiff,"\n")
+print("Absolute error:", trueDiff-calcDiff)
+print("Relative error:", (trueDiff-calcDiff) / trueDiff)
+```
+
+Here, the absolute error in the inputs is on the order of $10^{-16}$, but the relative error of the output is on the order of $10^{-9}$ – i.e., a million times larger.
+
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+An **ill-conditioned problem** is one in which the outputs depend in a very sensitive manner on the inputs.
+
+That is, a small change in the inputs can yield a very large change in the outputs.
+
+A simple example is computing $1/(a-b).$ If $a$ is close to $b,$ then a small change in either will make a big difference in the output. This is because $0$ doesn't have a multiplicative inverse, so as $a$ and $b$ get closer then $1/(a-b)$ will go to infinity.
+
+```{python}
+#| echo: true
+print(f'r1 is {r1}')
+print(f'r2 is very close to r1')
+
+r3 = r1 + 0.0001
+
+print(f'r3 is {r3}')
+print(f'1/(r1-r2) = {1/(r1-r2)}')
+print(f'1/(r3-r2) = {1/(r3-r2)}')
+```
+
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+:::{style="font-size:.9em"}
+The notion of ill-conditioning applies to matrix problems too, and in particular comes up when we solve certain problems involving matrices that are _almost_ uninvertible.
+
+Given the $2 \times 2$ matrix $A = \begin{bmatrix} 1 & 2.0000000001 \\ 2 & 4 \end{bmatrix},$ solve:
+
+$$
+A {\bf x} = \begin{bmatrix} 1 \\ 2 \end{bmatrix} \quad \text{and} \quad A {\bf y} = \begin{bmatrix} 1 \\ 2.01 \end{bmatrix}.
+$$
+
+
+```{python}
+#| echo: true
+A = np.array([[1, 2.0000000001], [2, 4]])
+b = np.array([[1],[2]])
+c = np.array([[1],[2.01]])
+
+print("x =")
+print(np.linalg.solve(A, b)) # true answer: [[1], [0]]
+
+print("y =")
+print(np.linalg.solve(A, c)) # should be [[100 million], [-50 million]]
+```
+
+:::
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+A related concept to ill-conditioned problems is the idea of _numerical stability_.
+
+Numerical stability is a property of a computer algorithm. At a high level, it captures whether the algorithm is:
+
+- good at overcoming minor inaccuracies, or
+- bad enough to exacerbate the problem, turning a minor mistake into a major error.
+
+Let's go back to the piecewise-linear function $f$.
+
+```{python}
+#| echo: true
+# Source: Greenbaum and Chartier's Numerical Methods, page 107
+
+def f(x):
+    if x <= 1/2:
+        return 2 * x
+    if x > 1/2:
+        return 2 * x - 1
+```
+
+
+## Principles of Approximate Computing{.really-smaller-title}
+
+So what went wrong here?
+
+- Because most real numbers cannot be represented exactly in a computer, any computation involving real numbers can introduce some error.
+
+- We never had a chance to use Principle #1 (compare for closeness rather than equality) because this code never performs equality checks.
+
+- Principle #2 says that errors can be magnified during subtractions. That's exactly what happens every time we run the `x > 1/2` case of the $f$ function. (And in the `x <= 1/2` case, we also multiply the error by 2.)
+
+- Principle #3 says to beware ill-conditioned problems. Fortunately, this piecewise linear function is not an ill-conditioned problem: it's not the case that a small change of $0.0000000001$ results in a big difference in the output.
+
+

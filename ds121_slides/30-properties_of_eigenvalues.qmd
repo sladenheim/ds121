@@ -1,0 +1,303 @@
+---
+title: Properties of Eigenvalues 
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+---
+
+## Learning Objectives
+:::{style="font-size: .8em"}
+
+*  Eigenvalues of triangular matrices
+*  Algebraic and geometric multiplicities of eigenvalues
+*  The connection between eigenvalues and matrix singularity
+*  The connection between eigenvalues and matrix similarity
+*  Important warnings about eigenvalues 
+*  Connection to Markov chains
+:::
+
+
+## Eigenvalues of a Triangular Matrix
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        The eigenvalues of a triangular matrix are the entries on its main diagonal.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<!-- __Proof.__ See the notes. -->
+
+<br>
+
+__Example.__ Let $A = \begin{bmatrix}3&6&-8\\0&0&6\\0&0&2\end{bmatrix}$ and $B = \begin{bmatrix}4&0&0\\-2&1&0\\5&3&4\end{bmatrix}$. 
+
+Then the eigenvalues of $A$ are 3, 0, and 2.   The eigenvalues of $B$ are 4 and 1.
+:::
+
+## Multiplicity
+
+:::{style="font-size: .8em"}
+Note that one of the eigenvalues of $B$ occurs twice. We say that it is _repeated_. 
+
+<br>
+
+In general, every eigenvalue has a certain __algebraic multiplicity__. Algebraic multiplicity counts the repetitions of $\lambda$ among the eigenvalues.
+
+<br>
+
+The eigenvalue 4 of $B$ has algebraic mulitiplicity of 2, while the eigenvalue 1 has algebraic multiplicity of 1. 
+
+<br>
+
+Next to algebraic multiplicity, there is also the __geometric multiplicity__ of an eigenvalue. The geometric multiplicty counts the linearly independent eigenvectors for $\lambda.$
+
+:::
+
+## Multiplicity
+
+:::{style="font-size: .8em"}
+
+Consider $C = \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix}.$ 
+
+* $C$ has one (repeated) eigenvlaue: 0.
+* There is only one eigenvector describing the eigenspace of $\lambda =0$: $\begin{bmatrix} 1 \\ 0 \end{bmatrix}.$
+* The algebraic multiplicity of $\lambda = 0$ is 2.
+* The geometric multiplicity of $\lambda = 0$ is 1.
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Let \(A = \begin{bmatrix} 7 & 2 \\ -2 & 3 \end{bmatrix}.\)  What are the algebraic and geometric multiplicities of its eigenvalues? <br>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Invertibility
+
+:::{style="font-size: .8em"}
+What happens if a matrix $A$ has 0 as an eigenvalue?
+
+<br> 
+
+This happens if and only if there is a nontrivial solution to the equation
+
+$$\begin{align*}
+A\mathbf{x} &= 0\mathbf{x} \\
+A\mathbf{x} &= {\bf 0}.
+\end{align*}$$
+
+<br>
+
+By the IMT, the homogeneous equation has a nontrivial solution if and only if $A$ is not invertible. Hence, 0 is an eigenvalue of $A$ if and only if $A$ is not invertible.
+:::
+
+
+## Invertibility
+
+:::{style="font-size: .8em"}
+So we have yet another addition to the Invertible Matrix Theorem!
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        Let \(A\) be an \(n\times n\) matrix. Then the following two statements are equivalent:<br>
+        <ol start="1">
+    <li> \(A\) is invertible. <br>
+    <li> The number 0 is not an eigenvalue of \(A\).
+    </ol>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+<br>
+
+__Example.__ $A = \begin{bmatrix}3&6&-8\\0&0&6\\0&0&2\end{bmatrix}$ with eigenvalues 3, 0, and 2 is not invertible. 
+:::
+
+## Similarity
+
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Similarity</span>
+        If \(A\) and \(B\) are \(n\times n\) matrices, then \(A\) is <b>similar</b> to \(B\) if there is an invertible matrix \(P\) such that \(P^{-1}AP = B,\) or, equivalently, \(A = PBP^{-1}.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+<br>
+
+ Similarity is a symmetric relationship: if $A$ is similar to $B$, then $B$ is similar to $A$.  Hence we just say that $A$ and $B$ _are similar._
+ 
+<br> 
+Changing $A$ into $B$ is called a __similarity transformation.__
+
+:::
+
+## Similarity
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        If \(n\times n\) matrices \(A\) and \(B\) are similar, then they have the same characteristic polynomial, and hence the same eigenvalues.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+__Proof.__  If $B = P^{-1}AP,$ then
+
+$$\begin{align*}
+B - \lambda I &= P^{-1}AP - \lambda I \\
+&= P^{-1}AP - \lambda P^{-1}P \\
+&= P^{-1}(AP-\lambda P) \\
+&= P^{-1}(A-\lambda I)P.
+\end{align*}$$
+
+:::
+
+## Similarity
+
+:::{style="font-size: .8em"}
+Now let's construct the characteristic polynomial by taking the determinant:
+
+$$\begin{align*}
+\det(B-\lambda I) &= \det[P^{-1}(A-\lambda I)P] \\
+&= \det(P^{-1})\cdot\det(A-\lambda I)\cdot\det(P),
+\end{align*}
+$$
+
+using the fact that the determinant of the product of matrices equals the product of the determinants.
+
+<br>
+
+Finally, since $\det(P^{-1})\cdot\det(P) = \det(P^{-1}P) = \det I = 1,$ we can see that 
+
+$$\det(B-\lambda I) = \det(A - \lambda I).$$
+:::
+
+## Warnings
+
+:::{style="font-size: .8em"}
+1. The eigenvalues of a matrix with real entries might be complex.
+
+__Example.__ Consider the "rotation by 90 degrees" matrix:
+
+$$A = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}.$$
+
+It does not have any real-valued eigenvalues.
+
+```{python}
+import numpy as np
+import laUtilities as ut
+```
+
+```{python}
+#| echo: true
+A = np.array([[0, -1],
+              [1,  0]])
+for i in range(len(A)):
+    print("eigenvalue", np.round(np.linalg.eigvals(A)[i]), "with eigenvector", np.round(np.linalg.eig(A)[1][:,i], 5))
+```
+:::
+
+## Warnings
+
+:::{style="font-size: .8em"}
+2. Elimination does not preserve eigenvalues.
+
+If you add a row of a matrix to its other row, or exchange its rows, the eigenvalues usually change.
+
+__Example.__  Consider $A = \begin{bmatrix} 1 & 3 \\ 2 & 6 \end{bmatrix}$.
+
+* Its characteristic equation is $(1-\lambda)(6-\lambda) - 6 = \lambda^2 - 7 \lambda = \lambda (\lambda - 7) = 0.$
+Hence, its eigenvalues are 0 and 7.
+* The reduced echelon form of $A$ is $U = \begin{bmatrix} 1 & 3 \\ 0 & 0 \end{bmatrix}.$ The eigenvalues of $U$ are 0 and 1.
+
+:::
+
+## Back to Markov Chains
+
+:::{style="font-size: .8em"}
+Recall that a _Markov chain_ models systems that change over time. It imposes a fixed rule that tells us how to compute the next state of the system based on the current state of the system (no matter the prior history or which time period we're currently at).
+
+Formally, a Markov chain is represented by:
+
+- An initial probability vector $\mathbf{x_0} \in \mathbb{R}^n$ showing the fraction of people/objects in each state at the beginning of the system, and
+- A stochastic matrix $P \in \mathbb{R}^{n \times n}$ that encodes the state transition rule, in the sense that the next state is calculated as ${\bf x_{k+1}} = P{\bf x_k}$.
+:::
+
+## Back to Markov Chains
+
+:::{style="font-size: .8em"}
+In the long run, it can be shown that every stochastic matrix has at least one __steady-state vector__ ${\bf q}$ such that $P{\bf q} = {\bf q}$. That is, ${\bf q}$ is an eigenvector of $P.$
+
+To find the steady-state vector for a Markov Chain:
+
+* Solve the linear system $(P-I){\bf q} = {\bf 0}.$  
+* The system will have an infinite number of solutions, with one free variable.  Obtain a general solution.
+* Pick any specific solution (choose any value for the free variable), and scale it so the entries add up to 1.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        The largest eigenvalue of a Markov Chain is 1.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+

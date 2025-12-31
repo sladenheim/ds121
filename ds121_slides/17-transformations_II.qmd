@@ -1,0 +1,766 @@
+---
+title: "Transformations"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+---
+
+## Learning Objectives
+:::{style="font-size: .8em"}
+- Visualizing Transformations in $\mathbb{R}^2$
+    - Dilations/contractions
+    - Reflections
+    - Rotations
+    - Shear
+    - Projection
+- Composing transformations
+- One-to-one and onto transformations
+- Invertible transformations
+:::
+
+
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+Where does $A \mathbf{x} = r \mathbf{x}$ with $r=2.5$ map the standard basis vectors?
+
+<br>
+
+Under the action of $A$, $\mathbf{e_1}$ goes to $\left[\begin{array}{c}2.5\\0\end{array}\right]$ and $\mathbf{e_2}$ goes to $\left[\begin{array}{c}0\\2.5\end{array}\right]$.
+
+<br>
+
+So the matrix $A$ must be $\left[\begin{array}{cc}2.5&0\\0&2.5\end{array}\right]$.
+
+<br>
+
+
+As mentioned earlier, this transformation is a _**dilation**_.
+
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+<br>
+
+:::{.columns .center-text}
+
+:::{.column width="50%"}
+```{python}
+import matplotlib.pyplot as plt
+import demoUtilities as dm
+import numpy as np
+
+note = np.array(
+        [[193,47],
+        [140,204],
+        [123,193],
+        [99,189],
+        [74,196],
+        [58,213],
+        [49,237],
+        [52,261],
+        [65,279],
+        [86,292],
+        [113,295],
+        [135,282],
+        [152,258],
+        [201,95],
+        [212,127],
+        [218,150],
+        [213,168],
+        [201,185],
+        [192,200],
+        [203,214],
+        [219,205],
+        [233,191],
+        [242,170],
+        [244,149],
+        [242,131],
+        [233,111]])
+note = note.T/150.0  
+
+square = np.array(
+    [[0,1,1,0],
+     [1,1,0,0]])
+A = np.array(
+    [[2.5, 0],
+     [0, 2.5]])
+# display(Latex(rf"$A = {ltx_array_fmt(A, '{:1.1f}')}$"))
+dm.plotSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+```
+:::
+
+:::{.column width="50%"}
+```{python}
+dm.plotSetup(-7,7,-7, 7)
+dm.plotShape(note)
+dm.plotShape(A @ note,'r')
+```
+:::
+:::
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What is the standard matrix for reflection through the \(x_1\) axis?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+:::{.columns .center-text}
+
+:::{.column width="50%"}
+```{python}
+A = np.array(
+    [[1,  0],
+     [0, -1]])
+dm.plotSmallSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+```
+:::
+
+:::{.column width="50%"}
+```{python}
+dm.plotSmallSetup()
+dm.plotShape(note)
+dm.plotShape(A @ note,'r')
+```
+:::
+:::
+
+:::{.fragment}
+$A=\begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$ corresponds to this reflection.
+:::
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What is the standard matrix for reflection through the \(x_2\) axis?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.columns .center-text}
+
+:::{.column width="50%"}
+```{python}
+A = np.array(
+    [[-1,0],
+     [0, 1]])
+dm.plotSmallSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+``` 
+:::
+
+:::{.column width="50%"}
+
+```{python}
+dm.plotSmallSetup()
+dm.plotShape(note)
+dm.plotShape(A @ note,'r')
+```
+:::
+:::
+
+:::{.fragment}
+$A=\begin{bmatrix} - 1 & 0 \\ 0 & 1 \end{bmatrix}$ \
+:::
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What about reflection through the line \(x_1=x_2\)?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.columns .center-text}
+
+:::{.column width="50%"}
+```{python}
+A = np.array(
+    [[0,1],
+     [1,0]])
+dm.plotSmallSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+plt.plot([-2,2],[-2,2],'b--');
+``` 
+:::
+
+:::{.column width="50%"}
+
+```{python}
+dm.plotSmallSetup()
+dm.plotShape(note)
+dm.plotShape(A @ note,'r')
+```
+:::
+:::
+
+:::{.fragment}
+$A=\begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}$ \
+:::
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What about reflection through the line \(x_1=-x_2\)?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.columns .center-text}
+
+:::{.column width="50%"}
+```{python}
+A = np.array(
+    [[ 0,-1],
+     [-1, 0]])
+dm.plotSmallSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+plt.plot([-2,2],[2,-2],'b--');
+``` 
+:::
+
+:::{.column width="50%"}
+
+```{python}
+dm.plotSmallSetup()
+dm.plotShape(note)
+dm.plotShape(A @ note,'r')
+```
+:::
+:::
+
+:::{.fragment}
+$A=\begin{bmatrix} 0 & -1 \\ -1 & 0 \end{bmatrix}$ \
+:::
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+:::{style="font-size: 1.0em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What about 180-degree rotation through the origin?
+
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<!-- We can use our rotation formula, but let's instead just think about how this transformation affects ${\bf e_1}$ and ${\bf e_2}$. -->
+
+:::{.columns .center-text .fragment}
+
+:::{.column width="50%"}
+```{python}
+A = np.array(
+    [[-1, 0],
+     [ 0,-1]])
+dm.plotSmallSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+``` 
+:::
+
+:::{.column width="50%"}
+
+```{python}
+dm.plotSmallSetup()
+dm.plotShape(note)
+dm.plotShape(A @ note,'r')
+```
+:::
+:::
+
+:::{.fragment}
+$A=\begin{bmatrix} -1 & 0 \\ 0 & -1 \end{bmatrix}$
+:::
+:::
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+:::{style="font-size:1.0em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What about a contraction of \(x_1\) dimension by a ratio of \(r = 0.45\) but no changes to \(x_2\)? 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+:::{.columns .center-text}
+
+:::{.column width="50%"}
+```{python}
+A = np.array(
+    [[0.45, 0],
+     [0,    1]])
+ax = dm.plotSmallSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+ax.arrow(1.0,1.5,-1.0,0,head_width=0.15, head_length=0.1, length_includes_head=True)
+``` 
+:::
+
+:::{.column width="50%"}
+
+```{python}
+dm.plotSmallSetup()
+dm.plotShape(note)
+dm.plotShape(A @ note,'r')
+```
+:::
+:::
+
+:::{.fragment}
+$A=\begin{bmatrix} 0.45 & 0 \\ 0 & 1 \end{bmatrix}$
+:::
+:::
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+Let us look at a vertical shear with $A=\begin{bmatrix}1 & 0 \\ -1.5 & 1 \end{bmatrix}$.
+
+
+:::{.columns .center-text}
+
+:::{.column width="50%"}
+```{python}
+A = np.array(
+    [[   1, 0],
+     [-1.5, 1]])
+dm.plotSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+``` 
+:::
+
+:::{.column width="50%"}
+
+```{python}
+dm.plotSetup()
+dm.plotShape(note)
+dm.plotShape(A @ note,'r')
+```
+:::
+:::
+
+## Visualizing Linear Transformations of $\mathbb{R}^2${.really-smaller-title}
+
+Another type of transformation is **projection**. Imagine we took any given point and 'dropped' it onto the $x_1$-axis.
+This time $A=\begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix}.$
+
+
+:::{.columns .center-text}
+
+:::{.column width="50%"}
+```{python}
+A = np.array(
+    [[   1, 0],
+     [0, 0]])
+dm.plotSmallSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+``` 
+:::
+
+:::{.column width="50%"}
+
+```{python}
+dm.plotSmallSetup()
+dm.plotShape(note)
+dm.plotShape(A @ note,'r')
+```
+:::
+:::
+
+## Composing Transformations
+
+:::{style="font-size: .8em"}
+We interpret matrix-vector multiplication as a linear transformation over $\mathbb{R}^n.$
+What does the product of two matrices mean, geometrically?
+
+
+We determined that the matrix $\small C = \left[\begin{array}{rr}-1&0\\0&-1\end{array}\right]$ implements a 180 degree rotation about the origin.
+
+:::{.center-text}
+```{python}
+note = dm.mnote()
+C = np.array(
+    [[-1, 0],
+     [ 0,-1]])
+
+dm.plotSmallerSetup()
+dm.plotShape(note)
+dm.plotShape(C @ note,'r')
+```
+:::
+:::
+
+## Composing Transformations
+
+:::{style="font-size: .7em" .incremental}
+Another approach is to reflect through the $x_1$ axis, via multiplication by $B = \left[\begin{array}{rr}1&0\\0&-1\end{array}\right].$ Then reflect throuh the $x_2$ axis, via multiplication by $A = \left[\begin{array}{rr}-1&0\\0&1\end{array}\right].$
+
+:::{.center-text}
+```{python}
+B = np.array(
+    [[ 1, 0],
+     [ 0,-1]])
+A = np.array(
+    [[-1, 0],
+     [ 0, 1]])
+#print("A ="); print(A)
+#print("B ="); print(B)
+dm.plotSmallSetup()
+dm.plotShape(note)
+dm.plotShape(B @ note,'g')
+dm.plotShape(A @ (B @ note),'r')
+```
+:::
+:::
+
+## Composing Transformations
+
+:::{style="font-size: .8em"}
+<!-- Another way to reflect point ${\bf u}$ through the origin is:
+
+* ${\bf v} = B{\bf u}$
+* Followed by ${\bf w} = A{\bf v}.$
+
+:::{.fragment}
+Hence, ${\bf w} = A(B{\bf u}) = C {\bf u}$. -->
+Therefore, _**multiplication of matrices represents to composition of linear transformations.**_
+
+That is, $C$ is the result of applying  a transformation from $B$, and then transformation $A$.
+
+$$
+\underbrace{\left[\begin{array}{rr}-1&0\\0&1\end{array}\right]}_{\large A}
+\underbrace{\left[\begin{array}{rr}1&0\\0&-1\end{array}\right]}_{\large B} =
+\underbrace{\left[\begin{array}{rr}-1&0\\0&-1\end{array}\right]}_{\large C}.
+$$
+
+The order matters, and we read them __from right to left__!
+
+:::
+
+## One-to-One and Onto
+
+:::{style="font-size: .8em;"}
+
+We've considered a variety of the linear transformations of $\mathbb{R}^2$:
+
+- Dilations and contractions
+- Rotations
+- Reflections
+- Shears
+- Projections
+
+Some of these transformations map multiple inputs to the same output, and some are incapable of generating certain outputs.
+
+We need additional terminology to understand these properties of linear transformations.
+
+:::
+
+## One-to-One
+
+:::{style="font-size: .8em;"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">One-to-one transformation</span>
+        A transformation \(T: \mathbb{R}^n \rightarrow \mathbb{R}^m\) is said to be <b>one-to-one</b> if each \(\mathbf{b}\) in \(\mathbb{R}^m\) is the image of <em>at most one</em> \(\mathbf{x}\) in \(\mathbb{R}^n\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+If $T$ is one-to-one, then for each $\mathbf{b},$ the equation $T(\mathbf{x}) = \mathbf{b}$ has either 0 or 1 solutions.
+
+Hence, the concept of one-to-one is asking a _**uniqueness**_ question about solutions to the equation $T(\mathbf{x}) = \mathbf{b}$ for all $\mathbf{b}.$
+
+:::
+
+## One-to-One
+
+:::{style="font-size: .8em;" .center-y}
+
+<img src = "/images/inverses/onto.jpeg" width=1000 />
+
+:::
+
+## Onto
+
+:::{style="font-size: .8em;"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Onto transformation</span>
+        A transformation \(T: \mathbb{R}^n \rightarrow \mathbb{R}^m\) is said to be <b>onto</b> \(\mathbb{R}^m\) if each \(\mathbf{b}\) in \(\mathbb{R}^m\) is the image of <em>at least one</em> \(\mathbf{x}\) in \(\mathbb{R}^n\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+In other words, $T$ is onto if every element of its codomain is in its range.
+
+
+If $T$ is onto, then for each $\mathbf{b},$ the equation $T(\mathbf{x}) = \mathbf{b}$ has either 1 or infinitely many solutions.
+
+
+Hence, the concept of onto is asking an _existence_ question about solutions to the equation $T(\mathbf{x}) = \mathbf{b}$ for all $\mathbf{b}.$
+
+:::
+
+
+## Onto
+
+:::{style="font-size: .8em;"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        For the transformation \(T\) pictured below, is \(T\) onto?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.center-text}
+<img src="images/inverses/not-onto.jpeg" width=800 />
+
+:::
+
+<!-- :::{.fragment}
+Here, we see that $T$ maps points in $\mathbb{R}^2$ to a plane lying _within_ $\mathbb{R}^3$. That is, the range of $T$ is a strict subset of the codomain of $T$.
+
+So $T$ is _not onto_ $\mathbb{R}^3$.
+::: -->
+
+:::
+
+## One-to-One and Onto
+
+:::{style="font-size: .8em;"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        If the equation \(A\mathbf{x} = \mathbf{b}\) is consistent (i.e., has at least one solution) for all \(\mathbf{b}\), then is \(T(\mathbf{x}) = A\mathbf{x}\) one-to-one? Is it onto?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.fragment}
+
+- $T(\mathbf{x})$ may or may not be one-to-one.  If the system has multiple solutions for some $\mathbf{b}$, $T(\mathbf{x})$ is not one-to-one.
+- $T(\mathbf{x})$ is onto.
+
+:::
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        If \(A\mathbf{x} = \mathbf{b}\) is consistent and has a unique solution for all \(\mathbf{b}\), then is \(T(\mathbf{x}) = A\mathbf{x}\) one-to-one? Is it onto?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+:::{.fragment}
+
+- Yes to both.
+
+:::
+
+:::
+
+
+<!-- ## Key Ideas
+
+:::{style="font-size: .8em" .incremental}
+
+- A transformation $T$ from $\mathbb{R}^n$ to $\mathbb{R}^m$ takes each vector ${\bf x}$ in $\mathbb{R}^n$ to $T({\bf x})$ in $\mathbb{R}^m$.
+
+- $T$ is linear if $T({\bf u} + {\bf v})$ = $T({\bf u}) + T({\bf v})$ and $T(c {\bf u} ) = cT( {\bf u} ).$
+
+- A linear transformation can be written as $T( {\bf u}) = A{\bf u}.$ $A$ is called the standard matrix of $T.$ To find $A,$ we look at what $T$ does to the columns of $I.$
+::: -->
+
+## Inverses
+
+:::{style="font-size: .8em"}
+When given a mathematical object, its "inverse" is another object that undoes the action of the first one. Some examples:
+
+- Given a non-zero real number $r$, its multiplicative inverse $r^{-1}$ has the property that it undoes multiplication by $r$, since $r^{-1} \cdot r = r \cdot r^{-1} = 1$.
+- Some functions over the real numbers like $f(x) = x^3$ have an inverse function $f^{-1}(x) = \sqrt[3]{x}$ such that $f^{-1} \circ f = f \circ f^{-1} =$ the identity function.
+
+Let's apply the concept of inverses to linear transformations -- that is, functions of vectors.
+:::
+
+## Inverse of a Linear Transformation{.smaller-title}
+
+
+:::{style="font-size:0.9em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Invertible linear transformation</span>
+        A linear transformation \(T: \mathbb{R}^n \rightarrow \mathbb{R}^n\) is <em>invertible</em> if there exists a function
+\(S: \mathbb{R}^n \rightarrow \mathbb{R}^n\) such that:<br>
+
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(S(T({\bf x})) = {\bf x}\;\;\;\mbox{for all}\;{\bf x}\in\mathbb{R}^n,\)<br>
+
+and
+<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\( T(S({\bf x})) = {\bf x}\;\;\;\mbox{for all}\;{\bf x}\in\mathbb{R}^n.\)
+
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<div style="margin-bottom: 0.5em;"> </div>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+       A linear transformation \(T: \mathbb{R}^n \to \mathbb{R}^n\) is invertible if and only if it is one-to-one and onto.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+<br>
+
+<!-- __Proof.__ In this case, it is easier to reason about the contrapositive statement: if a transformation $T$ is not one-to-one or is not onto, then it cannot be invertible. This is called a _proof by contradiction_. -->
+
+:::
+
+<!-- ## Inverse of a Linear Transformation{.smaller-title}
+
+
+:::{style="font-size:.8em"}
+- Suppose that $T$ is not one-to-one. Then there exist two different vectors ${\bf x}$ and ${\bf x'}$ such that $T({\bf x}) = T({\bf x'})$. In this case, it is not possible for both
+
+$$
+\begin{align*}
+    S(T({\bf x})) &= {\bf x} \\
+    S(T({\bf x'})) &= {\bf x'},\end{align*}
+$$
+
+since the left sides of the two equations are equal but the right sides are not. Hence, $T$ is not invertible.
+
+:::{.fragment}
+- Suppose that $T$ is not onto, meaning that there exists some $y \in \mathbb{R}^n$ that is not in the range of $T$. Hence for any transformation $S$ it is the case that $T(S({\bf y})) \neq {\bf y}$, so $T$ is not invertible.
+:::
+::: -->
+
