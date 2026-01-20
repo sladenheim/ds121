@@ -1,5 +1,5 @@
 ---
-title: "Introduction "
+title: "DS121: Introduction"
 number: "Lecture 1"
 author: "DS-121<br>Boston University"
 format: 
@@ -11,27 +11,23 @@ format:
 ---
 
 ## Logistics
-:::{style="font-size: .8em"}
+:::{style="font-size: .7em"}
 
 _Lectures_
 
-685-725 Comm Ave CAS 522
+- Section A: MWF 9:05 AM -- 9:55 AM in 685-725 Comm Ave CAS 313
+- Section B: MWF 10:10 AM - 11:00 AM in 2 Silber Way WED 130
 
-- Section A: MWF 9:05 AM -- 9:55 AM
-- Section B: MWF 10:10 AM - 11:00 AM
+_Discussions - all on Mondays_
 
-_Discussions_
+ - A2: 808 Commonwealth Ave FLR 122, M 1:25 PM -- 2:15 PM
+ - A3: 871 Commonwealth Ave CGS 113, M 2:30 PM -- 3:20 PM
+ - B2: 771 Commonwealth Ave MUG 203, M 8:00 PM -- 8:50 PM
+ - B3: 808 Commonwealth Ave FLR 122, M 9:05 AM -- 9:55 AM
+ - B5: 871 3 Cummington Mall PRB 146, M 11:15 AM -- 12:05 PM
 
- - A2: 888 Commonwealth Ave IEC B10, M 1:25 PM -- 2:15 PM
- - B2: 64-86 Cummington Mall PSY B39, W  2:30 PM - 3:20 PM
- - B3: 871 Commonwealth Ave CGS 313, W 3:35 PM - 4:25 PM
+ **Note that A4, A5, and B4 were cancelled - if you are still registered for A4 and A5 please change your registration, we will not be holding A4 and A5 discussions**
 
-:::
-
-:::{.notes}
-Welcome! 
-
-My name
 :::
 
 ## Logistics
@@ -39,34 +35,50 @@ My name
 
 _Teaching Staff_
 
- - Instructor: Prof. Lisa Wobbes  <br>
- - TF: Wanli Chen  <br>
- - CAs: Sarah Rashed, Alyssa Tay, Yutong (Chris) Wu
+ - Instructors: **Prof. Lauren Wheelock** and **Prof. Lisa Wobbes**  <br>
+ - TAs: **Daniel** Greiner, **Clare** Oudard and **Aastha** Gidwani  <br>
+ - CAs: Yutong (**Chris**) Wu, **Alyssa** Tay, **Charles** Carpenter, and **Tanisha** Krishnaraj
 
-Please use private messages on Piazza for all email needs!
 :::
 
-:::{.notes}
-Some of them might join us.
+## Office Hours
+:::{style="font-size: .8em"}
 
-Wanli leads discussions
+_Office Hours_
+
+- Schedule is on Piazza under Resources/Staff
+- Any changes will be announced on Piazza
+
+<div style="font-size: 0.65em;">
+
+| Mon | Tue | Wed | Thu | Fri |
+|-----|-----|-----|-----|-----|
+| Aastha 12-1 |  | Prof. Wheelock 11-12 |  | Clare 11-12 |
+| Charlie 2-3 | Chris 2:30-3:30 | Tanisha 12:30-1:10 |Daniel 2-3 | Alyssa 12-1 |
+| Daniel 4-5 |  Tanisha 3:45-4:45 | Clare 2-3 | Tanisha 3:45-4:45  | Prof. Wobbes 3-4 |
+| Alyssa 5-6 | Charlie 5-6  | Aastha 6:15-7:15 | Chris 5-6 | Charlie 4-5 |
+
+</div> 
+
 :::
+
 
 ## Getting Set Up
-:::{style="font-size: .8em"}
+:::{style="font-size: .75em"}
 
 _Platforms_
 
-- __Piazza__: https://piazza.com/bu/fall2025/ds121 <br>
+- __Piazza__: https://piazza.com/bu/spring2026/ds121/home <br>
 Check it weekly!
-- __Gradescope__: https://www.gradescope.com (Entry code: B3DKJ3)<br>
+Please use private messages on Piazza for all email needs!
+- __Gradescope__: https://www.gradescope.com<br>
 
-- __Grasple__: https://app.grasple.com/#/courses/12988 
+- __Grasple__: https://app.grasple.com/#/courses/14069
 
 _Resources_
 
-- __Lecture slides and notes__: Links are on Piazza<br>
-<!-- Slides reflect the latest content! -->
+- __Lecture slides and notes__: Linked on Piazza<br>
+- __Lecture recordings__: Linked on Piazza<br>
 
 _Programming environment_ 
 
@@ -74,92 +86,41 @@ _Programming environment_
 
 :::
 
-:::{.notes}
-Has everyone been enrolled?
 
-Familiar with Piazza, Gradescope, Python?
-:::
-
-## Grasple
+## Grasple and Homeworks
 :::{style="font-size: .75em"}
 
-- New addition to DS-121
-- 5-8 questions per homework assignment (HW 0: only 1 question)
-- Each question is worth 1 point on Grasple and 3 points for the assignment
-- Immediate digital feedback: layered structure
-- Grading: 
-    - Main question correct in 1 attempt: 100%
-    - Sub-question A correct, main question correct: 66%
-    - Sub-question A correct, main question incorrect: 33%
-    - Sub-question B correct, main question correct: 50%
-    - Sub-question B correct, main question incorrect: 25%
-    - Sub-question B incorrect: 0%
+**New structure this semester**
+
+- Two sources of **ungraded** practice problems: 
+  - Written problems (resembling traditional homework assignments)
+  - Grasple problems (online tool with responsive feedback)
+
+**Discussion quizzes replace graded homeworks**
+
+- 8 of the discussion sections will begin with a short (~10 min) quiz consisting of 1-2 of the homework problems
+- Your top 5 quiz scores will be averaged - the bottom 3 (eg if up to 3 were missed) will be dropped
 
 :::
 
-:::{.notes}
-New exciting platform
-
-Draw the scheme
-
-:::
-
-## Grasple
-:::{style="font-size: .8em"}
-
-- Do **not** skip questions! 
-- Only your first attempt on each assignment counts
-- Report bugs directly to Yutong Wu or Prof. Wobbes
-
-:::{.center-text}
-<img src="images/Grasple.png" width=900/>
-:::
-
-- Share your feedback with us through the survey
-
-:::
-
-:::{.notes}
-Wanli will explain more
-
-Pilot year
-
-Future: integration with Gradescope
-:::
 
 
 ## Course Grade
 :::{style="font-size: .8em"}
 _Computation_
 
-- 5% Participation
-- 15% Homework assignments
+- 5% Participation (from discussions)
+  - 1% for Quiz 0 (covering the syllabus)
+  - 1% for the Grasple survey
+  - 3% for discussion attendance (attend at least 9 of 13)
+- 15% Homework quizzes (during discussion) 
 - 15% Midterm 1
 - 15% Midterm 2 
 - 15% Midterm 3 
 - 35% Final exam
 
-_Participation_
-
-- Discussion Labs (3%): attend at least 9 out of 13
-- Homework 0 and Grasple Survey (2%)
 :::
 
-
-## Course Grade
-:::{style="font-size: .8em"}
-_Homework_
-
-- 8 homework assignments
-- Due at 11:59 pm on a Wednesday
-- Pen-and-paper mathematical questions and coding questions
-- Each assignment has questions on both Gradescope and Grasple
-- Questions during discussions and office hours are allowed and encouraged
-- Bonus quizzes during discussions
-- Clarity and correctness matter
-- No late submissions, no assignments are dropped
-
-:::
 
 ## Course Grade
 :::{style="font-size: .8em"}
@@ -167,26 +128,24 @@ _Exams_
 
 All exams are cumulative, with emphasis on material covered since the previous exam. Content may include lectures, discussion labs, homework, and required readings.
 
-- Midterm 1: __October 8, before class, CAS 522__ <br>
-Take-home exam. You must submit a hard copy. Late or digital submissions will not be accepted!
-- Midterm 2: __October 27, during class, CAS 522__ <br>
+- Midterm 1: __February 28, during class__ <br>
 In-person exam
-- Midterm 3: __November 17, during class, CAS 522__ <br>
+- Midterm 2: __March 20, during class__ <br>
 In-person exam
-- Final exam: __December 15-19__ <br>
+- Midterm 3: __April 8, during class__ <br>
 In-person exam
+- Final exam: __A: W 5/6 9-11, B: F 5/8 9-11__ <br>
+In-person exam, usual classrooms
 :::
 
-:::{.notes}
-Compromise between 2 and 3 midterms
-:::
+Exam review sessions will be held during discussions, not in class.
 
-## Policies
+## Course Policies
 :::{style="font-size: .8em"}
 _Regrade requests_
 
 - Up to one week after the grade is posted 
-- Submission via Gradescope 
+- Submission via Gradescope only
 
 _Collaboration Policy_
 
@@ -194,34 +153,22 @@ _Collaboration Policy_
 - No searching for answers
 - Disclose collaboration and sources
 
+:::
+
+
+## Course Policies (cont'd)
+:::{style="font-size: .8em"}
+
 _Learning Environment_
 
 - Inclusive environment for individuals of all genders, races, cultures, abilities, and sexual orientations
 
-
-:::
-
-:::{.notes}
-Please be respectful to your fellow students and the teaching staff
-:::
-
-## General Information
-:::{style="font-size: .8em"}
-
-_Office Hours_
-
-- Schedule is on Piazza under Resources/Staff 
-- Any changes will be announced on Piazza
-
 _Accommodations_
 
-- Only through Office for Disability Services (ODS) 
+- Exclusively through Office for Disability Services (ODS) 
 
 :::
 
-:::{.notes}
-My OH: CDS 1401 at 3:30 pm
-:::
 
 ## General Information
 :::{style="font-size: .8em"}
@@ -231,12 +178,22 @@ __More details, including the weekly schedule, can be found in the syllabus.__
 :::{.center-text}
 <img src="images/Piazza_DS121.png" width=900/>
 :::
+
 :::
 
-:::{.notes}
-Where to find the syllabus
+## Intro survey and Quiz 0
+:::{style="font-size: .8em"}
 
-Read the academic code of conduct 
+__Intro survey__
+
+- An informal survey to help us learn about you and your background
+- Not graded, but please complete, it helps us help you!
+
+__Quiz 0__
+
+- Will be on Gradescope (all other quizzes will be in discussion)
+- Will check that you have read over the syllabus
+
 :::
 
 
@@ -264,7 +221,7 @@ DS-122: Probability/statistics, and optimization
 
 ## Why Linear Algebra?
 <span style="font-size: 0.8em;">
-Linear algebra enables powerful machine learning techniques such as k-means for clustering, PageRank for web search ranking, PCA for dimensionality reduction, and neural networks for deep learning.
+Linear algebra enables powerful machine learning techniques such as **k-means** for clustering, **PageRank** for web search ranking, **PCA** for dimensionality reduction, and **neural networks** for deep learning.
 </span>
 
 :::{.columns}
@@ -277,36 +234,65 @@ Linear algebra enables powerful machine learning techniques such as k-means for 
 :::
 :::
 
-:::{.notes}
-k-means: customer segmentation, document clustering
-
-PageRank: number and quality of links to other pages
-
-PCA: image compression, facial recognition
-:::
-
 ## Why Linear Algebra?
 
 :::{.center-text}
 <img src="images/PCA_genes_Europe.png" width=700/>
 :::
 
-<!-- :::{.columns}
-::: {.column width="50%"}
-![](images/PCA_genes_Europe.png){fig-align="left" width=110%}
+<span style="font-size: 0.4em;">
+Data: 3000 x 500 k
+</span>
+
+## Why Linear Algebra?
+
+:::{.center-text}
+<img src="images/cnn.jpeg" width=700/>
 :::
 
-::: {.column width="50%"}
-![](images/Handwritten_digits.png){fig-align="right" width=110%}
+## Linear Algebra is Everywhere
+
+:::{style="font-size: 0.8em;"}
+
+:::{.fragment}
+**Netflix & Spotify** - "Users who liked X also liked Y" is powered by matrix factorization on billions of ratings
 :::
-::: -->
+
+:::{.fragment}
+**ChatGPT & LLMs** - Every word becomes a vector; attention is matrix multiplication
+:::
+
+:::{.fragment}
+**Image compression** - JPEG uses linear algebra to store photos at 10% of the original size
+:::
+
+:::{.fragment}
+**Google Search** - PageRank finds the most important webpages using eigenvectors
+:::
+
+:::{.fragment}
+**Facial recognition** - "Eigenfaces" represent faces as combinations of basis images
+:::
+
+:::
 
 :::{.notes}
-Data: 3000 x 500 k
+These aren't toy examples - they're the actual techniques used in production systems
+:::
 
-Genes mirror geography
+## Course Roadmap
+:::{style="font-size: 0.6em;"}
 
-Application?
+| Unit | Topics | Applications |
+|---------|--------------|--------------|
+| **1. Vectors & Geometry** | Vectors, lengths, inner products | k-NN classification |
+| **2. Clustering** | Distance, centroids, convergence | k-means clustering |
+| **3. Linear Systems** | Matrix algebra, Gauss-Jordan, LU | Solving equations at scale |
+| **4. Transformations** | Linear maps, inverses, vector spaces | Image transformations |
+| **5. Orthogonality** | Projections, Gram-Schmidt, QR | Least squares, linear regression |
+| **6. Eigenanalysis** | Eigenvalues, diagonalization, Markov chains | PageRank, dynamical systems |
+| **7. SVD & PCA** | Singular value decomposition | Compression, recommendations |
+
 :::
 
 ## What is Linear Algebra?
@@ -315,74 +301,53 @@ Application?
 :::{.incremental}
 :::{.fragment}
 <span style="font-size: 0.8em;">
-Linear algebra is a branch of mathematics that deals with vectors, matrices, linear systems, and linear transformations. 
+Linear algebra is a branch of mathematics that deals with **vectors, matrices, linear systems, and linear transformations**. 
 </span>
 
 :::
 :::{.fragment}
 <span style="font-size: 0.8em;">
-It involves understanding and manipulating multi-dimensional data through concepts like vector spaces, matrix operations, and matrix factorizations.
+It involves understanding and manipulating **multi-dimensional data** through concepts like **vector spaces, matrix operations, and matrix factorizations**.
 </span>
 
 :::
 :::
 :::
 
-:::{.notes}
-Vectors, matrices, linear systems, and linear transformations
 
-Understanding and manipulating **multi-dimensional** data
-
-:::
 
 ## Three Modes of Thinking
 
-:::{.incremental}
-<span style="font-size: 0.8em;">
+:::{.incremental style="font-size: 0.8em;"}
 - **Algebraic thinking**: how to correctly _manipulate symbols_ in a consistent logical framework.
-</span>
-
-<span style="font-size: 0.8em;">
 - **Geometric thinking**: learning to _extend_ familiar two- and three-dimensional concepts _to higher dimensions_.
-</span>
-
-<span style="font-size: 0.8em;">
 - **Computational thinking**: understanding the _relationship between abstract algebraic machinery and actual computations_ which _efficiently_ arrive at the correct answer.
-</span>
-
-:::{.fragment}
-<span style="font-size: 0.8em;">
-Integrating these three concepts is _essential_ for using linear algebra in data science.
-</span>
 :::
 
+:::{.fragment style="font-size: 0.8em;"}
+Integrating these three concepts is _essential_ for using linear algebra in data science.
 :::
 
 ## Three Modes of Thinking
-:::{center-text}
+:::{.center-text}
 ![](images/01-modes.jpg)
 :::
 
+
 ## Three Modes of Vector $\mathbf{v}$
-:::{.incremental}
-<span style="font-size: 0.8em;">
+
+:::{.incremental style="font-size: 0.8em;"}
 - **Algebraically:** a vector $\mathbf{v}$ is an abstract _object_ that permits addition ${\bf v} + {\bf w}$ and multiplication by a constant or *scalar* $c$ to form $c {\bf v}$.
-</span>
-
-<span style="font-size: 0.8em;">
 - **Computationally:** a vector is an ordered _list_ of real numbers.
-</span>
-
-<span style="font-size: 0.8em;">
-  $$
-  \small{\begin{array}{ccc}
-  {\bf u} = \left[\begin{array}{r}3\\-1\end{array}\right] &
-  {\bf v} = \left[\begin{array}{c}2\\2\end{array}\right] &
-  {\bf w} = \left[\begin{array}{c}-2\\-1\end{array}\right]
-  \end{array}}
-  $$
-</span>
 :::
+
+$$
+\small{\begin{array}{ccc}
+{\bf u} = \left[\begin{array}{r}3\\-1\end{array}\right] &
+{\bf v} = \left[\begin{array}{c}2\\2\end{array}\right] &
+{\bf w} = \left[\begin{array}{c}-2\\-1\end{array}\right]
+\end{array}}
+$$
 
 :::{.notes}
 Complex numbers are not the focus
@@ -440,7 +405,7 @@ print("This dataset contains", rows, "rows.")
 print("Each row contains", cols, "columns that contain the following features:")
 print(iris.feature_names)
 ```
-:::{center-text}
+:::{.center-text}
 ![](images/01-iris.png)
 :::
 
@@ -511,28 +476,26 @@ plt.ylabel(iris.feature_names[y_index]);
 
 ## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
 
-<span style="font-size: .8em;">
+
+:::{style="font-size: 0.8em;"}
+
+:::{.fragment}
 We can make the following observations.
-</span>
+:::
 
+:::{.fragment}
+1. There are _correlations_ among the 150 rows of A.
+    - Knowing the petal length of an iris tells you something about the petal width.
+    - Knowing the petal length and width might give you a way to classify which type of iris you have.
+:::
 
-<span style="font-size: .8em;">
-1. There are _correlations_ among the 150 rows of A. 
-</span>
-
-<span style="font-size: .8em;">
-- Knowing the petal length of an iris tells you something about the petal width. 
-- Knowing the petal length and width might give you a way to classify which type of iris you have.
-</span>
-
-<span style="font-size: .8em;">
+:::{.fragment}
 2. The matrix is _compressible_.
-</span>
+    - The 150 rows of $A$ are all samples of the same underlying physical process.
+    - We should be able to decompose this $150 \times 4$ matrix into simpler matrices.
+:::
 
-<span style="font-size: .8em;">
-  - The 150 rows of $A$ are all samples of the same underlying physical process.<br>
-  - We should be able to decompose this $150 \times 4$ matrix into simpler matrices.
-</span>
+:::
 
 :::{.notes}
 Compressible: the same physics and biology laws
@@ -543,56 +506,65 @@ What makes a matrix **simple**?
 :::
 
 
-## <span style="font-size: .8em;">Linear Algebra for Data Science</span>
+## The Scale Problem
 
-<span style="font-size: 0.8em;">
-What makes a matrix _simple_?
-</span>
+:::{style="font-size: 0.8em;"}
 
-
-:::{.incremental}
-<span style="font-size: 0.8em;">
-- **Size:** one matrix might have fewer rows or columns than another, which means it is more compact and has fewer degrees of freedom.
-</span>
-
-<span style="font-size: 0.8em;">
-- **Sparsity:** a matrix might be lower triangular (denoted $L$) or upper triangular (denoted $U$ or $R$), with all other entries equal to zero.
-</span>
-
-<span style="font-size: 0.8em;">
-- **Symmetry:** the entries of the matrix might be symmetric across the diagonal $S$, or it might even be a diagonal matrix $\Sigma$ with all other entries being 0.
-</span>
+:::{.fragment}
+Netflix has **200 million** users and **15,000** titles. That's a matrix with **3 trillion** entries.
 :::
 
-:::{.notes}
-What number is simpler, 6 or 3? Why?
+:::{.fragment}
+How do you store it? How do you compute with it? How do you find patterns in it?
 :::
 
+:::{.fragment}
+Most real-world data has _hidden structure_. We can decompose big matrices into smaller, simpler pieces.
+:::
 
-
+:::
 
 ## Matrix Decomposition
-<span style="font-size: 0.8em;">
-- $A = L U$ - Gauss-Jordan Elimination <br>
-- $A = Q R$ - Gram-Schmidt Orthogonalization <br>
-- $A = U \Sigma V$ - Singular Value Decomposition or SVD
-</span>
+
+:::{style="font-size: 0.8em;"}
+
+- $A = LU$ — Gauss-Jordan Elimination
+- $A = QR$ — Gram-Schmidt Orthogonalization
+- $A = U \Sigma V^T$ — Singular Value Decomposition (SVD)
+:::
 
 :::{.center-text}
 ![](images/01-svd.png)
 :::
 
-## Assumptions
-<span style="font-size: 0.8em;">
-Many techniques in this course involve dealing with high-dimensional datasets for which we assume low intrinsic dimensionality. This is often a good assumption, but not always!
+:::{.notes}
+We'll learn what "simpler" means: triangular, orthogonal, diagonal
+:::
+
+## A Word of Caution
+<span style="font-size: 0.75em;">
+These techniques assume your data has low intrinsic dimensionality—hidden structure from physics, biology, or human behavior. This is often true, but not always! [https://www.tylervigen.com/spurious-correlations](https://www.tylervigen.com/spurious-correlations)
 </span>
 
 :::{.center-text}
 ![](images/01-spurious.png)
 :::
 
-:::{.notes}
-Low intrinsic dimensionality: physical or mathematical structure
+## Before Next Class
 
-Caution!
+:::{style="font-size: 0.85em;"}
+
+**To do this week:**
+
+- Complete the **Intro Survey** (ungraded, but helps us help you!)
+- Complete **Quiz 0** on Gradescope (covers the syllabus)
+- Set up **Python** (instructions on Piazza)
+- Join **Piazza** and check it regularly
+
+**Friday:** We begin with **vectors** — the building blocks of everything else in this course. 
+
+:::
+
+:::{.center-text}
+Questions?
 :::
