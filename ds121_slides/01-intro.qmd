@@ -87,7 +87,7 @@ _Programming environment_
 :::
 
 
-## Grasple and Homeworks
+## Homework and Homework Quizzes
 :::{style="font-size: .75em"}
 
 **New structure this semester**
@@ -103,7 +103,22 @@ _Programming environment_
 
 :::
 
+## About Grasple
+:::{style="font-size: .75em"}
 
+
+- Second semester we're using Grasple - this time ungraded
+- 5-8 questions per homework assignment
+- Immediate digital feedback: layered structure
+
+- Report bugs directly to Yutong Wu or Prof. Wobbes
+
+:::{.center-text}
+<img src="images/Grasple.png" width=900/>
+:::
+
+
+:::
 
 ## Course Grade
 :::{style="font-size: .8em"}
@@ -191,7 +206,7 @@ __Intro survey__
 
 __Quiz 0__
 
-- Will be on Gradescope (all other quizzes will be in discussion)
+- Will be on Gradescope at 12pm today (all other quizzes will be in discussion)
 - Will check that you have read over the syllabus
 
 :::
@@ -557,7 +572,7 @@ These techniques assume your data has low intrinsic dimensionality—hidden stru
 **To do this week:**
 
 - Complete the **Intro Survey** (ungraded, but helps us help you!)
-- Complete **Quiz 0** on Gradescope (covers the syllabus)
+- Complete **Quiz 0** on Gradescope (covers the syllabus) - will be released on Gradescope at 12pm
 - Set up **Python** (instructions on Piazza)
 - Join **Piazza** and check it regularly
 
