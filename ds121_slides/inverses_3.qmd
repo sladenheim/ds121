@@ -3,17 +3,24 @@ title: "LU Factorization"
 author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
+        math: true
         css: 
         - styles.css
         html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
 ---
 
 ## Learning Objectives
 
 ::::{style="font-size: .8em"}
-In this lecture we will learn how to use Gauss-Jordan elimination for matrix factorization. The name of the technique that we will explore today is LU factorication.
-
-In the future lectures, we will discuss other factorization techniques such as QR factorization and SVD.
+- Elementary matrices
+- Matrix factorization
+- LU factorization
+    - Finding $U$
+    - Finding $L$
 ::::
 
 ## Matrix Factorization
@@ -27,11 +34,11 @@ $$
 
 There are several reasons to factor (or decompose) a matrix:
 
-1. Recasting $A$ into a form that makes computing with $A$ __faster__.
-2. Recasting $A$ into a form that makes working with $A$ __easier__.
-3. Recasting $A$ into a form that __exposes important properties__ of $A$.
+1. Recasting $A$ into a form that makes computing with $A$ _**faster**_.
+2. Recasting $A$ into a form that makes working with $A$ _**easier**_.
+3. Recasting $A$ into a form that _**exposes important properties**_ of $A$.
 
-LU factorization addresses the first case. In the future, we will study factorizations to address the other two cases.
+LU factorization addresses the first case. 
 :::
 
 ## LU Factorization Problem

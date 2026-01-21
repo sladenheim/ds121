@@ -7,14 +7,22 @@ format:
         css: 
         - styles.css
         html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
 ---
 
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
-In this lecture, we will deepen our understanding of the geometry of vectors and matrices. 
-
-We will explore the concept of orthogonality between two vectors in greater detail and introduce the notion of projection. Additionally, we will introduce the Gram-Schmidt orthogonalization procedure, which transforms any basis into an orthogonal one. In the future, we will apply the Gram-Schmidt process to perform a new type of matrix factorization known as QR factorization.
+- Orthogonal sets
+- Orthogonal basis
+- Finding coordinates with respect to an orthogonal basis
+    - Approach
+    - Computational costs
+- Orthogonal projection onto a vector
+- Orthogonal projection onto a subspace
 :::
 
 ## Orthogonal Sets
@@ -27,8 +35,8 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
-        A set of vectors \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) in \(\mathbb{R}^n\) is said to be an <b>orthogonal set</b> if each pair of distinct vectors from the set is orthogonal, i.e., \(\mathbf{u}_i^\top \mathbf{u}_j = 0\;\;\mbox{if}\;i\neq j.\)
+        <p><span class="label">Orthogonal set</span>
+        A set of vectors \(\small \{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) in \(\mathbb{R}^n\) is said to be an <b>orthogonal set</b> if each pair of distinct vectors from the set is orthogonal, i.e., \(\small \mathbf{u}_i^\top \mathbf{u}_j = 0\;\;\mbox{if}\;i\neq j.\)
         </p>
     </div>
     """
@@ -36,16 +44,16 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
+__Example.__  Consider 
 
-
-We are going to show that $\{\mathbf{u}_1,\mathbf{u}_2,\mathbf{u}_3\}$ is an orthogonal set, where
-:::
-:::{style="font-size: .6em"}
-
+:::{style="font-size: .7em"}
 $$
 \mathbf{u}_1 = \begin{bmatrix}3\\1\\1\end{bmatrix},\;\;\mathbf{u}_2=\begin{bmatrix}-1\\2\\1\end{bmatrix},\;\;\mathbf{u}_3=\begin{bmatrix}-1/2\\-2\\7/2\end{bmatrix}.
 $$
 :::
+
+:::
+
 :::{style="font-size: .8em"}
 We take the inner product of each pair of distinct vectors:
 :::
@@ -59,7 +67,7 @@ $$
 $$
 :::
 :::{style="font-size: .8em"}
-Hence, $\{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$ is an orthogonal set. 
+Hence, $\small \{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$ is an orthogonal set. 
 :::
 
 ## Orthogonal Sets
@@ -101,7 +109,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">Theorem</span>
        If \(S = \{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) is an orthogonal set of nonzero vectors in \(\mathbb{R}^n,\) then \(S\) is linearly independent.
         </p>
     </div>
@@ -120,7 +128,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">Orthogonal basis</span>
        An <b>orthogonal basis</b> for a subspace \(H\) of \(\mathbb{R}^n\) is a <em>basis</em> for \(H\) that is also an <em>orthogonal set</em>.
         </p>
     </div>
@@ -221,7 +229,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">Theorem</span>
         Let \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) be an orthogonal basis for a subspace \(H\) of \(\mathbb{R}^n\). For each \(\mathbf{y}\) in \(H\), the weights of the linear combination \(c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p = \mathbf{y}\) are given by \(c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^{\top} \mathbf{u}_j}\) with \(j = 1,\dots,p.\)
 
         </p>
@@ -235,7 +243,7 @@ __Proof.__  Let's consider the inner product of $\mathbf{y}$ and one of the $\ma
 
 The orthogonality of $\{\mathbf{u}_1,\dots,\mathbf{u}_p\}$ means that
 
-$$\begin{align*}
+$$\small \begin{align*}
 \mathbf{y}^\top \mathbf{u}_1 &= (c_1\mathbf{u}_1 + c_1\mathbf{u}_2 + \dots + c_p\mathbf{u}_p)^\top \mathbf{u}_1 \\
 &= c_1(\mathbf{u}_1^\top \mathbf{u}_1).
 \end{align*}
@@ -249,7 +257,7 @@ To find any other $c_j,$ compute $\mathbf{y}^\top \mathbf{u}_j$ and solve for $c
 ## Orthogonal Basis
 
 :::{style="font-size: .8em"}
-The set $S$ that we saw earlier, 
+__Example__. The set $S$ that we saw earlier, 
 
 $$
 \mathbf{u}_1 = \begin{bmatrix}3\\1\\1\end{bmatrix},\;\;\mathbf{u}_2=\begin{bmatrix}-1\\2\\1\end{bmatrix},\;\;\mathbf{u}_3=\begin{bmatrix}-1/2\\-2\\7/2\end{bmatrix},
@@ -257,7 +265,7 @@ $$
 
 is an orthogonal basis for $\mathbb{R}^3.$
 
-Let's express the vector $\mathbf{y} = \begin{bmatrix}6\\1\\-8\end{bmatrix}$ as a linear combination of the vectors in $S.$
+Let's express $\mathbf{y} = \begin{bmatrix}6\\1\\-8\end{bmatrix}$ as a linear combination of the vectors in $S.$
 
 That is, find $\mathbf{y}$'s coordinates in the basis $S$ --- i.e., in the coordinate system $S$.
 :::
@@ -296,7 +304,7 @@ y = u1 - 2 * u2 - 2 * u3
 # print(y)
 fig.plotPoint(y[0], y[1], y[2], 'b')
 fig.text(y[0]-2, y[1]+.1, y[2]+.1, r'$\bf y$ = (6, 1, -8)', 'y = (6, 1, -8)', size=16, color = 'b')
-fig.text(y[0]-2, y[1]+.1, y[2]-2.5, r'${\bf y} = 1{\bf u}_1 -2 {\bf u}_2 -2 {\bf u}_3$', 'y = (6, 1, -8)', size=16, color = 'b')
+fig.text(y[0]-2, y[1]+.1, y[2]-2.5, r'${\bf y} = 1{\bf u}_1 -2 {\bf u}_2 - 2 {\bf u}_3$', 'y = (6, 1, -8)', size=13, color = 'b')
 #
 fig.set_title(r'${\bf y}$ in an Orthogonal Basis', 'y in an Orthogonal Basis', size = 16)
 ```
@@ -306,7 +314,7 @@ fig.set_title(r'${\bf y}$ in an Orthogonal Basis', 'y in an Orthogonal Basis', s
 ## Orthogonal Basis
 
 :::{style="font-size: .8em"}
-Compute
+__Example__. Compute
 
 $$
 \mathbf{y}^\top \mathbf{u}_1 = 11,\;\;\;\mathbf{y}^\top \mathbf{u}_2 = -12,\;\;\;\mathbf{y}^\top \mathbf{u}_3 = -33,
@@ -334,8 +342,27 @@ Hence, $[{\bf y}]_{\mathcal{B}} = \begin{bmatrix} 1 & -2 & -2 \end{bmatrix}^\top
 
 Finding the coordinates of $\mathbf{y}$ in the orthogonal basis is efficient because
 
-- There are $n$ inner products, each requiring $2n$ flops.
+- There are $2n$ inner products, each requiring $2n$ flops.
 - Each coefficient $c_i$ can be calculated separately, allowing for parallel computation in linear time.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Do the vectors \(\begin{bmatrix} 2 \\ 2\\ 1\end{bmatrix}\), \(\begin{bmatrix} 0 \\ -1\\ 2\end{bmatrix}\), and \(\begin{bmatrix} -5 \\ 4\\ 2\end{bmatrix}\) form an orthogonal set in \(\mathbb{R}^3\)?
+            <br>
+            <br>
+            <br>
+            <br>
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
 
 :::
 
@@ -395,11 +422,12 @@ plt.plot(perpline2[0], perpline2[1], 'k', lw = 1);
 ```
 :::
 
+
+## Orthogonal Projection
+
 :::{style="font-size: .8em"}
 Note $\mathbf{y} - \alpha\mathbf{u} = \mathbf{y}-\hat{\mathbf{y}} = \mathbf{z}.$ We want $\mathbf{z}$ to be orthogonal to $\mathbf{u}.$
 :::
-
-## Orthogonal Projection
 
 :::{style="font-size: .8em"}
 Now $\mathbf{z} = \mathbf{y} - \alpha{\mathbf{u}}$ is orthogonal to $\mathbf{u}$ if and only if
@@ -476,12 +504,12 @@ $$
 
 ## Projections onto Subspaces{.smaller-title}
 
-:::{style="font-size: .8em"}
-Let $\mathbf{y} = \begin{bmatrix}7\\6\end{bmatrix}$ and $\mathbf{u} = \begin{bmatrix}4\\2\end{bmatrix}.$  We are going to find the orthogonal projection of $\mathbf{y}$ onto $\mathbf{u}$ and write $\mathbf{y}$ as the sum of a vector in Span$\{\mathbf{u}\}$ and a vector orthogonal to $\mathbf{u}.$
+:::{style="font-size: .9em"}
+__Example__. Let $\mathbf{y} = \begin{bmatrix}7\\6\end{bmatrix}$ and $\mathbf{u} = \begin{bmatrix}4\\2\end{bmatrix}.$  We are going to write $\mathbf{y}$ as the sum of a vector in Span$\{\mathbf{u}\}$ and a vector orthogonal to $\mathbf{u}.$
 
 :::{.center-text}
 ```{python}
-ax = ut.plotSetup(-3,11,-1,7,(8,6))
+ax = ut.plotSetup(-3,11,-1,7,(7,5))
 ut.centerAxes(ax)
 plt.axis('equal')
 u = np.array([4.,2])
@@ -536,28 +564,112 @@ $$
 ## Projections onto Subspaces
 
 :::{style="font-size: .8em"}
-The component of $\mathbf{y}$ orthogonal to $\mathbf{u}$ is
+The component of $\small \mathbf{y}$ orthogonal to $\small \mathbf{u}$ is
 
-$$
+$$ \small
 \mathbf{y}-\hat{\mathbf{y}} = \begin{bmatrix}7\\6\end{bmatrix} - \begin{bmatrix}8\\4\end{bmatrix} = \begin{bmatrix}-1\\2\end{bmatrix}.
 $$
 
 We can write
-$$
+$$ \small
 \begin{array}{ccccc}
 \mathbf{y} &=& \hat{\mathbf{y}} &+& \mathbf{z}. \\
 \begin{bmatrix}7\\6\end{bmatrix} &=& \begin{bmatrix}8\\4\end{bmatrix} &+& \begin{bmatrix}-1\\2\end{bmatrix}
 \end{array}.
 $$
 
-Furthermore, $\hat{\mathbf{y}}$ and $\mathbf{z}$ are orthogonal. We can quickly check this for ourselves using the inner product:
+Furthermore, $\small \hat{\mathbf{y}}$ and $\small \mathbf{z}$ are orthogonal. We can quickly check this for ourselves using the inner product:
 
-$$
+$$\small
 \hat{\mathbf{y}}^\top \mathbf{z} = 8(-1) + 4(2) = -8 + 8 = 0.
 $$
 :::
 
-## Two Important Properties of $\hat{\mathbf{y}}$
+## Projections onto Subspaces
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Let \(\mathbf{y} = \begin{bmatrix} 5 \\ 2 \end{bmatrix}\) and \(\mathbf{u} = \begin{bmatrix} 1 \\ 3 \end{bmatrix}.\) Calculate the orthogonal projection of \(\mathbf{y}\) onto the subspace spanned by \(\mathbf{u}.\)
+            <br>
+            <br>
+            <br>
+            <br>
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+:::{.notes}
+The orthogonal projection is $\operatorname{proj}_{\mathbf{u}}(\mathbf{y}) = \frac{\mathbf{y}^\top \mathbf{u}}{\mathbf{u}^\top \mathbf{u}}\mathbf{u} = \frac{5 \cdot 1 + 2 \cdot 3}{1^2 + 3^2}\mathbf{u} = \frac{5 + 6}{1 + 9}\mathbf{u} = \frac{11}{10}\mathbf{u} = \begin{bmatrix} 11/10 \\ 33/10 \end{bmatrix}.$ 
+:::
+
+## Properties of $\hat{\mathbf{y}}$
+
+:::{style="font-size: .8em"}
+
+**1.** _The closest point._
+
+Recall from geometry that given a line and a point $P$, the closest point on the line to $P$ is given by the perpendicular from $P$ to the line.
+
+Hence, $\hat{\mathbf{y}}$ is __the closest point to $\mathbf{y}$ in the subspace $L$.__
+
+:::{.center-text}
+```{python}
+#
+ax = ut.plotSetup(-3,11,-1,7,(6,4))
+ut.centerAxes(ax)
+plt.axis('equal')
+u = np.array([4.,2])
+y = np.array([7.,6])
+yhat = (y.T.dot(u)/u.T.dot(u))*u
+z = y-yhat
+ut.plotLinEqn(1.,-2.,0.)
+ut.plotVec(ax,u)
+ut.plotVec(ax,z)
+ut.plotVec(ax,y)
+ut.plotVec(ax,yhat)
+ax.text(u[0]+0.3,u[1]-0.5,r'$\mathbf{u}$',size=20)
+ax.text(yhat[0]+0.3,yhat[1]-0.5,r'$\mathbf{\hat{y}}$',size=20)
+ax.text(y[0],y[1]+0.8,r'$\mathbf{y}$',size=20)
+ax.text(z[0]-2,z[1],r'$\mathbf{y - \hat{y}}$',size=20)
+ax.text(10,4.5,r'$L = $Span$\{\mathbf{u}\}$',size=20)
+perpline1, perpline2 = ut.perp_sym(yhat, y, np.array([0,0]), 0.75)
+plt.plot(perpline1[0], perpline1[1], 'k', lw = 1)
+plt.plot(perpline2[0], perpline2[1], 'k', lw = 1)
+ax.plot([y[0],yhat[0]],[y[1],yhat[1]],'b--')
+ax.plot([0,y[0]],[0,y[1]],'b-')
+ax.plot([0,z[0]],[0,z[1]],'b-');
+```
+:::
+:::
+
+## Properties of $\hat{\mathbf{y}}$
+
+:::{style="font-size: .8em"}
+**2.** _The distance from $\mathbf{y}$ to $L$_
+
+The distance from $\mathbf{y}$ to $L$ is the length of the perpendicular from $\mathbf{y}$ to its orthogonal projection on $L$, namely $\hat{\mathbf{y}}$.
+    
+This distance equals the length of $\mathbf{y} - \hat{\mathbf{y}}$, or in other words the norm of ${\bf z}$.
+
+In the previous example, the distance is 
+
+$$
+\Vert\mathbf{y}-\hat{\mathbf{y}}\Vert = \Vert {\bf z} \Vert = \sqrt{(-1)^2 + 2^2} = \sqrt{5}.
+$$
+
+:::
+
+<!-- ## Two Important Properties of $\hat{\mathbf{y}}$
 
 :::{style="font-size: .8em"}
 
@@ -767,19 +879,4 @@ display(HTML(html_content))
 ```
 
 Proof: see the notes for a proof by induction.
-
-## Key Takeaways
-
-:::{style="font-size: .8em"}
-
-- An orthogonal set consists of vectors that are pairwise orthogonal. It is linearly independent.
-<!-- 
-- An orthogonal basis is a basis that is also an orthogonal set. -->
-
-- The coordinates of $\mathbf{y}$ in the orthogonal basis $\{\mathbf{u}_1,\dots,\mathbf{u}_p\}$ are given by $c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^{\top} \mathbf{u}_j}.$ Finding them is computationally efficient.
-
-- The projection into $\mathbf{u}$ decomposes a vector into the sum of its orthogonal projection into $\mathbf{u}$ and the component orthogonal to $\mathbf{u}$.
-
-- The Gram-Schmidt process is an algorithm that transforms any basis into an orthogonal basis, a basis that is also an orthogonal set.
-
-:::
+ -->

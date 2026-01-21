@@ -3,9 +3,14 @@ title: "Invertible Matrices"
 author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
+        math: true
         css: 
         - styles.css
         html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
 ---
 
 ## Learning Objectives

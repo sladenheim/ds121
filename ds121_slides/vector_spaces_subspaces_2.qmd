@@ -7,14 +7,21 @@ format:
         css: 
         - styles.css
         html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
 ---
 
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
-Today we will talk about bases and dimensions of subspaces. We will define those concepts first for general vector spaces and subspaces. Then we will apply them to column spaces and null spaces.
-
-We will also learn the Rank-Nullity Theorem and add new statements to IMT.
+- Review bases and dimensions
+- Basis for a nullspace
+- Basis for a column space
+- Matrix rank
+- Rank-nullity theorem  
+- New statements for IMT
 :::
 
 ## Basis
@@ -69,7 +76,7 @@ Since $\mathbf{a}_3$ is a scalar multiple of $\mathbf{a}_2,$ the most concise wa
 $H=\text{Span}\{\mathbf{a}_1,\mathbf{a}_2\}$ or equivalently, $H=\text{Span}\{\mathbf{a}_1,\mathbf{a}_3\}.$
 :::
 
-In other words, $\{\mathbf{a}_1, \mathbf{a}_2\}$ forms a _basis_ for $H$ and so does $\{\mathbf{a}_1,\mathbf{a}_3\}$.
+In other words, $\{\mathbf{a}_1, \mathbf{a}_2\}$ forms a _**basis**_ for $H$ and so does $\{\mathbf{a}_1,\mathbf{a}_3\}$.
 
 :::{.center-text}
 ```{python}
@@ -100,7 +107,7 @@ fig.text(9, -9, -7, r'H', 'H', size = 16)
 
 :::{style="font-size: .8em"}
 
-It can be shown that the smallest possible spanning set must be _linearly independent_.
+It can be shown that the smallest possible spanning set must be _**linearly independent**_.
 
 ```{python}
 from IPython.core.display import HTML
@@ -128,7 +135,7 @@ Furthermore, $\{\mathbf{a}_1\}$ is also not a basis for $H,$ because it does not
 ## Basis
 
 :::{style="font-size: .7em"}
-The columns of _any_ invertible $n\times n$ matrix form a basis for $\mathbb{R}^n,$ because, by the IMT, they are linearly independent and span $\mathbb{R}^n.$
+The columns of _**any**_ invertible $n\times n$ matrix form a basis for $\mathbb{R}^n,$ because, by the IMT, they are linearly independent and span $\mathbb{R}^n.$
 
 
 ```{python}
@@ -171,7 +178,7 @@ fig.plotIntersection([0, 1, 0, 0], [1, 0, 0, 0]);
 ## Dimension 
 
 :::{style="font-size: .8em"}
-If a vector space $V$ has a basis of $p$ vectors, then _every_ basis of $V$ must consist of exactly $p$ vectors. 
+If a vector space $V$ has a basis of $p$ vectors, then _**every**_ basis of $V$ must consist of exactly $p$ vectors. 
 The same is true for a subspace $H$.
 
 ```{python}
@@ -188,7 +195,7 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-The dimension of the zero subspace $\{{\bf 0}\}$ is defined to be zero.  
+__Remark__: The dimension of the zero subspace $\{{\bf 0}\}$ is defined to be zero.  
 
 For example, a plane through the origin ${\bf 0}$ is two-dimensional, and a line through ${\bf 0}$ is one-dimensional.
 
@@ -197,8 +204,7 @@ For example, a plane through the origin ${\bf 0}$ is two-dimensional, and a line
 ## Basis for a Nullspace
 
 :::{style="font-size: .8em"}
-Let us explain how to find a basis for a nullspace based on an example.
-
+__Example__.
 We are going to find a basis for the null space of the matrix
 :::
 :::{style="font-size: .6em"}
@@ -227,6 +233,7 @@ $x_1$ and $x_3$ are basic variables, and $x_2, x_4,$ and $x_5$ are free variable
 ## Basis for a Nullspace
 
 :::{style="font-size: .8em"}
+__Example (continued)__.
 So the general solution is:
 
 $$
@@ -234,9 +241,9 @@ $$
 x_3&=&-2x_4 + 2x_5.\end{array}
 $$
 
-Now, what we want to do is write the solution set as a _weighted combination of vectors,_ or simply a vector equation.
+Now, what we write the solution set as a _**weighted combination of vectors**_, or simply a vector equation.
 
-The key idea is that the _free variables will become the weights._
+The key idea is that the _**free variables will become the weights**_.
 :::
 
 ## Basis for a Nullspace
@@ -255,17 +262,20 @@ $$
 :::
 
 :::{style="font-size: .8em"}
-This expression describes the entire solution set of $A\mathbf{x} = {\bf 0}.$ So ${\operatorname{Nul}}\ A$ is the set of all linear combinations of $\mathbf{u}, \mathbf{v},$ and ${\bf w}$.  That is, ${\operatorname{Nul}}\ A$ is the subspace _spanned_ by $\{\mathbf{u}, \mathbf{v}, {\bf w}\}.$
+This expression describes the entire solution set of $A\mathbf{x} = {\bf 0}.$ <br>
+Hence, ${\operatorname{Nul}}\ A$ is the set of all linear combinations of $\mathbf{u}, \mathbf{v},$ and ${\bf w}$.  That is, ${\operatorname{Nul}}\ A$ is the subspace _**spanned**_ by $\{\mathbf{u}, \mathbf{v}, {\bf w}\}.$
 :::
 
 ## Basis for a Nullspace
 
 :::{style="font-size: .8em"}
-This construction automatically makes $\mathbf{u}, \mathbf{v},$ and ${\bf w}$ _linearly independent_. Note that each vector has a unique pattern of non-zero entries and each weight appears only in one position. Hence, the only way for the whole weighted sum to be zero is if every weight is zero. 
+__Example (continued)__.
+Note that each vector has a unique pattern of non-zero entries and each weight appears only in one position. 
+Hence, this construction automatically makes $\mathbf{u}, \mathbf{v},$ and ${\bf w}$ _**linearly independent**_.  
 
-Thus, $\{\mathbf{u}, \mathbf{v}, {\bf w}\}$ is a _basis_ for ${\operatorname{Nul}}\ A.$
+Thus, $\{\mathbf{u}, \mathbf{v}, {\bf w}\}$ is a _**basis**_ for ${\operatorname{Nul}}\ A.$
 
-Conclusion: by finding a parametric description of the solution of the equation $A\mathbf{x} = {\bf 0},$ we can construct a basis for the nullspace of $A$.
+<!-- Conclusion: by finding a parametric description of the solution of the equation $A\mathbf{x} = {\bf 0},$ we can construct a basis for the nullspace of $A$. -->
 
 
 ```{python}
@@ -282,9 +292,10 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-:::{.fragment}
-It is 3. To find the dimension of $\operatorname{Nul} A$, we can count the number of free variables in RREF.
 :::
+
+:::{.notes}
+It is 3. To find the dimension of $\operatorname{Nul} A$, we can count the number of free variables in RREF.
 :::
 
 ## Basis for a Column Space
@@ -292,7 +303,7 @@ It is 3. To find the dimension of $\operatorname{Nul} A$, we can count the numbe
 :::{style="font-size: .8em"}
 Since a basis for the column space must span it, we can use all matrix columns as our starting point. How do we select from all columns the linearly independent ones?
 
-Suppose we have a matrix $B$ that happens to be in _reduced echelon form:_
+__Example__. Suppose we have a matrix $B$ that happens to be in _reduced echelon form:_
 
 $$
 B = \begin{bmatrix}1&0&-3&5&0\\0&1&2&-1&0\\0&0&0&0&1\\0&0&0&0&0\end{bmatrix}.
@@ -354,6 +365,7 @@ In other words:
 ## Basis of a Column Space
 
 :::{style="font-size: .8em"}
+__Example__.
 Consider matrix $A$:
 :::
 
@@ -374,41 +386,17 @@ $$
 $$
 :::
 
-## Basis of a Column Space
-
-:::{style="font-size: .8em"}
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="purple-box">
-        <p>The pivot columns of matrix \(A\) form a basis for the column space of \(A\).</p>
-    </div>
-    """
-
-html_content = generate_html()
-display(HTML(html_content))
-```
-
-Be careful here though..
-
-- we compute the reduced row echelon form of $A$ to find which columns are pivot columns, but...
-- we use the _columns of $A$ itself_ as the basis for ${\operatorname{Col}}\ A$!
-:::
-
 ## Matrix Rank
 
 :::{style="font-size: .8em"}
-<!-- Now that we know how to find the basis of a column space, we can measure its dimension. This term is so important that we give it a special name. -->
-
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>The <b>rank</b> of a matrix, denoted by \(\operatorname{Rank}A\), is the dimension of the column space of A.</p>
+    <span class="label">Theorem </span>
+        <p>The pivot columns of matrix \(A\) form a basis for the column space of \(A\).</p>
     </div>
     """
 
@@ -418,6 +406,22 @@ display(HTML(html_content))
 
 <br>
 
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+    <span class="label">Matrix rank </span>
+        <p>The <b>rank</b> of a matrix, denoted by \(\operatorname{Rank}A\), is the dimension of the column space of \(A\).</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
 Since the pivot columns of $A$ form a basis for $\operatorname{Col} A,$ the rank of $A$ is just the number of pivot columns in $A$. 
 
 In other words, the rank of $A$ is the number of basic variables in a linear system of the form $A {\bf x} = {\bf b}$.
@@ -426,6 +430,11 @@ In other words, the rank of $A$ is the number of basic variables in a linear sys
 ## Matrix Rank
 
 :::{style="font-size: .8em"}
+For matrices $A$ and $B$ of appropriate sizes it can be shown that<br>
+
+1. $\small \operatorname{Rank}(A + B)\leq \operatorname{Rank} A + \operatorname{Rank}(B).$
+2. $\small \operatorname{Rank}(A B)\leq \min(\operatorname{Rank}A,\operatorname{Rank}B).$
+
 ```{python}
 from IPython.core.display import HTML
 
@@ -443,12 +452,6 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-<br>
-
-For matrices $A$ and $B$ of appropriate sizes it can be shown that<br>
-
-1. $\operatorname{Rank}(A + B)\leq \operatorname{Rank} A + \operatorname{Rank}(B).$
-2. $\operatorname{Rank}(A B)\leq \min(\operatorname{Rank}A,\operatorname{Rank}B).$
 
 :::
 
@@ -456,6 +459,7 @@ For matrices $A$ and $B$ of appropriate sizes it can be shown that<br>
 ## Matrix Rank
 
 :::{style="font-size: .8em"}
+__Example__.
 Determine the rank of the matrix
 :::
 :::{style="font-size: .7em"}
@@ -501,7 +505,8 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>If a matrix \(A\) has \(n\) columns, then \(\operatorname{Rank} A + \dim\operatorname{Nul}\).</p>
+    <span class="label">Theorem </span>
+        <p>If a matrix \(A\) has \(n\) columns, then \(n=\operatorname{Rank} A + \dim\operatorname{Nul}\).</p>
     </div>
     """
 
@@ -560,6 +565,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
+    <span class="label">Theorem </span>
         <p>Let \(A\) be a square \(n\times n\) matrix.  Then the following statements are each equivalent to the statement that \(A\) is an invertible matrix:
         <ol start="1">
         <li>The columns of \(A\) form a basis for \(\mathbb{R}^n.\)</li>
@@ -575,19 +581,4 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-:::
-
-## Key Ideas
-
-:::{style="font-size: .8em"}
-
-- A basis for a subspace $H$ of $\mathbb{R}^n$ is an independent set in $H$ that spans $H$.
-
-- The dimension of a subspace $H$ is the number of vectors in any basis for $H$.
-
-- A basis for the nullspace of $A$ is obtained from a parametric description of $A \bf{x} = 0$.
-
-- A basis for the column space of $A$ is formed by the pivot columns of $A.$
-
-- $\dim\operatorname{Nul} A + \dim\operatorname{Col} A =$ number of columns of $A$.
 :::

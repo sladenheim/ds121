@@ -255,7 +255,7 @@ Let's discuss each of these principles in more detail.
 <!-- Not using 8em font size to compensate because really smaller title applies font to whole slide.. maybe raw html instead of css? -->
 
 :::{style="font-size: 1em"}
- Compare floating point numbers for closeness, not equality
+ _**Compare floating point numbers for closeness, not equality.**_
 
 Two floating point computations that should yield the same result mathematically, may not do so due to rounding error.
 
@@ -347,7 +347,7 @@ np.allclose((A @ B) @ C, A @ (B @ C))
 
 ## Principles of Approximate Computing{.really-smaller-title}
 
-_**Two numbers, each with small relative error, can yield a value with large relative error if subtracted.**_ If two numbers have errors in the 9th significant digit, but the first 8 significant digits cancel out, then all of a sudden the relative error is large.
+_**Relative error can be magnified during subtractions.**_ If two numbers have errors in the 9th significant digit, but the first 8 significant digits cancel out, then all of a sudden the relative error is large.
 
 ```{python}
 #| echo: true

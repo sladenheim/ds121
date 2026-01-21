@@ -8,15 +8,199 @@ format:
         - styles.css
         html-math-method: mathjax
         highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
 ---
 
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
-Today we will define the least squares solution to an inconsistent system of equations using normal equations. 
 
-We will connect this solution to projections. By understanding the geometric interpretation of least squares, we will see how the solution minimizes the distance between the observed data and the model's predictions. This approach is fundamental to linear regression that will be introduced in the next lecture.
+- Orthogonal decomposition theorem
+- The best approximation theorem
+- Working with inconsistent systems
+- Least-squares 
+    - Problem statement
+    - Connection to projection
+    - Normal equations
 :::
+
+
+
+## Projecting onto Subspaces
+
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+    <span class="label">The Orthogonal Decomposition Theorem</span>
+        <p>
+        Let \(W\) be a subspace of \(\mathbb{R}^n\).  Then each \(\mathbf{y}\) in \(\mathbb{R}^n\) can be written uniquely in the form \(\mathbf{y} = \hat{\mathbf{y}} + \mathbf{z}\) where \(\hat{\mathbf{y}}\) is in \(W\) and 
+        \(\mathbf{z}\) is orthogonal to every vector in \(W\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.center-text}
+```{python}
+qr_setting = None
+import laUtilities as ut
+import numpy as np
+
+fig = ut.three_d_figure((8, 1), 'Projection of y onto Subspace W',
+                        -15, 15, -15, 15, -15, 15, (6,4), qr = qr_setting)
+a2 = np.array([5.0,-13.0,-3.0])
+a1 = np.array([1,-2.0,3])
+v = -3*a1 + a2
+y = np.array([12.0, 8.0, -5.0])
+A = np.array([a1, a2]).T
+#
+# plotting the span of v
+fig.plotSpan(a1, a2, 'Green')
+#
+yhat = A.dot(np.linalg.inv(A.T.dot(A))).dot(A.T).dot(y)
+fig.plotPoint(yhat[0], yhat[1], yhat[2], 'b')
+fig.text(yhat[0]+0.5, yhat[1]+0.5, yhat[2]+0.5, r'$\mathbf{\hat{y}}$', 'y-hat', size=18)
+#
+fig.plotPoint(y[0], y[1], y[2],'b')
+fig.text(y[0]+0.5, y[1]+0.5, y[2]+0.5, r'$\bf y$', 'y', size=18)
+#
+#
+m2 = (y + yhat) / 2
+m2 = m2 + [0,1,0]
+fig.text(m2[0], m2[1], m2[2], r'$\bf y - \hat{\bf y}$', '||y - y-hat||', size=18)
+
+#
+wpos = -4.5*a1 
+fig.text(wpos[0], wpos[1], wpos[2], r'$W$', 'W', size=22)
+#
+# lines
+fig.plotLine([y, yhat], 'b')
+#ut.plotPoint3d(ax,0,0,0,'b')
+fig.ax.view_init(azim=57.0,elev=-75.0)
+fig.hideAxes() 
+fig.plotPerpSym(yhat, y, a2-2*a1, 2.5)
+```
+:::
+
+<!-- Just as in the case of a 1D subspace (in the last lecture), we say that $\hat{\mathbf{y}}$ is the __orthogonal projection of $\mathbf{y}$ onto $W$__ and write $\hat{\mathbf{y}} = \mbox{proj}_W \mathbf{y}.$ -->
+
+:::
+
+<!-- ## Projecting onto Subspaces
+
+:::{style="font-size: .8em"}
+This is a generalization of orthogonal projection onto a 1-dimensional subspace (i.e., a line).
+
+
+:::{.center-text}
+```{python}
+#
+import matplotlib.pyplot as plt
+
+ax = ut.plotSetup(-3,11,-1,7,(5,3))
+ut.centerAxes(ax)
+plt.axis('equal')
+u = np.array([4.,2])
+y = np.array([6, 8])
+yhat = (y.T.dot(u)/u.T.dot(u))*u
+z = y-yhat
+ut.plotLinEqn(1.,-2.,0.)
+ut.plotVec(ax,y)
+ut.plotVec(ax,yhat)
+ax.text(yhat[0]+0.3,yhat[1]-0.5,r'$\mathbf{\hat{y}}$',size=20)
+ax.text(y[0],y[1]+0.8,r'$\mathbf{y}$',size=20)
+mm = (y + yhat)/2
+ax.text(mm[0]+.1,mm[1],r'$\mathbf{y - \hat{y}}$',size=20)
+ax.text(11,4.5,r'$L$',size=20)
+perpline1, perpline2 = ut.perp_sym(yhat, y, np.array([0,0]), 0.75)
+plt.plot(perpline1[0], perpline1[1], 'k', lw = 1)
+plt.plot(perpline2[0], perpline2[1], 'k', lw = 1)
+ax.plot([y[0],yhat[0]],[y[1],yhat[1]],'b--');
+```
+
+:::
+
+Given any orthogonal basis $\{\mathbf{u_1}, \mathbf{u_2}, \ldots, \mathbf{u_d}\}$ for the $d$-dimensional subspace $W$, $\hat{\mathbf{y}} = \mbox{proj}_W \mathbf{y}$ is the sum of the projections onto each of the basis vectors: $\hat{\mathbf{y}} = \mbox{proj}_{\mathbf{u_1}} \mathbf{y} + \mbox{proj}_{\mathbf{u_2}} \mathbf{y} + \cdots + \mbox{proj}_{\mathbf{u_d}} \mathbf{y}.$
+
+::: -->
+
+## Projecting onto Subspaces {.really-smaller-title}
+
+:::{style="font-size: 0.9em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+    <span class="label">The Best Approximation Theorem</span>
+        <p>
+        Let \(W\) be a subspace of \(\mathbb{R}^n\), let \(\mathbf{y} \in \mathbb{R}^n\). Let \(\hat{\mathbf{y}}\) be the orthogonal projection of \(\mathbf{y}\) into \(W\).  Then <b>\(\hat{\mathbf{y}}\) is the closest point in \(W\) to \(\mathbf{y}\)</b>, in the sense that \(\Vert \mathbf{y}-\hat{\mathbf{y}} \Vert < \Vert \mathbf{y} - \mathbf{v} \Vert\) for all \(\mathbf{v}\) in \(W\) distinct from \(\hat{\mathbf{y}}\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.center-text}
+```{python}
+#
+fig = ut.three_d_figure((8, 2), 'Comparison of v to the projection of y',
+                        -12, 12, -12, 12, -12, 12, (8,5), qr = qr_setting)
+a2 = np.array([5.0,-13.0,-3.0])
+a1 = np.array([1,-2.0,3])
+v = -3*a1 + a2
+y = np.array([12.0, 8.0, -5.0])
+A = np.array([a1, a2]).T
+#
+# plotting the span of v
+fig.plotSpan(a1, a2, 'Green')
+#
+yhat = A.dot(np.linalg.inv(A.T.dot(A))).dot(A.T).dot(y)
+fig.plotPoint(yhat[0], yhat[1], yhat[2], 'b')
+fig.text(yhat[0]+0.5, yhat[1]+0.5, yhat[2]+0.5, r'$\mathbf{\hat{y}}$', 'y-hat', size=18)
+#
+fig.plotPoint(y[0], y[1], y[2],'b')
+fig.text(y[0]+0.5, y[1]+0.5, y[2]+0.5, r'$\bf y$', 'y', size=18)
+#
+fig.plotPoint(v[0], v[1], v[2], 'b')
+fig.text(v[0]-1.5, v[1]-1.5, v[2]-1.5, r'$\bf v$', 'v', size=18)
+#
+m1 = (y + v) / 2
+m1 = m1 + [2,-6,0]
+fig.text(m1[0], m1[1], m1[2], r'$\Vert \bf y - \bf v\Vert$', '||y - v||', size=18)
+m2 = (y + yhat) / 2
+m2 = m2 + [0,1,0]
+fig.text(m2[0], m2[1], m2[2], r'$\Vert \bf y - \hat{\bf y}\Vert$', '||y - y-hat||', size=18)
+m3 = (yhat + v) / 2
+m3 = m3 + [-1,0,-4]
+fig.text(m3[0], m3[1], m3[2], r'$\Vert \hat{\bf y} - \bf v\Vert$', '||y - v||', size=18)
+#
+wpos = -4.5*a1 
+fig.text(wpos[0], wpos[1], wpos[2], r'$W$', 'W', size=22)
+#
+# lines
+fig.plotLine([y, yhat], 'b')
+fig.plotLine([v, yhat], 'b')
+fig.plotLine([y, v], 'b')
+#ut.plotPoint3d(ax,0,0,0,'b')
+fig.ax.view_init(azim=57.0,elev=-69.0)
+fig.hideAxes() 
+```
+:::
+
+::: 
+
 
 ## Solving Linear Systems
 
@@ -29,7 +213,7 @@ In 2014, data was collected regarding the percentage of linear algebra exercises
 
 | ID | % of Exercises | Exam Grade |
 |----|----------------|------------|
-| 1  | 20             | 55         |
+| 1  | 20             | 50         |
 | 2  | 100            | 100        |
 | 3  | 90             | 100        |
 | 4  | 70             | 70         |
@@ -58,7 +242,7 @@ $$
      1 & 30 \\
      \end{pmatrix} \text{ and }
      b = \begin{pmatrix}
-     55 \\
+     50 \\
      100 \\
      100 \\
      70 \\
@@ -244,7 +428,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">Least squares solution</span>
         If A is \(m\times n\) and \(\mathbf{b}\) is in \(\mathbb{R}^m,\) a <b>least squares solution</b> of \(A\mathbf{x} =\mathbf{b}\) is an \(\mathbf{\hat{x}}\) in \(\mathbb{R}^n\) such that \(\Vert A\mathbf{\hat{x}} - \mathbf{b}\Vert \leq \Vert A\mathbf{x} - \mathbf{b}\Vert\) for all \(\mathbf{x}\) in \(\mathbb{R}^n\).
         </p>
     </div>
@@ -254,7 +438,7 @@ display(HTML(html_content))
 ```
 <br>
 
-The point here is that no matter what $\mathbf{x}$ is, $A\mathbf{x}$ will be in the column space of $A.$ 
+<!-- The point here is that no matter what $\mathbf{x}$ is, $A\mathbf{x}$ will be in the column space of $A.$  -->
 
 So $\mathbf{b}$ is outside $\operatorname{Col}A$, and we are looking for $\hat{\mathbf{x}}$, which specifies the closest point in $\operatorname{Col}A$ to $\mathbf{b}$.
 :::
@@ -332,7 +516,7 @@ display(HTML(html_content))
 
 :::
 
-## Projection Solves Least Squares{.smaller-title}
+## Projection Solves Least Squares{.really-smaller-title}
 
 :::{style="font-size: .9em"}
 We want $A\hat{\mathbf{x}}$ to be the closest point in $\operatorname{Col}A$ to $\mathbf{b}$.
@@ -396,7 +580,7 @@ Since $\hat{\mathbf{b}}$ is the closest point in $\operatorname{Col}A$ to $\math
 However, if $A$ has free variables (the columns of $A$ are dependent) there are infinitely many solutions of $A\mathbf{\hat{x}} =\hat{\mathbf{b}}$.
 :::
 
-## Projection Solves Least Squares{.smaller-title}
+## Projection Solves Least Squares{.really-smaller-title}
 
 :::{style="font-size: .9em"}
 Let's go back to the case that we can visualize: $A$ is $3 \times 2.$ We have only two columns, $\mathbf{a}_1$ and $\mathbf{a}_2$, so they cannot span $\mathbb{R}^3$.  Hence, it is possible that a vector $\mathbf{b} \in \mathbb{R}^3$ might not lie in $\operatorname{Col}A$:
@@ -427,7 +611,7 @@ fig.ax.view_init(azim=30, elev=-80.0)
 :::
 :::
 
-## Projection Solves Least Squares{.smaller-title}
+## Projection Solves Least Squares{.really-smaller-title}
 
 :::{style="font-size: .9em"}
 We want to find the projection of $\mathbf{b}$ into the column space of $A$:
@@ -520,7 +704,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p>span class="label">Theorem</span>
         The set of least-squares solutions of \(A\mathbf{x} = \mathbf{b}\) is equal to the (nonempty) set of solutions of the normal equations \(A^\top A\mathbf{x} = A^\top \mathbf{b}.\)
         </p>
     </div>
@@ -579,7 +763,7 @@ $$
 We conclude that $\mathbf{\hat{x}} = \begin{bmatrix}1\\2\end{bmatrix}$ is the vector that minimizes $\Vert A\mathbf{x} -\mathbf{b}\Vert,$ and is the least-squares solution of $A\mathbf{x} = \mathbf{b}$.
 :::
 
-## Normal Equations
+<!-- ## Normal Equations
 
 :::{style="font-size: .8em"}
 The normal equations _always_ have a solution.  
@@ -599,7 +783,7 @@ We know that a linear system has multiple solutions when there are columns that 
 
 Here is a picture of what is going on.   -->
 
-In this case, $A$ is $3 \times 3$. Note that $\operatorname{Col}A$ is only two-dimensional because the three columns are linearly dependent.
+<!-- In this case, $A$ is $3 \times 3$. Note that $\operatorname{Col}A$ is only two-dimensional because the three columns are linearly dependent.
 
 :::{.center-text}
 ```{python}
@@ -635,9 +819,9 @@ fig.ax.view_init(azim=26.0,elev=-77.0)
 
 The orthogonal projection $\hat{\mathbf{b}}$ is always unique.   Some least squares problem have multiple solutions, because there are _multiple ways_ to construct $\hat{\mathbf{b}}$.
 
-:::
+::: -->
 
-## Normal Equations
+<!-- ## Normal Equations
 
 :::{style="font-size:.8em"}
 
@@ -698,7 +882,7 @@ $$
 In the RREF, there are 4 column vectors, but only the first three are linearly independent. The last column can be written as a linear combination of them.
 
 <br> -->
-
+<!-- 
 From the RREF we see that only the first three columns of $A^\top A$ are linearly independent. The last column can be written as a linear combination of them.
 
 <br>
@@ -770,16 +954,16 @@ Let's stop and look at this another way.  Up until now we have seen how to proje
 <br>
 
 This equation shows how to project onto a subspace (namely $\operatorname{Col} A$) given an __arbitrary__ basis.  This is a general formula that can be very useful.
-:::
+::: -->
 
-## Key Ideas
+<!-- ## Key Ideas
 :::{style="font-size: .8em"}
 - The least squares solution $\hat{\mathbf{x}}$ minimizes $||A\mathbf{x} - \mathbf{b}||^2,$ the sum of squared errors.
 
 - The best $\hat{\mathbf{x}}$ comes from the normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}.$
 
 - Normal equations always have a solution, but it is not unique when the solumns of $A$ are linearly dependent.
-:::
+::: -->
 
 
 

@@ -8,15 +8,21 @@ format:
         - styles.css
         html-math-method: mathjax
         highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
 ---
 
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
 
-Today, we will introduce Markov chains, special mathematical systems where your current state depends solely on your previous state. We will define them from a linear algebra perspective, connecting these systems to vectors and matrices.
-
-In addition, we will explore special properties of Markov chains called steady states. Steady states are unique conditions where the probabilities of being in each state remain constant over time, regardless of the initial state.  We will describe how to find these steady states, providing insights into how Markov chains behave in the long run.
+- Definition of a Markov chain
+    - Probability vector
+    - Stochastic matrix
+    - Initial state vector
+    - Transition matrix
+- Steady-state vector
 
 :::
 
@@ -30,7 +36,7 @@ Andrei Markov, 1856 - 1922, St Petersburg.
 
 :::
 
-In the early 1900s, Andrei Markov introduced the study of _stochastic systems in which one transitions between states, and the future state depends only on the current state_. 
+In the early 1900s, Andrei Markov introduced the study of _stochastic systems in which transitions between states, and the future state depend only on the current state_. 
 
 :::
 
@@ -45,7 +51,11 @@ We refer to the systems that were introduced by Markov as _Markov chains_ when t
 
 <br>
 
-Markov chains have proven to be incredibly useful. For instance, they are used for analyzing stock price movements, the dynamics of animal populations, and the PageRank algorithm.
+Markov chains are used for 
+
+- analyzing stock price movements, 
+- analyzing the dynamics of animal populations, 
+- the PageRank algorithm, ...
 :::
 
 ## PageRank
@@ -102,7 +112,7 @@ This situation is so common that it goes by many names:
 ## Markov Chains
 
 :::{style="font-size: .8em"}
-Mathematically, we define the state of the system at time $k$ is a vector ${\bf x_k} \in \mathbb{R}^n,$ and
+Mathematically, we define the state of the system at time $k$ as a vector ${\bf x_k} \in \mathbb{R}^n,$ and
 
 $$
 {\bf x_{k+1}} = T({\bf x_k}),\;\;\;\mbox{for time}\;k=0,1,2...
@@ -221,7 +231,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p> <span class="label">Probability vector</span>
         A <b>probability vector</b> is a vector of nonnegative entries that sums to 1.  
         </p>
     </div>
@@ -237,7 +247,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">Stochastic matrix</span>
         A <b>stochastic</b> matrix is a square matrix of nonnegative values whose columns each sum to 1.
         </p>
     </div>
@@ -253,7 +263,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">Markov chain</span>
         A <b>Markov chain</b> is a dynamical system whose state is a probability vector and which evolves according to a stochastic matrix. 
         </p>
     </div>
@@ -274,7 +284,7 @@ The probability vector ${\bf x_0}$ describes the initial distribution and is cal
 
 <br>
 
-The stochastic matrix $P$ describes how things "redistribute" themselves at each time step.
+The stochastic matrix $P$ describes how things "redistribute" themselves at each time step. $P$ is frequently called the __transition matrix__.
 :::
 
 ## Population Distribution
@@ -429,7 +439,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">Steady-state vector</span>
         If \(P\) is a stochastic matrix, then a <b>steady-state vector</b> (or <b>equilibrium vector</b>) for \(P\) is a probability vector \(\bf q\)  such that: 
          \(P{\bf q} = {\bf q}.\)
         </p>
@@ -441,7 +451,7 @@ display(HTML(html_content))
 
 <br>
 
-It can be shown that _every stochastic matrix has at least one steady-state vector._ 
+It can be shown that _**every stochastic matrix has at least one steady-state vector.**_ 
 
 <br>
 
@@ -541,7 +551,117 @@ So, we have found how to solve a Markov Chain for its steady state:
 * Pick any specific solution (choose any value for the free variable), and scale it so the entries add up to 1.
 :::
 
-## Convergence to a Steady State
+## Markov Chains
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+       Consider a Markov chain involving the movement of people between three possible states: the city, the suburbs, and rural areas. Suppose that every year, people move between these states according to the following rules:<br>
+
+    * 10% of all people currently living in the city move to the suburbs, and 5% move to rural areas;<br>
+    * 20% of all people in the suburbs move into the city, and 10% move to rural areas;<br>
+    * 15% of all people in rural areas move to the city, and 5% move to the suburbs.<br>
+
+     Write the stochastic matrix \( P \) corresponding to this Markov chain. This is the matrix that can be used to find next year's fraction of people in the city, suburbs, and rural areas, respectively. Ensure that \(P\) follows the provided order of states.
+     <br>
+     <br>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Markov Chains
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+       Consider a Markov chain involving the movement of people between three possible states: the city, the suburbs, and rural areas. Suppose that every year, people move between these states according to the following rules:<br>
+
+    * 10% of all people currently living in the city move to the suburbs, and 5% move to rural areas;<br>
+    * 20% of all people in the suburbs move into the city, and 10% move to rural areas;<br>
+    * 15% of all people in rural areas move to the city, and 5% move to the suburbs.<br>
+
+     Write the stochastic matrix \( P \) corresponding to this Markov chain. This is the matrix that can be used to find next year's fraction of people in the city, suburbs, and rural areas, respectively. Ensure that \(P\) follows the provided order of states.
+     <br>
+     <br>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+:::{.notes}
+     $$P = \begin{bmatrix} 0.85 & 0.2 & 0.15\\
+     0.1 & 0.7 & 0.05 \\
+     0.05 & 0.1 & 0.8 \end{bmatrix}.$$
+     This square matrix is stochastic because its entries are non-negative and each column adds to 1.
+:::
+
+## Markov Chains
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+Consider the Markov chain described by \(P = \begin{bmatrix}
+    0.7 & 0.6\\ 0.3 & 0.4
+\end{bmatrix}\) and initial probability vector \(\mathbf{x}_0 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}.\) Find the probability vector \(\mathbf{x}_2\) specifying the probabilities of the states after 2 time periods.
+     <br>
+     <br>
+          <br>
+     <br>
+          <br>
+     <br>
+          <br>
+     <br>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+:::{.notes}
+    The question is asking us to compute $\mathbf{x}_2:$
+    $$\mathbf{x}_2 = P^2 \mathbf{x}_0 = P(P\mathbf{x}_0) = \begin{bmatrix}
+    0.7 & 0.6\\ 0.3 & 0.4
+    \end{bmatrix} 
+    \left(
+    \begin{bmatrix}
+    0.7 & 0.6\\ 0.3 & 0.4
+    \end{bmatrix} 
+    \begin{bmatrix} 0 \\ 1 
+    \end{bmatrix} 
+    \right)= 
+    \begin{bmatrix}
+    0.7 & 0.6\\ 0.3 & 0.4
+    \end{bmatrix} 
+    \begin{bmatrix} 0.6 \\ 0.4 \end{bmatrix}
+    = \begin{bmatrix} 0.66 \\ 0.34 \end{bmatrix}.$$
+:::
+
+<!-- ## Convergence to a Steady State
 :::{style="font-size: .8em"}
 Note that the calculation of the steady-state vector does _not_ depend on the initial state ${\bf x_0}$.
 
@@ -552,9 +672,9 @@ Note that the calculation of the steady-state vector does _not_ depend on the in
 <br>
 
 We say that the long-term behavior of the chain has "no memory of the starting state."
-:::
+::: -->
 
-## Resource Allocation
+<!-- ## Resource Allocation
 :::{style="font-size: .8em"}
 
 Consider a computer system that consists of a disk, a CPU, and a network interface. A set of jobs are loaded into the system.   Each job makes requests for service from each of the components of the system.
@@ -769,4 +889,4 @@ def anim(frame):
 
 * Using linear algebraic tools we can predict the steady state of such a system.
 
-:::
+::: -->

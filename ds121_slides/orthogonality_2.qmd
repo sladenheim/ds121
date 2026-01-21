@@ -8,15 +8,21 @@ format:
         - styles.css
         html-math-method: mathjax
         highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
 ---
 
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
 
-In the last lecture, we saw that orthogonal sets can be very useful and easy to work with. Today, we will go one step further and introduce orthonormalization.
-
-Combining the Gram-Schmidt procedure with the concept of orthonormalization will lead us to a new form of matrix factorization: $QR$ factorization. $QR$ factorization provides a powerful tool for solving linear systems and performing other matrix computations efficiently.
+- Orthonormal sets
+- Orthonormal transformations
+- Orthogonal matrices
+- QR factorization
+    - Computation by hand and in Python
+    - Solving linear systems using QR
 
 
 <!-- 
@@ -25,10 +31,12 @@ Combining the Gram-Schmidt procedure with the concept of orthonormalization will
 By applying Gram-Schmidt to the column vectors of a matrix and keeping track of the operations performed along the way, we have a new method for factoring matrices. -->
 :::
 
+<!-- Need to add the definition of an orthonormal transformation. -->
+
 ## Orthonormal Sets
 
 :::{style="font-size: .8em"}
-Orthogonal sets become even particularly useful when we __normalize__ the vectors in the set. 
+Orthogonal sets becoe particularly useful when we __normalize__ the vectors in the set. 
 
 ```{python}
 from IPython.core.display import HTML
@@ -36,7 +44,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">Orthonormal Set</span>
         A set \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) is an <b>orthonormal set</b> if it is an orthogonal set of unit vectors.
         </p>
     </div>
@@ -65,7 +73,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">Theorem</span>
         An \(m\times n\) matrix \(U\) has orthonormal columns if and only if \(U^{\top} U = I\).
         </p>
     </div>
@@ -74,7 +82,7 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-__Proof.__ Let $U = [\mathbf{u}_1\;\mathbf{u}_n\; \dots \; \mathbf{u}_n]$ denote the column vectors of $U$. Then:
+__Proof.__ Let $U = [\mathbf{u}_1\;\mathbf{u}_2\; \dots \; \mathbf{u}_n]$ denote the column vectors of $U$. Then:
 :::
 :::{style="font-size: .55em"}
 $$
@@ -117,8 +125,8 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
-        Let \(U\) by an \(m\times n\) matrix with orthonormal columns, and let \(\mathbf{x}\) and \(\mathbf{y}\) be in \(\mathbb{R}^n.\)  Then:
+        <p><span class="label">Theorem</span>
+        Let \(U\) be an \(m\times n\) matrix with orthonormal columns, and let \(\mathbf{x}\) and \(\mathbf{y}\) be in \(\mathbb{R}^n.\)  Then:
 <ol start=1>
 <li> \(\Vert U\mathbf{x}\Vert = \Vert\mathbf{x}\Vert.\)</li>
 <li> \((U\mathbf{x})^\top (U\mathbf{y}) = \mathbf{x}^\top \mathbf{y}.\)</li>
@@ -188,15 +196,15 @@ display(HTML(html_content))
 :::{style="font-size: .8em"}
 An $m \times n$ matrix with orthonormal (or even orthogonal) columns must have $m \geq n$.
 
-__Example.__  Let $U = \begin{bmatrix}1/\sqrt{2}&2/3\\1/\sqrt{2}&-2/3\\0&1/3\end{bmatrix}$ and $\mathbf{x} = \begin{bmatrix}\sqrt{2}\\3\end{bmatrix}.$ 
+__Example.__  Let $\small U = \begin{bmatrix}1/\sqrt{2}&2/3\\1/\sqrt{2}&-2/3\\0&1/3\end{bmatrix}$ and $\small \mathbf{x} = \begin{bmatrix}\sqrt{2}\\3\end{bmatrix}.$ 
 
-Verify that $U$ has orthogonal columns and that $\Vert Ux\Vert = \Vert x\Vert.$
+Verify that $U$ has orthonormal columns and that $\Vert U \mathbf{x}\Vert = \Vert \mathbf{x} \Vert.$
 
 <br>
 
 We can use our earlier theorem to check that $U$ has orthonormal columns.
 
-$$
+$$ \small
 U^{\top} U = \begin{bmatrix}1/\sqrt{2}&1/\sqrt{2}&0\\2/3&-2/3&1/3\end{bmatrix}\begin{bmatrix}1/\sqrt{2}&2/3\\1/\sqrt{2}&-2/3\\0&1/3\end{bmatrix} = \begin{bmatrix}1&0\\0&1\end{bmatrix}.
 $$
 :::
@@ -204,18 +212,18 @@ $$
 ## Orthonormal Transformations
 
 :::{style="font-size: .8em"}
-Next, let's verify that $\Vert Ux\Vert = \Vert x\Vert.$
+Next, let's verify that $\Vert U \mathbf{x}\Vert = \Vert \mathbf{x} \Vert.$
 
-$$
+$$ \small
 U\mathbf{x} = \begin{bmatrix}1/\sqrt{2}&2/3\\1/\sqrt{2}&-2/3\\0&1/3\end{bmatrix}\begin{bmatrix}\sqrt{2}\\3\end{bmatrix} = \begin{bmatrix}3\\-1\\1\end{bmatrix}
 $$
 
 As a result,
 
-$$
+$$ \small
 \begin{eqnarray*}
 \Vert\mathbf{x}\Vert &=& \sqrt{2+9} &=& \sqrt{11} \\
-\Vert U\mathbf{x}\Vert &=& \sqrt{9 + 1 + 1} &=& \sqrt{11}.
+\Vert U\mathbf{x}\Vert &=& \sqrt{9 + 1 + 1} &=& \sqrt{11}
 \end{eqnarray*}
 $$
 :::
@@ -248,7 +256,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p> <span class="label">Orthogonal matrix</span>
         A square matrix is called <b>orthogonal</b> if it has ortho<u>normal</u> columns.
         </p>
     </div>
@@ -291,7 +299,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
+        <p><span class="label">QR factorization</span>
         Let \(A\) be an \(m \times n\) matrix <em>with linearly independent columns</em> (so it must be that \(m \geq n\)). Then, the <b>QR factorization</b> \(A = QR\) satisfies:
 <ol>
 <li> \(Q\) is an \(m \times n\) matrix whose column vectors are orthonormal,</li>
@@ -334,7 +342,7 @@ Note that Gram-Schmidt guarantees that ${\bf u}_i^\top {\bf a}_j = 0$ when $i > 
 ## Computing QR Factorization
 
 :::{style="font-size: .8em"}
-Use Gram-Schmidt orthogonalization to find QR factorization of 
+__Example__. Use Gram-Schmidt orthogonalization to find QR factorization of 
 $$
 A = \begin{bmatrix} 0 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 2 & 1 \end{bmatrix}.
 $$
@@ -348,8 +356,8 @@ Let's find the corresponding orthogonal (not orthonormal!) set.
 ## Computing QR Factorization
 
 :::{style="font-size: .8em"}
-$$
-\begin{eqnarray*}
+$$ \small
+\begin{eqnarray*} 
 {\bf v}_1 &=& {\bf a}_1 = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} \\ 
 {\bf v}_2 &=& {\bf a}_2 - \mbox{proj}_{{\bf v}_1}({\bf a}_2) = \begin{bmatrix} 1 \\ 1 \\ 2 \end{bmatrix} - \frac{0\cdot1 + 1\cdot1 + 1\cdot2}{0 + 1^2 + 1^2} \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} = \begin{bmatrix} 1 \\ -1/2 \\ 1/2 \end{bmatrix} \\ \\ \\
 {\bf v}_3 &=& {\bf a}_3 - \mbox{proj}_{{\bf v}_1}({\bf a}_3) - \mbox{proj}_{{\bf v}_2}({\bf a}_3)\\
@@ -363,13 +371,13 @@ $$
 
  Let's normalize each of the vectors use them as the columns of $Q$:
 
-$$
+$$\small
 Q = \begin{bmatrix}  0 & 2/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & -1/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & 1/\sqrt{6} & -1/\sqrt{3} \end{bmatrix}.
 $$
 
 Next, we calculate the upper triangular matrix:
 
-$$R = Q^\top A = \begin{bmatrix} {\bf u}_1^\top {\bf a}_1 & {\bf u}_1^\top {\bf a}_2 & {\bf u}_1^\top {\bf a}_3 \\ 0 & {\bf u}_2^\top {\bf a}_2 & {\bf u}_2^\top {\bf a}_3 \\ 0 & 0 & {\bf u}_3^\top {\bf a}_3 \end{bmatrix} =
+$$\small R = Q^\top A = \begin{bmatrix} {\bf u}_1^\top {\bf a}_1 & {\bf u}_1^\top {\bf a}_2 & {\bf u}_1^\top {\bf a}_3 \\ 0 & {\bf u}_2^\top {\bf a}_2 & {\bf u}_2^\top {\bf a}_3 \\ 0 & 0 & {\bf u}_3^\top {\bf a}_3 \end{bmatrix} =
 \begin{bmatrix}
 2/\sqrt{2} & 3/\sqrt{2} & 2/\sqrt{2} \\
 0 & 3/\sqrt{6} & 2/\sqrt{6} \\
@@ -384,7 +392,7 @@ It is easy to check that $A = Q R$.
 :::{style="font-size: .8em"}
 
 Let us factorize the following matrix using Python. In particular, we will use the built-in method `np.linalg.qr`.
-$$
+$$\small
 A = \left[\begin{array}{rrrr}3&-7&-2&2\\-3&5&1&0\\6&-4&0&-5\\-9&5&-5&12\end{array}\right].
 $$
 
@@ -485,7 +493,7 @@ R {\bf x} &= Q^\top {\bf b},\\
 \end{align*}
 $$
 
-where the last step uses the fact that $Q^{-1} = Q^\top$.
+where the last step uses the fact that $Q Q^\top = I$.
 
 Because $R$ is upper triangular, solving this system only requires the (fast) backsubstitution step rather than the entirety of Gauss-Jordan elimination. In other words, we get the same speedup as in LU factorization.
 :::
@@ -503,7 +511,7 @@ $$
 <br>
 
 We already know what $Q$ and $R$ are for this particular $A$:
-$$
+$$\small
 Q = \begin{bmatrix}  0 & 2/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & -1/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & 1/\sqrt{6} & -1/\sqrt{3} \end{bmatrix} \text{ and } 
 R = \begin{bmatrix}
 2/\sqrt{2} & 3/\sqrt{2} & 2/\sqrt{2} \\
@@ -557,7 +565,7 @@ It is easy to check that $A = Q R$. -->
 
 To solve $A {\bf x} = {\bf b}$, it suffices to find the solutions for $R {\bf x} = Q^\top {\bf b}$.
 
-$$
+$$\small
 \begin{eqnarray*}
 \begin{bmatrix}
 2/\sqrt{2} & 3/\sqrt{2} & 2/\sqrt{2} \\
@@ -682,7 +690,7 @@ fig.plotPerpSym(yhat, y, a2-2*a1, 2.5)
 ```
 :::
 
-<!-- Just as in the case of a 1D subspace (in the last lecture), we say that $\hat{\mathbf{y}}$ is the __orthogonal projection of $\mathbf{y}$ onto $W$__ and write $\hat{\mathbf{y}} = \mbox{proj}_W \mathbf{y}.$ -->
+Just as in the case of a 1D subspace (in the last lecture), we say that $\hat{\mathbf{y}}$ is the __orthogonal projection of $\mathbf{y}$ onto $W$__ and write $\hat{\mathbf{y}} = \mbox{proj}_W \mathbf{y}.$
 
 :::
 
@@ -790,14 +798,4 @@ fig.hideAxes()
 ```
 :::
 
-:::
-
-## Key Ideas
-:::{style="font-size: 0.8em"}
-
-- An orthogonal set of unit vectors is called an orthonormal set.
-
-- If a square matrix $U$ has orthonormal columns we call it orthogonal and $Q^\top = Q^{-1}.$
-
-- $QR$ faactorization uses Gram-Schmidt process and normalization to create $Q$ that has orthonormal columns. 
-:::
+::: 
