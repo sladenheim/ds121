@@ -107,14 +107,14 @@ _Programming environment_
 :::{style="font-size: .75em"}
 
 
-- Second semester we're using Grasple - this time ungraded
-- 5-8 questions per homework assignment
-- Immediate digital feedback: layered structure
-
-- Report bugs directly to Yutong Wu or Prof. Wobbes
+- Immediate digital feedback
+- Layered structure: two sub-questions that both lead back to the main question
+- 5 main questions per homework assignment
+- Only the quiz performance is graded; the practice score on the platform is not
+- Report bugs directly to Yutong (Chris) Wu 
 
 :::{.center-text}
-<img src="images/Grasple.png" width=900/>
+<img src="images/Grasple.png" width=700/>
 :::
 
 
