@@ -74,12 +74,37 @@ NUMBER!
 Do they know Sigma notation?
 :::
 
+## Quick Check: Compute an Inner Product
+
+:::{style="font-size: 0.8em;"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Compute the inner product of \(\mathbf{u} = \begin{bmatrix} 3 \\ -2 \\ 1 \end{bmatrix}\) and \(\mathbf{v} = \begin{bmatrix} 2 \\ 4 \\ -3 \end{bmatrix}\).</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<!--
+:::{.fragment}
+$$\mathbf{u}^\top \mathbf{v} = (3)(2) + (-2)(4) + (1)(-3) = 6 - 8 - 3 = -5$$
+:::
+-->
+
+:::
+
 ## Inner Product
 
 ::::{style="font-size: .8em"}
-__Example__: The vectors $\small{\mathbf{u} = \begin{bmatrix}4 \\ 2\end{bmatrix}}$ 
-and 
-$\small{\mathbf{v} = \begin{bmatrix}-1 \\ 2\end{bmatrix}}$ 
+__Example__: The vectors $\small{\mathbf{u} = \begin{bmatrix}4 \\ 2\end{bmatrix}}$
+and
+$\small{\mathbf{v} = \begin{bmatrix}-1 \\ 2\end{bmatrix}}$
 have a zero dot product:
 $$\small{\mathbf{u} \cdot \mathbf{v} 
 = \begin{bmatrix}4 \\ 2\end{bmatrix}
@@ -178,18 +203,18 @@ def generate_html():
         <p>Let \(\mathbf{u}\), \(\mathbf{v}\), and \(\mathbf{w}\) be vectors in \( \mathbb{R}^n \), and let \( c \) be a scalar. Then:</p>
         <ul>
             <li><b>\( \mathbf{u}^{\top} \mathbf{v} = \mathbf{v}^{\top} \mathbf{u} \)</b> <em>(symmetry)</em></li>
-            <li><b>\( (\mathbf{u} + \mathbf{v})^{\top} \mathbf{w} = \mathbf{u}^{\top} \mathbf{w} + \mathbf{v}^{\top} \mathbf{w} \)</b> <em>(linearity)</em></li>
-            <li><b>\( (c \mathbf{u})^{\top} \mathbf{v} = c (\mathbf{u}^{\top} \mathbf{v}) = \mathbf{u}^{\top} (c \mathbf{v}) \) </b><em>(linearity)</em></li>
+            <li><b>\( (\mathbf{u} + \mathbf{v})^{\top} \mathbf{w} = \mathbf{u}^{\top} \mathbf{w} + \mathbf{v}^{\top} \mathbf{w} \)</b> <em>(distributive property)</em></li>
+            <li><b>\( (c \mathbf{u})^{\top} \mathbf{v} = c (\mathbf{u}^{\top} \mathbf{v}) = \mathbf{u}^{\top} (c \mathbf{v}) \) </b><em>(associative property)</em></li>
             <li><b>\(\mathbf{u}^{\top} \mathbf{u} \geq 0 \)</b><em> (non-negativity)</em></li>
         </ul>
-        <p>Note: \( \mathbf{u}^{\top} \mathbf{u} = 0 \) if and only if \( \mathbf{u} = 0 \).</p>
+        <br>
+        Note: \( \mathbf{u}^{\top} \mathbf{u} = 0 \) if and only if \( \mathbf{u} = 0 \).
     </div>
     """
 
 html_content = generate_html()
 display(HTML(html_content))
 ```
-<!-- With the inner product at our disposal, let's start talking about vector geometry. -->
 
 <br>
 
@@ -199,8 +224,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>Can you explain why the inner product is symmetric?
-        </p>
+        Can you explain why the inner product is symmetric?
     </div>
     """
 
@@ -208,6 +232,22 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 ::::
+
+## <span style="font-size: 0.85em;">Why Do Inner Products Matter?</span>
+
+:::{style="font-size: 0.8em;"}
+The inner product is one of the most important operations in data science and machine learning.
+
+:::{.incremental}
+- **How "big" is a vector?** $\|\mathbf{v}\| = \sqrt{\mathbf{v}^\top \mathbf{v}}$ 
+- **How far apart are two points?** $\|\mathbf{u} - \mathbf{v}\|$
+- **Are two vectors pointing in similar directions?** 
+:::
+
+:::{.fragment}
+Today we'll develop these tools. Next lecture, we'll use them for **k-Nearest Neighbors classification**.
+:::
+:::
 
 ## Vector Lengths
 
@@ -303,127 +343,63 @@ What happens in $\mathbb{R}^3$?
 
 :::{.center-text}
 ```{python}
+import plotly.graph_objects as go
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 # Example vector components
 v1, v2, v3 = 5, 4, 7
 
-fig = plt.figure(figsize=(4, 4))
-ax = fig.add_subplot(111, projection='3d')
+fig = go.Figure()
 
-#----------------------------------------------------------------
-#   1) Draw the parallelepiped edges in blue
-#----------------------------------------------------------------
-# Bottom face: (0,0,0) -> (v1,0,0) -> (v1,v2,0) -> (0,v2,0) -> (0,0,0)
-bottom_x = [0, v1, v1, 0, 0]
-bottom_y = [0, 0,   v2, v2, 0]
-bottom_z = [0, 0,   0,  0,  0]
-ax.plot(bottom_x, bottom_y, bottom_z, 'b-')
-
-# Top face: (0,0,v3) -> (v1,0,v3) -> (v1,v2,v3) -> (0,v2,v3) -> (0,0,v3)
-top_x = [0, v1, v1, 0, 0]
-top_y = [0, 0,   v2, v2, 0]
-top_z = [v3, v3, v3, v3, v3]
-ax.plot(top_x, top_y, top_z, 'b-')
-
+# Parallelepiped edges (blue)
+# Bottom face
+fig.add_trace(go.Scatter3d(x=[0, v1, v1, 0, 0], y=[0, 0, v2, v2, 0], z=[0, 0, 0, 0, 0],
+    mode='lines', line=dict(color='blue', width=3), showlegend=False))
+# Top face
+fig.add_trace(go.Scatter3d(x=[0, v1, v1, 0, 0], y=[0, 0, v2, v2, 0], z=[v3, v3, v3, v3, v3],
+    mode='lines', line=dict(color='blue', width=3), showlegend=False))
 # Vertical edges
-# (0,0,0)->(0,0,v3), (v1,0,0)->(v1,0,v3), (v1,v2,0)->(v1,v2,v3), (0,v2,0)->(0,v2,v3)
-ax.plot([0, 0],   [0, 0],   [0, v3], 'b-')
-ax.plot([v1, v1], [0, 0],   [0, v3], 'b-')
-ax.plot([v1, v1], [v2, v2], [0, v3], 'b-')
-ax.plot([0, 0],   [v2, v2], [0, v3], 'b-')
+for x, y in [(0, 0), (v1, 0), (v1, v2), (0, v2)]:
+    fig.add_trace(go.Scatter3d(x=[x, x], y=[y, y], z=[0, v3],
+        mode='lines', line=dict(color='blue', width=3), showlegend=False))
 
-#----------------------------------------------------------------
-#   2) Draw diagonals
-#----------------------------------------------------------------
-# Red diagonal (main): from origin to (v1, v2, v3)
-ax.plot([0, v1], [0, v2], [0, v3], 'r--')
+# Main diagonal (red dashed): origin to (v1, v2, v3)
+fig.add_trace(go.Scatter3d(x=[0, v1], y=[0, v2], z=[0, v3],
+    mode='lines', line=dict(color='red', width=5, dash='dash'),
+    name='||v|| = √(v₁² + v₂² + v₃²)'))
 
-# Green diagonal (floor): from origin to (v1, v2, 0)
-ax.plot([0, v1], [0, v2], [0, 0], 'g--')
+# Floor diagonal (green dashed): origin to (v1, v2, 0)
+fig.add_trace(go.Scatter3d(x=[0, v1], y=[0, v2], z=[0, 0],
+    mode='lines', line=dict(color='green', width=4, dash='dash'),
+    name='√(v₁² + v₂²)'))
 
-#----------------------------------------------------------------
-#   3) Plot points of interest
-#----------------------------------------------------------------
-# Black dot at origin
-ax.plot([0], [0], [0], 'ko', markersize=6)
-# Red dot at tip of the vector
-ax.plot([v1], [v2], [v3], 'ro', markersize=6)
+# Points: origin and vector tip
+fig.add_trace(go.Scatter3d(x=[0], y=[0], z=[0], mode='markers',
+    marker=dict(color='black', size=6), name='Origin'))
+fig.add_trace(go.Scatter3d(x=[v1], y=[v2], z=[v3], mode='markers+text',
+    marker=dict(color='red', size=8), text=['v = (v₁, v₂, v₃)'],
+    textposition='top center', textfont=dict(size=12), showlegend=False))
 
-#----------------------------------------------------------------
-#   4) Labels
-#----------------------------------------------------------------
-# Vector label at (v1, v2, v3)
-ax.text(v1, v2, v3, r"$\mathbf{v} = (v_1,\,v_2,\,v_3)$",
-        fontsize=12, va='bottom', ha='left')
+fig.update_layout(
+    scene=dict(
+        xaxis_title='x₁', yaxis_title='x₂', zaxis_title='x₃',
+        xaxis=dict(range=[-1, v1+2]), yaxis=dict(range=[-1, v2+2]), zaxis=dict(range=[0, v3+2]),
+        camera=dict(eye=dict(x=1.5, y=1.5, z=0.8))
+    ),
+    height=360, margin=dict(l=0, r=0, t=30, b=0),
+    legend=dict(x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.8)')
+)
 
-# Label the diagonal sqrt(v1^2 + v2^2 + v3^2), in black + bold
-mx_d3 = v1/2
-my_d3 = v2/2
-mz_d3 = v3/2
-ax.text(mx_d3, my_d3, mz_d3,
-        r"$\mathbf{\sqrt{v_1^2 + v_2^2 + v_3^2}}$",
-        color='k', fontsize=12,
-        va='bottom', ha='left')
-
-# Label the floor diagonal sqrt(v1^2 + v2^2), in black + bold
-mx_d2 = v1/2
-my_d2 = v2/2
-mz_d2 = 0
-ax.text(mx_d2, my_d2, mz_d2,
-        r"$\mathbf{\sqrt{v_1^2 + v_2^2}}$",
-        color='k', fontsize=12,
-        va='bottom', ha='left')
-
-#----------------------------------------------------------------
-#   5) Right-angle marker in the floor plane (z=0) at the origin
-#      to emphasize the 90° between the x1 and x2 axes
-#----------------------------------------------------------------
-box_size = 0.5
-# We'll draw a small square near the origin in the x1-x2 plane
-# so it looks like a typical "right-angle" marker:
-ax.plot([0, 0],          [0, box_size],    [0, 0],         'k-')  # vertical up
-ax.plot([0, box_size],   [box_size, box_size], [0, 0],      'k-')  # top horizontal
-ax.plot([box_size, box_size], [box_size, 0],   [0, 0],      'k-')  # vertical down
-ax.plot([box_size, 0],   [0, 0],          [0, 0],         'k-')  # bottom horizontal
-
-#----------------------------------------------------------------
-#   6) Figure decorations
-#----------------------------------------------------------------
-ax.set_xlabel(r'$x_1$', labelpad=10, fontsize=12)
-ax.set_ylabel(r'$x_2$', labelpad=10, fontsize=12)
-ax.set_zlabel(r'$x_3$', labelpad=10, fontsize=12)
-
-# Set some bounds around the shape
-ax.set_xlim(-1, v1+2)
-ax.set_ylim(-1, v2+2)
-ax.set_zlim(0, v3+2)
-
-# Adjust view angle for a nicer perspective
-ax.view_init(elev=15, azim=-35)
-
-plt.tight_layout()
-plt.show()
-
+fig.show()
 ```
 :::
 
 In $\mathbb{R}^3$, the length is $\sqrt{v_1^2 + v_2^2 + v_3^2}$.
 :::
 
-:::{.notes}
-
-pi-THUH-gor-ee-uhn THEER-uhm X 2
-
-DRAW!
-
-:::
-
 ## Vector Lengths
 
-:::{style="font-size: .8em"}
+:::{style="font-size: .75em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -432,7 +408,7 @@ def generate_html():
     <div class="purple-box">
     <span class="label">Vector length (norm)</span>
         <p>
-        The <b>length</b> (or <b>norm</b>) of a vector \(\mathbf{v} = {\tiny \begin{bmatrix}v_1 \\v_2 \\\vdots \\v_n\end{bmatrix}}\) is the non-negative scalar \(\|\mathbf{v}\|\), defined by: 
+        The <b>length</b> (or <b>norm</b> or <b>magnitude</b> ) of a vector \(\mathbf{v} = {\tiny \begin{bmatrix}v_1 \\v_2 \\\vdots \\v_n\end{bmatrix}}\) is the non-negative scalar \(\|\mathbf{v}\|\), defined by: 
         \(\|\mathbf{v}\| = \sqrt{\mathbf{v} ^{\top} \mathbf{v}} = \sqrt{\sum_{i=1}^{n} v_i^2} = \sqrt{v_1^2 + v_2^2 + \cdots + v_n^2}\).
         </p>
     </div>
@@ -442,29 +418,41 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
-
-__Remark__: We also refer to $\|\mathbf{v}\|$ as the magnitude of $\mathbf{v}$. 
-
 :::
 
-:::{.fragment style="font-size: .8em"}
-The length of a four-dimensional vector would be $\sqrt{v_1^2 + v_2^2 + v_3^2 + v_4^2}$. 
+:::{.fragment style="font-size: .75em"}
+The length of a four-dimensional vector would be $\sqrt{v_1^2 + v_2^2 + v_3^2 + v_4^2}$.
 
 __Example__: $\begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}$ has a length of $\sqrt{1^2 + 1^2 +1^2 +1^2}= 2$.
 :::
 
-:::{.notes}
-non-negative scalar
+## <span style="font-size: 0.85em;">Intuition Puzzle - Vector Lengths</span>
 
-Remember the non-negativity property: inner product with itself $\geq$ 0!
+:::{style="font-size: .7em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Think-pair-share:</b> Without computing, which vector is longer?</p>
+        <p>\(\mathbf{a} = \begin{bmatrix} 1 \\ 2 \\ 3 \\ 4 \\ 5 \end{bmatrix}\) &emsp; or &emsp; \(\mathbf{b} = \begin{bmatrix} 3 \\ 3 \\ 3 \\ 3 \\ 3 \end{bmatrix}\)?</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
 :::
+
 
 ## Normalization to Unit Length
 
-:::{style="font-size: .8em"}
+:::{style="font-size: .65em"}
 The word _**"unit"**_ is always indicating that some measurement equals _**"one"**_. <br>
 The _**unit price**_ is the price for one item. A _**unit cube**_ has sides of length one.
 
+:::{.fragment}
 :::{style="font-size: 1em"}
 ```{python}
 from IPython.core.display import HTML
@@ -484,17 +472,23 @@ display(HTML(html_content))
 
 ```
 :::
+:::
 
+:::{.fragment}
 For any scalar $c$, the length of $c\mathbf{v}$ is $|c|$ times the length of $\mathbf{v}$:  
 $$
-c\mathbf{v} = |c|\|\mathbf{v}\|.
+\|c\mathbf{v}\| = |c|\|\mathbf{v}\|.
 $$
+:::
 
+:::{.fragment}
 If we divide a non-zero vector $\mathbf{v}$ by its length, we obtain a unit vector:
 $$
 \mathbf{u} = \frac{1}{\|\mathbf{v}\|}\mathbf{v}.
 $$
+:::
 
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
@@ -509,22 +503,16 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-
+:::
 :::
 
-:::{.notes}
-
-Use the property above with $c=\frac{1}{\|\mathbf{v}\|}$!
-
-Think of 1000 u! Simplify your computations!
-
-:::
 
 ## Normalization to Unit Length
 
-::::{style="font-size: .8em"}
+::::{style="font-size: .7em"}
 **Example**: Let $\mathbf{v}= {\small\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}}$. Find the unit vector $\mathbf{u}$ in the same direction as $\mathbf{v}$.<br>
 
+<!--
 First, compute the length of $\mathbf{v}$:
 
 :::{.center-text}
@@ -539,6 +527,7 @@ Then, multiply $\mathbf{v}$ by $1/\|\mathbf{v}\|$ to obtain:
 ::::
 :::{.center-text}
 $\mathbf{u} = \frac{1}{\|\mathbf{v}\|} \mathbf{v} = \frac{1}{5} \mathbf{v} = \frac{1}{5} {\small\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}} = {\small\begin{bmatrix} \frac{4}{5} \\ \frac{-2}{5} \\ \frac{2}{5} \\ \frac{1}{5} \end{bmatrix}}.$
+-->
 
 ::::
 
@@ -616,83 +605,87 @@ Consider $\mathbf{u} = \begin{bmatrix} 7 \\ 1 \end{bmatrix}$ and $\mathbf{v} = \
 
 :::{.center-text}
 ```{python}
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import numpy as np
 
 u = np.array([7, 1])
-
 v = np.array([3, 2])
-
-origin = np.array([0, 0])
-
-# Calculate u-v
-
 u_minus_v = u - v
 
-# Add an additional label for ||u-v|| on the bottom line
+# We'll use buttons with 'update' method to show/hide traces
+# Traces: 0=u_dot, 1=v_dot, 2=blue_top(v→u), 3=blue_bottom(0→u-v), 4=u-v_dot, 5=red_left(0→v), 6=red_right(u-v→u), 7-11=labels
 
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(6, 6))
+fig = go.Figure()
 
-# Plot the red lines (u and v)
-ax.plot([origin[0], v[0]], [origin[1], v[1]], color='red')  # From origin to v
-ax.plot([u_minus_v[0], u[0]], [u_minus_v[1], u[1]], color='red')  # From u-v to u
+# Trace 0: u point (red dot)
+fig.add_trace(go.Scatter(x=[u[0]], y=[u[1]], mode='markers+text',
+    marker=dict(color='red', size=12), text=['u'], textposition='top right',
+    textfont=dict(size=14), showlegend=False, name='u'))
 
-# Plot the blue lines (parallelogram sides)
-ax.plot([v[0], u[0]], [v[1], u[1]], color='blue')  # From v to u
-ax.plot([origin[0], u_minus_v[0]], [origin[1], u_minus_v[1]], color='blue')  # From origin to u-v
+# Trace 1: v point (red dot)
+fig.add_trace(go.Scatter(x=[v[0]], y=[v[1]], mode='markers+text',
+    marker=dict(color='red', size=12), text=['v'], textposition='top left',
+    textfont=dict(size=14), showlegend=False, name='v'))
 
-# Add points for u, v, and u-v
-ax.scatter(*u, color='red')
-ax.scatter(*v, color='red')
-ax.scatter(*u_minus_v, color='red')
+# Trace 2: Blue line from v to u (top)
+fig.add_trace(go.Scatter(x=[v[0], u[0]], y=[v[1], u[1]], mode='lines',
+    line=dict(color='blue', width=3), showlegend=False, visible=False, name='blue_top'))
 
-# Add labels for u, v, u-v, and ||u-v||
-ax.text(u[0] + 0.2, u[1], 'u', fontsize=14)
-ax.text(v[0] + 0.2, v[1], 'v', fontsize=14)
-ax.text(u_minus_v[0], u_minus_v[1] - 0.2, 'u - v', fontsize=12)
-ax.text((u[0] + v[0]) / 2 - 0.3, (u[1] + v[1]) / 2 + 0.2, r'$||u-v||$', fontsize=14)  
-# Top line
-ax.text((u_minus_v[0] + origin[0]) / 2 - 0.3, (u_minus_v[1] + origin[1]) / 2 - 0.4, r'$||u-v||$', fontsize=14)  # Bottom line
+# Trace 3: Blue line from origin to u-v (bottom)
+fig.add_trace(go.Scatter(x=[0, u_minus_v[0]], y=[0, u_minus_v[1]], mode='lines',
+    line=dict(color='blue', width=3), showlegend=False, visible=False, name='blue_bottom'))
 
-# Move x and y axis labels to the axes
-ax.spines['left'].set_position('zero')
-ax.spines['left'].set_color('black')
-ax.spines['left'].set_linewidth(0.5)
-ax.spines['bottom'].set_position('zero')
-ax.spines['bottom'].set_color('black')
-ax.spines['bottom'].set_linewidth(0.5)
+# Trace 4: u-v point (red dot)
+fig.add_trace(go.Scatter(x=[u_minus_v[0]], y=[u_minus_v[1]], mode='markers+text',
+    marker=dict(color='red', size=12), text=['u - v'], textposition='bottom right',
+    textfont=dict(size=12), showlegend=False, visible=False, name='u-v_dot'))
 
-# Hide the top and right spines
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
+# Trace 5: Red line from origin to v
+fig.add_trace(go.Scatter(x=[0, v[0]], y=[0, v[1]], mode='lines',
+    line=dict(color='red', width=2), showlegend=False, visible=False, name='red_left'))
 
-# Adjust tick positions to the axes
-ax.xaxis.set_ticks_position('bottom')
-ax.yaxis.set_ticks_position('left')
+# Trace 6: Red line from u-v to u
+fig.add_trace(go.Scatter(x=[u_minus_v[0], u[0]], y=[u_minus_v[1], u[1]], mode='lines',
+    line=dict(color='red', width=2), showlegend=False, visible=False, name='red_right'))
 
-# Set axis limits
-ax.set_xlim(-1, 8)
-ax.set_ylim(-1, 4)
+# Trace 7: ||u-v|| label on top blue line
+fig.add_trace(go.Scatter(x=[(u[0]+v[0])/2], y=[(u[1]+v[1])/2+0.4], mode='text',
+    text=['||u-v||'], textfont=dict(size=14, color='blue'), showlegend=False, visible=False))
 
-# Set grid and aspect ratio
-ax.grid(True, linestyle='--', linewidth=0.5)
-ax.set_aspect('equal', adjustable='box')
+# Trace 8: ||u-v|| label on bottom blue line
+fig.add_trace(go.Scatter(x=[u_minus_v[0]/2], y=[u_minus_v[1]/2-0.4], mode='text',
+    text=['||u-v||'], textfont=dict(size=14, color='blue'), showlegend=False, visible=False))
 
-# Show the plot
-plt.show()
+# Visibility patterns for each step: [u, v, blue_top, blue_bottom, uv_dot, red_left, red_right, label_top, label_bottom]
+step1 = [True, True, False, False, False, False, False, False, False]  # just u and v dots
+step2 = [True, True, True, False, False, False, False, True, False]    # add top blue line + its label
+step3 = [True, True, True, True, True, False, False, True, True]       # add bottom blue line + u-v dot + its label
+step4 = [True, True, True, True, True, True, True, True, True]         # add red lines
 
+buttons = [
+    dict(label='1. u and v', method='update', args=[{'visible': step1}]),
+    dict(label='2. u − v', method='update', args=[{'visible': step2}]),
+    dict(label='3. From origin', method='update', args=[{'visible': step3}]),
+    dict(label='4. Parallelogram', method='update', args=[{'visible': step4}]),
+]
+
+fig.update_layout(
+    updatemenus=[dict(type='buttons', showactive=True, y=-0.08, x=0.5, xanchor='center',
+                      buttons=buttons, font=dict(size=11), direction='left')],
+    xaxis=dict(range=[-1, 8], zeroline=True, zerolinewidth=1, zerolinecolor='black',
+               showgrid=True, gridwidth=0.5, gridcolor='lightgray', dtick=1),
+    yaxis=dict(range=[-1.5, 3.5], zeroline=True, zerolinewidth=1, zerolinecolor='black',
+               showgrid=True, gridwidth=0.5, gridcolor='lightgray', dtick=1, scaleanchor='x'),
+    height=340, width=550, margin=dict(l=20, r=20, t=20, b=60),
+    plot_bgcolor='white',
+)
+
+fig.show()
 ```
 :::
 
 Geometrically, the distance between two vectors is the _**length of their difference**_.
 ::::
-
-:::{.notes}
-Multiply v by -1
-
-Use head-to-tail method
-:::
 
 ## Distance
 
@@ -711,218 +704,96 @@ $$
 
 ## Orthogonality
 
-::::{style="font-size: .8em"}
-We say that two vectors $\mathbf{u}$ and $\mathbf{v}$ are perpendicular if and only if they form a right angle at the origin.
-
-:::{.center-text}
-
+:::::{.columns}
+::::{.column width="50%"}
 ```{python}
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import numpy as np
 
-start_v = np.array([-1, 1])
+# Vector endpoints
+point_u = np.array([2, 2])
+point_v = np.array([1, -1])
 
-end_v = np.array([2, -2])
+# Create frames for progressive reveal
+frames = []
+buttons = []
 
-point_v = np.array([1, -1])  # Point to mark on the blue line
+# Frame 1: Just vectors with right angle marker
+frame1_data = [
+    go.Scatter(x=[-1, 3], y=[-1, 3], mode='lines', line=dict(color='green', width=3), showlegend=False),
+    go.Scatter(x=[-1, 2], y=[1, -2], mode='lines', line=dict(color='blue', width=3), showlegend=False),
+    go.Scatter(x=[point_u[0]], y=[point_u[1]], mode='markers+text', marker=dict(color='green', size=12),
+        text=['<b>u</b>'], textposition='top right', textfont=dict(size=14, color='green'), showlegend=False),
+    go.Scatter(x=[point_v[0]], y=[point_v[1]], mode='markers+text', marker=dict(color='blue', size=12),
+        text=['<b>v</b>'], textposition='bottom right', textfont=dict(size=14, color='blue'), showlegend=False),
+    go.Scatter(x=[0], y=[0], mode='markers+text', marker=dict(color='black', size=10),
+        text=['<b>0</b>'], textposition='bottom left', textfont=dict(size=14), showlegend=False),
+    go.Scatter(x=[.25, .5, .25], y=[.25, 0, -.25], mode='lines', line=dict(color='black', width=2), showlegend=False),
+    go.Scatter(x=[None], y=[None], mode='lines', showlegend=False),
+    go.Scatter(x=[None], y=[None], mode='text', showlegend=False),
+]
+frames.append(go.Frame(data=frame1_data, name='vectors'))
+buttons.append(dict(args=[['vectors'], {"frame": {"duration": 300, "redraw": True}, "mode": "immediate"}],
+    label='1. Vectors', method="animate"))
 
-start_u = np.array([-1, -1])
+frame2_data = frame1_data[:6] + [
+    go.Scatter(x=[point_u[0], point_v[0]], y=[point_u[1], point_v[1]], mode='lines',
+        line=dict(color='red', width=4), showlegend=False),
+    go.Scatter(x=[None], y=[None], mode='text', showlegend=False),
+]
+frames.append(go.Frame(data=frame2_data, name='triangle'))
+buttons.append(dict(args=[['triangle'], {"frame": {"duration": 300, "redraw": True}, "mode": "immediate"}],
+    label='2. Draw u−v', method="animate"))
 
-end_u = np.array([3, 3])
+frame3_data = frame1_data[:6] + [
+    go.Scatter(x=[point_u[0], point_v[0]], y=[point_u[1], point_v[1]], mode='lines',
+        line=dict(color='red', width=4), showlegend=False),
+    go.Scatter(x=[0.6, 2.1, 0.3], y=[1.4, 0.5, -0.8], mode='text',
+        text=['<b>‖u‖</b>', '<b>‖u−v‖</b>', '<b>‖v‖</b>'],
+        textfont=dict(size=16, color=['green', 'red', 'blue']), showlegend=False),
+]
+frames.append(go.Frame(data=frame3_data, name='labels'))
+buttons.append(dict(args=[['labels'], {"frame": {"duration": 300, "redraw": True}, "mode": "immediate"}],
+    label='3. Show labels', method="animate"))
 
-point_u = np.array([2, 2])  # Point to mark on the line
+fig = go.Figure(data=frame1_data, frames=frames)
 
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(4, 4))  # Set the figure size to match the square aspect
+fig.update_layout(
+    xaxis=dict(range=[-2, 4], scaleanchor="y", scaleratio=1, zeroline=True,
+        zerolinewidth=1, zerolinecolor='lightgray', showgrid=True, dtick=1),
+    yaxis=dict(range=[-2, 4], zeroline=True, zerolinewidth=1, zerolinecolor='lightgray',
+        showgrid=True, dtick=1),
+    height=380, width=380, margin=dict(l=20, r=20, t=10, b=50),
+    updatemenus=[dict(type="buttons", showactive=True, y=-0.14, x=0.5, xanchor="center",
+        buttons=buttons, direction="left", font=dict(size=10))]
+)
 
-# Plot the green line u
-ax.plot([start_u[0], end_u[0]], [start_u[1], end_u[1]], color='green', label='u')
-
-# Add the green dot at (2, 2)
-ax.scatter(point_u[0], point_u[1], color='green')
-
-# Add bold label for the green dot
-ax.text(point_u[0] + 0.2, point_u[1], 'u', fontsize=12, fontweight='bold', color='green')
-
-# Plot the blue line v
-ax.plot([start_v[0], end_v[0]], [start_v[1], end_v[1]], color='blue', label='v')
-
-# Add the blue dot at (1, -1)
-ax.scatter(point_v[0], point_v[1], color='blue')
-
-#add black dot
-ax.scatter(0, 0, color='black')
-
-# Add bold label for the blue dot
-ax.text(point_v[0] + 0.2, point_v[1] - 0.2, 'v', fontsize=12, fontweight='bold', color='blue')
-
-# Draw the 90-degree angle marker (triangle formed by u and v)
-triangle_x = [.25, .5, .25]
-triangle_y = [.25, 0, -.25]
-ax.plot(triangle_x, triangle_y, color='black')
-ax.text(-.1, -.5, '0', fontsize=15, fontweight='bold')
-# Set axis limits to include both lines and the angle marker
-ax.set_xlim(-1, 3)
-ax.set_ylim(-2, 3)
-
-# Set grid and aspect ratio
-ax.set_aspect('equal', adjustable='box')
-
-# Show the plot
-plt.show()
-
+fig.show()
 ```
-:::
-
-Draw the line conneting $\mathbf{u}$ and $\mathbf{v}$. Then $\mathbf{u}$ and $\mathbf{v}$ are perpendicular if and only if this forms a right triangle, satisfying the Pythagorean theorem.
 ::::
-## Orthogonality
 
-:::{.center-text style="font-size: .8em"}
-```{python}
-import matplotlib.pyplot as plt
-import numpy as np
+::::{.column width="50%" style="font-size: .7em"}
+Two vectors $\mathbf{u}$ and $\mathbf{v}$ are **perpendicular** if they form a right angle at the origin.
 
-start_v = np.array([-1, 1])
-
-end_v = np.array([2, -2])
-
-point_v = np.array([1, -1])  # Point to mark on the blue line
-
-start_u = np.array([-1, -1])
-
-end_u = np.array([3, 3])
-
-point_u = np.array([2, 2])  # Point to mark on the line
-
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(4, 4))  # Set the figure size to match the square aspect
-
-# Plot the green line u
-ax.plot([start_u[0], end_u[0]], [start_u[1], end_u[1]], color='green', label='u')
-
-# Plot red line
-ax.plot([2, 1], [2, -1], color='red')
-
-# Add the green dot at (2, 2)
-ax.scatter(point_u[0], point_u[1], color='green')
-
-# Add bold label for the green dot
-ax.text(point_u[0] + 0.2, point_u[1], 'u', fontsize=12, fontweight='bold', color='green')
-
-# Plot the blue line v
-ax.plot([start_v[0], end_v[0]], [start_v[1], end_v[1]], color='blue', label='v')
-
-# Add the blue dot at (1, -1)
-ax.scatter(point_v[0], point_v[1], color='blue')
-
-ax.scatter(0, 0, color='black')
-
-# Add bold label for the blue dot
-ax.text(point_v[0] + 0.2, point_v[1] - 0.2, 'v', fontsize=12, fontweight='bold', color='blue')
-
-ax.text(-.1, -.5, '0', fontsize=15, fontweight='bold')
-# Set axis limits to include both lines and the angle marker
-ax.set_xlim(-1, 3)
-ax.set_ylim(-2, 3)
-
-# Set grid and aspect ratio
-ax.set_aspect('equal', adjustable='box')
-
-# Show the plot
-plt.show()
-```
-
+:::{.fragment}
+Draw the line connecting $\mathbf{u}$ and $\mathbf{v}$. They are perpendicular iff this forms a right triangle (Pythagorean theorem).
 :::
 
-:::{style="font-size: .8em"}
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
-
 def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>What is the length of the red side of the triangle?
-        </p>
-    </div>
-    """
-
-html_content = generate_html()
-display(HTML(html_content))
-```
-:::
-## Orthogonality
-:::{style="font-size: .8em"}
-
-According to the definitions, we have developed today, it is $\|\mathbf{u} - \mathbf{v}\|$.
-
-:::{.center-text}
-```{python}
-import matplotlib.pyplot as plt
-import numpy as np
-
-start_v = np.array([-1, 1])
-
-end_v = np.array([2, -2])
-
-point_v = np.array([1, -1])  # Point to mark on the blue line
-
-start_u = np.array([-1, -1])
-
-end_u = np.array([3, 3])
-
-point_u = np.array([2, 2])  # Point to mark on the line
-
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(4, 4))  # Set the figure size to match the square aspect
-
-# Plot the green line u
-ax.plot([start_u[0], end_u[0]], [start_u[1], end_u[1]], color='green', label='u')
-
-# Plot red line
-ax.plot([2, 1], [2, -1], color='red')
-
-# Add the green dot at (2, 2)
-ax.scatter(point_u[0], point_u[1], color='green')
-
-# Plot the blue line v
-ax.plot([start_v[0], end_v[0]], [start_v[1], end_v[1]], color='blue', label='v')
-
-# Add the blue dot at (1, -1)
-ax.scatter(point_v[0], point_v[1], color='blue')
-
-# Add labels for sides
-ax.text(.5, 1.5, r'$\|u\|$', fontsize=15, fontweight='bold', color='green')
-ax.text(1.6, .5, r'$\|u-v\|$', fontsize=15, fontweight='bold', color='red')
-ax.text(0, -1, r'$\|v\|$', fontsize=15, fontweight='bold', color='blue')
-ax.scatter(0, 0, color='black')
-
-
-# Set axis limits to include both lines and the angle marker
-ax.set_xlim(-1, 3)
-ax.set_ylim(-2, 3)
-
-# Set grid and aspect ratio
-ax.set_aspect('equal', adjustable='box')
-
-# Show the plot
-plt.show()
-
+    return r"""<div class="blue-box"><p>What is the length of the red side?</p></div>"""
+display(HTML(generate_html()))
 ```
 :::
 
-Hence, the blue and green lines are perpendicular if and only if:
-
-$$
-\|\mathbf{u}-\mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2.
-$$
+:::{.fragment}
+It is $\|\mathbf{u} - \mathbf{v}\|$. Hence, perpendicular iff:
+$$\|\mathbf{u}-\mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2$$
 :::
-
-:::{.notes}
-
-pi-THUH-gor-ee-uhn THEER-uhm
-
-:::
+::::
+:::::
 
 ## Orthogonality
 
@@ -1067,77 +938,9 @@ plt.show()
 ```
 :::
 
+
 ## Angle Between Two Vectors
 
-:::{.center-text}
-```{python}
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.patches import Arc
-
-# Define vectors u and v
-u = np.array([4, 1])
-v = np.array([-4, 3])
-origin = np.array([0, 0])  # Origin point
-
-# Calculate u-v
-
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(6, 4))
-
-# Plot the lines
-ax.plot([origin[0], u[0]], [origin[1], u[1]], color='blue', label='$\|u\|$')  # Line for u
-ax.plot([origin[0], v[0]], [origin[1], v[1]], color='blue', label='$\|v\|$')  # Line for v
-ax.plot([u[0], v[0]], [u[1], v[1]], color='blue', label='$\|u-v\|$')  # Line for u-v
-
-ax.scatter(u[0], u[1], color="red")
-ax.scatter(v[0], v[1], color="red")
-
-# Add labels for the vectors
-ax.text(u[0] + 0.2, u[1], 'u', fontsize=12, color='black')
-ax.text(v[0] - 0.5, v[1] + 0.2, 'v', fontsize=12, color='black')
-ax.text(2, .1, '$\|u\|$', fontsize=12, color='black')
-ax.text(-3, 1, '$\|v\|$', fontsize=12, color='black')
-ax.text(.2, 2.1, '$\|u - v\|$', fontsize=12, color='black')
-
-# Draw the curved arrow (arc) for theta
-arc = Arc(
-    (0, 0),  # Center of the arc
-    width=2, height=2,  # Dimensions of the arc
-    angle=0,  # Rotation angle of the arc
-    theta1=14, theta2=143.13,  # Start and end angles of the arc
-    color='black', linewidth=1.5
-)
-ax.add_patch(arc)
-
-# Add label for theta
-ax.text(0.8, 0.8, r'$\theta$', fontsize=12, color='black')
-
-# Move spines (axes) to the origin
-ax.spines['left'].set_position('zero')
-ax.spines['left'].set_color('black')
-ax.spines['bottom'].set_position('zero')
-ax.spines['bottom'].set_color('black')
-
-# Hide the top and right spines
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-
-# Ensure ticks are only on the axes
-ax.xaxis.set_ticks_position('bottom')
-ax.yaxis.set_ticks_position('left')
-
-# Set axis limits
-ax.set_xlim(-6, 6)
-ax.set_ylim(-1, 4)
-
-# Set grid and aspect ratio
-ax.set_aspect('equal', adjustable='box')
-
-# Show the plot
-plt.show()
-```
-:::
 ::::{style="font-size: .8em"}
 
 :::{.fragment}
@@ -1173,7 +976,7 @@ $$
 :::{.fragment}
 Equivalently, 
 $$
-\cos\theta=\frac{\mathbf{u}^\top}{\|\mathbf{u}\|}\frac{\mathbf{v}}{\|\mathbf{v\|}}.
+\cos\theta=\left(\frac{\mathbf{u}^\top}{\|\mathbf{u}\|}\right)\left(\frac{\mathbf{v}}{\|\mathbf{v\|}}\right).
 $$
 
 
@@ -1181,13 +984,9 @@ Note that $\frac{\mathbf{u}^\top}{\|\mathbf{u}\|}$ and $\frac{\mathbf{v}}{\|\mat
 :::
 :::
 
-:::{.notes}
-The length is not important!
-:::
-
 ## Angle Between Two Vectors
 
-::::{style="font-size: .8em"}
+::::{style="font-size: .75em"}
 **Example**: Consider $\mathbf{u}=\begin{bmatrix} .8 \\ .6 \end{bmatrix}$, and $\mathbf{v}=\begin{bmatrix} .28 \\ .96 \end{bmatrix}.$
 
 :::{.fragment}
@@ -1313,12 +1112,23 @@ print("Angle theta =", theta_degrees)
 ```
 :::
 
-<!-- ## Key Ideas
+## Wrap-up
 
-:::{.incremental style="font-size: .8em"}
-- The inner product $\mathbf{u}^\top \mathbf{v}$ multiplies each component $u_i$ by $v_i$ and sums all $u_i v_i$.
-- The length $\mathbf{\|\mathbf{v}\|}$ is the square root of $\mathbf{v}^\top \mathbf{v}$.
-- The vector $\frac{\mathbf{v}}{\|\mathbf{v}\|}$ is a unit vector. Its length is 1.
-- The inner product $\mathbf{u}^\top \mathbf{v}$ is zero when $\mathbf{u}$ and $\mathbf{v}$ are orthogonal.
-- The cosine of $\theta$, the angle between $\mathbf{u}$ and $\mathbf{v}$, is given by $\cos\theta = \mathbf{\frac{\mathbf{u}^\top \mathbf{v}}{\|\mathbf{u}\|\|\mathbf{v}\|}}$.
-::: -->
+**Take-aways**
+
+:::{.incremental style="font-size: .75em"}
+- The **inner product** $\mathbf{u}^\top \mathbf{v}$ multiplies each component $u_i$ by $v_i$ and sums all $u_i v_i$.
+- The **length** (norm) $\|\mathbf{v}\|$ is the square root of $\mathbf{v}^\top \mathbf{v}$.
+- Dividing by the length gives a **unit vector**: $\frac{\mathbf{v}}{\|\mathbf{v}\|}$ has length 1.
+- The **distance** between vectors is the length of their difference: $\|\mathbf{u} - \mathbf{v}\|$.
+- Two vectors are **orthogonal** when $\mathbf{u}^\top \mathbf{v} = 0$.
+- The **angle** between vectors: $\cos\theta = \frac{\mathbf{u}^\top \mathbf{v}}{\|\mathbf{u}\|\|\mathbf{v}\|}$.
+:::
+
+:::{style="font-size: 0.8em;"}
+:::{.fragment}
+**Next lecture:** k-Nearest Neighbors Classification
+
+We now have tools to measure distance between data points. How can we use this to **classify** new observations?
+:::
+:::

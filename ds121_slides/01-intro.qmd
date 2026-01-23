@@ -58,6 +58,8 @@ _Office Hours_
 | Daniel 4-5 |  Tanisha 3:45-4:45 | Clare 2-3 | Tanisha 3:45-4:45  | Prof. Wobbes 3-4 |
 | Alyssa 5-6 | Charlie 5-6  | Aastha 6:15-7:15 | Chris 5-6 | Charlie 4-5 |
 
+Plus "coffee slots with Prof. Wheelock": https://tinyurl.com/coffeeslots
+
 </div> 
 
 :::
@@ -69,8 +71,7 @@ _Office Hours_
 _Platforms_
 
 - __Piazza__: https://piazza.com/bu/spring2026/ds121/home <br>
-Check it weekly!
-Please use private messages on Piazza for all email needs!
+Please check or get notifications ~daily, and use private messages over email
 - __Gradescope__: https://www.gradescope.com<br>
 
 - __Grasple__: https://app.grasple.com/#/courses/14069
@@ -143,7 +144,7 @@ _Exams_
 
 All exams are cumulative, with emphasis on material covered since the previous exam. Content may include lectures, discussion labs, homework, and required readings.
 
-- Midterm 1: __February 28, during class__ <br>
+- Midterm 1: __February 18, during class__ <br>
 In-person exam
 - Midterm 2: __March 20, during class__ <br>
 In-person exam
@@ -530,7 +531,9 @@ Netflix has **200 million** users and **15,000** titles. That's a matrix with **
 :::
 
 :::{.fragment}
-How do you store it? How do you compute with it? How do you find patterns in it?
+- How do you store it?
+- How do you compute with it? 
+- How do you find patterns in it?
 :::
 
 :::{.fragment}

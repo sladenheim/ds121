@@ -11,22 +11,15 @@ format:
 ---
 
 ## Learning Objectives
-<!-- Is it better to increment bullets one by one? Or is it better to reveal them together so it is easier to present? -->
+
 ::::{style="font-size: .8em"}
-- Purpose: Understand why vectors are important
-- Perspectives on vectors:
-    - Algebraic
-    - Geometric
-    - Computational
-- Operations:
-    - Comparing vectors
-    - Combining vectors
-
+- Understand vectors from three perspectives: algebraic, geometric, and computational
+- Recognize different vector notations (column, row, angle brackets)
+- Perform vector operations: addition, scalar multiplication
+- Work with vectors in Python using NumPy
+- Understand linear combinations and when vectors span a space
+- Recognize when vectors are linearly dependent vs independent
 ::::
-
-:::{.notes}
-Why do we work with vectors?
-:::
 
 ## Why Vectors?
 :::::{.columns}
@@ -41,7 +34,9 @@ Why do we work with vectors?
 
 :::{style="font-size: .8em;"}
 
-_**Two**_ seperate numbers $v_1$ and $v_2$ form a _**two-dimensional**_ vector:
+But you _can_ keep track of both!
+
+_**Two**_ separate numbers $v_1$ and $v_2$ form a _**two-dimensional**_ vector:
 
 :::{.center-text}
 
@@ -55,15 +50,56 @@ $$
 ::::
 :::::
 
-:::{.notes}
-Notation: $\vec{v}, \mathbf{v}, \underline{v}, \bar{v},$...
+## Vectors: An Abstract View
 
-$\vec{0}$ and 0 are, in general, different objects
+:::{style="font-size: 0.65em;"}
+Think of a vector as a "grocery bag": $\begin{bmatrix} 3 \text{ apples} \\ 2 \text{ oranges} \end{bmatrix}$
+
+:::{.fragment}
+**What you CAN do with vectors:**
+
+- **Add them:** $\begin{bmatrix} 3 \\ 2 \end{bmatrix} + \begin{bmatrix} 1 \\ 4 \end{bmatrix} = \begin{bmatrix} 4 \\ 6 \end{bmatrix}$ (combine two grocery bags)
+- **Multiply by a scalar:** $2 \begin{bmatrix} 3 \\ 2 \end{bmatrix} = \begin{bmatrix} 6 \\ 4 \end{bmatrix}$ (double your order)
 :::
 
-<!-- :::{.text-center}
-You can't add apples and oranges
-::: -->
+:::{.fragment}
+**What you CAN'T do:**
+
+- **Multiply vectors by each other:** $\begin{bmatrix} 3 \\ 2 \end{bmatrix} \times \begin{bmatrix} 1 \\ 4 \end{bmatrix} = \text{ ???}$
+- **Add a scalar to a vector:** $5 + \begin{bmatrix} 3 \\ 2 \end{bmatrix} = \text{ ???}$
+:::
+:::
+
+## What Counts as a Vector?
+
+:::{style="font-size: 0.8em;"}
+A **vector space** is any set of objects where you can add elements and multiply by scalars.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Which of these are vectors? (Can you add them? Multiply by a scalar?)</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+:::{.incremental style="font-size: .8em"}
+- **Real numbers** (like 3, -2.5, $\pi$)? 
+    - Yes! $\mathbb{R}^1$ is a vector space.
+- **Polynomials** (like $3x^2 + 2x - 1$)?
+    - Yes! You can add them and scale them.
+
+- **Think-pair-share:** Turn to your neighbor and come up with another example of something that could be a vector (something you can add and scale).
+:::
+:::
+
 
 ## Algebraic Representation
 ::::{style="font-size: .8em"}
@@ -111,13 +147,6 @@ $\bf{a}=\begin{bmatrix}3 \\ -1\end{bmatrix}$,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
 
 ::::
 
-:::{.notes}
-Purple box: Definition, theorem, Lemma
-
-Blue box: Question 
-
-:::
-
 ## Algebraic Representation
 
 :::{style="font-size: .8em;"}
@@ -127,7 +156,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>How do vectors in \( \mathbb{R}^3\) look like?
+        <p>What do vectors in \( \mathbb{R}^3\) look like?
         </p>
     </div>
     """
@@ -160,6 +189,43 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
+:::
+
+## Vector Notation
+
+:::{style="font-size: 0.8em;"}
+
+| Notation | Example | Notes |
+|----------|---------|-------|
+| **Column vector** | $\begin{bmatrix} 2 \\ 3 \\ 4 \end{bmatrix}$ | Standard in linear algebra |
+| **Row vector** | $\begin{bmatrix} 2 & 3 & 4 \end{bmatrix}$ | Transpose of column vector |
+| **Angle brackets** | $\langle 2, 3, 4 \rangle$ | Common in physics, saves space |
+| **Tuple notation** | $(2, 3, 4)$ | Often used for points |
+
+:::
+
+## <span style="font-size: 0.85em;">Column vs Row Vectors in Python</span>
+
+```{python}
+#| echo: true
+import numpy as np
+
+# Column vector (2D array with shape (3,1))
+col_vec = np.array([[2], [3], [4]])
+print("Column vector shape:", col_vec.shape)
+print(col_vec)
+```
+
+```{python}
+#| echo: true
+# Row vector (2D array with shape (1,3))
+row_vec = np.array([[2, 3, 4]])
+print("Row vector shape:", row_vec.shape)
+print(row_vec)
+```
+
+:::{style="font-size: 0.8em;"}
+**Note:** NumPy also has 1D arrays `np.array([2, 3, 4])` with shape `(3,)` — these are neither row nor column vectors!
 :::
 
 ## Geometric Representation
@@ -241,16 +307,7 @@ display(HTML(html_content))
 ```
 :::
 
-:::{.notes}
-1. Imports the NumPy library, which is commonly used for numerical operations in Python.
 
-2. np. array function  
-creates a 2×1 column vector u...
-
-3. array_equal checks whether the arrays u and v are exactly equal in both shape and content.
-
-
-:::
 
 ## Vector Manipulations
 :::::{style="font-size: .8em"}
@@ -288,10 +345,6 @@ We can use `Python` to compute scalar-vector multiplication.
 #| echo: true
 print(2 * u)
 ```
-:::
-
-:::{.notes}
-Entry-wise multiplication
 :::
 
 ## Vector Manipulations
@@ -364,30 +417,60 @@ A geometric interpretation of vector sum is as a _**parallelogram**_. <br>
 
 If ${\bf u}$ and ${\bf v}$ in $\mathbb{R}^2$ are represented as points in the plane, then ${\bf u} + {\bf v}$ corresponds to _**the fourth vertex of the parallelogram**_ whose other vertices are ${\bf u}, {\bf0},$ and ${\bf v}$.
 :::
-:::{.center-text}
+
 ```{python}
-ax = ut.plotSetup(size=(10,5))
-ut.centerAxes(ax)
-ax.arrow(0, 0, 1, 2, head_width=0.2, head_length=0.2, length_includes_head = True)
-ax.arrow(0, 0, 4, 1, head_width=0.2, head_length=0.2, length_includes_head = True)
-ax.plot([4,5],[1,3],'--')
-ax.plot([1,5],[2,3],'--')
-ax.text(5.25,3.25,r'${\bf u}$+${\bf v}$',size=12)
-ax.text(1.5,2.5,r'${\bf u}$',size=12)
-ax.text(4.75,1,r'${\bf v}$',size=12)
-ut.plotPoint(ax,5,3)
-ax.plot(0,0,'')
+import plotly.graph_objects as go
+import numpy as np
+
+# Vectors
+u = np.array([1, 2])
+v = np.array([4, 1])
+uv = u + v
+
+fig = go.Figure()
+
+# u vector (blue)
+fig.add_trace(go.Scatter(x=[0, u[0]], y=[0, u[1]], mode='lines+markers+text',
+    line=dict(color='blue', width=4), marker=dict(size=[0, 12], symbol=['circle', 'arrow'],
+    angleref='previous'),
+    text=['', 'u'], textposition='top left', textfont=dict(size=14, color='blue'),
+    showlegend=False))
+
+# v vector (red)
+fig.add_trace(go.Scatter(x=[0, v[0]], y=[0, v[1]], mode='lines+markers+text',
+    line=dict(color='red', width=4), marker=dict(size=[0, 12]),
+    text=['', 'v'], textposition='bottom right', textfont=dict(size=14, color='red'),
+    showlegend=False))
+
+# Parallelogram dashed lines
+fig.add_trace(go.Scatter(x=[u[0], uv[0]], y=[u[1], uv[1]], mode='lines',
+    line=dict(color='red', width=2, dash='dash'), showlegend=False))
+fig.add_trace(go.Scatter(x=[v[0], uv[0]], y=[v[1], uv[1]], mode='lines',
+    line=dict(color='blue', width=2, dash='dash'), showlegend=False))
+
+# u + v point
+fig.add_trace(go.Scatter(x=[uv[0]], y=[uv[1]], mode='markers+text',
+    marker=dict(color='green', size=14),
+    text=['u + v'], textposition='top right', textfont=dict(size=14, color='green'),
+    showlegend=False))
+
+# Origin label
+fig.add_trace(go.Scatter(x=[0], y=[0], mode='markers+text',
+    marker=dict(color='black', size=8),
+    text=['0'], textposition='bottom left', textfont=dict(size=12),
+    showlegend=False))
+
+fig.update_layout(
+    xaxis=dict(range=[-1, 7], scaleanchor="y", scaleratio=1, zeroline=True,
+               zerolinewidth=1, zerolinecolor='lightgray', showgrid=True, dtick=1),
+    yaxis=dict(range=[-1, 5], zeroline=True, zerolinewidth=1, zerolinecolor='lightgray',
+               showgrid=True, dtick=1),
+    height=350,
+    margin=dict(l=40, r=40, t=10, b=10)
+)
+
+fig.show()
 ```
-:::
-
-:::{.notes}
-Do you know how the head-to-tail method works?
-
-Head: ending point/arrow
-
-Tail: starting point/origin
-:::
-
 
 ## Scalar Multiplication
 :::{style="font-size: .8em"}
@@ -419,100 +502,66 @@ print('')
 ```
 :::
 
-## Scalar Multiplication
+## Scalar Multiplication in 3D
+
+:::{style="font-size: 0.8em;"}
+The same principle applies in higher dimensions: scaling a vector $\mathbf{v} = \langle 1, 1, 2 \rangle$ by different scalars.
+:::
 
 ```{python}
 import plotly.graph_objects as go
 import numpy as np
 
-# Function to create edges of a cube
-def cube_edges(origin, size):
-    x0, y0, z0 = origin
-    return [
-        # bottom face
-        [(x0, y0, z0), (x0+size, y0, z0)],
-        [(x0, y0+size, z0), (x0+size, y0+size, z0)],
-        [(x0, y0, z0), (x0, y0+size, z0)],
-        [(x0+size, y0, z0), (x0+size, y0+size, z0)],
-
-        # top face
-        [(x0, y0, z0+size), (x0+size, y0, z0+size)],
-        [(x0, y0+size, z0+size), (x0+size, y0+size, z0+size)],
-        [(x0, y0, z0+size), (x0, y0+size, z0+size)],
-        [(x0+size, y0, z0+size), (x0+size, y0+size, z0+size)],
-
-        # vertical edges
-        [(x0, y0, z0), (x0, y0, z0+size)],
-        [(x0+size, y0, z0), (x0+size, y0, z0+size)],
-        [(x0, y0+size, z0), (x0, y0+size, z0+size)],
-        [(x0+size, y0+size, z0), (x0+size, y0+size, z0+size)]
-    ]
-
-# Create a 3D plot with two cubes and a line
 fig = go.Figure()
 
-# Add inner and outer cubes
-for edge in cube_edges((0,0,0), 1.0):
+# Base vector v = (1, 1, 2)
+v = np.array([1, 1, 2])
+
+# Scalars to show
+scalars = [0.5, 1, 2]
+colors = ['green', 'blue', 'red']
+labels = ['0.5v', 'v', '2v']
+
+# Add vectors as lines from origin
+for scalar, color, label in zip(scalars, colors, labels):
+    end = scalar * v
+    # Draw the vector line
     fig.add_trace(go.Scatter3d(
-        x=[edge[0][0], edge[1][0]],
-        y=[edge[0][1], edge[1][1]],
-        z=[edge[0][2], edge[1][2]],
+        x=[0, end[0]], y=[0, end[1]], z=[0, end[2]],
         mode='lines',
-        line=dict(color='blue'),
+        line=dict(color=color, width=6),
+        showlegend=False
+    ))
+    # Add point at the end
+    fig.add_trace(go.Scatter3d(
+        x=[end[0]], y=[end[1]], z=[end[2]],
+        mode='markers+text',
+        marker=dict(color=color, size=8),
+        text=[label],
+        textposition='top center',
+        textfont=dict(size=14),
         showlegend=False
     ))
 
-for edge in cube_edges((0,0,0), 2.0):
-    fig.add_trace(go.Scatter3d(
-        x=[edge[0][0], edge[1][0]],
-        y=[edge[0][1], edge[1][1]],
-        z=[edge[0][2], edge[1][2]],
-        mode='lines',
-        line=dict(color='blue'),
-        showlegend=False
-    ))
-
-# Vector line from (0,0,0) to (3,3,3)
-# Vector line from (0,0,0) to (3,3,3)
+# Add dashed line showing the direction
 fig.add_trace(go.Scatter3d(
-    x=[0,3], y=[0,3], z=[0,3],
+    x=[-0.5*v[0], 2.5*v[0]], y=[-0.5*v[1], 2.5*v[1]], z=[-0.5*v[2], 2.5*v[2]],
     mode='lines',
-    line=dict(color='red', dash='dot'),
+    line=dict(color='gray', width=2, dash='dot'),
     showlegend=False
 ))
 
-# Add red dot at corner of first box (0,0,0)
-fig.add_trace(go.Scatter3d(
-    x=[1], y=[1], z=[1],
-    mode='markers+text',
-    marker=dict(color='red', size=5),
-    text=['v'],
-    textposition='top center',
-    showlegend=False
-))
-
-# Add red dot at corner of second box (2,2,2)
-fig.add_trace(go.Scatter3d(
-    x=[2], y=[2], z=[2],
-    mode='markers+text',
-    marker=dict(color='red', size=5),
-    text=['2v'],
-    textposition='top center',
-    showlegend=False
-))
-
-# Set up axes and initial camera position
 fig.update_layout(
-    title_text='example',  # Add a title
     scene=dict(
-        xaxis=dict(range=[0,3], title='εX'),
-        yaxis=dict(range=[0,3], title='X2'),
-        zaxis=dict(range=[0,3], title='τX'),
-        camera=dict(eye=dict(x=1.5, y=-.8, z=.8))  # Adjust these values as needed
+        xaxis=dict(range=[-1, 3], title='x'),
+        yaxis=dict(range=[-1, 3], title='y'),
+        zaxis=dict(range=[-1, 5], title='z'),
+        camera=dict(eye=dict(x=1.5, y=-1.2, z=0.8)),
+        aspectmode='cube'
     ),
-    margin=dict(l=0, r=0, b=0, t=0)
+    margin=dict(l=0, r=0, b=0, t=30),
+    height=450
 )
-
 
 fig.show()
 ```
@@ -574,80 +623,388 @@ $$
 
 :::
 
-:::{.notes}
+## Linear Combinations
 
+:::{style="font-size: 0.8em;"}
+Click on **w**, **p**, or **q** to see how each is constructed as a linear combination of **u** and **v**.
+:::
+
+```{python}
+import plotly.graph_objects as go
+import numpy as np
+
+u = np.array([2, 1])
+v = np.array([-1, 1])
+
+# Define the three target points
+targets = {
+    'w': {'c': 2, 'd': 1, 'color': 'green'},
+    'p': {'c': -1, 'd': -1, 'color': 'blue'},
+    'q': {'c': -1, 'd': 3, 'color': 'orange'}
+}
+
+# Create frames for each target
+frames = []
+buttons = []
+
+for name, info in targets.items():
+    c, d = info['c'], info['d']
+    point = c * u + d * v
+    cu = c * u
+
+    frame_data = [
+        # Multiples of u (gray points along u direction)
+        go.Scatter(x=[f*u[0] for f in range(-3, 4)],
+                   y=[f*u[1] for f in range(-3, 4)],
+                   mode='markers+text', marker=dict(color='gray', size=8),
+                   text=[f'{f}u' if f != 0 else '0' for f in range(-3, 4)],
+                   textposition='bottom center', textfont=dict(size=10),
+                   showlegend=False),
+        # Multiples of v (gray points along v direction)
+        go.Scatter(x=[f*v[0] for f in range(-3, 4)],
+                   y=[f*v[1] for f in range(-3, 4)],
+                   mode='markers+text', marker=dict(color='gray', size=8),
+                   text=[f'{f}v' if f != 0 else '' for f in range(-3, 4)],
+                   textposition='bottom right', textfont=dict(size=10),
+                   showlegend=False),
+        # u vector (blue arrow)
+        go.Scatter(x=[0, u[0]], y=[0, u[1]], mode='lines+markers',
+                   line=dict(color='blue', width=3), marker=dict(size=[0, 10]),
+                   name='u', showlegend=False),
+        # v vector (red arrow)
+        go.Scatter(x=[0, v[0]], y=[0, v[1]], mode='lines+markers',
+                   line=dict(color='red', width=3), marker=dict(size=[0, 10]),
+                   name='v', showlegend=False),
+        # Path: origin -> c*u -> point
+        go.Scatter(x=[0, cu[0], point[0]], y=[0, cu[1], point[1]], mode='lines',
+                   line=dict(color='purple', width=2, dash='dot'), showlegend=False),
+        # Target point
+        go.Scatter(x=[point[0]], y=[point[1]], mode='markers+text',
+                   marker=dict(color=info['color'], size=14),
+                   text=[f'<b>{name}</b> = {c}u + {d}v'], textposition='top right',
+                   textfont=dict(size=12), showlegend=False)
+    ]
+    frames.append(go.Frame(data=frame_data, name=name))
+    buttons.append(dict(args=[[name], {"frame": {"duration": 300, "redraw": True}, "mode": "immediate"}],
+                       label=f'{name} = {c}u + {d}v', method="animate"))
+
+# Initial state (show w)
+c0, d0 = 2, 1
+point0 = c0 * u + d0 * v
+cu0 = c0 * u
+
+fig = go.Figure(
+    data=[
+        go.Scatter(x=[f*u[0] for f in range(-3, 4)],
+                   y=[f*u[1] for f in range(-3, 4)],
+                   mode='markers+text', marker=dict(color='gray', size=8),
+                   text=[f'{f}u' if f != 0 else '0' for f in range(-3, 4)],
+                   textposition='bottom center', textfont=dict(size=10),
+                   showlegend=False),
+        go.Scatter(x=[f*v[0] for f in range(-3, 4)],
+                   y=[f*v[1] for f in range(-3, 4)],
+                   mode='markers+text', marker=dict(color='gray', size=8),
+                   text=[f'{f}v' if f != 0 else '' for f in range(-3, 4)],
+                   textposition='bottom right', textfont=dict(size=10),
+                   showlegend=False),
+        go.Scatter(x=[0, u[0]], y=[0, u[1]], mode='lines+markers',
+                   line=dict(color='blue', width=3), marker=dict(size=[0, 10]),
+                   name='u', showlegend=False),
+        go.Scatter(x=[0, v[0]], y=[0, v[1]], mode='lines+markers',
+                   line=dict(color='red', width=3), marker=dict(size=[0, 10]),
+                   name='v', showlegend=False),
+        go.Scatter(x=[0, cu0[0], point0[0]], y=[0, cu0[1], point0[1]], mode='lines',
+                   line=dict(color='purple', width=2, dash='dot'), showlegend=False),
+        go.Scatter(x=[point0[0]], y=[point0[1]], mode='markers+text',
+                   marker=dict(color='green', size=14),
+                   text=['<b>w</b> = 2u + 1v'], textposition='top right',
+                   textfont=dict(size=12), showlegend=False)
+    ],
+    frames=frames
+)
+
+fig.update_layout(
+    xaxis=dict(range=[-7, 7], scaleanchor="y", scaleratio=1, zeroline=True,
+               zerolinewidth=1, zerolinecolor='black', dtick=2),
+    yaxis=dict(range=[-4, 5], zeroline=True, zerolinewidth=1, zerolinecolor='black', dtick=2),
+    height=380,
+    margin=dict(l=40, r=40, t=10, b=10),
+    updatemenus=[dict(type="buttons", showactive=True, y=-0.1, x=0.5, xanchor="center",
+                      buttons=buttons, direction="left")]
+)
+
+fig.show()
+```
+
+
+## Can We Reach Any Point?
+
+:::{style="font-size: 0.8em;"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Can we reach <i>any</i> point in \(\mathbb{R}^2\) as a linear combination of two vectors?</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.fragment}
+**It depends on which two vectors we choose!**
 :::
 
 
-## Linear Combinations
+:::{.fragment}
+::::{.columns}
+:::{.column width="50%"}
+**Collinear vectors** (same line):
+
+$\mathbf{u} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$, $\mathbf{v} = \begin{bmatrix} 2 \\ 4 \end{bmatrix}$
+:::
+
+:::{.column width="50%"}
+**Non-collinear vectors**:
+
+$\mathbf{u} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}$, $\mathbf{v} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$
+
+:::
+::::
+:::
+
+
+:::
+
+## <span style="font-size: 0.85em;">Collinear Vectors: Stuck on a Line</span>
+
+:::{style="font-size: 0.7em;"}
+$\mathbf{u} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$, $\mathbf{v} = \begin{bmatrix} 2 \\ 4 \end{bmatrix}$ — Note that $\mathbf{v} = 2\mathbf{u}$!
+:::
 
 :::{.center-text}
 ```{python}
-ax = ut.plotSetup(-6, 6, -4, 4, size=(10,5))
+import matplotlib.pyplot as plt
+import numpy as np
+import laUtilities as ut
+
+ax = ut.plotSetup(-3, 5, -3, 8, size=(5,5))
 ut.centerAxes(ax)
-ax.set_xticks([])
-ax.set_yticks([])
-factors = [-3, -2, -1, 0, 1, 2, 3]
-u = [2, 1]
-v = [-1, 1]
-for f in factors:
-    ut.plotPoint(ax, f*u[0], f*u[1])
-    ax.text(f*u[0]+0.25,f*u[1]-0.25,r'{}$\bf u$'.format(f),size=12)
-    ut.plotPoint(ax, f*v[0], f*v[1])
-    ax.text(f*v[0]+0.25,f*v[1]-0.25,r'{}$\bf v$'.format(f),size=12)
-ut.plotPoint(ax,2*u[0]+v[0],2*u[1]+v[1],'g')
-ut.plotPoint(ax,-u[0]-v[0],-u[1]-v[1],'b')
-ut.plotPoint(ax,-u[0]+3*v[0],-u[1]+3*v[1],'y')
+
+u = np.array([1, 2])
+v = np.array([2, 4])  # v = 2u, so they're collinear
+
+# Draw the line through origin with slope 2
+ax.plot([-2, 2], [-4, 4], 'g--', linewidth=2, alpha=0.5, label='All combinations lie here')
+
+# Plot several different (a,b) combinations - all land on the line
+combinations = [
+    (1, 1, 'u+v'),
+    (0, 0.3, '0.3v'),
+    (-1, 0, '-u'),
+    (-1, 0.5, '-u + 0.5v'),
+    (0.5, 0.5, '0.5u + 0.5v'),
+]
+
+
+# Draw u and v vectors
+ax.arrow(0, 0, u[0]*0.9, u[1]*0.9, head_width=0.3, head_length=0.1, fc='blue', ec='blue')
+ax.text(u[0]-0.5, u[1]-0.3, r'$\mathbf{u}$', fontsize=12, color='blue')
+ax.arrow(0, 0, v[0]*0.9, v[1]*0.9, head_width=0.3, head_length=0.1, fc='red', ec='red')
+ax.text(v[0]-0.5, v[1]-0.3, r'$\mathbf{v}$', fontsize=12, color='red')
+
+for a, b, label in combinations:
+    point = a * u + b * v
+    ax.plot(point[0], point[1], 'go', markersize=10)
+    ax.annotate(label, (point[0], point[1]), textcoords="offset points",
+                xytext=(8, 5), fontsize=10)
+print('')
 ```
 :::
 
-:::{.notes}
-light green: q, blue: p, dark green: w, 
-\begin{align*}
-{\bf w} &= 2{\bf u} + {\bf v}\\
-{\bf p} &= -{\bf u} - {\bf v}\\
-{\bf q} &= -{\bf u} + 3{\bf v}
-\end{align*}
+## <span style="font-size: 0.75em;">Non-Collinear Vectors: Reach Anywhere!</span>
+
+:::{style="font-size: 0.7em;"}
+$\mathbf{u} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}$, $\mathbf{v} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$ — These point in **different directions**!
 :::
 
-## Linear Combinations
-
-:::{.center-text}
 ```{python}
-ax = ut.plotSetup(-6, 6, -4, 4, size=(10,5))
-ut.centerAxes(ax)
-ax.set_xticks([])
-ax.set_yticks([])
-factors = [-3, -2, -1, 0, 1, 2, 3]
-u = [2, 1]
-v = [-1, 1]
-for f in factors:
-    ut.plotPoint(ax, f*u[0], f*u[1])
-    ax.text(f*u[0]+0.25,f*u[1]-0.25,r'{}$\bf u$'.format(f),size=12)
-    ut.plotPoint(ax, f*v[0], f*v[1])
-    ax.text(f*v[0]+0.25,f*v[1]-0.25,r'{}$\bf v$'.format(f),size=12)
-ax.plot([factors[0]*u[0],factors[-1]*u[0]],[factors[0]*u[1],factors[-1]*u[1]],'b--')
-ax.plot([factors[0]*v[0],factors[-1]*v[0]],[factors[0]*v[1],factors[-1]*v[1]],'b--')
-ut.plotPoint(ax,2*u[0]+v[0],2*u[1]+v[1],'g')
-ut.plotPoint(ax,-u[0]-v[0],-u[1]-v[1],'b')
-ut.plotPoint(ax,-u[0]+3*v[0],-u[1]+3*v[1],'y')
+import plotly.graph_objects as go
+import numpy as np
+
+u = np.array([2, 1])
+v = np.array([1, 2])
+
+# Define several target points to demonstrate we can reach anywhere
+targets = [
+    {'a': 1, 'b': 1, 'label': '(3, 3)'},
+    {'a': 2, 'b': -1, 'label': '(3, 0)'},
+    {'a': -1, 'b': 2, 'label': '(0, 3)'},
+    {'a': 1, 'b': -1, 'label': '(1, -1)'},
+    {'a': -1, 'b': -1, 'label': '(-3, -3)'},
+    {'a': 0.5, 'b': 1.5, 'label': '(2.5, 3.5)'},
+]
+
+frames = []
+buttons = []
+
+for t in targets:
+    a, b = t['a'], t['b']
+    point = a * u + b * v
+    au = a * u
+
+    frame_data = [
+        # u vector (blue)
+        go.Scatter(x=[0, u[0]], y=[0, u[1]], mode='lines+markers',
+                   line=dict(color='blue', width=3), marker=dict(size=[0, 10]),
+                   showlegend=False),
+        # v vector (red)
+        go.Scatter(x=[0, v[0]], y=[0, v[1]], mode='lines+markers',
+                   line=dict(color='red', width=3), marker=dict(size=[0, 10]),
+                   showlegend=False),
+        # Path: origin -> a*u -> point
+        go.Scatter(x=[0, au[0], point[0]], y=[0, au[1], point[1]], mode='lines+markers',
+                   line=dict(color='purple', width=2, dash='dot'),
+                   marker=dict(size=[0, 8, 0]), showlegend=False),
+        # Target point
+        go.Scatter(x=[point[0]], y=[point[1]], mode='markers+text',
+                   marker=dict(color='green', size=14),
+                   text=[f'{a}u + {b}v = {t["label"]}'], textposition='top left',
+                   textfont=dict(size=12), showlegend=False)
+    ]
+    frames.append(go.Frame(data=frame_data, name=t['label']))
+    buttons.append(dict(
+        args=[[t['label']], {"frame": {"duration": 300, "redraw": True}, "mode": "immediate"}],
+        label=t['label'], method="animate"
+    ))
+
+# Initial state
+a0, b0 = 1, 1
+point0 = a0 * u + b0 * v
+au0 = a0 * u
+
+fig = go.Figure(
+    data=[
+        go.Scatter(x=[0, u[0]], y=[0, u[1]], mode='lines+markers',
+                   line=dict(color='blue', width=3), marker=dict(size=[0, 10]),
+                   showlegend=False),
+        go.Scatter(x=[0, v[0]], y=[0, v[1]], mode='lines+markers',
+                   line=dict(color='red', width=3), marker=dict(size=[0, 10]),
+                   showlegend=False),
+        go.Scatter(x=[0, au0[0], point0[0]], y=[0, au0[1], point0[1]], mode='lines+markers',
+                   line=dict(color='purple', width=2, dash='dot'),
+                   marker=dict(size=[0, 8, 0]), showlegend=False),
+        go.Scatter(x=[point0[0]], y=[point0[1]], mode='markers+text',
+                   marker=dict(color='green', size=14),
+                   text=['1u + 1v = (3, 3)'], textposition='top right',
+                   textfont=dict(size=12), showlegend=False)
+    ],
+    frames=frames
+)
+
+fig.update_layout(
+    xaxis=dict(range=[-6, 6], zeroline=True, zerolinewidth=1, zerolinecolor='lightgray', dtick=2),
+    yaxis=dict(range=[-6, 6], zeroline=True, zerolinewidth=1, zerolinecolor='lightgray', dtick=2),
+    height=400,
+    width=450,
+    margin=dict(l=40, r=40, t=40, b=40),
+    updatemenus=[dict(type="dropdown", showactive=True, x=0.0, y=1.12, xanchor="left",
+                      buttons=buttons, direction="down")]
+)
+
+fig.show()
 ```
+
+## Why Does This Matter?
+
+:::{style="font-size: 0.8em;"}
+Two vectors **span** $\mathbb{R}^2$ (reach every point) only if they point in **different directions**.
+
+:::{.fragment}
+We need vectors that are **linearly independent** (not scalar multiples of each other) to span the full space.
+
+_We'll formalize this concept later in the course._
+:::
 :::
 
-:::{.notes}
-We can construct the full $\mathbb{R}^2$ using u and v.
+## <span style="font-size: 0.85em;">Think About: What About 3D?</span>
 
-light green: q, blue: p, dark green: w, 
-\begin{align*}
-{\bf w} &= 2{\bf u} + {\bf v}\\
-{\bf p} &= -{\bf u} - {\bf v}\\
-{\bf q} &= -{\bf u} + 3{\bf v}
-\end{align*}
+:::{style="font-size: 0.8em;"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>In \(\mathbb{R}^2\), checking if two vectors span the space is easy: just check if one is a scalar multiple of the other.</p>
+        <p><b>What about \(\mathbb{R}^3\)?</b> How can we tell if three vectors span all of 3D space?</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+**With your neighbor, decide:** Do these vectors span $\mathbb{R}^3$?
+
+::::{.columns}
+:::{.column width="50%"}
+**Set A:**
+
+$\mathbf{u} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}$, $\mathbf{v} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}$, $\mathbf{w} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$
 :::
 
-## Linear Combinations
+:::{.column width="50%"}
+**Set B:**
+
+$\mathbf{u} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}$, $\mathbf{v} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}$, $\mathbf{w} = \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$
+:::
+::::
+
+_Hint: What points can you reach? What points can't you reach?_
+:::
+
+## Solution
+<!--
+:::{style="font-size: 0.8em;"}
+::::{.columns}
+:::{.column width="50%"}
+**Set A: Does NOT span $\mathbb{R}^3$**
+
+$\mathbf{w} = \mathbf{u} - \mathbf{v}$ (it's a linear combination!)
+
+Any combination $\alpha\mathbf{u} + \beta\mathbf{v} + \gamma\mathbf{w}$ has first two coordinates equal.
+
+We can never reach $\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$ or any point with $x \neq y$.
+
+Linear combinations fill only a **plane**.
+:::
+
+:::{.column width="50%"}
+**Set B: DOES span $\mathbb{R}^3$**
+
+No vector is a combination of the others.
+
+To reach any point $\begin{bmatrix} a \\ b \\ c \end{bmatrix}$:
+
+$c\mathbf{u} + (b-c)\mathbf{v} + (a-b)\mathbf{w} = \begin{bmatrix} a \\ b \\ c \end{bmatrix}$ 
+
+Linear combinations fill **all of $\mathbb{R}^3$**.
+:::
+::::
+
+:::{.fragment}
+**The pattern:** Three vectors span $\mathbb{R}^3$ only if none of them can be written as a linear combination of the other two.
+:::
+:::
+-->
+
+## Linear Combinations in 2D
 :::{style="font-size: .8em"}
-Consider $\bf{u}$ ,$\bf{v}$ and $\bf{w}$ that are vectors in $\mathbb{R}^3$ and none of them is a linear combinaation of the other(s).
+Consider $\bf{u}$, $\bf{v}$ and $\bf{w}$ that are vectors in $\mathbb{R}^3$ and none of them is a linear combination of the other(s).
 
 ```{python}
 from IPython.core.display import HTML
@@ -671,10 +1028,10 @@ If $\bf{u}$ is a _**nonzero vector**_, its linear combination fills a _**line th
 :::
 ::::
 
-## Linear Combinations
+## Linear Combinations in 3D
 
 ::::{style="font-size: .8em"}
-Consider $\bf{u}$ ,$\bf{v}$ and $\bf{w}$ that are vectors in $\mathbb{R}^3$ and none of them is a linear combinaation of the other(s).
+Consider $\bf{u}$, $\bf{v}$ and $\bf{w}$ that are vectors in $\mathbb{R}^3$ and none of them is a linear combination of the other(s).
 
 ```{python}
 from IPython.core.display import HTML
@@ -692,7 +1049,7 @@ display(HTML(html_content))
 ```
 
 :::{.fragment}
-Assuming that $\boldsymbol{\bf{u}}$ and $\boldsymbol{\bf{v}}$ are nonzero vectors, their linear combinations, $c\boldsymbol{\bf{u}} + d\boldsymbol{\bf{v}}$, fill _**a plane through**_ $\tiny \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}.$
+Assuming that $\boldsymbol{\bf{u}}$ and $\boldsymbol{\bf{v}}$ are nonzero vectors, their linear combinations $c\boldsymbol{\bf{u}} + d\boldsymbol{\bf{v}}$ fill _**a plane through**_ $\tiny \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}.$
 :::
 :::{.fragment}
 ```{python}
@@ -716,131 +1073,26 @@ The linear combinations of $\boldsymbol{\bf{u}}$, $\boldsymbol{\bf{v}}$, and $\b
 :::
 ::::
 
-<!-- ## Linear Combinations
 
-::::{style="font-size: .8em"}
+## Wrap-up
 
-Consider the linear combinations of $\mathbf{v} = \tiny \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$ and $\mathbf{w} = \tiny \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}$. <br> They fill a plane in $\mathbb{R}^3$.
+**Take-aways**
 
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>Describe that plane.
-        </p>
-    </div>
-    """
-
-html_content = generate_html()
-display(HTML(html_content))
-```
-
-:::{.fragment}
-The plane of $\mathbf{v}$ and $\mathbf{w}$ contains all combinations $c\mathbf{v} + d\mathbf{w}$ with any $c \in \mathbb{R}$ and $d \in \mathbb{R}$:
-
-$$
-c\mathbf{v} + d \mathbf{w} =  c{\tiny \begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}} +  d{\tiny \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}} = \tiny \begin{bmatrix} c \\ c + d \\ d \end{bmatrix}.
-$$
-:::
-::::
-
-## Linear Combinations
-
-::::{style="font-size: .8em"}
-Consider the linear combinations of $\mathbf{v} = {\tiny\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}}$ and $\mathbf{w} = {\tiny\begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}}$. <br>They fill a plane in $\mathbb{R}^3$.
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>Find four vectors in that plane.
-        </p>
-    </div>
-    """
-
-html_content = generate_html()
-display(HTML(html_content))
-```
-
-:::{.fragment .center-text style="font-size: 1em"}
-For example, ${\tiny\begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}},\space{\tiny\begin{bmatrix} 2 \\ 3 \\ 1 \end{bmatrix}},\space {\tiny\begin{bmatrix} 5 \\ 7 \\ 2 \end{bmatrix}}$, and ${\tiny\begin{bmatrix} \pi \\ 2\pi \\ \pi \end{bmatrix}}$ are all in the plane.
-:::
-::::
-
-## Linear Combinations
-
-::::{style="font-size: .8em"}
-Consider the linear combinations of $\bar{v} = {\tiny\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}}$ and $\bar{w} = {\tiny\begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}}$. <br>They fill a plane in $\mathbb{R}^3$.
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>Find a vector that is not on the plane.
-        </p>
-    </div>
-    """
-
-html_content = generate_html()
-display(HTML(html_content))
-```
-:::{.fragment}
-:::{style="font-size: 1em"}
-Like most vectors, ${\tiny\begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix}}$ is not on the plane.
-:::
-:::{style="font-size: .8em"}
-_**Note:**_ $2 + 1 + 3$ is the reason why ${\tiny\begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix}}$ is not on the plane.
-:::
-:::
-::::
-## Linear Combinations
-
-::::{style="font-size: .8em"}
-Consider $\mathbf{v} = {\tiny\begin{bmatrix} 2 \\ -1 \end{bmatrix}}, \mathbf{w} = {\tiny\begin{bmatrix} -1 \\ 2 \end{bmatrix}}, \text{ and } \mathbf{b} = {\tiny\begin{bmatrix} 1 \\ 0 \end{bmatrix}}$.
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>Find two equations for \(c\) and \(d\) so that \(c\mathbf{v} + d\mathbf{w} \) equals \(\mathbf{b}\).
-        </p>
-    </div>
-    """
-
-html_content = generate_html()
-display(HTML(html_content))
-```
-
-We find the equasions as follows:
-
-$$
-\begin{aligned}
-c\mathbf{v} + d\mathbf{w} = \mathbf{b} &\iff c{\tiny\begin{bmatrix} 2 \\ -1 \end{bmatrix}} + d{\tiny\begin{bmatrix} -1 \\ 2 \end{bmatrix}} = {\tiny\begin{bmatrix} 1 \\ 0 \end{bmatrix}} \\
-&\iff
-\begin{cases}
-2c - d = 1 \\
--c + 2d = 0
-\end{cases}
-\end{aligned}
-$$
-
-
-
-
-:::: -->
-<!-- ## Key Ideas
-
-:::{.incremental style="font-size: .8em"}
+:::{.incremental style="font-size: .7em"}
 - A vector can be viewed as a list of numbers, an arrow from the origin, a point in the plane, or a NumPy array.
 - A vector in $d$-dimensional space $\mathbb{R}^d$ has $d$ entries.
 - Vector addition and scalar multiplication are performed entrywise.
 - Take all linear combinations of three-dimensional vectors $\mathbf{u}$, $\mathbf{v}$, and $\mathbf{w}$. These combinations typically form a line, a plane, or the whole space $\mathbb{R}^3$.
-::: -->
+:::
+
+:::{style="font-size: 0.7em;"}
+
+
+:::{.fragment}
+**Next lecture:** We know how to **add** vectors and **scale** them. But how do we **measure** them?
+
+- How long is a vector? (the **norm**)
+- What's the angle between two vectors? (the **inner product**)
+- How do we measure the distance between two points?
+:::
+:::
