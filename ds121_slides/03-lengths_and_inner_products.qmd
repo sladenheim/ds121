@@ -74,6 +74,17 @@ NUMBER!
 Do they know Sigma notation?
 :::
 
+## But wait...
+
+:::{style="font-size: 1.5em; text-align: center; margin-top: 2em;"}
+If there's an **inner** product...
+
+:::{.fragment}
+Is there an **outer** product?
+:::
+:::
+
+
 ## Quick Check: Compute an Inner Product
 
 :::{style="font-size: 0.8em;"}
@@ -509,26 +520,29 @@ display(HTML(html_content))
 
 ## Normalization to Unit Length
 
-::::{style="font-size: .7em"}
-**Example**: Let $\mathbf{v}= {\small\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}}$. Find the unit vector $\mathbf{u}$ in the same direction as $\mathbf{v}$.<br>
+::::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Problem:</b> Let \(\mathbf{v}= \begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}\). Find the unit vector \(\mathbf{u}\) in the same direction as \(\mathbf{v}\).</p>
+    </div>
+    """
+
+display(HTML(generate_html()))
+```
 
 <!--
-First, compute the length of $\mathbf{v}$:
-
-:::{.center-text}
-$\|\mathbf{v}\|^2 = \mathbf{v}^\top \mathbf{v} = (4)^2 + (-2)^2 + (2)^2 + (1)^2 = 25.$
-
-$\|\mathbf{v}\| = \sqrt{25} = 5.$
-:::
+:::{.fragment}
+First, compute the length: $\|\mathbf{v}\|^2 = 4^2 + (-2)^2 + 2^2 + 1^2 = 25$, so $\|\mathbf{v}\| = 5$.
 :::
 
-::::{style="font-size: .8em"}
-Then, multiply $\mathbf{v}$ by $1/\|\mathbf{v}\|$ to obtain:
-::::
-:::{.center-text}
-$\mathbf{u} = \frac{1}{\|\mathbf{v}\|} \mathbf{v} = \frac{1}{5} \mathbf{v} = \frac{1}{5} {\small\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}} = {\small\begin{bmatrix} \frac{4}{5} \\ \frac{-2}{5} \\ \frac{2}{5} \\ \frac{1}{5} \end{bmatrix}}.$
+:::{.fragment}
+Then normalize: $\mathbf{u} = \frac{1}{\|\mathbf{v}\|} \mathbf{v} = \frac{1}{5} {\small\begin{bmatrix} 4 \\ -2 \\ 2 \\ 1 \end{bmatrix}} = {\small\begin{bmatrix} 4/5 \\ -2/5 \\ 2/5 \\ 1/5 \end{bmatrix}}$
+:::
 -->
-
 ::::
 
 ## Distance
@@ -1111,6 +1125,22 @@ theta_degrees = np.arccos(innerProduct) * 180 / np.pi
 print("Angle theta =", theta_degrees)
 ```
 :::
+
+## Practice Problem
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Challenge:</b> Given the vector \(\mathbf{v} = \begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix}\), can you find a vector that is orthogonal to it?</p>
+    </div>
+    """
+
+display(HTML(generate_html()))
+```
+
 
 ## Wrap-up
 
