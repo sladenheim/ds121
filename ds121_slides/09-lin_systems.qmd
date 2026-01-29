@@ -24,11 +24,6 @@ format:
 - Span
 - Two perspectives on linear systems
 
-<!-- Today we are going to return to linear algebra for solving systems of equations. We will algebraically and geometrically explore the solutions to a system of equations.
-
-:::{.fragment}
-In addition, we will redefine the concept of a span and will connect it to what we know about linear systems.
-::: -->
 :::
 
 ## Systems of Equations
@@ -48,11 +43,11 @@ We call these _**linear equations**_ because no term has a power other than 1: t
 
 In other words, the only operations applied to our unknown variables are: <br>
 (1) addition, and <br>
-(2) mulitiplication by a constant.
+(2) multiplication by a constant.
 
 ::::
 
-## Systems of Equations
+## Defining Linear Equations
 
 ::::{style="font-size:.8em"}
 ```{python}
@@ -97,7 +92,7 @@ display(HTML(html_content))
 ```
 ::::
 
-## Systems of Equations
+## Solutions and Solution Sets
 
 ::::{style="font-size:.8em"}
 
@@ -161,7 +156,7 @@ display(HTML(html_content))
 ::::
 
 
-## Systems of Equations
+## Consistent and Inconsistent Systems
 
 ::::{style="font-size:.8em"}
 
@@ -203,90 +198,25 @@ display(HTML(html_content))
 ```
 ::::
 
-
-
-<!-- ## Systems of Equations
+## From Equations to Graphs
 
 ::::{style="font-size: .8em"}
-Notice that
-
-$$
-\begin{align*}
-&\begin{aligned}
-x_1 - 2x_2 + x_3 &= 5 \\
- 2x_2 - 8x_3 &= -4 \\
-6x_1 + 5x_2 + 9x_3 &= -4
-\end{aligned}
-\Leftrightarrow 
-x_1 
-\begin{bmatrix}
-1 \\ 
-0 \\ 
-6
-\end{bmatrix}
-+ x_2
-\begin{bmatrix}
--2 \\ 
-2 \\ 
-5
-\end{bmatrix}
-+ x_3
-\begin{bmatrix}
-1 \\ 
--8 \\ 
-9
-\end{bmatrix}
-=
-\begin{bmatrix}
-5 \\ 
--4 \\ 
--4
-\end{bmatrix}
-\end{align*}
-$$
-
-
-The equation on the right is called a **vector equation**. This single equation that involves column vectors is _**equivalent to**_ a system of linear equations arranged in rows. That is, they have the same solution:
-
-$$
-x_1=1,\space x_2=-2,\space x_3=0.
-$$
-
-:::: -->
-
-<!-- ## Systems of Equations
-
-::::{style="font-size:.8em"}
-$$
-\begin{align*}
-&\begin{aligned}
-x_1 - 2x_2 + x_3 & = 5 \\
-2x_2 - 8x_3 & = -4 \\
-6x_1 + 5x_2 + 9x_3 & = -4
-\end{aligned}
-\quad \rightarrow \quad
-\begin{aligned}
-x_1 & = 1 \\
-x_2 & = -2 \\
-x_3 & = 0
-\end{aligned}
-\end{align*}
-$$
+How do we plot a linear equation like $x_1 - 2x_2 = -1$?
 
 :::{.fragment}
-We can verify this claim by substitution.
+**Key idea**: Rearrange to solve for one variable in terms of the other.
 
-$$
-\begin{align*}
-1 - 2(-2) + 0 & = 5 \\
-2(-2) - 8(0) & = -4 \\
-6(1) + 5(-2) + 9(0) & = -4
-\end{align*}
-$$
+$$x_1 - 2x_2 = -1 \quad \Rightarrow \quad x_2 = \frac{x_1 + 1}{2}$$
 
-The solution $(x_1,x_2,x_3)=(1,-2,0)$ makes each equation true. 
+Now we can plot $x_2$ as a function of $x_1$ — this is just a line!
 :::
-:::: -->
+
+:::{.fragment}
+**In general**: A linear equation in 2 variables defines a **line** in $\mathbb{R}^2$.
+
+A linear equation in 3 variables defines a **plane** in $\mathbb{R}^3$.
+:::
+::::
 
 ## Visualizing Systems of Equations{.smaller-title}
 
@@ -294,10 +224,6 @@ The solution $(x_1,x_2,x_3)=(1,-2,0)$ makes each equation true.
 Geometrically, we can find the solutions to a system of linear equations in $d$ variables by:
 
 - creating a graph showing the solution space to each individual equation, which is a $d-1$ dimensional space;
-
-<!-- :::{.fragment}
-Let us first look at some examples in $\mathbb{R}^2$.
-If a linear equation has 2 variables, then the set of all possible solutions is one-dimensional (i.e., a line). -->
 
 :::{.center-text}
 ```{python}
@@ -349,7 +275,7 @@ plt.show()
 - finding the point(s) that are in common to all equations.
 ::::
 
-## Visualizing Systems of Equations{.smaller-title}
+## One Solution: Intersecting Lines{.smaller-title}
 
 ::::{style="font-size: .8em"}
 Here's the first system of equations.
@@ -414,7 +340,7 @@ display(HTML(html_content))
 :::
 ::::
 
-## Visualizing Systems of Equations{.smaller-title}
+## No Solution: Parallel Lines{.smaller-title}
 
 ::::{style="font-size: .8em"}
 Let us replace $3x_2$ by $2x_2$ in the second equation.
@@ -479,10 +405,74 @@ display(HTML(html_content))
 :::
 ::::
 
-## Visualizing Systems of Equations{.smaller-title}
+## Infinitely Many Solutions: Same Line{.smaller-title}
+
+::::{style="font-size: .8em"}
+What if the second equation is just a multiple of the first?
+
+:::{.center-text}
+```{python}
+plt.figure(figsize=(8, 4))
+
+# Plot the first equation: x1 - 2x2 = -1
+plt.plot(x, y, color='red', linewidth=3, label=r'$x_1 - 2x_2 = -1$')
+
+# Second equation: -2x1 + 4x2 = 2 (same line!)
+# This is just -2 times the first equation
+y3 = (x + 1) / 2  # Same as y
+plt.plot(x, y3, color='blue', linewidth=1.5, linestyle='--', label=r'$-2x_1 + 4x_2 = 2$')
+
+plt.axhline(0, color='black', linewidth=0.8, linestyle='--')
+plt.axvline(0, color='black', linewidth=0.8, linestyle='--')
+plt.xlim(-6, 6)
+plt.ylim(-2, 4)
+plt.xlabel("$x_1$")
+plt.ylabel("$x_2$")
+plt.legend(loc="upper left", frameon=True)
+plt.gca().spines['top'].set_visible(False)
+plt.gca().spines['right'].set_visible(False)
+plt.gca().spines['left'].set_position(('data', 0))
+plt.gca().spines['bottom'].set_position(('data', 0))
+plt.grid(False)
+plt.show()
+```
+:::
+
+The lines overlap completely — **every point on the line is a solution**!
+::::
+
+## Three Cases in 2D
+
+::::{style="font-size: .8em"}
+For a system of two linear equations in two variables:
+
+| Case | Geometry | # Solutions |
+|------|----------|-------------|
+| Lines intersect | Cross at one point | **1** (unique) |
+| Lines parallel | Never meet | **0** (inconsistent) |
+| Lines coincide | Same line | **∞** (infinitely many) |
+
+:::{.fragment}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>How can you tell from the equations (without graphing) which case you have?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+::::
+
+:::{.notes}
+Compare the slopes: if slopes are different, lines intersect (one solution). If slopes are the same but y-intercepts differ, parallel (no solution). If slopes and intercepts are the same, coincident (infinitely many).
+:::
+
+## Systems in Three Dimensions{.smaller-title}
 
 ::::{style="font-size:.8em"}
-This geometric reasoning also works in higher dimensions. 
+This geometric reasoning also works in higher dimensions.
 
 Let's consider $\mathbb{R}^3$. In three-dimensional space, the solution to each individual linear equation forms a 2-dimensional plane.
 
@@ -500,14 +490,14 @@ This system has a unique solution that is given by $x_1 =1, x_2 = -2,$ and $x_3=
 
 ::::
 
-## Visualizing Systems of Equations{.smaller-title}
+## Three Planes, One Point{.smaller-title}
 
 <video width="1000" autoplay loop muted>
   <source src="/figures/Fig2.1.mp4" type="video/mp4">
 </video>
 
 
-## Visualizing Systems of Equations{.smaller-title}
+## Equivalent Systems{.smaller-title}
 
 :::{style="font-size:.8em"}
 We can also say that the system
@@ -532,7 +522,7 @@ $$
 We can plot this system too.
 :::
 
-## Visualizing Systems of Equations{.smaller-title}
+## Equivalent System Visualized{.smaller-title}
 
 <video width="1000" autoplay loop muted>
   <source src="/figures/Fig2.2.mp4" type="video/mp4">
@@ -585,144 +575,24 @@ It involves _**column vectors**_ and is  _**equivalent to**_ the system on the l
 
 ::::
 
-<!-- ## From Systems of Equations to Vectors {.really-smaller-title}
-
-::::{style="font-size: 1em"}
-Given some set of vectors $\mathbf{a_1,a_2,\dots,a_k}$, can a given vector $\mathbf{b}$ be written as a linear combination of $\mathbf{a_1,a_2,\dots,a_k}$?
-
-:::{.fragment}
-Let's take a specific example.<br>
-
-Let $\mathbf{a}_1=\begin{bmatrix}1 \\ -2 \\ -5 \end{bmatrix}$, $\mathbf{a}_2=\begin{bmatrix}2 \\ 5 \\ 6 \end{bmatrix}$, and $\mathbf{b}=\begin{bmatrix}7 \\ 4 \\ -3 \end{bmatrix}$.
-:::
-
-:::{.fragment}
-We need to determine whether $\mathbf{b}$ can be generated as a linear combination of $\mathbf{a_1}$ and $\mathbf{a_2}$. That is, we are looking for weights $x_1$ and $x_2$ such that
-
-$$
-x_1\mathbf{a_1} + x_2\mathbf{a_2} = \mathbf{b}.
-$$
-:::
-
-:::{.fragment}
-We can convert this single vector equation into a linear system.
-:::
-::::
-
-
-
-## From Systems of Equations to Vectors {.really-smaller-title}
-
-$$
-x_1 
-\begin{bmatrix}
-1 \\ 
--2 \\ 
--5
-\end{bmatrix}
-+ x_2
-\begin{bmatrix}
-2 \\ 
-5 \\ 
-6
-\end{bmatrix}
-=
-\begin{bmatrix}
-7 \\ 
-4 \\ 
--3
-\end{bmatrix}.
-$$
-
-:::{.fragment}
-By the definition of scalar-vector multiplication, this is:
-
-$$
-\begin{bmatrix}
-x_1 \\ 
--2x_1 \\ 
--5x_1
-\end{bmatrix}
-+ 
-\begin{bmatrix}
-2x_2 \\ 
-5x_2 \\ 
-6x_2
-\end{bmatrix}
-=
-\begin{bmatrix}
-7 \\ 
-4 \\ 
--3
-\end{bmatrix}.
-$$
-:::
-
-:::{.fragment}
-By the definition of vector addition, this is:
-
-$$
-\begin{bmatrix}
-x_1 + 2x_2 \\ 
--2x_1 + 5x_2 \\ 
--5x_1 + 6x_2
-\end{bmatrix}
-=
-\begin{bmatrix}
-7 \\ 
-4 \\ 
--3
-\end{bmatrix}.
-$$
-
-:::
-
-## From Systems of Equations to Vectors {.really-smaller-title}
-
-::::{style="font-size: 1.0em"}
-By the definition of vector equality, this is:
-
-$$
-\begin{aligned}
-x_1 + 2x_2 &= 7, \\
--2x_1 + 5x_2 &= 4, \\
--5x_1 + 6x_2 &= -3.
-\end{aligned}
-$$
-
-This is a linear system! Its solution is $x_1=3$ and $x_2=2$.
-
-:::{.fragment}
-We have found the solution to our vector equation as well.
-In other words, we have found that
-
-$$
-3\mathbf{a}_1 + 2\mathbf{a}_2 = \mathbf{b}.
-$$
-And vice versa! Given a system of linear equations, we can form a vector equation where the vectors correspond to the "columns" of the linear system.
-:::
-
-:::: -->
 
 ## Span
 
 ::::{style="font-size:.8em"}
-If linear systems can be inconsistent, then so can be vector equations.
-<br><br>
-_**What does that mean for a vector equation to be inconsistent?**_
-<br><br>
+Vector equations can also be inconsistent. When does this happen?
 
-The answer involves the _**span**_ of a set of vectors.
-<br><br>
-Let's say we are given vectors $\mathbf{a_1}$, $\mathbf{a_2}$, and $\mathbf{b}$.
+:::{.fragment}
+It depends on whether $\mathbf{b}$ can be written as a linear combination of the other vectors.
 
-Assume that it is possible to express $\mathbf{b}$ as a linear combination of $\mathbf{a}_1$ and $\mathbf{a}_2$. That is, there are some $x_1,x_2$ such that $x_1\mathbf{a_1} + x_2\mathbf{a_2}=\mathbf{b}.$
-<br><br>
-Then we say that $\mathbf{b}$ is in the span of the set of vectors $\{\mathbf{a}_1,\mathbf{a}_2\}$.
+If there exist $x_1, x_2$ such that $x_1\mathbf{a_1} + x_2\mathbf{a_2}=\mathbf{b}$, we say $\mathbf{b}$ is **in the span** of $\{\mathbf{a}_1,\mathbf{a}_2\}$.
+:::
 
+:::{.fragment}
+If no such $x_1, x_2$ exist, then $\mathbf{b}$ is **not in the span** — and the equation is inconsistent.
+:::
 ::::
 
-## Span
+## Definition of Span
 ::::{style="font-size:.8em"}
 ```{python}
 from IPython.core.display import HTML
@@ -778,7 +648,7 @@ display(HTML(html_content))
   <source src="/figures/Fig2.5.mp4" type="video/mp4">
 </video>
 
-## Span
+## Span and Vector Equations
 
 ::::{style="font-size: .8em"}
 Asking whether the vector equation
@@ -810,20 +680,20 @@ No, the vector equation $x_1\mathbf{a_1}+x_2\mathbf{a_2}=\mathbf{b}$ is inconsis
 
 ::::{style="font-size:.8em"}
 
-We have been working with two perspectives on linear systems.
+Every linear system can be viewed two ways:
 
 :::{.incremental}
-1. One perspective is through equations that correspond to rows.
-2. The other is through vector equations corresponding to columns.
+1. **Row view**: Each equation defines a line/plane. Find their intersection.
+2. **Column view**: Can we reach $\mathbf{b}$ using linear combinations of column vectors?
 :::
 
 :::{.fragment}
-These are two different ways of visualizing the same linear system.
+Same system, same answer — different geometric intuition.
 :::
 
 ::::
 
-## Two Perspectives
+## Column-Based View: An Example
 
 ::::{style="font-size:.8em"}
 
@@ -848,7 +718,7 @@ The _column-based_ view asks whether $\mathbf{b}=\begin{bmatrix}6 \\ 8 \\ -5 \en
   <source src="/figures/Fig2.7.mp4" type="video/mp4">
 </video>
 
-## Two Distinct Vector Spaces
+## Row-Based View
 
 ::::{style="font-size: .8em"}
 The _row-based_ view draws individually the solution set of each equation and then asks whether there is a common point of intersection.
@@ -867,19 +737,81 @@ However, as the course goes on we will use the first perspective much more often
 
 ::::
 
-## Two Perspectives
+## Row-Based View: No Common Intersection
 
 <video width="1000" autoplay loop muted>
     <source src="/figures/Fig2.8.mp4" type="video/mp4">
   </video>
 
-<!-- ## Key Ideas
+## Solving Systems in Python
 
-:::{.incremental style="font-size:.8em"}
+::::{style="font-size: .8em"}
+NumPy can solve systems of linear equations using `numpy.linalg.solve`:
 
-- A solution of a linear system is a list of numbers that makes each equation a true statement.
-- A linear system is inconsistent if it has no solutions.
-- A linear system and its vector equation are equivalent.
-- $\text{Span}\{\mathbf{a_1,\dots,a_k\}}$ is the set of all linear combinations of $\mathbf{a_1,\dots,a_k}$
+```{python}
+#| echo: true
+import numpy as np
 
-::: -->
+# System: x1 - 2x2 + x3 = 5
+#         2x2 - 8x3 = -4
+#         6x1 + 5x2 + 9x3 = -4
+
+A = np.array([[1, -2, 1],
+              [0, 2, -8],
+              [6, 5, 9]])
+b = np.array([5, -4, -4])
+
+x = np.linalg.solve(A, b)
+print(f"Solution: x1={x[0]:.0f}, x2={x[1]:.0f}, x3={x[2]:.0f}")
+```
+
+:::{.fragment}
+This matches our geometric visualization: the three planes intersect at $(1, -2, 0)$.
+:::
+::::
+
+## Practice: Classify the System
+
+::::{style="font-size: .8em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>For each system, determine: <b>one solution</b>, <b>no solution</b>, or <b>infinitely many</b>?
+        <ol type="a">
+            <li>\(\begin{aligned} x + y &= 3 \\ 2x + 2y &= 6 \end{aligned}\)</li>
+            <li>\(\begin{aligned} x + y &= 3 \\ x + y &= 5 \end{aligned}\)</li>
+            <li>\(\begin{aligned} x + y &= 3 \\ x - y &= 1 \end{aligned}\)</li>
+        </ol>
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+:::{.notes}
+a. Infinitely many — second equation is 2× the first (same line)
+b. No solution — parallel lines (same slope, different intercept)
+c. One solution — lines intersect at (2, 1)
+:::
+
+## Wrap-up
+
+::::{style="font-size:.8em"}
+
+**Key takeaways:**
+
+- A **linear equation** involves only addition and multiplication by constants
+- A **solution** is a list of values that makes every equation true
+- Systems can be **consistent** (one or infinitely many solutions) or **inconsistent** (no solutions)
+- **Geometrically**: solutions are where lines/planes intersect
+- **Vector equations** provide an equivalent way to express linear systems
+- $\text{Span}\{\mathbf{a_1,\dots,a_k}\}$ = all possible linear combinations
+- **Two perspectives**:
+  - Row view: find intersection of solution sets
+  - Column view: is $\mathbf{b}$ in the span of the column vectors?
+
+**Next lecture**: Linear dependence — when vectors are "redundant"
+
+::::

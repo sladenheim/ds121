@@ -1,10 +1,10 @@
 ---
 title: "K-Means Clustering in Practice"
 author: "CDS DS-121<br>Boston University"
-format: 
+format:
     revealjs:
         math: true
-        css: 
+        css:
         - styles.css
         html-math-method: mathjax
         highlight-style: github
@@ -14,221 +14,452 @@ format:
 
 ---
 
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import sklearn.datasets as sk_data
+import sklearn.metrics as metrics
+import sklearn.manifold
+from sklearn.cluster import KMeans
+from IPython.core.display import HTML
+```
+
 ## Learning Objectives
 
 ::::{style="font-size: .8em;"}
 
-- Generation of a synthetic dataset
-- Dimensionality reduction using Multidimensional Scaling (MDS) 
-- Application of $k$-means clustering using __`scikit-learn`__ library
-- Examination of the results
+- The clustering workflow in practice
+- Visualizing high-dimensional data
+    - Pairwise distance matrices
+    - Multidimensional Scaling (MDS)
+- Using scikit-learn's `KMeans`
+- Interpreting and validating cluster results
 
 ::::
 
+## The Clustering Workflow
 
-## K-Means Clustering
+::::{style="font-size: .85em"}
+A typical clustering project follows these steps:
 
-::::{style="font-size: .8em"}
-Let's do an extended example showing $k$-means clustering in practice and in the context of the python libraries __`scikit-learn`__.
+1. **Prepare data**: clean, normalize, select features
+2. **Choose k**: how many clusters? (more on this next lecture)
+3. **Run algorithm**: fit k-means to the data
+4. **Visualize**: do the clusters make sense?
+5. **Interpret**: what does each cluster represent?
+6. **Validate**: are the clusters meaningful?
 
-Our goals are to learn:
-
-* How clustering is used in practice
-* Tools for evaluating the quality of a clustering
-* Tools for assigning meaning or labels to a cluster
-* Important visualizations
-* A little bit about feature extraction for text
+:::{.fragment}
+Today we'll work through steps 3-5 with synthetic data. Next lecture: choosing k and validation.
+:::
 ::::
 
-## Synthetic Data {.scrollable}
+## Our Dataset: 30 Dimensions
 
-::::{style="font-size: .8em"}
-We are going to generate synthetic data and inspect it.
-
-
+::::{style="font-size: .85em"}
 ```{python}
 #| echo: true
-import sklearn.datasets as sk_data
-X, y = sk_data.make_blobs(n_samples=100, centers=3, n_features=30,
-                          center_box=(-10.0, 10.0), random_state=0)
-print(X.shape)
+X, y_true = sk_data.make_blobs(n_samples=100, centers=3, n_features=30,
+                                center_box=(-10.0, 10.0), random_state=0)
+print(f"Shape: {X.shape}")
+print(f"100 points, each with 30 features")
 ```
 
-::::
-
-## Synthetic Data {.scrollable}
-
-::::{style="font-size: .8em"}
-
+:::{.fragment}
 ```{python}
-#| echo: true
-import seaborn as sns
-sns.heatmap(X, xticklabels = False, yticklabels = False, linewidths = 0, cbar = False)
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>How do you visualize 30 dimensions? You can't plot it directly!</p>
+    </div>
+    """
+display(HTML(generate_html()))
 ```
+:::
 ::::
 
-## Synthetic Data
+## Visualizing the Raw Data
 
-:::{style="font-size: .8em"}
+::::{style="font-size: .85em"}
+One option: show the data as a **heatmap**. Each row is a data point, each column is a feature.
 
-Each row is a data item and the columns correspond to features (which are simply coordinates here).
+```{python}
+fig, ax = plt.subplots(figsize=(10, 5))
+sns.heatmap(X, xticklabels=False, yticklabels=False, linewidths=0, cbar=True, ax=ax)
+ax.set_xlabel('Features (30 dimensions)')
+ax.set_ylabel('Data points (100 samples)')
+plt.tight_layout()
+```
 
-Let's compute the pairwise distances for visualization purposes.
+Hard to see structure here — the rows aren't in any meaningful order.
+::::
 
+## Pairwise Distances
+
+::::{style="font-size: .85em"}
+Another view: compute the distance between **every pair** of points.
 
 ```{python}
 #| echo: true
-import sklearn.metrics as metrics
 euclidean_dists = metrics.euclidean_distances(X)
-euclidean_dists
+print(f"Distance matrix shape: {euclidean_dists.shape}")
+print(f"Distance from point 0 to point 1: {euclidean_dists[0, 1]:.2f}")
 ```
+
+:::{.fragment}
+This gives us a 100×100 matrix. Entry $(i, j)$ = distance between points $i$ and $j$.
 :::
-
-## Synthetic Data
-
-:::{style="font-size: .75em"}
-We can then visualize the data using a heatmap on the set of pairwise distances.
-
-:::{.center-text}
-```{python}
-#| echo: true
-sns.heatmap(euclidean_dists, xticklabels=False, yticklabels=False, linewidths=0, 
-            square=True);
-```
-:::
-:::
-
-## Multidimensional Scaling
-
-::::{style="font-size: .8em"}
-
-- Our dataset lives in _**30 dimensions**_. Too complex to visualize directly!
-- _**Multidimensional Scaling (MDS)**_ helps us visualize pairwise similarities in 2D.
-
-The idea behind MDS is:
-
-given a distance (or dissimilarity) matrix for the data points, find a set of coordinates in a lower dimension that approximates these distances as well as possible, for each point.
-
-
-It begins with random coordinates and iteratively adjusts them to reduce the gap between true and approximated distances.
-
-<br>
-Let's run MDS to build a 2 dimensional model of our 30 dimensional dataset.
-
 ::::
 
-## Multidimensional Scaling
-
-:::{.center-text}
-```{python}
-import sklearn.manifold
-import matplotlib.pyplot as plt
-mds = sklearn.manifold.MDS(n_components=2, max_iter=3000, eps=1e-9, random_state=0,
-                   dissimilarity = "precomputed", n_jobs = 1)
-fit = mds.fit(euclidean_dists)
-pos = fit.embedding_
-plt.scatter(pos[:, 0], pos[:, 1], s=8)
-plt.axis('square')
-plt.show()
-```
-:::
-
-:::{style="font-size: .8em"}
-Although the data lives in 30 dimensions, we can get a sense of how the points are clustered by approximately placing the points into two dimensions.
-:::
-
-## K-Means Clustering
+## Visualizing Pairwise Distances
 
 ::::{style="font-size: .8em"}
-The `scikit-learn` module `sklearn.cluster` has a large set of tools for clustering.  
-
-There are 3 functions in all the clustering classes, 
-
-- **`fit()`,**
-- **`predict()`,** and
-- **`fit_predict()`**.
-
-`fit()` builds the model from the training data (e.g. for $k$-means, it finds the centroids), 
-
-
-`predict()` assigns labels to the data after building the model, and 
-
-
-`fit_predict()` does both in a single step.
-
-
-
-::::
-
-## K-Means Clustering
-
-:::{style="font-size: .8em"}
+:::{.center-text}
 ```{python}
-#| echo: true
-from sklearn.cluster import KMeans
-kmeans = KMeans(init = 'k-means++', n_clusters = 3, n_init = 100)
-kmeans.fit_predict(X)
+fig, ax = plt.subplots(figsize=(5, 5))
+sns.heatmap(euclidean_dists, xticklabels=False, yticklabels=False,
+            linewidths=0, square=True, ax=ax)
+ax.set_title('Pairwise Distance Matrix (unsorted)')
+plt.tight_layout()
 ```
-
-All the tools in `scikit-learn` are implemented as python objects.
-
-Thus, the general sequence for using a tool from `scikit-learn` is:
-
-* Create the object, probably with some hyperparameter settings or intialization,
-* Run the method, generally by using the `fit()` function, and
-* Examine the results, which are generally property variables of the object.
 :::
 
+**Dark** = close together, **Light** = far apart. Still hard to see clusters — points aren't sorted!
+::::
 
-## K-Means Clustering
+## The Visualization Problem
 
+::::{style="font-size: .85em"}
+
+Heatmaps show raw values or distances, but hard to interpret
+
+:::{.fragment}
 ```{python}
-import numpy as np
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Can we find 2D coordinates that preserve the distances between points?</p>
+    </div>
+    """
+display(HTML(generate_html()))
 ```
+:::
+
+:::{.fragment}
+This is exactly what dimensionality-reduction tools like Multidimensional Scaling (MDS), t-SNE, and UMAP do!
+:::
+::::
+
+## <span style="font-size: 0.85em;">Multidimensional Scaling (MDS)</span>
+
+
+::::{style="font-size: .85em"}
+**Goal**: Find 2D coordinates where distances match the original high-dimensional distances.
+
+**How it works**:
+
+1. Start with random 2D positions
+2. Compare distances in 2D to true distances in 30D
+3. Adjust positions to reduce the mismatch
+4. Repeat until distances are as close as possible
+
+:::{.fragment}
+In practice, t-SNE and UMAP are more common but the algorithms are more complex
+:::
+::::
+
+## MDS in Action
+
 ```{python}
 #| echo: true
-centroids = kmeans.cluster_centers_
+mds = sklearn.manifold.MDS(n_components=2, max_iter=3000, eps=1e-9,
+                            random_state=0, dissimilarity="precomputed")
+pos = mds.fit_transform(euclidean_dists)
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.scatter(pos[:, 0], pos[:, 1], s=40, alpha=0.7)
+ax.set_title('30D Data Projected to 2D via MDS')
+ax.set_xlabel('MDS Dimension 1')
+ax.set_ylabel('MDS Dimension 2')
+ax.axis('equal')
+plt.tight_layout()
+```
+
+Now we can see the three clusters!
+
+## Running k-Means
+
+::::{style="font-size: .85em"}
+scikit-learn provides `KMeans` in `sklearn.cluster`:
+
+```{python}
+#| echo: true
+kmeans = KMeans(n_clusters=3, init='k-means++', n_init=10, random_state=0)
+kmeans.fit(X);
+```
+
+Key parameters:
+
+- `n_clusters`: the k in k-means
+- `init='k-means++'`: smart initialization (more next lecture)
+- `n_init`: run algorithm multiple times, keep best result
+::::
+
+## Examining the Results
+
+::::{style="font-size: .85em"}
+```{python}
+#| echo: true
+# Cluster assignments for each point
 labels = kmeans.labels_
-error = kmeans.inertia_
+print(f"Labels: {labels}")
+
+# Cluster centers (30-dimensional vectors)
+print(f"\nCentroid shapes: {kmeans.cluster_centers_.shape}")
+
+# Total within-cluster sum of squares (the cost function)
+print(f"\nInertia (cost): {kmeans.inertia_:.1f}")
 ```
+::::
+
+## Visualizing the Clusters
 
 ```{python}
-#| echo: true
-print(f'The total error of the clustering is: {error:0.1f}.')
-print('\nCluster labels:')
-print(labels)
-print('\nCluster centroids:')
-print(np.round(centroids, 3))
+fig, ax = plt.subplots(figsize=(7, 5))
+scatter = ax.scatter(pos[:, 0], pos[:, 1], c=labels, cmap='viridis', s=50, alpha=0.8)
+ax.set_title('k-Means Clusters (visualized in 2D via MDS)')
+ax.set_xlabel('MDS Dimension 1')
+ax.set_ylabel('MDS Dimension 2')
+ax.axis('equal')
+plt.colorbar(scatter, label='Cluster')
+plt.tight_layout()
 ```
 
+## Sorted Distance Matrix
 
-## K-Means Clustering
-
-::::{style="font-size: .8em"}
-Let's visualize the results by reordering data items according to their cluster.
+::::{style="font-size: .75em"}
+Let's reorder points by cluster and look at the distance matrix again:
 
 :::{.center-text}
 ```{python}
+# Sort points by cluster label
 idx = np.argsort(labels)
-rX = X[idx, :]
-sns.heatmap(rX, xticklabels = False, yticklabels = False, linewidths = 0)
+sorted_dists = euclidean_dists[idx, :][:, idx]
+
+fig, ax = plt.subplots(figsize=(4.5, 4.5))
+sns.heatmap(sorted_dists, xticklabels=False, yticklabels=False,
+            linewidths=0, square=True, ax=ax)
+ax.set_title('Distance Matrix (sorted by cluster)')
+plt.tight_layout()
+```
+:::
+
+Dark blocks on diagonal = points in same cluster are close. Success!
+::::
+
+## Sorted Data Heatmap
+
+::::{style="font-size: .8em"}
+Same idea for the raw data — sort rows by cluster:
+
+
+:::{.center-text}
+```{python}
+sorted_X = X[idx, :]
+fig, ax = plt.subplots(figsize=(9, 4.5))
+sns.heatmap(sorted_X, xticklabels=False, yticklabels=False, linewidths=0, cbar=True, ax=ax)
+ax.set_xlabel('Features')
+ax.set_ylabel('Data points (sorted by cluster)')
+
+# Add cluster dividers
+cluster_sizes = np.bincount(labels)
+cumsum = np.cumsum(cluster_sizes)
+for c in cumsum[:-1]:
+    ax.axhline(y=c, color='red', linewidth=2)
+plt.tight_layout()
+```
+:::
+Now we can see that clusters have different feature patterns!
+::::
+
+## Interpreting Clusters
+
+::::{style="font-size: .85em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>We found 3 clusters — but what do they <i>mean</i>?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+**For synthetic data**: we know the "true" labels, so we can check.
+
+**For real data**: we need to examine the clusters to understand them:
+
+- Look at cluster centroids (what's the "average" member like?)
+- Look at representative examples from each cluster
+- Compare feature distributions across clusters
+- Use domain knowledge to assign meaningful labels
+:::
+::::
+
+## Comparing to Ground Truth
+
+::::{style="font-size: .85em"}
+Our synthetic data has true labels `y_true`. Let's compare:
+
+```{python}
+#| echo: true
+# Create a cross-tabulation
+import pandas as pd
+comparison = pd.crosstab(y_true, labels,
+                         rownames=['True Label'],
+                         colnames=['k-Means Label'])
+print(comparison)
+```
+
+:::{.fragment}
+The clusters align well! (Labels may be permuted — cluster "0" might map to true label "1", etc.)
+:::
+::::
+
+## Cluster Profiles
+
+::::{style="font-size: .85em"}
+What makes each cluster different? Look at the centroids:
+
+```{python}
+fig, ax = plt.subplots(figsize=(10, 3))
+sns.heatmap(kmeans.cluster_centers_, cmap='viridis', ax=ax,
+            xticklabels=False, yticklabels=[f'Cluster {i}' for i in range(3)],
+            cbar_kws={'label': 'Centroid Value'})
+ax.set_xlabel('Features (30 dimensions)')
+ax.set_title('Cluster Centroids: Feature Profiles')
+plt.tight_layout()
+```
+
+Each row shows a cluster's "signature" — distinct patterns across features.
+::::
+
+## <span style="font-size: 0.8em;">Practice: Interpret These Clusters</span>
+
+
+::::{style="font-size: .8em"}
+A retailer clustered their customers and got these centroids:
+
+| | Age | Income ($K) | Monthly Spend ($) | Visits/Month |
+|---------|-----|-------------|-------------------|--------------|
+| **Cluster 0** | 42 | 55 | 150 | 8 |
+| **Cluster 1** | 28 | 95 | 420 | 3 |
+| **Cluster 2** | 58 | 140 | 180 | 2 |
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>With your neighbor:</b>
+        <ol type="a">
+            <li>Give each cluster a descriptive name</li>
+            <li>What marketing strategy might work for each?</li>
+        </ol>
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+:::{.notes}
+Possible interpretations:
+- Cluster 0: "Budget-conscious regulars" — middle-aged, moderate income, frequent small purchases. Strategy: loyalty program, everyday deals
+- Cluster 1: "Young professionals" — younger, good income, big spenders but infrequent. Strategy: premium products, convenience features, app engagement
+- Cluster 2: "Affluent occasionals" — older, high income, modest spending, rare visits. Strategy: high-end seasonal campaigns, personal service
+
+Key point: There's no single "right" answer! The goal is to find actionable insights.
+:::
+
+## The scikit-learn Pattern
+
+::::{style="font-size: .75em"}
+Compare k-NN (classification) to k-means (clustering) — same structure!
+
+::::{.columns}
+:::{.column width="50%"}
+**k-NN (from Lecture 4)**
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+# 1. Create model
+model = KNeighborsClassifier(n_neighbors=3)
+
+# 2. Fit to data
+model.fit(X_train, y_train)
+
+# 3. Use results
+predictions = model.predict(X_test)
+```
+:::
+
+:::{.column width="50%"}
+**k-Means (today)**
+```python
+from sklearn.cluster import KMeans
+
+# 1. Create model
+model = KMeans(n_clusters=3)
+
+# 2. Fit to data
+model.fit(X)
+
+# 3. Use results
+labels = model.labels_
 ```
 :::
 ::::
 
-
-## K-Means Clustering
-
-:::{style="font-size: .75em"}
-
-Let's look at the matrix of pairwise distances between points, after sorting them by cluster.
-Dark squares indicate that the pair of points are _**close**_ to each other, whereas light colors indicate that they are _**far apart**_.
-
+:::{.fragment}
+Once you learn this pattern, picking up new scikit-learn models is easy!
 :::
+::::
 
-:::{.center-text}
+## Workflow Summary
+
+::::{style="font-size: .85em"}
 ```{python}
-rearranged_dists = euclidean_dists[idx,:][:,idx]
-sns.heatmap(rearranged_dists, xticklabels = False, yticklabels = False, linewidths = 0, square = True);
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><b>Clustering Workflow:</b></p>
+        <ol>
+            <li><b>Visualize</b>: Use MDS or similar to see if clusters exist</li>
+            <li><b>Cluster</b>: Run k-means with chosen k</li>
+            <li><b>Validate</b>: Check distance matrix, compare to ground truth if available</li>
+            <li><b>Interpret</b>: Examine centroids and cluster members</li>
+            <li><b>Iterate</b>: Try different k values, compare results</li>
+        </ol>
+    </div>
+    """
+display(HTML(generate_html()))
 ```
-:::
+::::
+
+## Wrap-up
+
+::::{style="font-size: .85em"}
+**Today we learned:**
+
+- **Visualizing high-D data**: heatmaps, distance matrices, MDS
+- **MDS**: projects data to 2D while preserving distances
+- **scikit-learn's KMeans**: `fit()`, `labels_`, `cluster_centers_`, `inertia_`
+- **Validating clusters**: sorted distance matrices, ground truth comparison
+- **Interpreting clusters**: centroid profiles, representative examples
+
+**Next time**: How do we choose k? How do we know if clusters are "good"?
+::::

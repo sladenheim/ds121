@@ -14,28 +14,72 @@ format:
 
 ---
 
-## Collinearity
+## Redundant Information {.smaller-title}
 ::::{style="font-size:.8em"}
-Social media influencer performance: 
+Imagine building a model to predict someone's health outcomes with these features:
 
-- Follower count
-- Likes received on posts
-- Video views
-- Estimated monthly income
+- Birthday 
+- Age
+- Sex
+- Height
+- Weight
+- Blood pressure
+
+:::{.fragment}
+**Major Problem**: Birthday and age encode the same information! 
+
+**Minor Problem**: Height and weight are highly correlated
+
+:::
+
+:::{.fragment}
+This is called **collinearity** — when features are linear combinations of each other.
+
+Including redundant features doesn't help your model; it just adds noise and complexity.
+:::
+::::
+
+## Collinearity in Real Data {.smaller-title}
+::::{style="font-size:.8em"}
+Here's a dataset of social media influencers:
 
 :::{.center-text}
 ```{python}
-import pandas as pd  
+import pandas as pd
 
 # Load the dataset and perform the analysis
 data = pd.read_csv('data/influencer_dataset.csv')
 print(data.head(6))
 ```
 :::
-Understanding collinearity helps us avoid misleading models by ensuring each feature adds unique value to predictions.
+
+If `video_views` is highly correlated with `estimated_income`, including both might not add much value.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What problems might occur if we build a predictive model using features with collinearity?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+**Today**: We'll formalize what "redundant" means mathematically — this is **linear dependence**.
+:::
+::::
+
+:::{.notes}
+Potential issues with collinearity:
+- Unstable coefficients: small changes in data cause large swings in model weights
+- Can't interpret individual feature importance (which one matters?)
+- Some algorithms (like linear regression) may fail or give misleading results
 :::
 
-## Learning Objectives
+## Learning Objectives {.smaller-title}
 ::::{style="font-size:.8em"}
 - Linear dependence and independence:
     - Definition
@@ -44,39 +88,184 @@ Understanding collinearity helps us avoid misleading models by ensuring each fea
 - Connection to span
 ::::
 
-## Linear Dependence
+## Linear Dependence in 2D {.smaller-title}
 
 ::::{style="font-size:.8em"}
-Let's consider a consistent system of equations $x_1\mathbf{a_1} + x_2\mathbf{a_2}=\mathbf{a_3}$, meaning that $\mathbf{a_3}$ is in the span of $\mathbf{a_1}$ and $\mathbf{a_2}$. 
+Let's start with a simple example in $\mathbb{R}^2$.
+
+::::{.columns}
+:::{.column width="50%"}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots(figsize=(5, 5))
+
+# Draw vectors
+ax.annotate('', xy=(2, 1), xytext=(0, 0),
+            arrowprops=dict(arrowstyle='->', color='steelblue', lw=2))
+ax.annotate('', xy=(4, 2), xytext=(0, 0),
+            arrowprops=dict(arrowstyle='->', color='coral', lw=2))
+
+ax.text(2.1, 0.7, r'$\mathbf{u}$', fontsize=14, color='steelblue')
+ax.text(4.1, 1.7, r'$\mathbf{v}$', fontsize=14, color='coral')
+
+ax.axhline(0, color='gray', linewidth=0.5)
+ax.axvline(0, color='gray', linewidth=0.5)
+ax.set_xlim(-1, 6)
+ax.set_ylim(-1, 4)
+ax.set_aspect('equal')
+ax.set_xlabel('$x_1$')
+ax.set_ylabel('$x_2$')
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+```
+:::
+:::{.column width="50%"}
+Consider $\mathbf{u} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}$ and $\mathbf{v} = \begin{bmatrix} 4 \\ 2 \end{bmatrix}$.
+
+Notice that $\mathbf{v} = 2\mathbf{u}$.
+
+:::{.fragment}
+These vectors point in the **same direction** — they lie on the same line through the origin.
+
+We say $\{\mathbf{u}, \mathbf{v}\}$ is **linearly dependent**.
+:::
+:::
+::::
+::::
+
+## Why "Dependent"? {.smaller-title}
+
+::::{style="font-size:.8em"}
+$\mathbf{u}$ and $\mathbf{v}$ are dependent because one can be written in terms of the other:
+$$\mathbf{v} = 2\mathbf{u}$$
+
+Equivalently: $2\mathbf{u} - \mathbf{v} = \mathbf{0}$, or $2\mathbf{u} + (-1)\mathbf{v} = \mathbf{0}$.
+
+:::{.fragment}
+<br>
+We found coefficients $(2, -1)$ — not both zero — such that:
+$$2\mathbf{u} + (-1)\mathbf{v} = \mathbf{0}$$
+
+This is the definition of linear dependence!
+:::
+
+:::{.fragment}
+**Compare**: If $\mathbf{u} = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $\mathbf{w} = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$, can you find non-zero coefficients $c_1, c_2$ such that $c_1\mathbf{u} + c_2\mathbf{w} = \mathbf{0}$?
+:::
+::::
+
+## Linear Dependence in 3D {.smaller-title}
+
+::::{style="font-size:.8em"}
+Now let's see this in $\mathbb{R}^3$. Consider a consistent system $x_1\mathbf{a_1} + x_2\mathbf{a_2}=\mathbf{a_3}$, meaning that $\mathbf{a_3}$ is in the span of $\mathbf{a_1}$ and $\mathbf{a_2}$.
 
 ::::
 
-<video width="1000" autoplay loop muted>
-  <source src="/figures/Fig2.9.mp4" type="video/mp4">
-</video>
+```{python}
+import plotly.graph_objects as go
+import numpy as np
+
+# Three coplanar vectors (linearly dependent): a3 = a1 + a2
+a1 = np.array([2, 0, 1])
+a2 = np.array([0, 2, 1])
+a3 = a1 + a2  # (2, 2, 2)
+
+fig = go.Figure()
+
+# Origin point (blue)
+fig.add_trace(go.Scatter3d(
+    x=[0], y=[0], z=[0],
+    mode='markers+text',
+    marker=dict(color='steelblue', size=8),
+    text=['0'], textposition='bottom center',
+    textfont=dict(size=12), showlegend=False
+))
+
+# Vector a1 (red)
+fig.add_trace(go.Scatter3d(
+    x=[0, a1[0]], y=[0, a1[1]], z=[0, a1[2]],
+    mode='lines', line=dict(color='coral', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[a1[0]], y=[a1[1]], z=[a1[2]],
+    mode='markers+text', marker=dict(color='coral', size=6),
+    text=['a₁'], textposition='top center',
+    textfont=dict(size=14, color='coral'), showlegend=False
+))
+
+# Vector a2 (red)
+fig.add_trace(go.Scatter3d(
+    x=[0, a2[0]], y=[0, a2[1]], z=[0, a2[2]],
+    mode='lines', line=dict(color='coral', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[a2[0]], y=[a2[1]], z=[a2[2]],
+    mode='markers+text', marker=dict(color='coral', size=6),
+    text=['a₂'], textposition='top center',
+    textfont=dict(size=14, color='coral'), showlegend=False
+))
+
+# Vector a3 (red)
+fig.add_trace(go.Scatter3d(
+    x=[0, a3[0]], y=[0, a3[1]], z=[0, a3[2]],
+    mode='lines', line=dict(color='coral', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[a3[0]], y=[a3[1]], z=[a3[2]],
+    mode='markers+text', marker=dict(color='coral', size=6),
+    text=['a₃'], textposition='top center',
+    textfont=dict(size=14, color='coral'), showlegend=False
+))
+
+# Semi-transparent plane through origin containing all three vectors
+# Create a grid of points on the plane spanned by a1 and a2
+s = np.linspace(-0.5, 1.5, 10)
+t = np.linspace(-0.5, 1.5, 10)
+S, T = np.meshgrid(s, t)
+X_plane = S * a1[0] + T * a2[0]
+Y_plane = S * a1[1] + T * a2[1]
+Z_plane = S * a1[2] + T * a2[2]
+
+fig.add_trace(go.Surface(
+    x=X_plane, y=Y_plane, z=Z_plane,
+    colorscale=[[0, 'rgba(100, 100, 200, 0.3)'], [1, 'rgba(100, 100, 200, 0.3)']],
+    showscale=False, showlegend=False
+))
+
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(range=[-1, 4], title='x₁'),
+        yaxis=dict(range=[-1, 4], title='x₂'),
+        zaxis=dict(range=[-1, 4], title='x₃'),
+        camera=dict(eye=dict(x=1.8, y=-1.5, z=1.0)),
+        aspectmode='cube'
+    ),
+    margin=dict(l=0, r=0, b=0, t=30),
+    height=450
+)
+
+fig.show()
+```
 
 
-
-
-## Linear Dependence
+## Geometric Intuition {.smaller-title}
 
 :::{style="font-size:.8em"}
-Although $\mathbf{0, a_1, a_2,}$ and $\mathbf{a_3}$ are in $\mathbb{R}^3,$ they lie within the same two-dimensional plane.
+Although $\mathbf{0, a_1, a_2,}$ and $\mathbf{a_3}$ are in $\mathbb{R}^3$, they all lie in the same 2D plane.
 
-Such relationship among the vectors is known as linear dependence.
+This is the geometric signature of **linear dependence**: the vectors don't span their full ambient space.
 
-<br><br>
+:::{.fragment}
+**Key observation**: The plane containing $\mathbf{a_1, a_2, a_3}$ passes through the origin $\mathbf{0}$.
 
-Before stating the formal definition, let’s build some intuition about what this means.
-
-We observe the following:
-
-> The plane defined by vectors $\mathbf{a_1,a_2,}$ and $\mathbf{a_3}$ happens to include the origin $\mathbf{0}$.
-
+This is always true for linearly dependent sets — they can be combined to give zero.
+:::
 
 :::
 
-## Linear Dependence
+## Formal Definitions {.smaller-title}
 
 ::::{style="font-size:.8em"}
 ```{python}
@@ -121,7 +310,7 @@ display(HTML(html_content))
 
 ::::
 
-## Linear Dependence
+## Example: 3 Dependent Vectors {.smaller-title}
 ::::{style="font-size:.8em"}
 __Example__: Consider vectors
 $\small \mathbf{u} = \begin{bmatrix} 1 \\ -1\\ 0 \end{bmatrix},
@@ -137,7 +326,7 @@ Note: all three vectors have components adding to zero. Hence, $\small x_1+x_2+x
 
 ::::
 
-## Linear Dependence
+## Practice: Dependent or Independent? {.smaller-title}
 
 ::::{style="font-size:.8em"}
 ```{python}
@@ -160,11 +349,6 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
-<!-- 
-    a independent
-    b dependent
-    c dependent : )
-    d dependent? -->
 ::::
 
 :::{.notes}
@@ -174,13 +358,37 @@ b. 1 v_1 + 1 v_2 = 0
 
 c. 0 v_1 + 1 v_2 = 0
 
-d. (1/2)v_1 + v_2 + v_3 =0
-
-Note: You can't have more than n linearly independent directions in an n-dimensional space. You can think of Rn
-  as having n slots to store independent directions. Once you fill those slots with n linearly independent vectors, any new vector you add must be a combination of the ones already there — because there's no room for a new independent direction.
+d. (1/2)v_1 + v_2 + v_3 = 0
 :::
 
-## Link to Linear Combinations 
+## The Max Number of Independent Vectors {.smaller-title}
+
+::::{style="font-size:.8em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>
+        In \(\mathbb{R}^n\), you can have <b>at most</b> \(n\) linearly independent vectors.
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+**Why?** Think of $\mathbb{R}^n$ as having $n$ "slots" for independent directions.
+
+- In $\mathbb{R}^2$: at most 2 independent vectors (2 non-collinear directions)
+- In $\mathbb{R}^3$: at most 3 independent vectors (3 non-coplanar directions)
+
+:::{.fragment}
+**Consequence**: If you have more than $n$ vectors in $\mathbb{R}^n$, they **must** be linearly dependent.
+
+This is why problem (d) above — three vectors in $\mathbb{R}^2$ — has to be dependent!
+:::
+::::
+
+## Link to Linear Combinations {.smaller-title} 
 
 ::::{style="font-size:.8em"}
 ```{python}
@@ -197,8 +405,6 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-
-<!-- Even if small amount of text after, is it better to just fragment the big chunk, then reveal little one? Not wanting to show too much at once. -->
 
 :::{.fragment}
 **Proof.** In the 'if' direction, we assume that there exists one vector in $S$ that is a linear combination of the others. We need to prove that $S$ is linearly dependent. 
@@ -230,7 +436,7 @@ b_1v_1+b_2v_2 + ... + b_pv_p = 0 has a non-trivial solution
 
 :::
 
-## Link to Linear Combinations
+## Proof (cont.) {.smaller-title}
 
 ::::{style="font-size:.8em;"}
 We subtract $\mathbf{v_p}$ from both sides of this equation:
@@ -247,9 +453,7 @@ Now, we consider the "only if" part:
 
 Assume $S$ is linearly dependent. Then $c_1\mathbf{v_1}+\cdots+c_{p}\mathbf{v_{p}} = \mathbf{0}$ and at least one of the $c_i$ is nonzero.
 
-Pick one of the nonzero $c_i$, and rearranging it, we get:
-<!-- maybe instead $, rearrange it, and we get:
-or $, rearranging it gets us: ? -->
+Pick one of the nonzero $c_i$ and rearrange:
 $$
 \mathbf{v_i}=-(c_1/c_i)\mathbf{v_1}-\cdots-(c_p/c_i)\mathbf{v_p}.
 $$
@@ -258,7 +462,7 @@ Thus, there is at least one vector that is a linear combination of the others.
 :::
 ::::
 
-## Link to Span
+## Spanning Sets {.smaller-title}
 
 ::::{style="font-size:.8em"}
 
@@ -307,28 +511,88 @@ Building blocks -> spanning set
 Building -> span
 :::
 
-## Link to Span
+## Visualizing the Span {.smaller-title}
 
-<div style="text-align: center;">
-  <video width="600" autoplay loop muted>
-    <source src="/figures/Fig2.10.mp4" type="video/mp4">
-  </video>
-</div>
+```{python}
+import plotly.graph_objects as go
+import numpy as np
 
-## Link to Span 
+# Two linearly independent vectors
+u = np.array([3, 1, 0])
+v = np.array([1, 6, 0])
+
+fig = go.Figure()
+
+# Origin point (blue)
+fig.add_trace(go.Scatter3d(
+    x=[0], y=[0], z=[0],
+    mode='markers+text',
+    marker=dict(color='steelblue', size=8),
+    text=['0'], textposition='bottom center',
+    textfont=dict(size=12), showlegend=False
+))
+
+# Vector u (red)
+fig.add_trace(go.Scatter3d(
+    x=[0, u[0]], y=[0, u[1]], z=[0, u[2]],
+    mode='lines', line=dict(color='coral', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[u[0]], y=[u[1]], z=[u[2]],
+    mode='markers+text', marker=dict(color='coral', size=6),
+    text=['u'], textposition='top center',
+    textfont=dict(size=14, color='coral'), showlegend=False
+))
+
+# Vector v (red)
+fig.add_trace(go.Scatter3d(
+    x=[0, v[0]], y=[0, v[1]], z=[0, v[2]],
+    mode='lines', line=dict(color='coral', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[v[0]], y=[v[1]], z=[v[2]],
+    mode='markers+text', marker=dict(color='coral', size=6),
+    text=['v'], textposition='top center',
+    textfont=dict(size=14, color='coral'), showlegend=False
+))
+
+# Semi-transparent plane spanned by u and v
+s = np.linspace(-0.3, 1.3, 10)
+t = np.linspace(-0.3, 1.3, 10)
+S, T = np.meshgrid(s, t)
+X_plane = S * u[0] + T * v[0]
+Y_plane = S * u[1] + T * v[1]
+Z_plane = S * u[2] + T * v[2]
+
+fig.add_trace(go.Surface(
+    x=X_plane, y=Y_plane, z=Z_plane,
+    colorscale=[[0, 'rgba(100, 100, 200, 0.3)'], [1, 'rgba(100, 100, 200, 0.3)']],
+    showscale=False, showlegend=False
+))
+
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(range=[-1, 8], title='x₁'),
+        yaxis=dict(range=[-1, 8], title='x₂'),
+        zaxis=dict(range=[-2, 2], title='x₃'),
+        camera=dict(eye=dict(x=1.5, y=-1.8, z=0.8)),
+        aspectmode='cube'
+    ),
+    margin=dict(l=0, r=0, b=0, t=30),
+    height=450
+)
+
+fig.show()
+```
+
+## Span and Linear Dependence {.smaller-title}
 
 ::::{style="font-size:.8em"}
-Next, let us explain why a non-zero vector $\mathbf{w}$ is in $\text{Span}\{\mathbf{u},\mathbf{v}\}$ if and only if $\{\mathbf{u,v,w}\}$ is linearly dependent.
+**Claim**: A non-zero $\mathbf{w}$ is in $\text{Span}\{\mathbf{u},\mathbf{v}\}$ ⟺ $\{\mathbf{u,v,w}\}$ is linearly dependent.
 
-<br>
+**Forward** (⟹): If $\mathbf{w} \in \text{Span}\{\mathbf{u},\mathbf{v}\}$, then $\mathbf{w}$ is a linear combination of $\mathbf{u}$ and $\mathbf{v}$, so $\{\mathbf{u,v,w}\}$ is dependent.
 
-If $\mathbf{w}$ is in $\text{Span}\{\mathbf{u},\mathbf{v}\}$, then $\mathbf{w}$ is a linear combination of $\mathbf{u}$ and $\mathbf{v}$.
-
-So $\{\mathbf{u,v,w}\}$ is linearly dependent (by the theorem we just proved).
-
-<br>
-
-On the other hand, $\{\mathbf{u,v,w}\}$ is linearly dependent, there exists $c_1,c_2,$ and $c_3,$ not all zero, such that
+**Backward** (⟸): If $\{\mathbf{u,v,w}\}$ is dependent, there exist $c_1,c_2, c_3$ (not all zero) such that
 
 $$
 c_1\mathbf{u} + c_2\mathbf{v} + c_3\mathbf{w} = \mathbf{0}
@@ -337,7 +601,7 @@ $$
 
 ::::
 
-## Link to Span 
+## Span and Linear Dependence {.smaller-title}
 
 ::::{style="font-size:.75em"}
 
@@ -360,31 +624,189 @@ From here it follows that $\mathbf{w}$ is in $\text{Span}\{\mathbf{u},\mathbf{v}
 
 ::::
 
-## Link to Span
+## $\mathbf{w}$ in the Span {.smaller-title}
 
-<div style="text-align: center;">
-  <video width="600" autoplay loop muted>
-    <source src="/figures/Fig2.10.mp4" type="video/mp4">
-  </video>
-</div>
+```{python}
+import plotly.graph_objects as go
+import numpy as np
 
-## Link to Span 
+# Two linearly independent vectors
+u = np.array([3, 1, 0])
+v = np.array([1, 6, 0])
+# w is IN the span (a linear combination of u and v)
+w = u + v  # (4, 7, 0) - lies on the plane
 
-<div style="text-align: center;">
-  <video width="600" autoplay loop muted>
-    <source src="/figures/Fig2.11.mp4" type="video/mp4">
-  </video>
-</div>
+fig = go.Figure()
 
-## Link to Span
+# Origin point (blue)
+fig.add_trace(go.Scatter3d(
+    x=[0], y=[0], z=[0],
+    mode='markers+text',
+    marker=dict(color='steelblue', size=8),
+    text=['0'], textposition='bottom center',
+    textfont=dict(size=12), showlegend=False
+))
+
+# Vector u (coral)
+fig.add_trace(go.Scatter3d(
+    x=[0, u[0]], y=[0, u[1]], z=[0, u[2]],
+    mode='lines', line=dict(color='coral', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[u[0]], y=[u[1]], z=[u[2]],
+    mode='markers+text', marker=dict(color='coral', size=6),
+    text=['u'], textposition='top center',
+    textfont=dict(size=14, color='coral'), showlegend=False
+))
+
+# Vector v (coral)
+fig.add_trace(go.Scatter3d(
+    x=[0, v[0]], y=[0, v[1]], z=[0, v[2]],
+    mode='lines', line=dict(color='coral', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[v[0]], y=[v[1]], z=[v[2]],
+    mode='markers+text', marker=dict(color='coral', size=6),
+    text=['v'], textposition='top center',
+    textfont=dict(size=14, color='coral'), showlegend=False
+))
+
+# Vector w (green - in the span!)
+fig.add_trace(go.Scatter3d(
+    x=[0, w[0]], y=[0, w[1]], z=[0, w[2]],
+    mode='lines', line=dict(color='seagreen', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[w[0]], y=[w[1]], z=[w[2]],
+    mode='markers+text', marker=dict(color='seagreen', size=6),
+    text=['w'], textposition='top center',
+    textfont=dict(size=14, color='seagreen'), showlegend=False
+))
+
+# Semi-transparent plane spanned by u and v
+s = np.linspace(-0.3, 1.5, 10)
+t = np.linspace(-0.3, 1.5, 10)
+S, T = np.meshgrid(s, t)
+X_plane = S * u[0] + T * v[0]
+Y_plane = S * u[1] + T * v[1]
+Z_plane = S * u[2] + T * v[2]
+
+fig.add_trace(go.Surface(
+    x=X_plane, y=Y_plane, z=Z_plane,
+    colorscale=[[0, 'rgba(100, 100, 200, 0.3)'], [1, 'rgba(100, 100, 200, 0.3)']],
+    showscale=False, showlegend=False
+))
+
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(range=[-1, 8], title='x₁'),
+        yaxis=dict(range=[-1, 10], title='x₂'),
+        zaxis=dict(range=[-2, 2], title='x₃'),
+        camera=dict(eye=dict(x=1.5, y=-1.8, z=0.8)),
+        aspectmode='cube'
+    ),
+    margin=dict(l=0, r=0, b=0, t=30),
+    height=450
+)
+
+fig.show()
+```
+
+## $\mathbf{w}$ Outside the Span {.smaller-title}
+
+```{python}
+import plotly.graph_objects as go
+import numpy as np
+
+# Two linearly independent vectors
+u = np.array([3, 1, 0])
+v = np.array([1, 6, 0])
+# w is OUTSIDE the span (has a non-zero z component)
+w = np.array([2, 3, 2])  # not on the xy-plane!
+
+fig = go.Figure()
+
+# Origin point (blue)
+fig.add_trace(go.Scatter3d(
+    x=[0], y=[0], z=[0],
+    mode='markers+text',
+    marker=dict(color='steelblue', size=8),
+    text=['0'], textposition='bottom center',
+    textfont=dict(size=12), showlegend=False
+))
+
+# Vector u (coral)
+fig.add_trace(go.Scatter3d(
+    x=[0, u[0]], y=[0, u[1]], z=[0, u[2]],
+    mode='lines', line=dict(color='coral', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[u[0]], y=[u[1]], z=[u[2]],
+    mode='markers+text', marker=dict(color='coral', size=6),
+    text=['u'], textposition='top center',
+    textfont=dict(size=14, color='coral'), showlegend=False
+))
+
+# Vector v (coral)
+fig.add_trace(go.Scatter3d(
+    x=[0, v[0]], y=[0, v[1]], z=[0, v[2]],
+    mode='lines', line=dict(color='coral', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[v[0]], y=[v[1]], z=[v[2]],
+    mode='markers+text', marker=dict(color='coral', size=6),
+    text=['v'], textposition='top center',
+    textfont=dict(size=14, color='coral'), showlegend=False
+))
+
+# Vector w (purple - outside the span!)
+fig.add_trace(go.Scatter3d(
+    x=[0, w[0]], y=[0, w[1]], z=[0, w[2]],
+    mode='lines', line=dict(color='purple', width=6), showlegend=False
+))
+fig.add_trace(go.Scatter3d(
+    x=[w[0]], y=[w[1]], z=[w[2]],
+    mode='markers+text', marker=dict(color='purple', size=6),
+    text=['w'], textposition='top center',
+    textfont=dict(size=14, color='purple'), showlegend=False
+))
+
+# Semi-transparent plane spanned by u and v
+s = np.linspace(-0.3, 1.3, 10)
+t = np.linspace(-0.3, 1.3, 10)
+S, T = np.meshgrid(s, t)
+X_plane = S * u[0] + T * v[0]
+Y_plane = S * u[1] + T * v[1]
+Z_plane = S * u[2] + T * v[2]
+
+fig.add_trace(go.Surface(
+    x=X_plane, y=Y_plane, z=Z_plane,
+    colorscale=[[0, 'rgba(100, 100, 200, 0.3)'], [1, 'rgba(100, 100, 200, 0.3)']],
+    showscale=False, showlegend=False
+))
+
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(range=[-1, 8], title='x₁'),
+        yaxis=dict(range=[-1, 8], title='x₂'),
+        zaxis=dict(range=[-1, 4], title='x₃'),
+        camera=dict(eye=dict(x=1.5, y=-1.8, z=0.8)),
+        aspectmode='cube'
+    ),
+    margin=dict(l=0, r=0, b=0, t=30),
+    height=450
+)
+
+fig.show()
+```
+
+## General Case: $p$ Vectors {.smaller-title}
 
 ::::{style="font-size:.75em"}
-The above example can be expanded from $3$ to $p$ $(p>3)$ vectors.
+This generalizes to any number of vectors:
 
-
-- If a set of vectors $\{\mathbf{v_1,v_2,\dots,v_p}\}$ is linearly dependent, then at least one of them lies wihin the span of the others.
-
-- At the same time, if one vector in the set $\{\mathbf{v_1,v_2,\dots,v_p}\}$ lies within the span of the others, then the set is linearly dependent.
+- **Dependent** ⟹ at least one vector lies within the span of the others
+- **One vector in the span of others** ⟹ the set is dependent
 
 
 ```{python}
@@ -415,3 +837,116 @@ a. c=3: vec 3 = vec 1− vec 2
 b. c=0: vec 3 = 3 (vec 1)− vec 2
 :::
 
+## Checking Dependence in Python {.smaller-title}
+
+::::{style="font-size: .8em"}
+How do we check if vectors are linearly dependent computationally?
+
+```{python}
+#| echo: true
+import numpy as np
+
+# Stack vectors as columns of a matrix
+v1 = np.array([1, -1, 0])
+v2 = np.array([0, 1, -1])
+v3 = np.array([-1, 0, 1])
+A = np.column_stack([v1, v2, v3])
+
+# Check the rank
+print(f"Matrix:\n{A}")
+print(f"Rank: {np.linalg.matrix_rank(A)}")
+```
+
+:::{.fragment}
+**Rank = 2** but we have 3 vectors → **linearly dependent**!
+
+If rank equals the number of vectors, they're independent. If rank is less, they're dependent.
+:::
+::::
+
+## Removing Redundancy (a preview!) {.smaller-title}
+
+::::{style="font-size:.8em"}
+If a set of vectors is linearly dependent, we can always **remove the redundant vectors** without changing the span.
+
+:::{.fragment}
+Given any spanning set, we can find a subset that:
+
+1. Is **linearly independent**
+2. **Spans the same space**
+
+This minimal independent spanning set is called a **basis**.
+:::
+
+:::{.fragment}
+The number of vectors in a basis is the **dimension** of the space they span.
+:::
+::::
+
+## Basis and Dimension (a preview!) {.smaller-title}
+
+::::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Five vectors in \(\mathbb{R}^3\) span a 2D plane. What's the minimum number of vectors needed to span the same plane?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+**Answer**: 2 vectors (a basis for the plane).
+
+The other 3 vectors are redundant — they can be written as linear combinations of the basis vectors.
+:::
+
+:::{.fragment}
+**Connection to rank**: The rank of a matrix = dimension of the column space = number of independent columns.
+:::
+::::
+
+## Back to Collinearity {.smaller-title}
+
+::::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>If your 10 features are linearly dependent with rank 7, only <b>7 features</b> provide independent information. The other 3 are redundant.</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+This is why detecting linear dependence matters in data science:
+
+- **Rank** tells you how many features actually carry unique information
+- **Dependent features** can cause numerical instability in models
+- **Dimensionality reduction** techniques find lower-dimensional representations
+:::
+::::
+
+## Wrap-up {.smaller-title}
+
+::::{style="font-size:.8em"}
+
+**Key takeaways:**
+
+- **Linear dependence**: $x_1\mathbf{v_1}+\dots+x_p\mathbf{v_p}=\mathbf{0}$ has a nontrivial solution
+- **Linear independence**: only the trivial solution works
+- **Dependent** ⟺ at least one vector is a linear combination of the others
+- **Basis**: a minimal independent spanning set
+- **Dimension**: the size of a basis = rank of the matrix
+
+:::{.fragment}
+**Data science connection**: If features are linearly dependent, some are redundant. Rank tells you how many truly independent features you have.
+:::
+
+::::

@@ -112,7 +112,7 @@ $$\mathbf{u}^\top \mathbf{v} = (3)(2) + (-2)(4) + (1)(-3) = 6 - 8 - 3 = -5$$
 
 ## Inner Product
 
-::::{style="font-size: .8em"}
+::::{style="font-size: .7em"}
 __Example__: The vectors $\small{\mathbf{u} = \begin{bmatrix}4 \\ 2\end{bmatrix}}$
 and
 $\small{\mathbf{v} = \begin{bmatrix}-1 \\ 2\end{bmatrix}}$
@@ -132,13 +132,6 @@ Assume that we have three goods to buy and sell. Their prices are known per unit
 
 
 ::::
-
-:::{.notes}
-Buy Negative
-
-Sell Positive
-
-:::
 
 ## Inner Product
 

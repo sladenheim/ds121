@@ -1,10 +1,10 @@
 ---
 title: "Introduction to $k$-Means Clustering"
 author: "CDS DS-121<br>Boston University"
-format: 
+format:
     revealjs:
         math: true
-        css: 
+        css:
         - styles.css
         html-math-method: mathjax
         highlight-style: github
@@ -14,455 +14,684 @@ format:
 
 ---
 
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+import sklearn.datasets as sk_data
+from IPython.core.display import HTML
+```
+
 ## Learning Objectives
 
 ::::{style="font-size: .8em;"}
 
-- Similarity and dissimilarity
-    - Metric
-    - Cosine similarity
-- Clustering
+- From supervised to unsupervised learning
+- Measuring similarity and dissimilarity
+    - Metrics (distance functions)
+    - Cosine similarity (connection to dot products)
+- What is clustering?
 - $k$-means clustering
     - Centroid
     - Cost function
-    - Algorithm
+    - The algorithm
+::::
+
+## From Supervised to Unsupervised
+
+::::{style="font-size: .85em"}
+In the last few lectures, we learned **supervised learning** with k-NN:
+
+- Given: data with labels $\{(\mathbf{x}_i, y_i)\}$
+- Goal: predict labels for new data
+
+:::{.fragment}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What if we don't have labels? What can we still learn from data?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+
+:::{.fragment}
+**Unsupervised learning**: discover structure in data *without* labels.
+
+Today's goal: **clustering** — grouping similar data points together.
+:::
+::::
+
+## Why Cluster?
+
+::::{style="font-size: .85em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Shout it out:</b> When might you want to group data without knowing the groups in advance?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+**Real-world applications:**
+
+- **Customer segmentation**: group customers by purchasing behavior
+- **Document organization**: group news articles by topic
+- **Image compression**: group similar colors together
+- **Biology**: group genes by expression patterns
+- **Anomaly detection**: find points that don't fit any group
+:::
 ::::
 
 ## Similarity and Dissimilarity
 
-::::{style="font-size: .8em;"}
-Working with data, we can encounter a wide variety of data objects:
+::::{style="font-size: .85em"}
+To cluster, we need to measure how **similar** or **dissimilar** two data points are.
 
 ::::{.columns}
+:::{.column width="55%"}
+We work with many types of data:
 
+- User records
+- Images
+- Text documents
+- DNA sequences
+- Time series
+- ...
+:::
+
+:::{.column width="45%"}
+<img src="/images/vectors_ds/data-objects.png" style="width:100%;"/>
+:::
+::::
+
+:::{.fragment}
+**Key question**: How do we define "similar" mathematically?
+:::
+::::
+
+## Dissimilarity as Distance
+
+::::{style="font-size: .85em"}
+A **dissimilarity function** $d(x, y)$ returns a large value when $x$ and $y$ are different.
+
+The most common type is a **metric** (also called a distance function).
+
+:::{.fragment}
+A function $d(x, y)$ is a **metric** if it satisfies:
+
+| Property | Meaning |
+|----------|---------|
+| $d(x, y) = 0 \Leftrightarrow x = y$ | Zero distance means identical |
+| $d(x, y) \geq 0$ | Distances are non-negative |
+| $d(x, y) = d(y, x)$ | Symmetric |
+| $d(x, z) \leq d(x, y) + d(y, z)$ | Triangle inequality |
+:::
+::::
+
+## The Triangle Inequality
+
+::::{style="font-size: .85em"}
+::::{.columns}
 :::{.column width="60%"}
-<img src="/images/vectors_ds/data-objects.png" style="width:576px; height:372.6px;"/>
+The triangle inequality says: the direct path is never longer than going through a third point.
 
+$$d(x, z) \leq d(x, y) + d(y, z)$$
+
+**Euclidean distance** satisfies all metric properties — it's our go-to dissimilarity measure.
 :::
 
 :::{.column width="40%"}
-
-:::{style="font-size: .9em"}
-* Records of users
-* Graphs
-* Images
-* Videos
-* Text (webpages, books)
-* Strings (DNA sequences)
-* Timeseries
-* ...
-:::
-:::
-
-::::
-
-We are naturally interested in how _**similar**_ or _**dissimilar**_ two objects of the same type are.
-::::
-
-## Similarity and Dissimilarity
-
-::::{style="font-size: .8em;" .center-y}
-_**A dissimilarity function takes two objects as input, and returns a large value when the two objects are not very similar.**_
-<br><br>
-Often we put restrictions on the dissimilarity function.
-One of the most common is that it must be a _**metric**_.
-<br><br>
-A metric is commonly called a _**distance**_. We will mainly work with Euclidian distance.
-::::
-
-:::{.notes}
-Each distance is a metric
-
-Not each metric is a distance
-:::
-
-## Similarity and Dissimilarity
-
-::::{style="font-size: .8em;" }
-::::{.columns}
-
-:::{.column width="65%"}
-The dissimilarity $d(x, y)$ between two objects $x$ and $y$ is a
-__metric__ if <br>
-
-* $d(x, y) = 0 \leftrightarrow x == y\;\;\;\;\;\;\;\;$ 
-* $d(x, y) > 0 \leftrightarrow x \neq y\;\;\;\;\;\;\;\;\;\;$
-* $d(x, y) = d(y, x)\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;$ 
-* $d(x, y) \leq d(x, z) + d(z, y)\;\;$ 
-:::
-
-:::{.column width="35%"}
 <img src="/images/vectors_ds/Triangle.png"/>
 :::
 ::::
-::::
 
-
-## Cosine Similarity
-
-::::{style="font-size: .8em"}
-
-Suppose we are given two documents $d_1$ and $d_2.$ How can we find out if they are similar?
-
-
-Consider both $d_1$ and $d_2$ as a "bag of words."
-
-To describe $d_1$, we construct a vector $\mathbf{x}\in\mathbb{R}^n$ that counts the frequency of occurrence of certain words in $d_1.$
-
-$$
-\mathbf{x}=\begin{bmatrix}3\\7\\4\\ \vdots \\ 20 \end{bmatrix} \leftarrow \begin{bmatrix} \text{dog} \\ \text{cat} \\ \text{house} \\ \vdots \\ \text{door} \end{bmatrix}
-$$
-
-We do the same for $d_2$ to obtain $\mathbf{y} \in \mathbb{R}^n$.
-
-::::
-
-
-## Cosine Similarity
-
-::::{style="font-size: .8em"}
-To decide whether the documents are similar, we simply ask if $\mathbf{x}$ and $\mathbf{y}$ point in the same direction.
-
-The cosine of the angle between the two document-vectors is simply:
-
-$$
-\cos(\theta_{\mathbf{x}, \mathbf{y}}) = \frac{\mathbf{x}^{\top} \mathbf{y}}{\Vert\mathbf{x}\Vert \Vert\mathbf{y}\Vert}
-$$
-
-This value is _**large**_ when $\mathbf{x} \approx \mathbf{y}.$  So it is a _**similarity**_ function.
-
-<br>
-
-Note: We often use $1-\cos(\theta_{\mathbf{x}, \mathbf{y}})$ to convert this similarity function into a dissimilarity function.
-
-::::
-
-:::{.notes}
-cos(0) = 1
-
-cos(pi/2) = 0
-
-Cosine similarity is not a metric: doesn't satisfy the triangle inequality
-:::
-
-## Clustering
-
-::::{style="font-size: .8em"}
-What if rather than having 2 documents, we have a million documents?
-
-Clustering is an _**unsupervised learning technique**_ that offers a more systematic approach to find similar documents.
-
-::::{.columns}
-
-:::{.column width="65%"}
-Informally, a **clustering** is:
-
-:::{style="font-size: .9em"}
-> a grouping of data objects, such that the objects within a group are similar (or near) to one another and dissimilar (or far) from the objects in other groups.
-:::
-:::
-
-:::{.column width="35%"}
-<img src="/images/vectors_ds/clusters.png"/>
-
-:::
-::::
-
-A clustering algorithm _**minimizes intra-cluster distances**_ and _**maximizes inter-cluster distances**_.
-
-
-::::
-
-## Clustering
-
-::::{style="font-size: .8em"}
-In this course, we will focus on _**partitional clustering**_.
-
-In a _**partitional clustering**_, the points are divided into a set of non-overlapping groups. That is, each point belongs only to one cluster, and the set of clusters covers all points.
-
-
-:::{.center-text}
-<img src="/images/vectors_ds/partitional-clustering.png" width = 600/>
-
-
-:::
-::::
-
-:::{.notes}
-Hierarchical, density-based
-:::
-
-##  $k$-Means Clustering
-
-::::{style="font-size: .8em"}
-Consider the following image. Each color in the image is represented by an integer. Typically we might use 24 bits for each integer (8 bits for R, G, and B).
-
-Now cluster the pixels by their color value, and replace each pixel by its cluster center. Because there are a smaller number of colors used, we can use fewer bits for each pixel.
-
-::::{style="font-size: .8em"}
-
-
-:::{.center-text}
-<img src="/images/vectors_ds/girl.jpeg" width = 350/>
-
-:::
-::::
-::::
-
-:::{.notes}
-In digital images, each color is typically made by combining three basic colors: Red, Green, and Blue.
-
-Each of these three colors is stored using 8 bits.
-
-With 8 bits, you can represent $2^8=256$ different values (from 0 to 255).
-
-$2^8 \cdot 2^8 \cdot 2^8 = 16,777,216$ colors
-:::
-
-##  $k$-Means Clustering
-
-:::{style="font-size: .8em"}
-
-Here, we use 4 bits (16 colors) for a compression ratio around 6$\times$.
-:::
-
-:::{.center-text}
-<img src="/images/vectors_ds/4bit-compressed-girl.png" width = 650/>
-
-:::
-
-##  $k$-Means Clustering
-
-:::{style="font-size: .8em"}
-
-Here, we use 3 bits (8 colors) for a compression ratio around 8$\times$.
-:::
-
-:::{.center-text}
-<img src="/images/vectors_ds/3bit-compressed-girl.png" width = 650/>
-
-:::
-
-##  $k$-Means Clustering
-
-:::{style="font-size: .8em"}
-Here, we use 2 bits (4 colors) for a compression ratio around 12$\times$.
-:::
-
-:::{.center-text}
-<img src="/images/vectors_ds/2bit-compressed-girl.png" width = 650/>
-
-:::
-
-##  $k$-Means Clustering
-
-:::{style="font-size: .8em"}
-Finally, we use 1 bit (2 colors) for a compression ratio around 24$\times$.
-:::
-
-:::{.center-text}
-<img src="/images/vectors_ds/1bit-compressed-girl.png" width = 650/>
-
-:::
-
-##  $k$-Means Clustering
-
-::::{style="font-size: .8em"}
-Here is a clustering of the colors within this image of a yellow flower, based on the red-ness and green-ness of each pixel in the image.
-::::
-
-::::{.columns}
-
-:::{.column width="50%"}
-<img src="/images/vectors_ds/yellow-flower.png" width = 420/>
-
-:::
-
-:::{.column width="50%"}
-<img src="/images/vectors_ds/flower-clustering.png" width = 420/>
-
-:::
-
-::::
-
-##  $k$-Means Clustering
-
-::::{style="font-size: .8em"}
-To properly define the  $k$-means problem, we need to introduce the concept of the centroid of a dataset.
-
-Given $n$ different vectors ${\bf x_1},\ldots,{\bf x_n}$ each with the same dimension $d$, the _**centroid**_ (called _**center**_ or _**mean**_) is the average of the vectors taken componentwise.
-
-$$
-\overline{\mathbf{x}} = \frac{1}{n}\sum_i {\bf x_i}.
-$$
-
-In other words: the centroid is the "center of mass" of the dataset.
-
+:::{.fragment}
 ```{python}
-from IPython.core.display import HTML
-
 def generate_html():
     return r"""
-    <div class="blue-box" style="text-align: left;">
-        <p>
-       Find the centroid of
-        \(\small \begin{bmatrix} 1 \\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\ 3 \end{bmatrix}, \begin{bmatrix} 6 \\ 2 \end{bmatrix}.\)
-        </p>
+    <div class="blue-box">
+        <p>Is "number of different characters" a metric for strings? (e.g., d("cat", "car") = 1)</p>
     </div>
     """
+display(HTML(generate_html()))
+```
+:::
+::::
 
-html_content = generate_html()
-display(HTML(html_content))
+:::{.notes}
+Yes! This is called Hamming distance. It satisfies all four properties.
+:::
+
+## Cosine Similarity
+
+::::{style="font-size: .85em"}
+Sometimes we care about **direction**, not magnitude.
+
+**Example**: Comparing documents by word frequency.
+
+::::{.columns}
+:::{.column width="50%"}
+Document 1 (short):
+$$\mathbf{x}=\begin{bmatrix}3\\7\\4\end{bmatrix} \leftarrow \begin{bmatrix} \text{dog} \\ \text{cat} \\ \text{house} \end{bmatrix}$$
+:::
+
+:::{.column width="50%"}
+Document 2 (long):
+$$\mathbf{y}=\begin{bmatrix}30\\70\\40\end{bmatrix}$$
+
+Same topics, just 10x longer!
+:::
+::::
+
+:::{.fragment}
+Euclidean distance says these are very different. But they're about the same topics!
+:::
+::::
+
+## Cosine Similarity
+
+::::{style="font-size: .8em"}
+**Recall from Lecture 3**: The dot product relates to the angle between vectors:
+
+$$\mathbf{x}^{\top} \mathbf{y} = \Vert\mathbf{x}\Vert \Vert\mathbf{y}\Vert \cos(\theta)$$
+
+:::{.fragment}
+Rearranging gives us **cosine similarity**:
+
+$$\cos(\theta_{\mathbf{x}, \mathbf{y}}) = \frac{\mathbf{x}^{\top} \mathbf{y}}{\Vert\mathbf{x}\Vert \Vert\mathbf{y}\Vert}$$
+
+- **cos = 1**: vectors point the same direction (most similar)
+- **cos = 0**: vectors are perpendicular (unrelated)
+- **cos = -1**: vectors point opposite directions
+:::
+
+:::{.fragment}
+To convert to dissimilarity: use $1 - \cos(\theta)$
+:::
+::::
+
+## What is Clustering?
+
+::::{style="font-size: .85em"}
+::::{.columns}
+:::{.column width="60%"}
+A **clustering** is a grouping of data where:
+
+- Points **within** a group are similar
+- Points in **different** groups are dissimilar
+
+More formally: minimize intra-cluster distances, maximize inter-cluster distances.
+:::
+
+:::{.column width="40%"}
+<img src="/images/vectors_ds/clusters.png"/>
+:::
+::::
+
+:::{.fragment}
+We focus on **partitional clustering**: each point belongs to exactly one cluster, and every point is assigned.
+:::
+::::
+
+## Partitional Clustering
+
+:::{.center-text}
+<img src="/images/vectors_ds/partitional-clustering.png" width=600/>
+:::
+
+:::{.notes}
+Other types: hierarchical clustering, density-based clustering (DBSCAN)
+:::
+
+## <span style="font-size: 0.85em;">Application: Image Compression</span>
+
+
+::::{style="font-size: .85em"}
+Each pixel has a color (R, G, B). With 8 bits per channel, that's $2^{24} \approx 16$ million possible colors.
+
+**Idea**: Cluster similar colors together, replace each pixel with its cluster's "average" color.
+
+:::{.center-text}
+<img src="/images/vectors_ds/girl.jpeg" width=300/>
+:::
+
+Fewer colors = fewer bits needed = compression!
+::::
+
+:::{.notes}
+Each color channel uses 8 bits (0-255). Total: 24 bits per pixel.
+:::
+
+## Image Compression: Results
+
+::::{style="font-size: .8em"}
+::::{.columns}
+:::{.column width="50%"}
+**16 colors (4 bits)**
+<img src="/images/vectors_ds/4bit-compressed-girl.png" width=100%/>
+:::
+
+:::{.column width="50%"}
+**8 colors (3 bits)**
+<img src="/images/vectors_ds/3bit-compressed-girl.png" width=100%/>
+:::
+::::
+::::
+
+## Image Compression: Results
+
+::::{style="font-size: .8em"}
+::::{.columns}
+:::{.column width="50%"}
+**4 colors (2 bits)**
+<img src="/images/vectors_ds/2bit-compressed-girl.png" width=100%/>
+:::
+
+:::{.column width="50%"}
+**2 colors (1 bit)**
+<img src="/images/vectors_ds/1bit-compressed-girl.png" width=100%/>
+:::
+::::
+::::
+
+## Visualizing Color Clusters
+
+::::{style="font-size: .85em"}
+Here's a flower image clustered by red and green pixel values:
+
+::::{.columns}
+:::{.column width="50%"}
+<img src="/images/vectors_ds/yellow-flower.png" width=100%/>
+:::
+
+:::{.column width="50%"}
+<img src="/images/vectors_ds/flower-clustering.png" width=100%/>
+:::
+::::
+
+Each color in the scatter plot represents a cluster of similar pixel colors.
+::::
+
+## The Centroid
+
+::::{style="font-size: .85em"}
+To define $k$-means, we need the **centroid** (also called center or mean).
+
+Given vectors $\mathbf{x}_1, \ldots, \mathbf{x}_n$, the centroid is their average:
+
+$$\overline{\mathbf{x}} = \frac{1}{n}\sum_{i=1}^n \mathbf{x}_i$$
+
+The centroid is the "center of mass" of the points.
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Find the centroid of
+        \(\begin{bmatrix} 1 \\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\ 3 \end{bmatrix}, \begin{bmatrix} 6 \\ 2 \end{bmatrix}\).</p>
+    </div>
+    """
+display(HTML(generate_html()))
 ```
 ::::
 
 :::{.notes}
-$\small \begin{bmatrix} 3 \\ 2 \end{bmatrix}$
-
+Answer: $\begin{bmatrix} 3 \\ 2 \end{bmatrix}$
 :::
 
-<!-- ##  $k$-Means Clustering
+## The $k$-Means Problem
 
-::::{style="font-size: .8em" .center-y}
+::::{style="font-size: .85em"}
+**Given**:
+
+- Data points $\mathbf{x}_1, \ldots, \mathbf{x}_n$ in $\mathbb{R}^d$
+- Number of clusters $k$
+
+**Find**: $k$ centroids $\mathbf{c}_1, \ldots, \mathbf{c}_k$ that minimize the **cost function**:
+
+$$\text{Cost} = \sum_{i=1}^n \Vert \mathbf{x}_i - \mathbf{c}_{j(i)} \Vert^2$$
+
+where $j(i)$ is the index of the centroid closest to $\mathbf{x}_i$.
 
 :::{.fragment}
-We define the **sample variance** of a dataset $\{{\bf x_1},\ldots,{\bf x_n}\}$ as:
-    
-$$
-\operatorname{Var}(X) = \frac{1}{n}\sum_i\Vert \mathbf{x}_i - \overline{\mathbf{x}}\Vert^2. 
-$$
-
-In other words, the sample variance of the set of points is the average squared distance from each point to the centroid. 
-:::
-:::: -->
-
-
-##  $k$-Means Clustering
-
-::::{style="font-size: .8em"}
-
-_**Assumptions**_: 
-
-- data points ${\bf x_1},\ldots,{\bf x_n}$ in $\mathbb{R}^d$ are given
-- the number of clusters $k$ is given
-
-_**$k$-means problem**_:
-
-Find $k$ centroids $\mathbf{c_1}, \dots, \mathbf{c_k}$, so that the sum of squared Euclidean distances between each point and its assigned center (called _**the cost function**_) is minimized. That is, the $k$ centroids minimize
-
-$$
-\sum_{i=1}^n \Vert \mathbf{x_i} -\mathbf{c_j}\Vert^2,
-$$
-
-where $j \in \{1, 2, ..., k\}$ is the index of the centroid closest to $\mathbf{x_i}.$
-::::
-
-
-<!-- ##  $k$-Means Clustering
-
-::::{style="font-size: .8em"}
-Equivalently, we can think in terms of the partition itself.
-
-Consider the set $X = \{{\bf x_1}, \dots, {\bf x_n}\}$ where ${\bf x_i} \in \mathbb{R}^d$. The problem here is to:
-
-1. Find $k$ points $\mathbf{c_1}, \dots, \mathbf{c_k}$, and
-
-2. Partition the set $X$ into $k$ different subsets $\{X_1, \dots, X_k\}$ by assigning each point ${\bf x_i}$ to its nearst cluster center, in such a way as to minimize the cost
-    $$ 
-    \sum_{i=1}^n \min_j \Vert \mathbf{x_i} - \mathbf{c_j} \Vert^2 = \sum_{j=1}^k \sum_{\mathbf{x} \in X_j} \Vert \mathbf{x} - \mathbf{c_j} \Vert^2.
-    $$ -->
-<!-- :::: -->
-
-
-
-##  $k$-Means Clustering
-
-::::{style="font-size: .8em" .columns}
-:::{.column width="70%"}
-
-How hard is it to solve this problem?
-
-* $k=1$ and $k=n$ are easy special cases (why?)
-* However, this problem is _**NP-hard**_ if the dimension of the data is at least 2
-    * As a result, we don't expect that there is any exact, efficient algorithm in general 
-
-
-
-Nonetheless, there is a simple algorithm that works quite well in practice!
-
-
-This algorithm was voted among the _**top-10 algorithms**_ in data mining!
-
-:::
-
-:::{.column width="30%" .center-text}
-<img src="/images/vectors_ds/top-algorithms-book.png" />
+In words: minimize the total squared distance from each point to its nearest center.
 :::
 ::::
 
-:::{.notes}
+## How Hard is This?
 
-NP-hard refers to a class of problems that are at least as hard as the hardest problems in NP 
+::::{style="font-size: .85em"}
+::::{.columns}
+:::{.column width="65%"}
+Some special cases are easy:
 
-NP (Nondeterministic Polynomial time): That means if someone gives you a solution, you can check whether it's correct quickly (efficiently)
+- $k = 1$: centroid is just the mean of all points
+- $k = n$: each point is its own cluster
 
+But in general? The problem is **NP-hard** — no efficient exact algorithm exists.
+
+:::{.fragment}
+The good news: there's a simple algorithm that works well in practice. It's one of the **top 10 algorithms in data mining**!
+:::
 :::
 
-##  $k$-Means Clustering
-
-::::{style="font-size: .8em;"}
-Here is the $k$-means algorithm for $X = \{{\bf x_1}, \dots, {\bf x_n}\}$ where ${\bf x_i} \in \mathbb{R}^d$:
-
-1. Pick $k$ cluster centers $\{{\bf c_1}, \dots, {\bf c_k}\}$.  These can be chosen randomly, or by some deterministic method.
-2. For each $j$ between 1 and $k$, define the cluster $X_j$ as the set of points in $X$ that are closest to center ${\bf c_j}$.
-3. For each $j$ between 1 and $k$, redefine ${\bf c_j}$ to be the center of mass of cluster $X_j$.
-4. Repeat steps 2 and 3 until convergence.
-
-We refer to steps 2 and 3 as an iteration of the $k$-means algorithm.
-
+:::{.column width="35%"}
+<img src="/images/vectors_ds/top-algorithms-book.png"/>
+:::
+::::
 ::::
 
 :::{.notes}
-k is a hyperparamer
-
-Convergence: no point changes clusters and all the centroids remain the same
+NP-hard: at least as hard as the hardest problems in NP. If you could solve k-means efficiently, you could solve many other hard problems.
 :::
 
-##  $k$-Means Clustering
+## The $k$-Means Algorithm
 
-:::{.center-text}
-<img src="/images/vectors_ds/cluster-plots.png" />
+::::{style="font-size: .85em"}
+1. **Initialize**: Pick $k$ starting centers (randomly or strategically)
 
-:::
+2. **Assign**: Put each point in the cluster of its nearest center
 
-:::{.notes}
-Each figure shows centroids in the beginning of the iteration
-:::
+3. **Update**: Recompute each center as the centroid of its cluster
 
-##  $k$-Means Clustering
+4. **Repeat** steps 2-3 until nothing changes
 
-::::{style="font-size: .6em"}
+:::{.fragment}
 ```{python}
-from IPython.core.display import HTML
-
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p> Consider the following dataset: \({\small\begin{bmatrix} -2 \\ 10 \end{bmatrix}, \begin{bmatrix} 1 \\ 10 \end{bmatrix}, \begin{bmatrix} 0 \\ 10 \end{bmatrix}, \begin{bmatrix} 2 \\ 10 \end{bmatrix}, \begin{bmatrix} 4 \\ 10 \end{bmatrix}.}\) <br><br>
-        The number of clusters is equal to 2 (i.e., \(k=2\)). In the beginning of the 1st iteration, we initialize the cluster centers at \(\small\begin{bmatrix} 1 \\ 10 \end{bmatrix}\) and \(\small\begin{bmatrix} 4 \\ 10 \end{bmatrix}\).
+        <p>Why must this algorithm eventually stop?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+::::
+
+
+## $k$-Means in Action
+
+:::{.center-text}
+<img src="/images/vectors_ds/cluster-plots.png"/>
+:::
+
+:::{.notes}
+Each panel shows the state at the beginning of an iteration. Watch how centroids move and clusters stabilize.
+:::
+
+## $k$-Means: Step Through It
+
+::::{style="font-size: .8em"}
+Click the buttons to step through the k-means algorithm:
+
+```{python}
+import plotly.graph_objects as go
+import numpy as np
+
+# Generate sample data with 3 clusters
+np.random.seed(42)
+X_demo = np.vstack([
+    np.random.randn(20, 2) * 0.8 + [-3, 2],
+    np.random.randn(20, 2) * 0.8 + [3, 2],
+    np.random.randn(20, 2) * 0.8 + [0, -2]
+])
+
+# Manual k-means iterations to capture each step
+def assign_clusters(X, centers):
+    distances = np.array([[np.linalg.norm(x - c) for c in centers] for x in X])
+    return np.argmin(distances, axis=1)
+
+def update_centers(X, labels, k):
+    return np.array([X[labels == i].mean(axis=0) for i in range(k)])
+
+# Initial centers (intentionally not optimal to show movement)
+centers_0 = np.array([[-1, 0], [1, 0], [0, 3]])
+
+# Run iterations
+labels_1 = assign_clusters(X_demo, centers_0)
+centers_1 = update_centers(X_demo, labels_1, 3)
+labels_2 = assign_clusters(X_demo, centers_1)
+centers_2 = update_centers(X_demo, labels_2, 3)
+labels_3 = assign_clusters(X_demo, centers_2)
+centers_3 = update_centers(X_demo, labels_3, 3)
+labels_4 = assign_clusters(X_demo, centers_3)
+
+# Colors for clusters
+colors = ['steelblue', 'coral', 'seagreen']
+
+# Create frames
+frames = []
+buttons = []
+
+# Frame 0: Initial data + centers (no assignment)
+frame0 = [
+    go.Scatter(x=X_demo[:, 0], y=X_demo[:, 1], mode='markers',
+               marker=dict(color='gray', size=10), showlegend=False, name='data'),
+    go.Scatter(x=centers_0[:, 0], y=centers_0[:, 1], mode='markers',
+               marker=dict(color=['steelblue', 'coral', 'seagreen'], size=18,
+                          symbol='x', line=dict(width=3)),
+               showlegend=False, name='centers')
+]
+frames.append(go.Frame(data=frame0, name='init'))
+buttons.append(dict(args=[['init'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                   label='1. Initialize', method="animate"))
+
+# Frame 1: First assignment
+frame1 = [
+    go.Scatter(x=X_demo[:, 0], y=X_demo[:, 1], mode='markers',
+               marker=dict(color=[colors[l] for l in labels_1], size=10), showlegend=False),
+    go.Scatter(x=centers_0[:, 0], y=centers_0[:, 1], mode='markers',
+               marker=dict(color=['steelblue', 'coral', 'seagreen'], size=18,
+                          symbol='x', line=dict(width=3)), showlegend=False)
+]
+frames.append(go.Frame(data=frame1, name='assign1'))
+buttons.append(dict(args=[['assign1'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                   label='2. Assign', method="animate"))
+
+# Frame 2: First update
+frame2 = [
+    go.Scatter(x=X_demo[:, 0], y=X_demo[:, 1], mode='markers',
+               marker=dict(color=[colors[l] for l in labels_1], size=10), showlegend=False),
+    go.Scatter(x=centers_1[:, 0], y=centers_1[:, 1], mode='markers',
+               marker=dict(color=['steelblue', 'coral', 'seagreen'], size=18,
+                          symbol='x', line=dict(width=3)), showlegend=False)
+]
+frames.append(go.Frame(data=frame2, name='update1'))
+buttons.append(dict(args=[['update1'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                   label='3. Update', method="animate"))
+
+# Frame 3: Second assignment
+frame3 = [
+    go.Scatter(x=X_demo[:, 0], y=X_demo[:, 1], mode='markers',
+               marker=dict(color=[colors[l] for l in labels_2], size=10), showlegend=False),
+    go.Scatter(x=centers_1[:, 0], y=centers_1[:, 1], mode='markers',
+               marker=dict(color=['steelblue', 'coral', 'seagreen'], size=18,
+                          symbol='x', line=dict(width=3)), showlegend=False)
+]
+frames.append(go.Frame(data=frame3, name='assign2'))
+buttons.append(dict(args=[['assign2'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                   label='4. Assign', method="animate"))
+
+# Frame 4: Second update
+frame4 = [
+    go.Scatter(x=X_demo[:, 0], y=X_demo[:, 1], mode='markers',
+               marker=dict(color=[colors[l] for l in labels_2], size=10), showlegend=False),
+    go.Scatter(x=centers_2[:, 0], y=centers_2[:, 1], mode='markers',
+               marker=dict(color=['steelblue', 'coral', 'seagreen'], size=18,
+                          symbol='x', line=dict(width=3)), showlegend=False)
+]
+frames.append(go.Frame(data=frame4, name='update2'))
+buttons.append(dict(args=[['update2'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                   label='5. Update', method="animate"))
+
+# Frame 5: Third assignment
+frame5 = [
+    go.Scatter(x=X_demo[:, 0], y=X_demo[:, 1], mode='markers',
+               marker=dict(color=[colors[l] for l in labels_3], size=10), showlegend=False),
+    go.Scatter(x=centers_2[:, 0], y=centers_2[:, 1], mode='markers',
+               marker=dict(color=['steelblue', 'coral', 'seagreen'], size=18,
+                          symbol='x', line=dict(width=3)), showlegend=False)
+]
+frames.append(go.Frame(data=frame5, name='assign3'))
+buttons.append(dict(args=[['assign3'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                   label='6. Assign', method="animate"))
+
+# Frame 6: Final update (converged)
+frame6 = [
+    go.Scatter(x=X_demo[:, 0], y=X_demo[:, 1], mode='markers',
+               marker=dict(color=[colors[l] for l in labels_4], size=10), showlegend=False),
+    go.Scatter(x=centers_3[:, 0], y=centers_3[:, 1], mode='markers',
+               marker=dict(color=['steelblue', 'coral', 'seagreen'], size=18,
+                          symbol='x', line=dict(width=3)), showlegend=False)
+]
+frames.append(go.Frame(data=frame6, name='converged'))
+buttons.append(dict(args=[['converged'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                   label='7. Converged!', method="animate"))
+
+# Create figure with initial frame
+fig = go.Figure(data=frame0, frames=frames)
+
+fig.update_layout(
+    xaxis=dict(range=[-6, 6], zeroline=True, zerolinecolor='lightgray', showgrid=True, dtick=2),
+    yaxis=dict(range=[-5, 5], zeroline=True, zerolinecolor='lightgray', showgrid=True, dtick=2,
+               scaleanchor='x', scaleratio=1),
+    height=380, width=550,
+    margin=dict(l=40, r=40, t=20, b=60),
+    updatemenus=[dict(type="buttons", showactive=True, y=-0.12, x=0.5, xanchor="center",
+                      buttons=buttons, direction="left", font=dict(size=10))]
+)
+
+fig.show()
+```
+
+Watch the centroids (✕) move as assignments change!
+::::
+
+## $k$-Means in Python
+
+::::{style="font-size: .85em"}
+```{python}
+#| echo: true
+# Generate sample data
+np.random.seed(42)
+X = np.vstack([
+    np.random.randn(30, 2) + [0, 0],
+    np.random.randn(30, 2) + [5, 5],
+    np.random.randn(30, 2) + [5, 0]
+])
+
+# Run k-means
+kmeans = KMeans(n_clusters=3, random_state=0, n_init=10)
+kmeans.fit(X)
+
+print(f"Cluster centers:\n{kmeans.cluster_centers_.round(2)}")
+print(f"\nFirst 10 labels: {kmeans.labels_[:10]}")
+```
+::::
+
+## Visualizing the Result
+
+```{python}
+fig, ax = plt.subplots(figsize=(8, 5))
+scatter = ax.scatter(X[:, 0], X[:, 1], c=kmeans.labels_, cmap='viridis', s=50, alpha=0.7)
+ax.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1],
+           c='red', marker='X', s=200, edgecolors='black', linewidths=2, label='Centroids')
+ax.legend()
+ax.set_title('k-Means Clustering Result')
+ax.set_xlabel('Feature 1')
+ax.set_ylabel('Feature 2')
+plt.tight_layout()
+```
+
+## Practice: $k$-Means by Hand
+
+::::{style="font-size: .8em"}
+::::{.columns}
+:::{.column width="45%"}
+```{python}
+fig, ax = plt.subplots(figsize=(5, 5))
+
+# Data points
+points = {'A': (0, 4), 'B': (2, 4), 'C': (4, 0), 'D': (6, 0)}
+for name, (x, y) in points.items():
+    ax.scatter(x, y, s=150, c='gray', zorder=3)
+    ax.annotate(name, (x, y), xytext=(8, 8), textcoords='offset points', fontsize=14, fontweight='bold')
+
+# Initial centers
+ax.scatter(1, 2, s=200, c='steelblue', marker='X', zorder=4, linewidths=2)
+ax.annotate('C₁', (1, 2), xytext=(8, -12), textcoords='offset points', fontsize=12, color='steelblue')
+ax.scatter(5, 2, s=200, c='coral', marker='X', zorder=4, linewidths=2)
+ax.annotate('C₂', (5, 2), xytext=(8, -12), textcoords='offset points', fontsize=12, color='coral')
+
+ax.set_xlim(-1, 7)
+ax.set_ylim(-1, 6)
+ax.set_xticks(range(0, 7))
+ax.set_yticks(range(0, 6))
+ax.grid(True, alpha=0.3)
+ax.set_aspect('equal')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+plt.tight_layout()
+```
+:::
+
+:::{.column width="55%"}
+**Data points:**
+
+A = (0, 4), B = (2, 4), C = (4, 0), D = (6, 0)
+
+**Initial centers:** C₁ = (1, 2), C₂ = (5, 2)
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Work through one iteration:</b>
         <ol type="a">
-            <li>Provide the list of points in the cluster associated with the center at \(\small\begin{bmatrix}1 \\ 10 \end{bmatrix}\) in the 1st iteration.</li>
-            <li>Provide the cluster centers at the end of the 1st iteration.</li>
-            <li>Continue iterating until convergence. How many iterations were needed for the algorithm to complete?</li>
-            <li>Provide the centers of the final clusters.</li>
-            <li>Provide the lists of the final clusters.</li>
+            <li>Assign each point to its nearest center</li>
+            <li>Compute new center positions</li>
+            <li>Sketch the new centers on the plot</li>
         </ol>
         </p>
     </div>
     """
-
-html_content = generate_html()
-display(HTML(html_content))
+display(HTML(generate_html()))
 ```
+:::
+::::
 ::::
 
+:::{.notes}
+Distances from C₁(1,2): A=√5≈2.2, B=√5≈2.2, C=√13≈3.6, D=√29≈5.4
+Distances from C₂(5,2): A=√29≈5.4, B=√13≈3.6, C=√5≈2.2, D=√5≈2.2
+
+Assignment: A,B → C₁ (blue cluster), C,D → C₂ (orange cluster)
+New C₁ = average of A,B = ((0+2)/2, (4+4)/2) = (1, 4)
+New C₂ = average of C,D = ((4+6)/2, (0+0)/2) = (5, 0)
+
+Converges in 1 iteration! The visual intuition matches: top-left cluster, bottom-right cluster.
+:::
+
+## Wrap-up
+
+::::{style="font-size: .75em"}
+**Today we learned:**
+
+- **Unsupervised learning**: finding structure without labels
+- **Similarity measures**: metrics (like Euclidean distance) and cosine similarity
+- **Clustering**: grouping similar points together
+- **$k$-means algorithm**:
+  1. Initialize centers
+  2. Assign points to nearest center
+  3. Update centers as centroids
+  4. Repeat until convergence
+
+**Next time**: Using $k$-means in practice with scikit-learn, and visualizing high-dimensional data.
+::::
