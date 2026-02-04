@@ -390,7 +390,7 @@ Look at what *nearby* houses sold for recently!
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-fig, ax = plt.subplots(figsize=(9, 6))
+fig, ax = plt.subplots(figsize=(7, 5))
 
 # House positions (x, y) and prices
 houses = {
@@ -459,7 +459,7 @@ display(HTML(generate_html()))
 ```
 
 :::{.fragment}
-We can use Euclidean distance in feature space!
+Can we still use Euclidean distance?
 
 $$\text{dist}(\mathbf{x}, \mathbf{y}) = \sqrt{(x_1 - y_1)^2 + (x_2 - y_2)^2 + \cdots}$$
 
@@ -563,8 +563,8 @@ for idx, k in enumerate([5, 50]):
     xx, yy = np.meshgrid(np.arange(-4, 4, h), np.arange(-2, 4, h))
     Z = knn.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
 
-    axs[idx].pcolormesh(xx, yy, Z, shading='auto', alpha=0.3)
-    axs[idx].scatter(X_demo[:,0], X_demo[:,1], c=y_demo, s=30)
+    axs[idx].pcolormesh(xx, yy, Z, shading='auto', alpha=0.3, vmin=0, vmax=2)
+    axs[idx].scatter(X_demo[:,0], X_demo[:,1], c=y_demo, s=30, vmin=0, vmax=2)
     axs[idx].set_title(f'k = {k}', fontsize=14)
     axs[idx].axis('equal')
     axs[idx].axis('off')
@@ -580,6 +580,7 @@ With $k=50$, the model is **too simple** - it ignores the real structure in the 
 ::::{style="font-size: .8em"}
 
 We need k that's "just right":
+
 - Too small: Overfitting (memorizes noise)<
 - Too large: Underfitting (misses real patterns)<
 - Just right: Captures signal, ignores noise

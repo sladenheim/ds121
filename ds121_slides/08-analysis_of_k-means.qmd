@@ -32,6 +32,8 @@ from IPython.core.display import HTML
 ::::{style="font-size: .8em;"}
 
 - Limitations of $k$-means
+    - Non-spherical clusters, unequal sizes
+    - The curse of dimensionality
 - Feature scaling with `StandardScaler`
 - Choosing k: three methods
     - Elbow method (no labels needed)
@@ -57,6 +59,115 @@ $k$-means assumes clusters are **spherical** and **similar-sized**. It fails whe
 <img src="/images/vectors_ds/k-means-cluster-size.png" width=100%/>
 :::
 ::::
+::::
+
+## The Curse of Dimensionality
+
+::::{style="font-size: .85em"}
+Both k-NN and k-means rely on **distance**. In high dimensions, distance becomes meaningless.
+
+**Setup**: Imagine data points uniformly distributed in a ball of radius 10 around a test point.
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What fraction of points are in the outer "shell" (distance 9 to 10)?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## The Shell Problem
+
+::::{style="font-size: .8em"}
+::::{.columns}
+:::{.column width="45%"}
+```{python}
+fig, ax = plt.subplots(figsize=(5, 5))
+# Draw circles
+circle_outer = plt.Circle((0, 0), 1, fill=False, color='steelblue', linewidth=2)
+circle_inner = plt.Circle((0, 0), 0.9, fill=False, color='coral', linewidth=2, linestyle='--')
+ax.add_patch(circle_outer)
+ax.add_patch(circle_inner)
+
+# Shade the shell region
+theta = np.linspace(0, 2*np.pi, 100)
+ax.fill_between(np.cos(theta), 0.9*np.sin(theta), np.sin(theta), alpha=0.3, color='gold')
+ax.fill_between(np.cos(theta), -np.sin(theta), -0.9*np.sin(theta), alpha=0.3, color='gold')
+
+ax.plot(0, 0, 'ko', markersize=8)
+ax.annotate('test point', (0, 0), xytext=(0.1, -0.15), fontsize=10)
+ax.annotate('r = 10', (0.7, 0.7), fontsize=11)
+ax.annotate('r = 9', (0.55, 0.55), fontsize=11, color='coral')
+ax.set_xlim(-1.3, 1.3)
+ax.set_ylim(-1.3, 1.3)
+ax.set_aspect('equal')
+ax.axis('off')
+ax.set_title('2D: What fraction is in the shell?', fontsize=12)
+plt.tight_layout()
+```
+:::
+
+:::{.column width="55%"}
+The volume of a $d$-dimensional ball scales as $r^d$.
+
+**Fraction in outer shell (9 to 10):**
+$$1 - \frac{\text{Vol}(r=9)}{\text{Vol}(r=10)} = 1 - \left(\frac{9}{10}\right)^d$$
+
+:::{.fragment}
+| Dimensions | Fraction in shell |
+|------------|-------------------|
+| d = 2      | 1 - 0.9² = 19%    |
+| d = 10     | 1 - 0.9¹⁰ = 65%   |
+| d = 50     | 1 - 0.9⁵⁰ = 99.5% |
+:::
+:::
+::::
+::::
+
+## Visualizing the Curse
+
+::::{style="font-size: .8em"}
+:::{.center-text}
+```{python}
+dims = range(1, 101)
+fractions = [1 - (0.9)**d for d in dims]
+
+plt.figure(figsize=(9, 4))
+plt.plot(dims, fractions, 'b-', linewidth=2)
+plt.xlabel('Number of dimensions (d)', fontsize=12)
+plt.ylabel('Fraction of points in shell (distance 9-10)', fontsize=12)
+plt.title('As dimensions increase, almost ALL points are in the outer shell', fontsize=13)
+plt.axhline(y=0.5, color='r', linestyle='--', alpha=0.5, label='50%')
+plt.axhline(y=0.99, color='orange', linestyle='--', alpha=0.5, label='99%')
+plt.legend()
+plt.tight_layout()
+```
+:::
+
+**The problem**: In high dimensions, your "nearest" neighbors are nearly the same distance as your "farthest" neighbors. Centroids become meaningless!
+::::
+
+## What To Do About It
+
+::::{style="font-size: .85em"}
+When you have many features:
+
+- **Get more data** (need exponentially more as dimensions grow)
+- **Reduce dimensions**: feature selection, PCA (we saw MDS last lecture!)
+- **Feature scaling**: use `StandardScaler` (coming up next)
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Rule of thumb:</b> Distance-based methods need training data that grows exponentially with the number of features.</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
 ::::
 
 ## Bad Initialization
@@ -512,6 +623,7 @@ The clusters align well with the true cultivars (with some label permutation).
 **Today we learned:**
 
 - **Limitations**: k-means assumes spherical, similar-sized clusters
+- **Curse of dimensionality**: distance becomes meaningless in high-D
 - **Feature scaling**: Always use `StandardScaler` before clustering
 - **Choosing k**:
   - **Elbow method**: look for the "bend" in the inertia plot

@@ -37,6 +37,34 @@ from IPython.core.display import HTML
     - The algorithm
 ::::
 
+
+## Review question from knn
+
+::::{style="font-size: .7em"}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Scenario:</b> You're building a model to predict whether hospital patients will be readmitted within 30 days. You have:</p>
+        <ul>
+            <li>10,000 patient records</li>
+            <li>50 features (demographics, diagnoses, medications, lab values)</li>
+            <li>8% of patients are actually readmitted </li>
+        </ul>
+        <p style="margin-top: 15px;"><b>Discuss with your group:</b></p>
+        <ol>
+            <li>How would you split this data for model selection and evaluation?</li>
+            <li>Would you use cross-validation? How many folds?</li>
+            <li>Which metric(s) should you prioritize? Why?</li>
+            <li>Would k-NN be a good choice here? What concerns do you have?</li>
+        </ol>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
 ## From Supervised to Unsupervised
 
 ::::{style="font-size: .85em"}

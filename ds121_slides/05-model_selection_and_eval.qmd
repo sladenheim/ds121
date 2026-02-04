@@ -36,9 +36,9 @@ import sklearn.model_selection as model_selection
 - Hyperparameters vs parameters
 - Evaluating classifiers beyond accuracy
     - Confusion matrix
-    - Precision and recall
+    - Precision, recall, and F1 score
+    - Choosing the right metric for your problem
 - Worked example: Iris dataset
-- Challenges: The curse of dimensionality
 ::::
 
 ## Recall: Overfitting
@@ -49,6 +49,49 @@ Last lecture we learned:
 - **Overfitting**: when a model memorizes training data but fails on new data
 - Small $k$ in k-NN = overfitting (too sensitive to noise)
 - Large $k$ = underfitting (too smooth, misses patterns)
+::::
+
+## Recall: Overfitting vs Underfitting  {.smaller}
+
+::::{style="font-size: .8em"}
+Here's what over/underfitting looks like with k-NN decision boundaries:
+
+:::{.center-text}
+```{python}
+# Reminder plot from Lecture 4 - overlapping clusters show overfitting clearly
+import sklearn.datasets as sk_data
+X_demo, y_demo = sk_data.make_blobs(n_samples=150,
+                          centers=[[-2, 0],[1, 5], [2.5, 1.5]],
+                          cluster_std=[2, 2, 3],
+                          n_features=2,
+                          center_box=(-10.0, 10.0), random_state=0)
+
+h = 0.1
+x_min, x_max = X_demo[:, 0].min() - 1, X_demo[:, 0].max() + 1
+y_min, y_max = X_demo[:, 1].min() - 1, X_demo[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+
+fig, axs = plt.subplots(1, 3, figsize=(11, 3))
+for idx, k in enumerate([1, 5, 50]):
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_demo, y_demo)
+    Z = knn.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
+
+    axs[idx].pcolormesh(xx, yy, Z, shading='auto', alpha=0.3)
+    axs[idx].scatter(X_demo[:,0], X_demo[:,1], c=y_demo, s=20)
+    labels = ['k = 1 (Overfitting)', 'k = 5 (Just right?)', 'k = 50 (Underfitting)']
+    axs[idx].set_title(labels[idx], fontsize=13)
+    axs[idx].axis('equal')
+    axs[idx].axis('off')
+
+plt.subplots_adjust(top=0.9, bottom=0.05, left=0.02, right=0.98)
+```
+:::
+
+**Today's question**: How do we *systematically* find the right $k$?
+::::
+
+## The Key Question
 
 ```{python}
 from IPython.core.display import HTML
@@ -62,7 +105,6 @@ def generate_html():
 
 display(HTML(generate_html()))
 ```
-::::
 
 ## Train/Test Split
 
@@ -162,7 +204,26 @@ Teams often do well on the public leaderboard but drop on the private one — th
 :::
 ::::
 
-## <span style="font-size: 0.85em;">Evaluating k-NN with Train/Test</span>
+## Discussion: Data Splits
+
+::::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Think-Pair-Share:</b></p>
+        <ol>
+            <li>You have 100 samples. What's wrong with using 95% for training and 5% for testing?</li>
+            <li>A colleague says "I tried 20 different values of \(k\) and picked the one with the best <i>test</i> accuracy." What's the problem?</li>
+        </ol>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## <span style="font-size: 0.85em;">Evaluating k-NN with a Validation Set</span>
 
 
 ::::{style="font-size: .8em"}
@@ -176,14 +237,14 @@ knn.fit(X_train, y_train)
 
 # Evaluate on both sets
 train_accuracy = knn.score(X_train, y_train)
-test_accuracy = knn.score(X_test, y_test)
+val_accuracy = knn.score(X_test, y_test)  # Using as validation set here
 
 print(f'Training accuracy: {train_accuracy:.1%}')
-print(f'Test accuracy: {test_accuracy:.1%}')
+print(f'Validation accuracy: {val_accuracy:.1%}')
 ```
 
 :::{.fragment}
-**Test accuracy** is what matters — it tells us how well we'll do on new data!
+**Validation accuracy** tells us how well we'll do on new data — use it to tune hyperparameters!
 :::
 ::::
 
@@ -193,29 +254,31 @@ print(f'Test accuracy: {test_accuracy:.1%}')
 ::::{style="font-size: .8em"}
 :::{.center-text}
 ```{python}
+# Note: Using our earlier split - in practice, X_test here acts as a validation set
+# since we're using it to choose k (we'd need a separate final test set)
 train_scores = []
-test_scores = []
+val_scores = []
 k_values = range(1, 51)
 
 for k in k_values:
     knn = KNeighborsClassifier(n_neighbors=k)
     knn.fit(X_train, y_train)
     train_scores.append(knn.score(X_train, y_train))
-    test_scores.append(knn.score(X_test, y_test))
+    val_scores.append(knn.score(X_test, y_test))
 
 plt.figure(figsize=(9, 4))
 plt.plot(k_values, train_scores, 'b.-', label='Training accuracy', markersize=4)
-plt.plot(k_values, test_scores, 'r.-', label='Test accuracy', markersize=4)
+plt.plot(k_values, val_scores, 'r.-', label='Validation accuracy', markersize=4)
 plt.xlabel('k (number of neighbors)')
 plt.ylabel('Accuracy')
 plt.legend()
-plt.axvline(x=k_values[np.argmax(test_scores)], color='gray', linestyle='--', alpha=0.5)
-plt.title('Training vs Test Accuracy for Different k')
+plt.axvline(x=k_values[np.argmax(val_scores)], color='gray', linestyle='--', alpha=0.5)
+plt.title('Training vs Validation Accuracy for Different k')
 plt.tight_layout()
 ```
 :::
 
-Notice: Training accuracy starts at ~100% for k=1 (overfitting), while test accuracy peaks somewhere in the middle.
+Notice: Training accuracy starts at ~100% for k=1 (overfitting), while validation accuracy peaks somewhere in the middle.
 ::::
 
 ## But Wait...
@@ -259,16 +322,16 @@ Consider synthetic data generated from $y = \sin(2\pi x)$ plus noise:
 ::::{.columns}
 :::{.column width="50%"}
 ```{python}
-N = 10
-x = np.linspace(0, 1, N)
-y = np.sin(2 * np.pi * x) + default_rng(2).normal(size = N, scale = 0.20)
+N_poly = 10
+x_poly = np.linspace(0, 1, N_poly)
+y_poly = np.sin(2 * np.pi * x_poly) + default_rng(2).normal(size = N_poly, scale = 0.20)
 
 cx = np.linspace(0, 1, 1000)
 cy = np.sin(2 * np.pi * cx)
 
 plt.figure(figsize = (5, 4.0))
 plt.plot(cx, cy, lw = 2, label='True function')
-plt.plot(x, y, 'ro', markersize = 8, fillstyle = 'none', label='Noisy data')
+plt.plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none', label='Noisy data')
 plt.xlabel('x', size = 14)
 plt.ylabel('y', size = 14)
 plt.legend()
@@ -310,34 +373,34 @@ def fit_poly(x, y, k):
     w_hat, _, _, _ = np.linalg.lstsq(A, y)
     return w_hat
 
-w_hat_0 = 1/N * np.sum(y)
-w_hat_1 = fit_poly(x, y, 1)
-w_hat_3 = fit_poly(x, y, 3)
+w_hat_0 = 1/N_poly * np.sum(y_poly)
+w_hat_1 = fit_poly(x_poly, y_poly, 1)
+w_hat_3 = fit_poly(x_poly, y_poly, 3)
 fig, axs = plt.subplots(1, 3, sharey = True, figsize = (12, 3.5))
 #
 cy = 1000 * [w_hat_0]
-pred_y = N * [w_hat_0]
+pred_y = N_poly * [w_hat_0]
 axs[0].plot(cx, cy, lw = 2, label = r'$k$ = 0')
-axs[0].plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+axs[0].plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none')
 axs[0].set_xlabel('x', size = 16)
 axs[0].set_ylabel('y', size = 16)
-axs[0].set_title(r'$k$ = 0, constant' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y - pred_y)))
+axs[0].set_title(r'$k$ = 0, constant' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y_poly - pred_y)))
 #axs[0].legend(loc = 'best', fontsize = 16)
 #
 cy = design_matrix(cx, 1) @ w_hat_1
-pred_y = design_matrix(x, 1) @ w_hat_1
+pred_y = design_matrix(x_poly, 1) @ w_hat_1
 axs[1].plot(cx, cy, lw = 2, label = r'$k$ = 1')
-axs[1].plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+axs[1].plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none')
 axs[1].set_xlabel('x', size = 16)
-axs[1].set_title(r'$k$ = 1, linear' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y - pred_y)))
+axs[1].set_title(r'$k$ = 1, linear' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y_poly - pred_y)))
 #axs[1].legend(loc = 'best', fontsize = 16)
 #
 cy = design_matrix(cx, 3) @ w_hat_3
-pred_y = design_matrix(x, 3) @ w_hat_3
+pred_y = design_matrix(x_poly, 3) @ w_hat_3
 axs[2].plot(cx, cy, lw = 2, label = r'$k$ = 3')
-axs[2].plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+axs[2].plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none')
 axs[2].set_xlabel('x', size = 16)
-axs[2].set_title('$k$ = 3, cubic' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y - pred_y)))
+axs[2].set_title('$k$ = 3, cubic' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y_poly - pred_y)))
 #axs[2].legend(loc = 'best', fontsize = 16)
 #
 fig.tight_layout();
@@ -347,15 +410,6 @@ Here, $E(\mathbf{w})$ is the **training error**.
 
 ::::
 
-:::{.notes}
-0: horizontal line without a slope
-
-1: straight line with a slope
-
-3: cubic function -> Looks pretty good
-
-Can we make it better?
-:::
 
 ## Model Selection
 
@@ -368,11 +422,11 @@ By setting $k=9$, we get the following polynomial to fit the data:
 
 :::{.center-text}
 ```{python}
-w_hat_9 = fit_poly(x, y, 9)
+w_hat_9 = fit_poly(x_poly, y_poly, 9)
 cy = design_matrix(cx, 9) @ w_hat_9
 plt.figure(figsize=(8, 2.5))
 plt.plot(cx, cy, lw = 2, label = r'$k$ = 9')
-plt.plot(x, y, 'ro', markersize = 8, fillstyle = 'none')
+plt.plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none')
 plt.xlabel('x', size = 16)
 plt.ylabel('y', size = 16)
 plt.title(r'$k$ = 9' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(0))
@@ -479,13 +533,12 @@ A **hyperparameter** is a setting we choose *before* training:
 - Learning rate, regularization strength, ...
 
 :::{.fragment}
-How do we choose the right value? **Hold out data and test!**
+How do we choose the right value? **Hold out validation data and compare!**
 :::
 ::::
 
-## Beyond a Single Train/Test Split
+## Beyond a Single Train/Val Split  {.smaller}
 
-::::{style="font-size: .8em"}
 **Problem**: A single random split can be lucky or unlucky!
 
 :::{.fragment}
@@ -493,7 +546,6 @@ How do we choose the right value? **Hold out data and test!**
 
 **Solution 2: Cross-Validation** — systematically use all data for both training and testing.
 :::
-::::
 
 
 ## Random Subsampling
@@ -505,82 +557,13 @@ For each hyperparameter value:
 2. Train and evaluate on each split
 3. Average the results
 
-More robust than a single split!
-::::
-
-## Grid Search {.scrollable}
-
-::::{style="font-size: .85em;"}
-**Grid search**: try many hyperparameter values, pick the best.
-
-Here's the pattern:
-
-:::{style="font-size: .8em"}
-```{python}
-def model_error(x_train, y_train, x_test, y_test, k):
-    '''
-    This function fits a polynomial of degree k to the training data
-    and returns the error on both the training and test data.
-    '''
-    w_star = fit_poly(x_train, y_train, k)
-    pred_test_y = design_matrix(x_test, k) @ w_star
-    pred_train_y = design_matrix(x_train, k) @ w_star
-    return (np.linalg.norm(y_train - pred_train_y), np.linalg.norm(y_test - pred_test_y))
-
-np.random.seed(7)
-```
-```{python}
-#| echo: true
-# fraction of data used for testing
-split_frac = 0.5
-
-# maximum polynomial degree to consider
-max_k = 10
-
-n_splits = 5
-
-# grid search over k
-# we assume a model_error() function that reports the
-# training and testing error (definition omitted for space)
-
-err = []
-for k in range(1, max_k):
-    for s in range(n_splits):
-        x_train, x_test, y_train, y_test = model_selection.train_test_split(
-            x, y, test_size = split_frac)
-        split_train_err, split_test_err = model_error(x_train, y_train, x_test, y_test, k)
-        err.append([k, s, split_train_err, split_test_err])
-
-df = pd.DataFrame(err, columns = ['k', 'split', 'Training Error', 'Testing Error'])
-df.head  (10)
-```
-:::
-::::
-
-## Random Subsampling
-::::{style="font-size: .8em;"}
-:::{.center-text}
-<!-- ```{python}
-#|echo: true
-df.groupby('k').mean()[['Training Error', 'Testing Error']].plot(
-    yerr = df.groupby('k').std()/np.sqrt(n_splits), figsize=(8,3))
-plt.ylabel('Error')
-plt.ylim([0, 5]); -->
-<!-- ``` -->
-:::{.column width="60%"}
-<img src="/images/plot_grid_search.png" width=700/>
-
-:::
-Mean error for each value of $k$
-:::
-
-Best test error at $k=3$ — that's our winner.
+More robust than a single split — but there's an even better approach...
 ::::
 
 ## Cross-Validation
 
 ::::{style="font-size: .85em;"}
-**$k$-fold cross-validation**: split data into $k$ parts. Each part takes a turn as test set.
+**$k$-fold cross-validation**: split data into $k$ parts. Each part takes a turn as validation set.
 
 :::{.center-text}
 ![](/images/vectors_ds/k_folds.png)
@@ -594,6 +577,77 @@ Best test error at $k=3$ — that's our winner.
 - **Leave-one-out**: $k$ = dataset size. Maximum training data, but slow.
 
 Larger $k$ = more training data per fold, but more computation.
+::::
+
+## Quick Check: Cross-Validation
+
+::::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Turn to your neighbor:</b></p>
+        <p>You're doing 5-fold cross-validation on a dataset of 1000 samples (assume you've already set aside a test set of 200, and you have 1000 left).</p>
+        <ol>
+            <li>How many samples are in each fold?</li>
+            <li>How many times do you train the model?</li>
+            <li>How many samples does each model see during training?</li>
+        </ol>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## Grid Search with Cross-Validation {.scrollable}
+
+::::{style="font-size: .8em;"}
+**Grid search**: try many hyperparameter values, pick the best using CV.
+
+```{python}
+#| echo: true
+from sklearn.model_selection import cross_validate
+
+# Grid search over different values of k
+results = []
+for k in range(1, 16):
+    cv_results = cross_validate(
+        KNeighborsClassifier(n_neighbors=k), X, y, cv=5,
+        return_train_score=True  # Get both training and validation scores
+    )
+    for fold in range(5):
+        results.append([k, fold+1,
+                       cv_results['train_score'][fold],
+                       cv_results['test_score'][fold]])
+
+df = pd.DataFrame(results, columns=['k', 'Fold', 'Train Acc', 'Val Acc'])
+df.head(10)
+```
+::::
+
+## Grid Search Results
+
+::::{style="font-size: .8em;"}
+:::{.center-text}
+```{python}
+# Average across folds for each k
+summary = df.groupby('k')[['Train Acc', 'Val Acc']].mean()
+
+plt.figure(figsize=(8, 4))
+plt.plot(summary.index, summary['Train Acc'], 'b.-', label='Training accuracy', markersize=8)
+plt.plot(summary.index, summary['Val Acc'], 'r.-', label='Validation accuracy', markersize=8)
+plt.xlabel('k (number of neighbors)')
+plt.ylabel('Accuracy')
+plt.legend()
+best_k = summary['Val Acc'].idxmax()
+plt.axvline(x=best_k, color='gray', linestyle='--', alpha=0.5)
+plt.title(f'Cross-Validation Results (best k = {best_k})')
+plt.tight_layout()
+```
+:::
+
+CV averages over all folds → more robust estimate of generalization!
 ::::
 
 ## Beyond Accuracy
@@ -656,6 +710,129 @@ display(HTML(generate_html()))
 ```
 ::::
 
+## More Metrics (Just FYI)
+
+::::{style="font-size: .65em"}
+::::{.columns}
+:::{.column width="50%"}
+**From the confusion matrix:**
+
+|               | Predicted + | Predicted − |
+|---------------|-------------|-------------|
+| **Actual +**  | TP          | FN          |
+| **Actual −**  | FP          | TN          |
+
+:::
+
+:::{.column width="50%"}
+**Key rates:**
+
+- **True Positive Rate (TPR)** = Recall = Sensitivity
+  $$\text{TPR} = \frac{TP}{TP + FN}$$
+
+- **False Positive Rate (FPR)**
+  $$\text{FPR} = \frac{FP}{FP + TN}$$
+
+- **Specificity** = 1 − FPR
+  $$\text{Specificity} = \frac{TN}{FP + TN}$$
+:::
+::::
+::::
+
+## The F1 Score (just FYI)
+
+::::{style="font-size: .8em"}
+What if you want a *single number* that balances precision and recall?
+
+:::{.fragment}
+**F1 Score**: The harmonic mean of precision and recall
+
+$$F_1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}$$
+:::
+
+:::{.fragment}
+**Why harmonic mean?** It penalizes extreme imbalance.
+
+| Precision | Recall | Arithmetic Mean | F1 Score |
+|-----------|--------|-----------------|----------|
+| 0.90      | 0.90   | 0.90            | 0.90     |
+| 0.99      | 0.01   | 0.50            | 0.02     |
+
+A model that ignores one metric can't hide behind a high average!
+:::
+::::
+
+## When to Use Which Metric?
+
+::::{style="font-size: .75em"}
+
+| Scenario | Prioritize | Why |
+|-------|------|---------|
+| Cancer screening | **Recall** | Don't miss actual cases |
+| Spam filter | **Precision** | Don't block legitimate emails |
+| Balanced importance | **F1 Score** | Single balanced metric |
+| Understanding errors | **Confusion matrix** | See full error breakdown |
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Key insight:</b> The "best" metric depends on the <i>cost</i> of different types of errors in your application.</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+::::
+
+## Computing Metrics in Python
+
+::::{style="font-size: .8em"}
+```{python}
+#| echo: true
+from sklearn.metrics import precision_score, recall_score, f1_score
+
+# Example: binary classification results
+y_true = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1]
+y_pred = [1, 1, 0, 1, 0, 1, 0, 0, 1, 0]
+
+print(f"Precision: {precision_score(y_true, y_pred):.2f}")
+print(f"Recall:    {recall_score(y_true, y_pred):.2f}")
+print(f"F1 Score:  {f1_score(y_true, y_pred):.2f}")
+```
+
+For multi-class problems, use `average='macro'` (treat all classes equally) or `average='weighted'` (weight by class frequency).
+::::
+
+## Practice: Computing Metrics
+
+::::{style="font-size: .65em"}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Your turn!</b> A model for detecting fraudulent transactions gives these results:</p>
+        <table style="margin: 10px auto; border-collapse: collapse;">
+            <tr><td></td><td style="padding: 5px 15px;"><b>Pred: Fraud</b></td><td style="padding: 5px 15px;"><b>Pred: Legit</b></td></tr>
+            <tr><td><b>Actual: Fraud</b></td><td style="padding: 5px 15px; text-align: center;">45</td><td style="padding: 5px 15px; text-align: center;">5</td></tr>
+            <tr><td><b>Actual: Legit</b></td><td style="padding: 5px 15px; text-align: center;">30</td><td style="padding: 5px 15px; text-align: center;">920</td></tr>
+        </table>
+        <p><b>Calculate:</b></p>
+        <ol>
+            <li>Accuracy</li>
+            <li>Precision (for detecting fraud)</li>
+            <li>Recall (for detecting fraud)</li>
+        </ol>
+        <p><i>Which metric matters most for fraud detection? Why?</i></p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
 ## <span style="font-size: 0.85em;">Worked Example: The Iris Dataset</span>
 
 ::::{style="font-size: .8em"}
@@ -702,70 +879,28 @@ Colors: Setosa (purple), Versicolor (green), Virginica (yellow)
 :::
 
 
-## Iris: Train/Test Split
+## Iris: The Proper Workflow
 
 ::::{style="font-size: .8em"}
-Let's split the data for training and testing using `train_test_split`:
+**Step 1**: Hold out a test set (we won't touch this until the end!)
 
 ```{python}
 #|echo: true
-X_train, X_test, y_train, y_test = model_selection.train_test_split(
+# Hold out 30% for final testing
+X_train_full, X_test, y_train_full, y_test = model_selection.train_test_split(
     X, y, test_size=0.3, random_state=0)
 
-print(f'Training samples: {len(X_train)}, Test samples: {len(X_test)}')
+print(f'Training samples: {len(X_train_full)}, Test samples: {len(X_test)}')
 ```
 ::::
 
-## Iris: Training k-NN
+## Iris: Finding the Best k with CV
 
 ::::{style="font-size: .8em"}
-Now let's train a k-NN classifier with $k=3$:
+**Step 2**: Use cross-validation *on the training data* to find the best $k$:
 
-```{python}
-#| echo: true
-knn = KNeighborsClassifier(n_neighbors=3)
-knn.fit(X_train, y_train)
-
-# Evaluate on test data
-accuracy = knn.score(X_test, y_test)
-print(f'Accuracy on test data: {accuracy:.2%}')
-```
-
-:::{.fragment}
-Pretty good! But accuracy alone doesn't tell us *where* errors occur. Let's look with a **confusion matrix**.
-:::
-::::
-
-## Iris: Confusion Matrix
-
-::::{style="font-size: .8em"}
-```{python}
-#| echo: true
-y_pred = knn.predict(X_test)
-cm = metrics.confusion_matrix(y_test, y_pred)
-pd.DataFrame(cm,
-             columns=['Pred: Setosa', 'Pred: Versicolor', 'Pred: Virginica'],
-             index=['True: Setosa', 'True: Versicolor', 'True: Virginica'])
-```
-
-:::{.fragment}
-**Reading the matrix**: rows are actual classes, columns are predictions.
-
-- **Diagonal** = correct predictions
-- **Off-diagonal** = errors (row tells you the true class, column tells you the predicted class)
-
-Notice: Setosa is easy to classify. Versicolor and Virginica sometimes get confused — they're more similar!
-:::
-::::
-
-## Iris: Finding the Best k
-
-::::{style="font-size: .8em"}
 ::::{.columns}
-
 :::{.column width="55%"}
-Let's use cross-validation to find the best $k$:
-
 ```{python}
 #| echo: true
 from sklearn.model_selection import cross_val_score
@@ -775,8 +910,13 @@ cv_scores = []
 
 for k in k_values:
     knn = KNeighborsClassifier(n_neighbors=k)
-    scores = cross_val_score(knn, X, y, cv=5)
+    # CV only on training data!
+    scores = cross_val_score(knn, X_train_full,
+                             y_train_full, cv=5)
     cv_scores.append(scores.mean())
+
+best_k = k_values[np.argmax(cv_scores)]
+print(f'Best k from CV: {best_k}')
 ```
 :::
 
@@ -788,136 +928,45 @@ plt.xlabel('k')
 plt.ylabel('Cross-validation accuracy')
 plt.title('Finding the best k')
 plt.xticks(range(0, 21, 5))
-best_k = k_values[np.argmax(cv_scores)]
 plt.axvline(x=best_k, color='r', linestyle='--', alpha=0.5)
 plt.tight_layout()
 ```
 :::
 ::::
-
-Best $k$ appears to be around 5-13 for this dataset.
 ::::
 
-## K-NN: The Downsides
-
-::::{style="font-size: .85em"}
-$k$-NN is simple, but has limitations:
-
-- **Slow at prediction time**: compute distance to *every* training point
-- **Feature scaling matters**: large-range features dominate
-- **Curse of dimensionality**: struggles with many features
-::::
-
-## The Curse of Dimensionality
-
-::::{style="font-size: .85em"}
-In high dimensions, geometry gets weird. Let's see why this breaks k-NN.
-
-**Setup**: Imagine data points uniformly distributed in a ball of radius 10 around a test point.
-
-```{python}
-from IPython.core.display import HTML
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>What fraction of points are in the outer "shell" (distance 9 to 10)?</p>
-    </div>
-    """
-display(HTML(generate_html()))
-```
-::::
-
-## The Shell Problem
+## Iris: Final Evaluation
 
 ::::{style="font-size: .8em"}
-::::{.columns}
-:::{.column width="45%"}
+**Step 3**: Train final model with best k, evaluate on held-out test set:
+
 ```{python}
-fig, ax = plt.subplots(figsize=(5, 5))
-# Draw circles
-circle_outer = plt.Circle((0, 0), 1, fill=False, color='steelblue', linewidth=2)
-circle_inner = plt.Circle((0, 0), 0.9, fill=False, color='coral', linewidth=2, linestyle='--')
-ax.add_patch(circle_outer)
-ax.add_patch(circle_inner)
+#| echo: true
+# Train final model with best k
+final_knn = KNeighborsClassifier(n_neighbors=best_k)
+final_knn.fit(X_train_full, y_train_full)
 
-# Shade the shell region
-theta = np.linspace(0, 2*np.pi, 100)
-ax.fill_between(np.cos(theta), 0.9*np.sin(theta), np.sin(theta), alpha=0.3, color='gold')
-ax.fill_between(np.cos(theta), -np.sin(theta), -0.9*np.sin(theta), alpha=0.3, color='gold')
-
-ax.plot(0, 0, 'ko', markersize=8)
-ax.annotate('test point', (0, 0), xytext=(0.1, -0.15), fontsize=10)
-ax.annotate('r = 10', (0.7, 0.7), fontsize=11)
-ax.annotate('r = 9', (0.55, 0.55), fontsize=11, color='coral')
-ax.set_xlim(-1.3, 1.3)
-ax.set_ylim(-1.3, 1.3)
-ax.set_aspect('equal')
-ax.axis('off')
-ax.set_title('2D: What fraction is in the shell?', fontsize=12)
-plt.tight_layout()
+# NOW we touch the test set - only once!
+test_accuracy = final_knn.score(X_test, y_test)
+print(f'Final test accuracy with k={best_k}: {test_accuracy:.2%}')
 ```
-:::
-
-:::{.column width="55%"}
-The volume of a $d$-dimensional ball scales as $r^d$.
-
-**Fraction in outer shell (9 to 10):**
-$$1 - \frac{\text{Vol}(r=9)}{\text{Vol}(r=10)} = 1 - \left(\frac{9}{10}\right)^d$$
-
-:::{.fragment}
-| Dimensions | Fraction in shell |
-|------------|-------------------|
-| d = 2      | 1 - 0.9² = 19%    |
-| d = 10     | 1 - 0.9¹⁰ = 65%   |
-| d = 50     | 1 - 0.9⁵⁰ = 99.5% |
-:::
-:::
-::::
 ::::
 
-## Visualizing the Curse
+## Iris: Confusion Matrix
 
 ::::{style="font-size: .8em"}
-:::{.center-text}
 ```{python}
-dims = range(1, 101)
-fractions = [1 - (0.9)**d for d in dims]
-
-plt.figure(figsize=(9, 4))
-plt.plot(dims, fractions, 'b-', linewidth=2)
-plt.xlabel('Number of dimensions (d)', fontsize=12)
-plt.ylabel('Fraction of points in shell (distance 9-10)', fontsize=12)
-plt.title('As dimensions increase, almost ALL points are in the outer shell', fontsize=13)
-plt.axhline(y=0.5, color='r', linestyle='--', alpha=0.5, label='50%')
-plt.axhline(y=0.99, color='orange', linestyle='--', alpha=0.5, label='99%')
-plt.legend()
-plt.tight_layout()
+#| echo: true
+y_pred = final_knn.predict(X_test)
+cm = metrics.confusion_matrix(y_test, y_pred)
+pd.DataFrame(cm,
+             columns=['Pred: Setosa', 'Pred: Versicolor', 'Pred: Virginica'],
+             index=['True: Setosa', 'True: Versicolor', 'True: Virginica'])
 ```
-:::
 
-**The problem for k-NN**: In high dimensions, your "nearest" neighbors are nearly the same distance as your "farthest" neighbors. Everyone is equally far away!
+Notice: Setosa is easy to classify. Versicolor and Virginica sometimes get confused — they're more similar!
 ::::
 
-## What To Do About It
-
-::::{style="font-size: .85em"}
-When you have many features:
-
-- **Get more data** (need exponentially more as dimensions grow)
-- **Reduce dimensions**: feature selection, PCA
-- **Use distance-weighted voting** (closer neighbors count more)
-
-```{python}
-from IPython.core.display import HTML
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p><b>Rule of thumb:</b> k-NN needs training data that grows exponentially with the number of features.</p>
-    </div>
-    """
-display(HTML(generate_html()))
-```
-::::
 
 ## Wrap-up
 
@@ -930,8 +979,7 @@ display(HTML(generate_html()))
 - **Train/validation/test**: Use validation to tune, keep test locked away
 - **Cross-validation**: More robust evaluation using multiple splits
 - **Confusion matrix**: Shows where classifier makes mistakes
-- **Precision & Recall**: Important when classes are imbalanced or costs differ
-- **Curse of dimensionality**: $k$-NN struggles in high dimensions
+- **Precision, Recall, F1**: Important when classes are imbalanced or costs differ
 
 **Next lecture**: Our next model: unsupervised learning with $k$-means clustering
 
