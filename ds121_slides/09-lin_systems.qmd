@@ -14,22 +14,38 @@ format:
 
 ---
 
+## A few logistical notes
+
+:::: {.columns}
+::: {.column width="50%" style="font-size: .8em"}
+- All B-section discussions will now be in MUG 205
+- The ERC Peer Tutoring Program offers appointment based-tutoring 7 days a week, 9am-11pm, you can schedule online
+- Class meets Tuesday-Wednesday-Friday next week with our mudterm on Wednesday.
+- This Friday (and HW3) is the end of new content for the exam.  A practice exam has been posted.
+:::
+
+::: {.column width="50%"}
+<img src="images/dsa_in_nyc.png" width="80%"/>
+:::
+::::
+
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
 
-- Review of concepts and terminology related to linear systems
-- Visualization of linear systems
-- Vector equations
-- Span
-- Two perspectives on linear systems
+- Define linear equations, linear systems, and their solution sets
+- Visualize systems
+- Classify as consistent or inconsistent
+- Rewrite as vector equations
+- Determine whether a vector is in a given span
+- Compare row-based and column-based views
 
 :::
 
 ## Systems of Equations
 
 ::::{style="font-size: .8em"}
-Here is an example of a system of 3 equations in 3 unknown variables:
+Many problems in science and engineering reduce to finding values that satisfy several constraints at once. Here is an example of a system of 3 equations in 3 unknown variables:
 
 $$
 \begin{align*}
@@ -94,7 +110,7 @@ display(HTML(html_content))
 
 ## Solutions and Solution Sets
 
-::::{style="font-size:.8em"}
+::::{style="font-size:.75em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -155,8 +171,8 @@ display(HTML(html_content))
 
 ::::
 
+## <span style="font-size: 0.75em;">Consistent and Inconsistent Systems</span>
 
-## Consistent and Inconsistent Systems
 
 ::::{style="font-size:.8em"}
 
@@ -201,7 +217,7 @@ display(HTML(html_content))
 ## From Equations to Graphs
 
 ::::{style="font-size: .8em"}
-How do we plot a linear equation like $x_1 - 2x_2 = -1$?
+Let's start with a simple example. How do we plot a linear equation like $x_1 - 2x_2 = -1$?
 
 :::{.fragment}
 **Key idea**: Rearrange to solve for one variable in terms of the other.
@@ -405,7 +421,7 @@ display(HTML(html_content))
 :::
 ::::
 
-## Infinitely Many Solutions: Same Line{.smaller-title}
+## <span style="font-size: 0.75em;">Infinitely Many Solutions: Same Line</span>
 
 ::::{style="font-size: .8em"}
 What if the second equation is just a multiple of the first?
@@ -492,10 +508,12 @@ This system has a unique solution that is given by $x_1 =1, x_2 = -2,$ and $x_3=
 
 ## Three Planes, One Point{.smaller-title}
 
-<video width="1000" autoplay loop muted>
-  <source src="/figures/Fig2.1.mp4" type="video/mp4">
-</video>
 
+<div style="overflow: hidden; height: 630px;">
+  <video width="700" style="margin-top: -150px;" autoplay loop muted>
+    <source src="/figures/Fig2.1.mp4" type="video/mp4">
+  </video>
+</div>
 
 ## Equivalent Systems{.smaller-title}
 
@@ -524,14 +542,18 @@ We can plot this system too.
 
 ## Equivalent System Visualized{.smaller-title}
 
-<video width="1000" autoplay loop muted>
-  <source src="/figures/Fig2.2.mp4" type="video/mp4">
-</video>
+
+
+<div style="overflow: hidden; height: 630px;">
+  <video width="700" style="margin-top: -150px;" autoplay loop muted>
+    <source src="/figures/Fig2.2.mp4" type="video/mp4">
+  </video>
+</div>
 
 ## Vector Equations
 
 ::::{style="font-size: .8em"}
-Notice that
+What happens if we group terms by variable instead of by equation? Notice that
 
 $$
 \begin{align*}
@@ -638,15 +660,19 @@ display(HTML(html_content))
 
 ## Span of a Single Vector in $\mathbb{R}^3$
 
-<video width="1000" autoplay loop muted>
-  <source src="/figures/Fig2.4.mp4" type="video/mp4">
-</video>
+<div style="overflow: hidden; height: 630px;">
+  <video width="700" style="margin-top: -150px;" autoplay loop muted>
+    <source src="/figures/Fig2.4.mp4" type="video/mp4">
+  </video>
+</div>
 
 ## Span of Two Vectors in $\mathbb{R}^3$
 
-<video width="1000" autoplay loop muted>
-  <source src="/figures/Fig2.5.mp4" type="video/mp4">
-</video>
+<div style="overflow: hidden; height: 630px;">
+  <video width="700" style="margin-top: -150px;" autoplay loop muted>
+    <source src="/figures/Fig2.5.mp4" type="video/mp4">
+  </video>
+</div>
 
 ## Span and Vector Equations
 
@@ -667,14 +693,13 @@ Is $\mathbf{b}$ in that plane?
 
 ## Is $\mathbf{b}$ in Span$\{\mathbf{a_1,a_2}\}$? {.smaller-title}
 
-<div style="text-align: center;">
-  <video width="500" autoplay loop muted>
+
+<div style="overflow: hidden; height: 630px;">
+  <video width="700" style="margin-top: -150px;" autoplay loop muted>
     <source src="/figures/Fig2.6.mp4" type="video/mp4">
   </video>
 </div>
 
-
-No, the vector equation $x_1\mathbf{a_1}+x_2\mathbf{a_2}=\mathbf{b}$ is inconsistent.
 
 ## Two Perspectives
 
@@ -686,14 +711,21 @@ Every linear system can be viewed two ways:
 1. **Row view**: Each equation defines a line/plane. Find their intersection.
 2. **Column view**: Can we reach $\mathbf{b}$ using linear combinations of column vectors?
 :::
+::::
 
-:::{.fragment}
-Same system, same answer — different geometric intuition.
-:::
+## <span style="font-size: 0.85em;">Two Perspectives - A Metaphor</span>
+
+::::{style="font-size:.8em"}
+Suppose you have two tubes of paint: yellow $\begin{bmatrix}1\\1\\0\end{bmatrix}$ and cyan $\begin{bmatrix}0\\1\\1\end{bmatrix}$, with channels $\begin{bmatrix}R\\G\\B\end{bmatrix}$. Can you mix them to make pure red $\begin{bmatrix}1\\0\\0\end{bmatrix}$?
+
+- **Column view:** Any combination of yellow and cyan will have some Green or Blue in it. Pure red has no green or blue — it's not in the span.
+- **Row view:** The R channel needs $x_1 = 1$, the B channel needs $x_2 = 0$, but then the G channel requires $1 + 0 = 0$ — a contradiction.
+
+Same conclusion, two framings: **mixing ingredients** vs. **satisfying constraints**.
 
 ::::
 
-## Column-Based View: An Example
+## <span style="font-size: 0.85em;">Column-Based View: An Example</span>
 
 ::::{style="font-size:.8em"}
 
@@ -714,9 +746,12 @@ The _column-based_ view asks whether $\mathbf{b}=\begin{bmatrix}6 \\ 8 \\ -5 \en
 
 ## Two Distinct Vector Spaces
 
-<video width="1000" autoplay loop muted>
-  <source src="/figures/Fig2.7.mp4" type="video/mp4">
-</video>
+
+<div style="overflow: hidden; height: 630px;">
+  <video width="700" style="margin-top: -150px;" autoplay loop muted>
+    <source src="/figures/Fig2.7.mp4" type="video/mp4">
+  </video>
+</div>
 
 ## Row-Based View
 
@@ -737,11 +772,14 @@ However, as the course goes on we will use the first perspective much more often
 
 ::::
 
-## Row-Based View: No Common Intersection
+## <span style="font-size: 0.7em;">Row-Based View: No Common Intersection</span>
 
-<video width="1000" autoplay loop muted>
+
+<div style="overflow: hidden; height: 630px;">
+  <video width="700" style="margin-top: -150px;" autoplay loop muted>
     <source src="/figures/Fig2.8.mp4" type="video/mp4">
   </video>
+</div>
 
 ## Solving Systems in Python
 
@@ -790,17 +828,9 @@ display(HTML(generate_html()))
 ```
 ::::
 
-:::{.notes}
-a. Infinitely many — second equation is 2× the first (same line)
-b. No solution — parallel lines (same slope, different intercept)
-c. One solution — lines intersect at (2, 1)
-:::
-
 ## Wrap-up
 
-::::{style="font-size:.8em"}
-
-**Key takeaways:**
+::::{style="font-size:.75em"}
 
 - A **linear equation** involves only addition and multiplication by constants
 - A **solution** is a list of values that makes every equation true
