@@ -33,7 +33,7 @@ Imagine building a model to predict someone's health outcomes with these feature
 :::
 
 :::{.fragment}
-This is called **collinearity** — when features are linear combinations of each other.
+Both are called **collinearity** — when features are linear combinations of each other.
 
 Including redundant features doesn't help your model; it just adds noise and complexity.
 :::
@@ -898,15 +898,6 @@ def generate_html():
 display(HTML(generate_html()))
 ```
 
-:::{.fragment}
-**Answer**: 2 vectors (a basis for the plane).
-
-The other 3 vectors are redundant — they can be written as linear combinations of the basis vectors.
-:::
-
-:::{.fragment}
-**Connection to rank**: The rank of a matrix = dimension of the column space = number of independent columns.
-:::
 ::::
 
 ## Back to Collinearity {.smaller-title}
