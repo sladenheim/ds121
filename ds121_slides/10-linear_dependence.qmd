@@ -1,10 +1,10 @@
 ---
 title: "Linear Dependence"
 author: "CDS DS-121<br>Boston University"
-format: 
+format:
     revealjs:
         math: true
-        css: 
+        css:
         - styles.css
         html-math-method: mathjax
         highlight-style: github
@@ -14,11 +14,21 @@ format:
 
 ---
 
+## Learning Objectives {.smaller-title}
+::::{style="font-size:.8em"}
+- Define linear dependence and independence
+- Geometric intuition: independent vs dependent sets in $\mathbb{R}^2$ and $\mathbb{R}^3$
+- Equivalence: dependence $\iff$ one vector is a combination of others
+- At most $n$ independent vectors in $\mathbb{R}^n$
+- Preview: basis, dimension, and redundancy
+- Review: key topics from Lectures 1–9
+::::
+
 ## Redundant Information {.smaller-title}
 ::::{style="font-size:.8em"}
 Imagine building a model to predict someone's health outcomes with these features:
 
-- Birthday 
+- Birthday
 - Age
 - Sex
 - Height
@@ -26,16 +36,14 @@ Imagine building a model to predict someone's health outcomes with these feature
 - Blood pressure
 
 :::{.fragment}
-**Major Problem**: Birthday and age encode the same information! 
+**Major Problem**: Birthday and age encode the same information!
 
 **Minor Problem**: Height and weight are highly correlated
 
 :::
 
 :::{.fragment}
-Both are called **collinearity** — when features are linear combinations of each other.
-
-Including redundant features doesn't help your model; it just adds noise and complexity.
+Both are called **collinearity** — when features are linear combinations of each other. (Sometimes we distingush between "perfect collinearity" and "approximate collinearity" here.)
 :::
 ::::
 
@@ -78,15 +86,6 @@ Potential issues with collinearity:
 - Can't interpret individual feature importance (which one matters?)
 - Some algorithms (like linear regression) may fail or give misleading results
 :::
-
-## Learning Objectives {.smaller-title}
-::::{style="font-size:.8em"}
-- Linear dependence and independence:
-    - Definition
-    - Algebraic and geometric views
-- Connection to linear combinations
-- Connection to span
-::::
 
 ## Linear Dependence in 2D {.smaller-title}
 
@@ -191,7 +190,7 @@ fig.add_trace(go.Scatter3d(
 fig.add_trace(go.Scatter3d(
     x=[a1[0]], y=[a1[1]], z=[a1[2]],
     mode='markers+text', marker=dict(color='coral', size=6),
-    text=['a₁'], textposition='top center',
+    text=['a\u2081'], textposition='top center',
     textfont=dict(size=14, color='coral'), showlegend=False
 ))
 
@@ -203,7 +202,7 @@ fig.add_trace(go.Scatter3d(
 fig.add_trace(go.Scatter3d(
     x=[a2[0]], y=[a2[1]], z=[a2[2]],
     mode='markers+text', marker=dict(color='coral', size=6),
-    text=['a₂'], textposition='top center',
+    text=['a\u2082'], textposition='top center',
     textfont=dict(size=14, color='coral'), showlegend=False
 ))
 
@@ -215,7 +214,7 @@ fig.add_trace(go.Scatter3d(
 fig.add_trace(go.Scatter3d(
     x=[a3[0]], y=[a3[1]], z=[a3[2]],
     mode='markers+text', marker=dict(color='coral', size=6),
-    text=['a₃'], textposition='top center',
+    text=['a\u2083'], textposition='top center',
     textfont=dict(size=14, color='coral'), showlegend=False
 ))
 
@@ -236,9 +235,9 @@ fig.add_trace(go.Surface(
 
 fig.update_layout(
     scene=dict(
-        xaxis=dict(range=[-1, 4], title='x₁'),
-        yaxis=dict(range=[-1, 4], title='x₂'),
-        zaxis=dict(range=[-1, 4], title='x₃'),
+        xaxis=dict(range=[-1, 4], title='x\u2081'),
+        yaxis=dict(range=[-1, 4], title='x\u2082'),
+        zaxis=dict(range=[-1, 4], title='x\u2083'),
         camera=dict(eye=dict(x=1.8, y=-1.5, z=1.0)),
         aspectmode='cube'
     ),
@@ -250,19 +249,148 @@ fig.show()
 ```
 
 
-## Geometric Intuition {.smaller-title}
+## Reaching Zero: The Key Question {.smaller-title}
 
-:::{style="font-size:.8em"}
-Although $\mathbf{0, a_1, a_2,}$ and $\mathbf{a_3}$ are in $\mathbb{R}^3$, they all lie in the same 2D plane.
+::::{style="font-size:.8em"}
+All three vectors $\mathbf{a_1, a_2, a_3}$ lie on a plane through the origin.
 
-This is the geometric signature of **linear dependence**: the vectors don't span their full ambient space.
+But **any** span passes through the origin — even for independent vectors!
 
 :::{.fragment}
-**Key observation**: The plane containing $\mathbf{a_1, a_2, a_3}$ passes through the origin $\mathbf{0}$.
+The real question is:
 
-This is always true for linearly dependent sets — they can be combined to give zero.
+> **Can you reach $\mathbf{0}$ using *nonzero* weights?**
+
+- **Independent** $\{\mathbf{a_1, a_2}\}$: The *only* solution to $c_1\mathbf{a_1} + c_2\mathbf{a_2} = \mathbf{0}$ is $c_1 = c_2 = 0$. No shortcut back to zero.
 :::
 
+:::{.fragment}
+- **Dependent** $\{\mathbf{a_1, a_2, a_3}\}$: We can find $(1)\mathbf{a_1} + (1)\mathbf{a_2} + (-1)\mathbf{a_3} = \mathbf{0}$. A nontrivial path back to zero!
+:::
+::::
+
+:::{.notes}
+Key point: the plane through the origin is a property of ALL spans, not just dependent sets.
+What makes a set dependent is that you can walk along a combination of the vectors with nonzero weights and end up back where you started (the origin).
+For independent vectors, the only way to get back to zero is to not move at all (all weights = 0).
+:::
+
+## Nontrivial Path to Zero {.smaller-title}
+
+::::{style="font-size:.75em"}
+Since $\mathbf{a_3} = \mathbf{a_1} + \mathbf{a_2}$, we have $(1)\mathbf{a_1} + (1)\mathbf{a_2} + (-1)\mathbf{a_3} = \mathbf{0}$. Follow the path:
+::::
+
+```{python}
+import plotly.graph_objects as go
+import numpy as np
+
+a1 = np.array([2, 0, 1])
+a2 = np.array([0, 2, 1])
+a3 = a1 + a2  # [2, 2, 2]
+
+# Path: (1)a1 + (1)a2 + (-1)a3 = 0
+p0 = np.array([0, 0, 0])
+p1 = p0 + a1              # [2, 0, 1]
+p2 = p1 + a2              # [2, 2, 2]
+p3 = p2 - a3              # [0, 0, 0]
+
+fig = go.Figure()
+
+# Origin marker
+fig.add_trace(go.Scatter3d(
+    x=[0], y=[0], z=[0],
+    mode='markers+text', marker=dict(color='black', size=8),
+    text=['origin'], textposition='bottom center',
+    textfont=dict(size=12), showlegend=False
+))
+
+# Original vectors (faint gray, for reference)
+for vec, name in [(a1, 'a\u2081'), (a2, 'a\u2082'), (a3, 'a\u2083')]:
+    fig.add_trace(go.Scatter3d(
+        x=[0, vec[0]], y=[0, vec[1]], z=[0, vec[2]],
+        mode='lines', line=dict(color='gray', width=2, dash='dot'),
+        opacity=0.4, showlegend=False
+    ))
+    fig.add_trace(go.Scatter3d(
+        x=[vec[0]], y=[vec[1]], z=[vec[2]],
+        mode='text', text=[name], textposition='top center',
+        textfont=dict(size=11, color='gray'), showlegend=False
+    ))
+
+# Path segment 1: origin -> a1 (blue)
+fig.add_trace(go.Scatter3d(
+    x=[p0[0], p1[0]], y=[p0[1], p1[1]], z=[p0[2], p1[2]],
+    mode='lines', line=dict(color='steelblue', width=8),
+    showlegend=False
+))
+mid1 = (p0 + p1) / 2
+fig.add_trace(go.Scatter3d(
+    x=[mid1[0]], y=[mid1[1]], z=[mid1[2]],
+    mode='text', text=['  +1\u00b7a\u2081'], textposition='middle right',
+    textfont=dict(size=13, color='steelblue'), showlegend=False
+))
+
+# Path segment 2: a1 -> a1+a2 (green)
+fig.add_trace(go.Scatter3d(
+    x=[p1[0], p2[0]], y=[p1[1], p2[1]], z=[p1[2], p2[2]],
+    mode='lines', line=dict(color='seagreen', width=8),
+    showlegend=False
+))
+mid2 = (p1 + p2) / 2
+fig.add_trace(go.Scatter3d(
+    x=[mid2[0]], y=[mid2[1]], z=[mid2[2]],
+    mode='text', text=['  +1\u00b7a\u2082'], textposition='middle right',
+    textfont=dict(size=13, color='seagreen'), showlegend=False
+))
+
+# Path segment 3: a1+a2 -> origin (orange) — this is the -1*a3 step
+fig.add_trace(go.Scatter3d(
+    x=[p2[0], p3[0]], y=[p2[1], p3[1]], z=[p2[2], p3[2]],
+    mode='lines', line=dict(color='darkorange', width=8),
+    showlegend=False
+))
+mid3 = (p2 + p3) / 2
+fig.add_trace(go.Scatter3d(
+    x=[mid3[0]], y=[mid3[1]], z=[mid3[2]],
+    mode='text', text=['  \u22121\u00b7a\u2083'], textposition='middle right',
+    textfont=dict(size=13, color='darkorange'), showlegend=False
+))
+
+# Faint plane
+s = np.linspace(-0.3, 1.5, 8)
+t = np.linspace(-0.3, 1.5, 8)
+S, T = np.meshgrid(s, t)
+fig.add_trace(go.Surface(
+    x=S*a1[0]+T*a2[0], y=S*a1[1]+T*a2[1], z=S*a1[2]+T*a2[2],
+    colorscale=[[0, 'rgba(100,100,200,0.15)'], [1, 'rgba(100,100,200,0.15)']],
+    showscale=False, showlegend=False
+))
+
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(range=[-1, 4], title='x\u2081'),
+        yaxis=dict(range=[-1, 4], title='x\u2082'),
+        zaxis=dict(range=[-1, 4], title='x\u2083'),
+        camera=dict(eye=dict(x=1.8, y=-1.5, z=1.0)),
+        aspectmode='cube'
+    ),
+    margin=dict(l=0, r=0, b=0, t=30),
+    height=420
+)
+
+fig.show()
+```
+
+:::{.notes}
+Walk through the path:
+1. Start at the origin (0,0,0)
+2. Walk along +1*a1 to reach (2,0,1) — blue segment
+3. Walk along +1*a2 to reach (2,2,2) — green segment
+4. Walk along -1*a3 to reach (0,0,0) — orange segment, back to origin!
+
+We used nonzero weights (1, 1, -1) and ended up back at zero.
+This is IMPOSSIBLE for an independent set — the only way back is weights all = 0.
 :::
 
 ## Formal Definitions {.smaller-title}
@@ -286,7 +414,7 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
-<div style="margin-bottom: 0.5em;"> </div> 
+<div style="margin-bottom: 0.5em;"> </div>
 
 ```{python}
 from IPython.core.display import HTML
@@ -326,7 +454,7 @@ Note: all three vectors have components adding to zero. Hence, $\small x_1+x_2+x
 
 ::::
 
-## Practice: Dependent or Independent? {.smaller-title}
+## Practice: Dependent or Independent? {.really-smaller-title}
 
 ::::{style="font-size:.8em"}
 ```{python}
@@ -361,7 +489,7 @@ c. 0 v_1 + 1 v_2 = 0
 d. (1/2)v_1 + v_2 + v_3 = 0
 :::
 
-## The Max Number of Independent Vectors {.smaller-title}
+## The Max Number of Independent Vectors {.really-smaller-title}
 
 ::::{style="font-size:.8em"}
 ```{python}
@@ -384,13 +512,12 @@ display(HTML(generate_html()))
 :::{.fragment}
 **Consequence**: If you have more than $n$ vectors in $\mathbb{R}^n$, they **must** be linearly dependent.
 
-This is why problem (d) above — three vectors in $\mathbb{R}^2$ — has to be dependent!
+This is why problem (d) above (three vectors in $\mathbb{R}^2$) has to be dependent!
 :::
 ::::
+## <span style="font-size: 0.75em;">Dependence $\iff$ Linear Combination</span>
 
-## Link to Linear Combinations {.smaller-title} 
-
-::::{style="font-size:.8em"}
+::::{style="font-size:.75em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -398,7 +525,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>  <span class="label">Theorem</span>
-        <b></b> Let \(S\) be a set of two or more vectors: \(S=\{\mathbf{v_1,\dots,v_p}\}.\) At least one of the vectors in \(S\) is a linear combination of the others if and only if \(S\) is linearly dependent.
+        Let \(S=\{\mathbf{v_1,\dots,v_p}\}\) be a set of two or more vectors. \(S\) is linearly dependent if and only if at least one vector in \(S\) is a linear combination of the others.
         </p>
     </div>
     """
@@ -407,60 +534,53 @@ display(HTML(html_content))
 ```
 
 :::{.fragment}
-**Proof.** In the 'if' direction, we assume that there exists one vector in $S$ that is a linear combination of the others. We need to prove that $S$ is linearly dependent. 
+Recall our two definitions:
 
-Since $S$ is an unordered set, the labeling of indices is arbitrary. Let's relabel the indices in order to make this vector $\mathbf{v_p}$.
+| Linear dependence | Linear combination |
+|:--|:--|
+| $c_1\mathbf{v_1}+\cdots+c_p\mathbf{v_p}=\mathbf{0}$, some $c_i\neq 0$ | $\mathbf{v_p}=c_1\mathbf{v_1}+\cdots+c_{p-1}\mathbf{v_{p-1}}$ |
 
-By the definition of linear combination, this means that there exist scalars $c_1,c_2,\dots,c_{p-1}$ such that:
-$$
-c_1\mathbf{v_1}+\cdots+c_{p-1}\mathbf{v_{p-1}} = \mathbf{v_p}.
-$$
+:::
 
+:::{.fragment}
+**Direction $\Leftarrow$** &ensp; Suppose $\mathbf{v_p}=c_1\mathbf{v_1}+\cdots+c_{p-1}\mathbf{v_{p-1}}$.
+
+Rearrange: &ensp; $c_1\mathbf{v_1}+\cdots+c_{p-1}\mathbf{v_{p-1}} + (-1)\mathbf{v_p} = \mathbf{0}$
+
+The coefficient of $\mathbf{v_p}$ is $-1 \neq 0$, so this is a **nontrivial** solution. Dependent!
 :::
 ::::
 
 :::{.notes}
-$P \iff Q$
+This is the key theorem connecting our two ways of thinking about dependence.
 
-Easy proofs during classes, even easier proofs on the exams.
-
-MANY proofs in DS320.
-
-Definition linear combination:
-
-v_p = a_1v_1 + a_2v_2 ... + a_{p-1}v_{p-1}
-
-Definition linear dependence:
-
-b_1v_1+b_2v_2 + ... + b_pv_p = 0 has a non-trivial solution
-
+Direction <=: If one vector is a linear combination of the others, we can rearrange to get a nontrivial solution to the homogeneous equation. The key insight is that the coefficient of the vector we "moved to the other side" is -1, which is nonzero.
 :::
 
-## Proof (cont.) {.smaller-title}
+## Proof: The Other Direction {.smaller-title}
 
-::::{style="font-size:.8em;"}
-We subtract $\mathbf{v_p}$ from both sides of this equation:
-
-$$
-c_1\mathbf{v_1}+\cdots+c_{p-1}\mathbf{v_{p-1}}-\mathbf{v_p} = \mathbf{0}.
-$$
-
-Not all the coefficients are zero (in particular, the coefficient of $\mathbf{v_p}$ is $-1$). Thus, the vectors are linearly dependent.
-
+::::{style="font-size:.8em"}
+**Direction $\Rightarrow$** &ensp; Suppose $S$ is linearly dependent.
 
 :::{.fragment}
-Now, we consider the "only if" part:
+Then there exist $c_1,\dots,c_p$ (**not all zero**) such that:
+$$c_1\mathbf{v_1}+\cdots+c_p\mathbf{v_p} = \mathbf{0}$$
+:::
 
-Assume $S$ is linearly dependent. Then $c_1\mathbf{v_1}+\cdots+c_{p}\mathbf{v_{p}} = \mathbf{0}$ and at least one of the $c_i$ is nonzero.
+:::{.fragment}
+Pick any $c_i \neq 0$. Isolate $\mathbf{v_i}$:
 
-Pick one of the nonzero $c_i$ and rearrange:
-$$
-\mathbf{v_i}=-(c_1/c_i)\mathbf{v_1}-\cdots-(c_p/c_i)\mathbf{v_p}.
-$$
+$$\mathbf{v_i}=-\frac{c_1}{c_i}\mathbf{v_1}-\cdots-\frac{c_p}{c_i}\mathbf{v_p}$$
 
-Thus, there is at least one vector that is a linear combination of the others.
+$\mathbf{v_i}$ is a linear combination of the others!
 :::
 ::::
+
+:::{.notes}
+Direction =>: Start from the dependence relation. Since not all weights are zero, pick one that's nonzero. Divide through by that weight and rearrange to isolate the corresponding vector on one side. That vector is now expressed as a linear combination of the remaining vectors.
+
+Note: we can divide by c_i because we picked a NONZERO one. This is why the "not all zero" condition matters.
+:::
 
 ## Spanning Sets {.smaller-title}
 
@@ -482,9 +602,7 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-Let's explore the connection between spanning sets and linear dependence.
-
-We'll start with two linearly independent vectors $\mathbf{u}={\small\begin{bmatrix}3\\1\\0\end{bmatrix}}$ and $\mathbf{v}={\small\begin{bmatrix}1\\6\\0\end{bmatrix}}.$
+Consider two linearly independent vectors $\mathbf{u}={\small\begin{bmatrix}3\\1\\0\end{bmatrix}}$ and $\mathbf{v}={\small\begin{bmatrix}1\\6\\0\end{bmatrix}}.$
 
 ```{python}
 from IPython.core.display import HTML
@@ -493,7 +611,7 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        What subset of \(\mathbb{R}^3\) is spanned by \(\mathbf{u}\) and \(\mathbf{v}\)?
+        What subset of \(\mathbb{R}^3\) is spanned by \(\mathbf{u}\) and \(\mathbf{v}\)? Is \(\{\mathbf{u}, \mathbf{v}\}\) a spanning set for all of \(\mathbb{R}^3\)?
         </p>
     </div>
     """
@@ -501,14 +619,16 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
+:::{.fragment}
+$\{\mathbf{u}, \mathbf{v}\}$ spans a **plane** — but not all of $\mathbb{R}^3$. What happens if we add a third vector?
+:::
+
 ::::
 
 :::{.notes}
-generating set 
+u and v span only the xy-plane (z=0). They are NOT a spanning set for R^3 because we can't reach any point with z != 0.
 
-Building blocks -> spanning set
-
-Building -> span
+Key question for students: does adding a third vector always help expand the span?
 :::
 
 ## Visualizing the Span {.smaller-title}
@@ -572,9 +692,9 @@ fig.add_trace(go.Surface(
 
 fig.update_layout(
     scene=dict(
-        xaxis=dict(range=[-1, 8], title='x₁'),
-        yaxis=dict(range=[-1, 8], title='x₂'),
-        zaxis=dict(range=[-2, 2], title='x₃'),
+        xaxis=dict(range=[-1, 8], title='x\u2081'),
+        yaxis=dict(range=[-1, 8], title='x\u2082'),
+        zaxis=dict(range=[-2, 2], title='x\u2083'),
         camera=dict(eye=dict(x=1.5, y=-1.8, z=0.8)),
         aspectmode='cube'
     ),
@@ -585,46 +705,11 @@ fig.update_layout(
 fig.show()
 ```
 
-## Span and Linear Dependence {.smaller-title}
+## $\mathbf{w}$ in the Span {.smaller-title}
 
 ::::{style="font-size:.8em"}
-**Claim**: A non-zero $\mathbf{w}$ is in $\text{Span}\{\mathbf{u},\mathbf{v}\}$ ⟺ $\{\mathbf{u,v,w}\}$ is linearly dependent.
-
-**Forward** (⟹): If $\mathbf{w} \in \text{Span}\{\mathbf{u},\mathbf{v}\}$, then $\mathbf{w}$ is a linear combination of $\mathbf{u}$ and $\mathbf{v}$, so $\{\mathbf{u,v,w}\}$ is dependent.
-
-**Backward** (⟸): If $\{\mathbf{u,v,w}\}$ is dependent, there exist $c_1,c_2, c_3$ (not all zero) such that
-
-$$
-c_1\mathbf{u} + c_2\mathbf{v} + c_3\mathbf{w} = \mathbf{0}
-$$
-
-
+$\mathbf{w} = \mathbf{u}+\mathbf{v}$ lies on the plane, so $\{\mathbf{u,v,w}\}$ is **dependent** — $\mathbf{w}$ adds no new information. $\text{Span}\{\mathbf{u,v,w}\}$ is still just the plane.
 ::::
-
-## Span and Linear Dependence {.smaller-title}
-
-::::{style="font-size:.75em"}
-
-This implies that there are two options for $c_3$:
-
-1. $c_3=0$ and
-2. $c_3\neq 0.$
-
-Let us consider both options.
-
-1. If $c_3=0$, then $c_1\mathbf{u} + c_2\mathbf{v} = \mathbf{0}.$ However, this is not possible, because $\mathbf{u}$ and $\mathbf{v}$ are linearly independent. Thus, $c_3\neq0.$
-
-2. If $c_3\neq0$, then we can express $\mathbf{w}$ as
-
-$$
-\mathbf{w} = -\left(\frac{c_1}{c_3}\right) \mathbf{u} - \left(\frac{c_2}{c_3}\right) \mathbf{v}.
-$$
-
-From here it follows that $\mathbf{w}$ is in $\text{Span}\{\mathbf{u},\mathbf{v}\}.$
-
-::::
-
-## $\mathbf{w}$ in the Span {.smaller-title}
 
 ```{python}
 import plotly.graph_objects as go
@@ -699,9 +784,9 @@ fig.add_trace(go.Surface(
 
 fig.update_layout(
     scene=dict(
-        xaxis=dict(range=[-1, 8], title='x₁'),
-        yaxis=dict(range=[-1, 10], title='x₂'),
-        zaxis=dict(range=[-2, 2], title='x₃'),
+        xaxis=dict(range=[-1, 8], title='x\u2081'),
+        yaxis=dict(range=[-1, 10], title='x\u2082'),
+        zaxis=dict(range=[-2, 2], title='x\u2083'),
         camera=dict(eye=dict(x=1.5, y=-1.8, z=0.8)),
         aspectmode='cube'
     ),
@@ -713,6 +798,10 @@ fig.show()
 ```
 
 ## $\mathbf{w}$ Outside the Span {.smaller-title}
+
+::::{style="font-size:.8em"}
+$\mathbf{w}$ is not in $\text{Span}\{\mathbf{u,v}\}$, so $\{\mathbf{u,v,w}\}$ is **independent** — $\mathbf{w}$ expands the span beyond the plane!
+::::
 
 ```{python}
 import plotly.graph_objects as go
@@ -787,9 +876,9 @@ fig.add_trace(go.Surface(
 
 fig.update_layout(
     scene=dict(
-        xaxis=dict(range=[-1, 8], title='x₁'),
-        yaxis=dict(range=[-1, 8], title='x₂'),
-        zaxis=dict(range=[-1, 4], title='x₃'),
+        xaxis=dict(range=[-1, 8], title='x\u2081'),
+        yaxis=dict(range=[-1, 8], title='x\u2082'),
+        zaxis=dict(range=[-1, 4], title='x\u2083'),
         camera=dict(eye=dict(x=1.5, y=-1.8, z=0.8)),
         aspectmode='cube'
     ),
@@ -800,13 +889,52 @@ fig.update_layout(
 fig.show()
 ```
 
+## Spanning Sets and Dependence {.smaller-title}
+
+::::{style="font-size:.8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        \(\{\mathbf{u}, \mathbf{v}\}\) only spans a plane. How could we build a spanning set for all of \(\mathbb{R}^3\)?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.fragment}
+We need to add a vector **outside** the current span — i.e., one that is **independent** of $\mathbf{u}$ and $\mathbf{v}$.
+:::
+
+:::{.fragment}
+This is the key connection:
+
+- Adding a **dependent** vector (like $\mathbf{w} = \mathbf{u}+\mathbf{v}$) doesn't expand the span at all
+- Adding an **independent** vector expands the span to a higher dimension
+- To span $\mathbb{R}^3$, we need **3 linearly independent** vectors
+:::
+::::
+
+:::{.notes}
+This is the whole point: dependence = redundancy in the spanning set.
+If you add a dependent vector, you're adding something that was already reachable — the span doesn't grow.
+If you add an independent vector, you're adding a genuinely new direction — the span grows by one dimension.
+This directly previews the concept of basis: a spanning set with no redundancy (all independent).
+:::
+
 ## General Case: $p$ Vectors {.smaller-title}
 
 ::::{style="font-size:.75em"}
 This generalizes to any number of vectors:
 
-- **Dependent** ⟹ at least one vector lies within the span of the others
-- **One vector in the span of others** ⟹ the set is dependent
+- **Dependent** $\implies$ at least one vector lies within the span of the others
+- **One vector in the span of others** $\implies$ the set is dependent
 
 
 ```{python}
@@ -832,9 +960,9 @@ display(HTML(html_content))
 
 ::::
 :::{.notes}
-a. c=3: vec 3 = vec 1− vec 2
+a. c=3: vec 3 = vec 1 - vec 2
 
-b. c=0: vec 3 = 3 (vec 1)− vec 2
+b. c=0: vec 3 = 3 (vec 1) - vec 2
 :::
 
 ## Checking Dependence in Python {.smaller-title}
@@ -858,13 +986,13 @@ print(f"Rank: {np.linalg.matrix_rank(A)}")
 ```
 
 :::{.fragment}
-**Rank = 2** but we have 3 vectors → **linearly dependent**!
+**Rank = 2** but we have 3 vectors so they are **linearly dependent**!
 
 If rank equals the number of vectors, they're independent. If rank is less, they're dependent.
 :::
 ::::
 
-## Removing Redundancy (a preview!) {.smaller-title}
+## Removing Redundancy (preview) {.smaller-title}
 
 ::::{style="font-size:.8em"}
 If a set of vectors is linearly dependent, we can always **remove the redundant vectors** without changing the span.
@@ -881,11 +1009,7 @@ This minimal independent spanning set is called a **basis**.
 :::{.fragment}
 The number of vectors in a basis is the **dimension** of the space they span.
 :::
-::::
 
-## Basis and Dimension (a preview!) {.smaller-title}
-
-::::{style="font-size:.8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -900,7 +1024,7 @@ display(HTML(generate_html()))
 
 ::::
 
-## Back to Collinearity {.smaller-title}
+## Collinearity in Practice {.smaller-title}
 
 ::::{style="font-size:.8em"}
 ```{python}
@@ -915,6 +1039,7 @@ def generate_html():
 display(HTML(generate_html()))
 ```
 
+
 :::{.fragment}
 This is why detecting linear dependence matters in data science:
 
@@ -922,22 +1047,136 @@ This is why detecting linear dependence matters in data science:
 - **Dependent features** can cause numerical instability in models
 - **Dimensionality reduction** techniques find lower-dimensional representations
 :::
-::::
 
-## Wrap-up {.smaller-title}
-
-::::{style="font-size:.8em"}
-
-**Key takeaways:**
-
-- **Linear dependence**: $x_1\mathbf{v_1}+\dots+x_p\mathbf{v_p}=\mathbf{0}$ has a nontrivial solution
-- **Linear independence**: only the trivial solution works
-- **Dependent** ⟺ at least one vector is a linear combination of the others
-- **Basis**: a minimal independent spanning set
-- **Dimension**: the size of a basis = rank of the matrix
 
 :::{.fragment}
-**Data science connection**: If features are linearly dependent, some are redundant. Rank tells you how many truly independent features you have.
+FYI - You may hear "collinearity" and "multicolinearity" used interchangeably
+:::
+::::
+
+## Midterm Review: Lectures 1–10 {.really-smaller-title}
+
+::::{style="font-size:.65em"}
+::::{.columns}
+:::{.column width="50%"}
+**Vectors & Geometry (L1–L3)**
+
+- Vectors: algebraic, geometric, computational views
+- Addition, scalar multiplication, linear combinations, span
+- Dot product, length, distance, unit vectors
+- Angle between vectors, orthogonality, parallel vectors
+
+**k-NN & Evaluation (L4–L5)**
+
+- Parametric vs non-parametric algorithms
+- k-NN: classification (hard/soft), regression, choosing $k$
+- Train/test/validation, cross-validation (e.g., 5-fold)
+- Confusion matrix, accuracy, precision, recall
+:::
+:::{.column width="50%"}
+**k-Means Clustering (L6–L8)**
+
+- k-means: algorithm, centroids, cost function, convergence
+- Feature scaling (StandardScaler), curse of dimensionality
+- Choosing $k$: elbow method, silhouette coefficient
+- Rand Index for comparing clusterings
+
+**Linear Systems & Dependence (L9–L10)**
+
+- Linear equations, systems, consistent vs inconsistent
+- Row and column views, vector equations and span
+- Dependent $\iff$ nontrivial solution to $c_1\mathbf{v_1}+\cdots+c_p\mathbf{v_p}=\mathbf{0}$
+- Dependent $\iff$ one vector is a combination of others
+- At most $n$ independent vectors in $\mathbb{R}^n$; rank
+:::
+::::
+::::
+
+## Review Practice {.smaller-title}
+
+::::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        <ol type="a">
+            <li>Compute the distance between \(\mathbf{u}={\small\begin{bmatrix}1\\3\\-2\end{bmatrix}}\) and \(\mathbf{v}={\small\begin{bmatrix}4\\-1\\2\end{bmatrix}}\).</li>
+            <li>Compute \(\mathbf{u}\cdot\mathbf{v}\) for \(\mathbf{u}={\small\begin{bmatrix}3\\-1\\2\end{bmatrix}}\) and \(\mathbf{v}={\small\begin{bmatrix}1\\4\\-1\end{bmatrix}}\). Is the angle between them acute, right, or obtuse?</li>
+            <li>Write \({\small\begin{bmatrix}5\\3\end{bmatrix}}\) as a linear combination of \({\small\begin{bmatrix}1\\1\end{bmatrix}}\) and \({\small\begin{bmatrix}2\\-1\end{bmatrix}}\), or explain why it's not possible.</li>
+        </ol>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+::::
+
+:::{.notes}
+a. ||u - v|| = ||(-3, 4, -4)|| = sqrt(9+16+16) = sqrt(41)
+
+b. u dot v = 3(1) + (-1)(4) + 2(-1) = 3 - 4 - 2 = -3. Since the dot product is negative, the angle is obtuse (greater than 90 degrees).
+
+c. Need c1[1,1] + c2[2,-1] = [5,3]. From row 1: c1 + 2c2 = 5. From row 2: c1 - c2 = 3. Subtracting: 3c2 = 2, so c2 = 2/3 and c1 = 3 + 2/3 = 11/3. So [5,3] = (11/3)[1,1] + (2/3)[2,-1].
 :::
 
+## Linear Algebra: True or False? {.smaller-title}
+
+::::{style="font-size:.75em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        <ol type="a">
+            <li>If \(\{\mathbf{v_1, v_2}\}\) is linearly independent in \(\mathbb{R}^3\), then \(\{\mathbf{v_1, v_2}\}\) is a spanning set for \(\mathbb{R}^3\).</li>
+            <li>If \(\{\mathbf{v_1, v_2, v_3}\}\) is linearly dependent, then \(\mathbf{v_3}\) must be a linear combination of \(\mathbf{v_1}\) and \(\mathbf{v_2}\).</li>
+            <li>Every set of two nonzero vectors in \(\mathbb{R}^2\) is linearly independent.</li>
+            <li>A set of 6 vectors in \(\mathbb{R}^5\) must be linearly dependent.</li>
+            <li>If \(\mathbf{u}\cdot\mathbf{v}=0\), then one of \(\mathbf{u}\) or \(\mathbf{v}\) must be the zero vector.</li>
+            <li>If \(\{\mathbf{v_1, v_2, v_3}\}\) is linearly independent, then \(\{\mathbf{v_1, v_2}\}\) is also linearly independent.</li>
+            <li>The span of any set of vectors in \(\mathbb{R}^n\) always contains the zero vector.</li>
+        </ol>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
 ::::
+
+## ML Review: True or False? {.smaller-title}
+
+::::{style="font-size:.75em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        <ol type="a">
+            <li>In k-NN, increasing \(k\) always improves accuracy on the test set.</li>
+            <li>k-means is guaranteed to converge, but not necessarily to the best clustering.</li>
+            <li>Precision and recall always increase or decrease together.</li>
+            <li>If a k-NN classifier has 100% training accuracy with \(k=1\), it must be a good model.</li>
+            <li>The test set should be used to tune hyperparameters like \(k\) in k-NN.</li>
+            <li>In k-means, the cost function can increase from one iteration to the next.</li>
+             <li>k-means can correctly separate one large cluster (with many points) from one small one if they are sufficiently far apart.</li>
+        </ol>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+::::
+
+
