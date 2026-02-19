@@ -51,7 +51,7 @@ A typical clustering project follows these steps:
 6. **Validate**: are the clusters meaningful?
 
 :::{.fragment}
-Today we'll work through steps 3-5 with synthetic data. Next lecture: choosing k and validation.
+Today we'll work through steps 3-5. Next lecture: choosing k and validation.
 :::
 ::::
 
@@ -81,18 +81,30 @@ display(HTML(generate_html()))
 
 ## Visualizing the Raw Data
 
-::::{style="font-size: .85em"}
-One option: show the data as a **heatmap**. Each row is a data point, each column is a feature.
+::::{style="font-size: .65em"}
+One option: show the data as a **heatmap**. Each row is a point, each column is a feature.
 
+:::{.center-text}
 ```{python}
-fig, ax = plt.subplots(figsize=(10, 5))
+fig, ax = plt.subplots(figsize=(8, 3.7))
 sns.heatmap(X, xticklabels=False, yticklabels=False, linewidths=0, cbar=True, ax=ax)
 ax.set_xlabel('Features (30 dimensions)')
 ax.set_ylabel('Data points (100 samples)')
 plt.tight_layout()
 ```
+:::
 
-Hard to see structure here — the rows aren't in any meaningful order.
+:::{.fragment}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Can you spot any clusters in this heatmap? What makes it hard to see structure?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
 ::::
 
 ## Pairwise Distances
@@ -114,18 +126,30 @@ This gives us a 100×100 matrix. Entry $(i, j)$ = distance between points $i$ an
 
 ## Visualizing Pairwise Distances
 
-::::{style="font-size: .8em"}
+::::{style="font-size: .75em"}
 :::{.center-text}
 ```{python}
-fig, ax = plt.subplots(figsize=(5, 5))
+fig, ax = plt.subplots(figsize=(4, 4))
 sns.heatmap(euclidean_dists, xticklabels=False, yticklabels=False,
             linewidths=0, square=True, ax=ax)
 ax.set_title('Pairwise Distance Matrix (unsorted)')
-plt.tight_layout()
+plt.subplots_adjust(top=0.92, bottom=0.02, left=0.02, right=0.95)
 ```
 :::
+**Dark** = close together, **Light** = far apart. Still hard to see clusters
 
-**Dark** = close together, **Light** = far apart. Still hard to see clusters — points aren't sorted!
+:::{.fragment}
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
+        <p style="margin: 4px 0;">If we sorted the rows and columns by cluster assignment, what would you expect this heatmap to look like?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
 ::::
 
 ## The Visualization Problem
@@ -171,6 +195,8 @@ In practice, t-SNE and UMAP are more common but the algorithms are more complex
 
 ## MDS in Action
 
+
+:::{.center-text}
 ```{python}
 #| echo: true
 mds = sklearn.manifold.MDS(n_components=2, max_iter=3000, eps=1e-9,
@@ -187,8 +213,22 @@ ax.set_ylabel('MDS Dimension 2')
 ax.axis('equal')
 plt.tight_layout()
 ```
+:::
 
-Now we can see the three clusters!
+
+
+
+## MDS vs t-SNE and UMAP
+
+:::{.center-text}
+<img src="/images/mnist.png" style="width:100%;"/>
+:::
+
+## MDS vs t-SNE and UMAP
+
+:::{.center-text}
+<img src="/images/mnist_tsne.png" style="width:100%;"/>
+:::
 
 ## Running k-Means
 
@@ -227,6 +267,7 @@ print(f"\nInertia (cost): {kmeans.inertia_:.1f}")
 
 ## Visualizing the Clusters
 
+:::{.center-text}
 ```{python}
 fig, ax = plt.subplots(figsize=(7, 5))
 scatter = ax.scatter(pos[:, 0], pos[:, 1], c=labels, cmap='viridis', s=50, alpha=0.8)
@@ -237,6 +278,7 @@ ax.axis('equal')
 plt.colorbar(scatter, label='Cluster')
 plt.tight_layout()
 ```
+:::
 
 ## Sorted Distance Matrix
 
@@ -326,7 +368,15 @@ print(comparison)
 ```
 
 :::{.fragment}
-The clusters align well! (Labels may be permuted — cluster "0" might map to true label "1", etc.)
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Why are the labels "permuted"? Does k-means cluster 0 <i>have</i> to correspond to true label 0? Why or why not?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
 :::
 ::::
 
@@ -354,7 +404,7 @@ Each row shows a cluster's "signature" — distinct patterns across features.
 ::::{style="font-size: .8em"}
 A retailer clustered their customers and got these centroids:
 
-| | Age | Income ($K) | Monthly Spend ($) | Visits/Month |
+| | Age | Income (\$K) | Monthly Spend (\$) | Visits/Month |
 |---------|-----|-------------|-------------------|--------------|
 | **Cluster 0** | 42 | 55 | 150 | 8 |
 | **Cluster 1** | 28 | 95 | 420 | 3 |
@@ -426,6 +476,97 @@ labels = model.labels_
 
 :::{.fragment}
 Once you learn this pattern, picking up new scikit-learn models is easy!
+:::
+
+:::{.fragment}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Spot the difference:</b> What line appears in k-NN's <code>fit()</code> that's missing from k-means? Why?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+::::
+
+## What If We Pick the Wrong k?
+
+::::{style="font-size: .8em"}
+We used $k=3$ because we generated 3 clusters. But what if we didn't know?
+
+```{python}
+fig, axs = plt.subplots(1, 3, figsize=(12, 3.5))
+for idx, k in enumerate([2, 3, 5]):
+    km = KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=0)
+    km.fit(X)
+    axs[idx].scatter(pos[:, 0], pos[:, 1], c=km.labels_, cmap='viridis', s=40, alpha=0.8)
+    axs[idx].set_title(f'k = {k}  (inertia = {km.inertia_:.0f})')
+    axs[idx].set_xlabel('MDS Dim 1')
+    axs[idx].set_ylabel('MDS Dim 2')
+    axs[idx].axis('equal')
+plt.tight_layout()
+```
+
+::::
+
+## Wrong k: What Goes Wrong?
+
+::::{style="font-size: .8em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Look at the plots:</b></p>
+        <ol>
+            <li><b>k = 2</b>: Two real clusters got merged. Which ones?</li>
+            <li><b>k = 5</b>: Some real clusters got split. Does this seem useful?</li>
+            <li>The <b>inertia</b> (cost) decreases as k goes up. Why?</li>
+        </ol>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+Lower inertia doesn't always mean a better model — we need smarter ways to choose $k$!
+:::
+::::
+
+## <span style="font-size: 0.8em;">Preview: How Inertia Changes with k</span>
+
+::::{style="font-size: .8em"}
+
+:::{.center-text}
+```{python}
+inertias = []
+k_range = range(1, 9)
+for k in k_range:
+    km = KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=0)
+    km.fit(X)
+    inertias.append(km.inertia_)
+
+plt.figure(figsize=(7, 4))
+plt.plot(k_range, inertias, 'bo-', markersize=8)
+plt.xlabel('k (number of clusters)')
+plt.ylabel('Inertia (within-cluster sum of squares)')
+plt.title('Inertia vs. Number of Clusters')
+plt.xticks(list(k_range))
+plt.tight_layout()
+```
+:::
+
+:::{.fragment}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
+        <p><b>Predict:</b> Where is the "best" k on this plot? How would you decide?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
 :::
 ::::
 
