@@ -1,5 +1,5 @@
 ---
-title: "Matrix Algebra"
+title: "Matrices and Linear Systems"
 author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
@@ -18,79 +18,27 @@ format:
 
 ::::{style="font-size:.8em"}
 
-- Review of matrices
-    - Terminology
-    - Notation
-- Matrix equations
-- Matrix-vector multiplication 
-- Matrix multiplication
-- Matrix addition
+- Review of matrix algebra
+    - Core notation and definitions
+    - Matrix operations: matrix addition, scalar multiplication, matrix-vector multiplication, matrix multiplication
 - Powers of a matrix
+- Review of linear systems and their solutions
+    - (Reduced) echelon form
+    - Gauss-Jordan elimination
+- Free and basic variables
+- Consistency
 
 ::::
 
-## Matrices of a Linear System
-
+## Review: Notation
 ::::{style="font-size:.8em"}
-Given the following system of equations,
 
+* An $m \times n$ matrix has $m$ rows and $n$ columns. It is an element of $\mathbb{R}^{m\times n}.$
+* Matrices use capital letters: $A.$
+* Entries use lowercase: $a_{i,j}$ is the entry in row $i$, column $j$ of $A$.
+* The columns of $A$ are the column vectors: $\mathbf{a}_1, \mathbf{a}_2, \dots, \mathbf{a}_n \in \mathbb{R}^m.$ 
 $$
-\begin{aligned}
-    x_1 - 2x_2 + x_3 &= 5 \\
-    2x_2 - 8x_3 &= -4 \\
-    6x_1 + 5x_2 + 9x_3 &= -4
-\end{aligned}
-$$
-
-the matrices
-
-$$
-\begin{bmatrix}
-    1 & -2 & 1 \\
-    0 & 2 & -8 \\
-    6 & 5 & 9
-\end{bmatrix} \text{ and } \left[\begin{array}{ccc|c}
-    1 & -2 & 1  & 5 \\
-    0 & 2 & -8  & -4 \\
-    6 & 5 & 9  & -4
-\end{array}\right]
-$$
-
-are called the __coefficient matrix__ and  __augmented matrix__ of the system, respectively.
-::::
-
-
-<!-- ## Matrices of a Linear System
-
-::::{style="font-size:.8em"}
-:::{.fragment}
-In addition, recall that
-
-$$
-\left[\begin{array}{ccc|c}
-    1 & -2 & 1  & 5 \\
-    0 & 2 & -8  & -4 \\
-    6 & 5 & 9  & -4
-\end{array}\right]
-$$
-
-is called the __augmented matrix__ of a system. 
-
-The augmented matrix consists of the coefficient matrix with an added column containing the constants from the right sides of the equations.
-:::
-:::: -->
-
-## Notation
-
-::::{style="font-size: .8em"}
-A matrix with $m$ rows and $n$ columns is referred to as "an $m \times n$ matrix" and is an element of the set $\mathbb{R}^{m\times n}$. 
-
-
-In this course, we denote matrices using a capital letter like $A$. 
-
-We denote its entry in row $i$ and column $j$ with a lowercase variable $a_{i,j}$.
-
-$$
+{\small
 A = \overset{n}{\overbrace{%
   \begin{bmatrix}
     a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
@@ -107,51 +55,19 @@ A = \overset{n}{\overbrace{%
     a_{m,1}
   \end{bmatrix}
 } \right\} m
-$$
-
-::::
-
-:::{.notes}
-Note that we always list the number of rows first, then the number of columns.
-:::
-
-## Notation
-
-::::{style="font-size:.8em"}
-The columns of this matrix are the same as the column vectors $\mathbf{a_1,a_2,\dots,a_n}\in\mathbb{R}^m$ in our vector equation.
-
-$$
-{\small
-\overset{n}{\overbrace{%
+  \quad
+= 
   \begin{bmatrix}
-    \vert & \vert &  & \vert \\
     \vert & \vert &  & \vert \\
     \mathbf{a_{1}} & \mathbf{a_{2}} & \cdots & \mathbf{a_{n}} \\
     \vert & \vert &  & \vert \\
-    \vert & \vert &  & \vert
   \end{bmatrix}
-}} \quad
-\left. \vphantom{%
-  \begin{bmatrix}
-    a_{1,1} \\[1ex]
-    a_{2,1} \\[1ex]
-    \vdots  \\[1ex]
-    a_{m,1}
-  \end{bmatrix}
-} \right\} m
-}
-$$
-
-A notational shorthand for this:
-
-$$
-A = [\mathbf{a_1 \: a_2 \: \dots \: a_n}].
+= [\mathbf{a_1 \: a_2 \: \dots \: a_n}].}
 $$
 
 ::::
 
-## Identity Matrix
-
+## Review: Definitions
 ::::{style="font-size:.8em"}
 ```{python}
 from IPython.core.display import HTML
@@ -166,7 +82,6 @@ def generate_html():
     """
 html_content = generate_html()
 display(HTML(html_content))
-
 ```
 <br>
 
@@ -177,7 +92,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p><span class="label">Identity matrix</span>
-        An <b>identity matrix</b> is a square matrix that has ones on the main diagonal and zeros everywhere else.
+        An <b>identity matrix</b> \(I\) is a square matrix that has ones on the main diagonal and zeros everywhere else.
         </p>
     </div>
     """
@@ -185,85 +100,7 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
-
-
-<!-- $$
-\begin{array}{ccc}
-I_2 = \left[\begin{array}{rr}1&0\\0&1\end{array}\right]\;\;\;
-I_3 = \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&1\end{array}\right]\;\;\;
-I_4 = \left[\begin{array}{rrrr}1&0&0&0\\0&1&0&0\\0&0&1&0\\0&0&0&1\end{array}\right]
-\end{array}
-$$ -->
 <br>
-An identity matrix is denoted by $I$. An important property of $I$ is that for any $\mathbf{x}$, $I\mathbf{x}=\mathbf{x}.$
-::::
-
-## Transpose of a Matrix
-
-::::{style="font-size: .8em"}
-Given an $m \times n$ matrix $A,$ the transpose of $A$ is the matrix we get by interchanging its rows and columns.
-It is denoted $A^\top$.   Its shape is $n \times m$.
-
-$$
-A^\top_{ij} = A_{ji}.
-$$
-$$
-\begin{array}{ccc}
-A = \left[\begin{array}{rr}a&b\\c&d\end{array}\right],&
-B = \left[\begin{array}{rr}-5&2\\1&-3\\0&4\end{array}\right],&
-C = \left[\begin{array}{rrrr}1&1&1&1\\-3&5&-2&7\end{array}\right]
-\end{array}
-$$
-
-$$
-\begin{array}{ccc}
-A^\top = \left[\begin{array}{rr}a&c\\b&d\end{array}\right],&
-B^\top = \left[\begin{array}{rrr}-5&1&0\\2&-3&4\end{array}\right],&
-C^\top = \left[\begin{array}{rr}1&-3\\1&5\\1&-2\\1&7\end{array}\right]
-\end{array}
-$$
-::::
-
-## Transpose of a Matrix
-
-::::{style="font-size:.8em"}
-Rules for transposes:
-
-1. $(A^\top)^\top = A$
-2. $(A + B)^\top = A^\top + B^\top$
-3. For any scalar $r$, $(rA)^\top = r(A^\top)$
-4. $(AB)^\top = B^\top A^\top$
-::::
-
-## Matrix Equations
-
-::::{style="font-size:.8em"}
-Let's consider the following linear system:
-
-$$
-\begin{align}
-x_1 + 2x_2 - x_3 &= 4 \\
--5x_2 +3x_3 &= 1
-\end{align}
-$$
-
-This linear system is equivalent to a vector equation.
-
-$$
-x_1{\small\begin{bmatrix}1 \\0 \end{bmatrix}} + x_2{\small\begin{bmatrix}2 \\-5 \end{bmatrix}} + x_3{\small\begin{bmatrix}-1 \\3 \end{bmatrix}} = {\small\begin{bmatrix}4 \\1 \end{bmatrix}}
-$$
-
-It is also equivalent to this __matrix equation__.
-
-$$
-\begin{bmatrix}1 & 2 &-1 \\ 0 & -5 &3\end{bmatrix}\begin{bmatrix}x_1\\x_2\\x_3 \end{bmatrix} = \begin{bmatrix}4 \\ 1\end{bmatrix}.
-$$
-::::
-
-## Matrix Equations
-
-::::{style="font-size: .8em"}
-The above linear system, vector equation, and matrix equation all have the same solution.
 
 ```{python}
 from IPython.core.display import HTML
@@ -271,13 +108,69 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>
-         <span class="label">Theorem</span>
-        If \(A\) is an \(m\times n\) matrix, with columns \(\mathbf{a_1,a_2,\dots,a_n,}\) and if \(\mathbf{b}\) is in \(\mathbb{R}^m\), the matrix equation<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(A\mathbf{x}=\mathbf{b}\)<br> has the same solution set as the vector equation<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(x_1{\bf a_1} + x_2{\bf a_2} + ... + x_n{\bf a_n} = {\bf b},\)<br>
-        which, in turn, has the same solution set as the system of linear equations whose augmented matrix is<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\([{\bf a_1} \; {\bf a_2} \; ... \;{\bf a_n}\; | \; {\bf b}].\)
+        <p><span class="label">Transpose of a matrix</span>
+        The matrix \(B=A^\top\) is the <b>transpose</b> of the matrix \(A\) if each entry \(b_{i,j}\) in \(B\) is the same as the entry \(a_{j,i}\) in \(A\), and conversely.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+::::
+
+## Review: Definitions
+::::{style="font-size:.8em"}
+__Example.__
+If $A =  \left[\begin{array}{rr}-5&2\\1&-3\\0&4\end{array}\right]$, then
+$A^\top = \left[\begin{array}{rrr}-5&1&0\\2&-3&4\end{array}\right].$ <br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Properties of transposes</span> <ul>
+        <li> \((A^\top)^\top = A\). </li>
+        <li> \((A + B)^\top = A^\top + B^\top\). </li>
+        <li> For any scalar \(r\), \((rA)^\top = r(A^\top)\).</li>
+        <li> \((AB)^\top = B^\top A^\top\).</li>
+        </ul>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+
+::::
+
+## Review: Matrix Operations
+
+::::{style="font-size:.8em"}
+If $A$ and $B$ are both $m \times n$, then $C = A + B$ is definied and obtained by adding the corresponding entries:
+$c_{i,j} = a_{i,j} + b_{i,j}.$
+
+If $r$ is a scalar, then the entries of $rA$ are given by $ra_{i,j}.$
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Properties of matrix addition and scalar multiplication</span> <ul>
+        For any \(m \times n\) matrices \(A, B, C,\) and any scalars \(r, s \in \mathbb{R}\):
+        <li> \(A +  B = B + A\). </li>
+        <li> \((A + B) + C = A + (B + C)\). </li>
+        <li> \(A + 0 = A\), where  \(0\) is the \(m \times n\) zero matrix.</li>
+        <li> \(r(A + B) = rA + rB\).</li>
+        <li> \((r + s)A = rA + sA\).</li>
+        <li> \(r(sA) = (rs)A\).</li>
+        </ul>
         </p>
     </div>
     """
@@ -287,7 +180,7 @@ display(HTML(html_content))
 ```
 ::::
 
-## Matrix-Vector Multiplication
+## Review: Matrix Operations
 
 ::::{style="font-size:.8em"}
 ```{python}
@@ -298,7 +191,7 @@ def generate_html():
     <div class="purple-box">
         <p>
          <span class="label">Matrix-vector product</span>
-        Let \(A\) be an \(m\times n\) matrix, with columns \(\mathbf{a_1,a_2,\dots,a_n,}\) and \(\mathbf{x}\in \mathbb{R}^n\). The <b>product</b> of \(A\) and \(x\), denoted \(A\mathbf{x}\), is the vector \(\mathbf{b}\in\mathbb{R}^m\) that is the linear combination of the columns of \(A\) using the corresponging entries in \(\mathbf{x}\) as weights:<br>
+        Let \(A\) be an \(m\times n\) matrix, with columns \(\mathbf{a_1,a_2,\dots,a_n}\), and \(\mathbf{x}\in \mathbb{R}^n\). The <b>product</b> of \(A\) and \(\mathbf{x}\), denoted \(A\mathbf{x}\), is the vector \(\mathbf{b}\in\mathbb{R}^m\) that is the linear combination of the columns of \(A\) using the corresponging entries in \(\mathbf{x}\) as weights:<br>
 
         \({A\mathbf{x}} =
             \begin{bmatrix}
@@ -321,43 +214,28 @@ Notice that the number of _columns_ of $A$ must match the number of _rows_ of $\
 
 ::::
 
-## Matrix-Vector Multiplication
-
-::::{style="font-size:.8em"}
-
-__Example.__ For $\mathbf{a_1,a_2,a_3} \in \mathbb{R}^m$ let's write the linear combination $3\mathbf{a_1}+5\mathbf{a_2} + 7\mathbf{a_3}$ as a matrix times a vector.
-
-$$
-3\mathbf{a_1}+5\mathbf{a_2} + 7\mathbf{a_3} =[\mathbf{a_1 \space a_2 \space a_3}]\begin{bmatrix}3\\5\\7\end{bmatrix}
-= A\mathbf{x}.
-$$
-
-Notice that if $A = [\mathbf{a_1 \space a_2 \dots a_n}]$ then $A\mathbf{x}$ is some point that lies in $\text{Span}\{\mathbf{a, a_2, \dots, a_n}\}.$
-
-::::
-
-## Matrix-Vector Multiplication
+## Review: Matrix Operations
 
 ::::{style="font-size:.8em"}
 
 __Example.__ One way to compute matrix-vector product is using linear combination.
 
 $$
-\begin{bmatrix} 1 & 2 & -1 \\ 0 & -5 & 3 \end{bmatrix} \begin{bmatrix} 4 \\ 3 \\ 7 \end{bmatrix} = 
-4 \begin{bmatrix} 1 \\ 0 \end{bmatrix} + 3 \begin{bmatrix} 2 \\ -5 \end{bmatrix} + 7 \begin{bmatrix} -1 \\ 3 \end{bmatrix} = 
+\small{\begin{bmatrix} 1 & 2 & -1 \\ 0 & -5 & 3 \end{bmatrix} \begin{bmatrix} 4 \\ 3 \\ 7 \end{bmatrix} = 
+4 \begin{bmatrix} 1 \\ 0 \end{bmatrix} + 3 \begin{bmatrix} 2 \\ -5 \end{bmatrix} + 7 \begin{bmatrix} -1 \\ 3 \end{bmatrix} =} 
 $$
 
 $$
-\begin{bmatrix} 4 \\ 0 \end{bmatrix} + \begin{bmatrix} 6 \\ -15 \end{bmatrix} + \begin{bmatrix} -7 \\ 21 \end{bmatrix} = \begin{bmatrix} 3 \\ 6 \end{bmatrix}.
+\small{\begin{bmatrix} 4 \\ 0 \end{bmatrix} + \begin{bmatrix} 6 \\ -15 \end{bmatrix} + \begin{bmatrix} -7 \\ 21 \end{bmatrix} = \begin{bmatrix} 3 \\ 6 \end{bmatrix}.}
 $$
 
 Another way is using inner products:
 $$
-\begin{bmatrix}1 & 2 & -1 \\ 0 & -5 & 3 \end{bmatrix}\begin{bmatrix}4\\3\\7\end{bmatrix}= \begin{bmatrix} 1 \cdot 4 \space+\space 2 \cdot 3 \space+\space (-1)\cdot 7 \\ 1 \cdot 4 \space+\space 2 \cdot 3 \space+\space (-1)\cdot 7\end{bmatrix} = \begin{bmatrix} 3 \\ 6 \end{bmatrix}.
+\small{\begin{bmatrix}1 & 2 & -1 \\ 0 & -5 & 3 \end{bmatrix}\begin{bmatrix}4\\3\\7\end{bmatrix}= \begin{bmatrix} 1 \cdot 4 \space+\space 2 \cdot 3 \space+\space (-1)\cdot 7 \\ 1 \cdot 4 \space+\space 2 \cdot 3 \space+\space (-1)\cdot 7\end{bmatrix} = \begin{bmatrix} 3 \\ 6 \end{bmatrix}.}
 $$
 ::::
 
-## Matrix-Vector Multiplication
+## Review: Matrix Operations
 
 :::{style="font-size:.8em"}
 In Python, we can use `Numpy` to calculate a matrix-vector product using the `@` symbol.
@@ -379,7 +257,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p> <span class="label">Theorem</span>
+        <p> <span class="label">Properties of matrix-vector multiplication</span>
         If \(A\) is an \(m \times n\) matrix, \(\bf u\) and \(\bf v\) are vectors in \(\mathbb{R}^n\), and \(c\) is a scalar, then:
         <ol type="1">
         <li> \(A({\bf u} + {\bf v}) = A{\bf u} + A{\bf v};\)</li>
@@ -394,8 +272,13 @@ display(HTML(html_content))
 
 :::
 
+:::{.notes}
+Distributive
 
-## Matrix Multiplication
+Scalar associative
+:::
+
+## Review: Matrix Operations
 
 ::::{style="font-size:.8em"}
 
@@ -407,8 +290,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p><span class="label">Matrix product</span>
-        If \(A\) is an \(m \times n\) matrix and \(B\) is \(n \times p\) matrix with columns \({\bf b_1},\dots,{\bf b_p},\) then the <b>product</b> \(AB\) is defined as the \(m \times p\) matrix whose columns are \(A{\bf b_1}, \dots, A{\bf b_p}:\)<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(AB = A[{\bf b_1} \; \dots \; {\bf b_p}] = [A{\bf b_1} \; \dots \; A{\bf b_p}].\)
+        If \(A\) is an \(m \times n\) matrix and \(B\) is \(n \times p\) matrix with columns \({\bf b_1},\dots,{\bf b_p},\) then the <b>product</b> \(AB\) is defined as the \(m \times p\) matrix whose columns are \(A{\bf b_1}, \dots, A{\bf b_p}:\) \(AB = A[{\bf b_1} \; \dots \; {\bf b_p}] = [A{\bf b_1} \; \dots \; A{\bf b_p}].\)
         </p>
     </div>
     """
@@ -423,8 +305,13 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p><span class="label">Theorem</span>
-        If \(A\) is \(m\times n\), and \(B\) is \(p \times q\), then \(AB\) is defined if and only if \(n = p\).   If \(AB\) is defined, then it is \(m \times q\).
+        <p><span class="label">Properties of matrix multiplication </span>
+        <ul>
+        <li> Associative: \(A(BC) = (AB)C\). </li>
+        <li> Scalar associative: \(r(AB) = (rA)B = A(rB)\) for any scalar \(r\).</li>
+        <li> Distributive: \(A(B+C) = AB + AC\) and \((B+C)A = BA + CA\). </li>
+        <li> Identity: \(I A = A = AI\).</li>
+        </ul>
         </p>
     </div>
     """
@@ -433,18 +320,15 @@ display(HTML(html_content))
 
 ```
 
-For example, &emsp;&emsp;$\begin{array}{cccc}A&B&=&AB\\ 3\times \fbox{5}&\fbox{5} \times 2&& 3 \times 2\\ \end{array}$
-
 ::::
 
-## Matrix Multiplication
+:::{.notes}
+Again similar to real numbers, but what product property is true for numbers, but not for matrices? 
+:::
+
+## Review: Matrix Operations
 
 ::::{style="font-size:.8em"}
-<!-- Matrix product can also be defined via inner product.
-
-$(AB)_{ij} =$ inner product of row $i$ of $A$ and column $j$ of $B$
-
-$(AB)_{ij} = \sum_k A_{ik}B_{kj}.$ -->
 
 ```{python}
 from IPython.core.display import HTML
@@ -453,7 +337,7 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-         Given \(A = \left[\begin{array}{rr}2&3\\1&-5\end{array}\right]\) and \(B = \left[\begin{array}{rrr}4&3&6\\1&-2&3\end{array}\right],\) compute the entry in row 1, column 3 of \(C=AB.\)
+         Given \(\small{A = \left[\begin{array}{rr}2&3\\1&-5\end{array}\right]}\) and \(\small{B = \left[\begin{array}{rrr}4&3&6\\1&-2&3\end{array}\right],}\) compute the entry in row 1, column 3 of \(\small{C=AB}.\)
         </p>
     </div>
     """
@@ -461,27 +345,8 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-For matrix multiplication we have the properties below.
-
-1. Associative: $A(BC) = (AB)C$
-2. Scalar associative: $r(AB) = (rA)B = A(rB)$ for any scalar $r$
-3. Distributive: $A(B+C) = AB + AC$ and $(B+C)A = BA + CA$ 
-4. Identity: $I A = A = AI$
-
-::::
-
-:::{.notes}
-$$
-AB = \left[\begin{array}{rr}\fbox{2} & \fbox{3}\\1&-5\end{array}\right]\left[\begin{array}{rrr}4&3&\fbox{6}\\1&-2&\fbox{3}\end{array}\right] = \left[\begin{array}{rrc}*&*&2(6)+3(3)\\*&*&*\end{array}\right] = \left[\begin{array}{rrr}*&*&21\\*&*&*\end{array}\right].
-$$
-:::
-
-## Matrix Multiplication
-
-::::{style="font-size:.8em"}
-Note: In general, $AB\neq BA$.
-
-
+:::{.fragment}
+Note: In general, $\small{AB\neq BA}$.
 ```{python}
 #| echo: true
 A = np.array([[2,  3],
@@ -496,123 +361,32 @@ A @ B
 #| error: true
 B @ A
 ```
+:::
 ::::
 
-<!-- ## Matrix Algebra
-
-::::{style="font-size:.7em"}
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="purple-box">
-        <p>
-        If \(A\) is \(m\times n\), and \(B\) is \(p \times q\), then \(AB\) is defined if and only if \(n = p\).   If \(AB\) is defined, then it is \(m \times q\).
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-
-```
-
-For example, &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;$\begin{array}{cccc}A&B&=&AB\\ 3\times \fbox{5}&\fbox{5} \times 2&& 3 \times 2\\ \end{array}$
-
-:::{.fragment}
+:::{.notes}
 $$
-\begin{array}{cccc}A&B&=&AB\\
-3\times 5&5 \times 2&& 3 \times 2\\
-\left[\begin{array}{rrrrr}*&*&*&*&*\\ *&*&*&*&*\\ *&*&*&*&*\end{array}\right] & 
-\left[\begin{array}{rr}*&*\\ *&*\\ *&*\\ *&*\\ *&*\end{array}\right] & 
-= &
-\left[\begin{array}{rr}*&*\\ *&*\\ *&*\end{array}\right]
-\end{array}
+AB = \left[\begin{array}{rr}\fbox{2} & \fbox{3}\\1&-5\end{array}\right]\left[\begin{array}{rrr}4&3&\fbox{6}\\1&-2&\fbox{3}\end{array}\right] = \left[\begin{array}{rrc}*&*&2(6)+3(3)\\*&*&*\end{array}\right] = \left[\begin{array}{rrr}*&*&21\\*&*&*\end{array}\right].
 $$
 :::
-:::: -->
-
-## Matrix Addition
-
-::::{style="font-size:.8em"}
-If $A$ and $B$ have the same shape, we get $A + B$ by adding the corresponding entries.  
-
-<div style="margin-bottom: 0.5em;"> </div> 
-
-$$
-(A + B)_{ij} = A_{ij} + B_{ij}.
-$$
-
-If $A$ and $B$ are not the same shape, $A + B$ is undefined.
-
-Furthermore, we define scalar-matrix multiplication entry-wise, just as for vectors.
-
-$$
-(rA)_{ij} = r(A_{ij}).
-$$
-
-::::
-
-## Matrix Addition
-
-::::{style="font-size:.8em"}
-Matrix addition satisfies the following properties.
-
-For any matrices $A, B, C$ of the same shape and any scalars $r, s \in \mathbb{R}$:
-
-1. $A +  B = B + A$
-2. $(A + B) + C = A + (B + C)$
-3. $A + 0 = A$
-4. $r(A + B) = rA + rB$
-5. $(r + s)A = rA + sA$
-6. $r(sA) = (rs)A$
-::::
-
-<!-- ## Matrix Algebra
-
-::::{style="font-size:.8em"}
-For matrix multiplication we have the properties below.
-
-1. Associative: $A(BC) = (AB)C$
-2. Scalar associative: $r(AB) = (rA)B = A(rB)$ for any scalar $r$
-3. Distributive: $A(B+C) = AB + AC$ and $(B+C)A = BA + CA$ 
-4. Identity: $I A = A = AI$
-
-:::: -->
-
-## Unexpected Properties
-
-::::{style="font-size:.75em"}
-1. We already saw that, $AB$ is _not_ equal to $BA$.  Multiplication is __not commutative!__
-    * Even if $AB$ is defined, $BA$ may not be defined.
-    * Sometimes though, $A$ and $B$ _do_ commute. For instance, the identity matrix $I$ commutes with all matrices.
-
-2. In general, you cannot cancel out matrices in a multiplication. If $AC = AB$, it does _not_ follow that $C = B$.
-3. If $AB$ is the zero matrix, in general, you cannot conclude that either $A$ or $B$ is a zero matrix.
-    * Example: $A = \left[\begin{array}{rr}1 & 0\\0&0\end{array}\right]$ and $B = \left[\begin{array}{rr}0 & 0\\0&1\end{array}\right].$
-
-::::
 
 ## Powers of a Matrix
 
 ::::{style="font-size:.8em"}
-Now with matrix-matrix multiplication, we can define the powers of a matrix in a straightforward way.  For an integer $k > 0$:
+Now with matrix-matrix multiplication, we can define the powers of a matrix.  For a square matrix $A$  and an integer $k > 0$:
 
 $$
-A^k = \overbrace{A\cdots A}^k.
+\small{A^k = \overbrace{A\cdots A}^k.}
 $$
 
-Obviously, $A$ must be a square matrix for $A^k$ to be defined.
+<!-- $$
+\small{A^k = \overbrace{A\cdots A}^k.}
+$$ -->
 
 What should $A^0$ be?
 
 $A^0{\bf x}$ should be the result of multiplying ${\bf x}$ with $A$ zero times.   So we define $A^0 = I$.
 
-:::
-
-## Powers of a Matrix
-::::{style="font-size:.8em"}
-
 ```{python}
 from IPython.core.display import HTML
 
@@ -620,12 +394,12 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-         Let \(A = \begin{bmatrix} 
+         Let \(\small{A = \begin{bmatrix} 
 2 & 0 & 0\\
 0 & -1 & 0\\
 0 & 0 & 1
-\end{bmatrix} .\)
-Compute \(A^0, A^2,\) and \(A^3.\)
+\end{bmatrix}}.\)
+Compute \(\small{A^0, A^2,}\) and \(\small{A^3.}\)
         </p>
     </div>
     """
@@ -633,26 +407,7 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-<br>
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-         Prove that, if \(A\) is a matrix, then the matrix \(AA^T\) is symmetric.
-
-Hint: A matrix \(S\) is called symmetric when \(S^T = S.\)
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
-
-::::
+:::
 
 :::{.notes}
 $$A_0 = I_3, A_2 = \begin{bmatrix} 
@@ -669,14 +424,371 @@ A_3 = \begin{bmatrix}
 Because $(AA^T)^T = (A^T)^TA^T = AA^T$, we see that $AA^T$ is symmetric.
 :::
 
+## Review: Linear Systems
 
-<!-- ## Key Ideas
+::::{style="font-size:.8em"}
+Consider the following linear system,
 
-:::{style="font-size:.8em" .incremental}
+$$
+\small{\begin{aligned}
+    x_1 - 2x_2 + x_3 &= 5 \\
+    2x_2 - 8x_3 &= -4 \\
+    6x_1 + 5x_2 + 9x_3 &= -4
+\end{aligned}}
+$$
 
-- The set $\{{\bf v_1, ..., v_p}\}$ is said is said to be __linearly independent__ if the vector equation $x_1{\bf v_1} + ... + x_p{\bf v_p} = {\bf 0}$ has only the trivial solution $x_1 = 0, ..., x_p = 0$.
+the matrices
 
-- The vectors $\mathbf{v_1,v_2,\dots,v_p}$ span the space if their combinations fill that space.
+$$
+\small{\begin{bmatrix}
+    1 & -2 & 1 \\
+    0 & 2 & -8 \\
+    6 & 5 & 9
+\end{bmatrix}} \text{ and } \small{\left[\begin{array}{ccc|c}
+    1 & -2 & 1  & 5 \\
+    0 & 2 & -8  & -4 \\
+    6 & 5 & 9  & -4
+\end{array}\right]}
+$$
 
-- Matrices do not always obey the same algebraic rules as scalars. For example, in general, $AB \neq BA.$
+are called the __coefficient matrix__ and  __augmented matrix__ of the system, respectively.
+::::
+
+## Review: Linear Systems
+
+::::{style="font-size:.8em"}
+To solve a linear system, the following **elementary row operations** are performed on rows of the (augmented) matrix:
+
+1. Swap two rows.
+2. Multiply a row by a nonzero value.
+3. Add a multiple of a row to another row.
+
+__Note:__ The elementary row operations do not change the solution set of the system.
+<br>
+
+By applying an appropriate sequence of elementary row
+operations to a matrix, we can always reduce it to a matrix in (reduced) echelon form. 
+::::
+
+## Review: Echelon Form
+
+::::{style="font-size:.75em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Pivot position and value </span>
+        A <b>pivot position</b> is the location of the first nonzero element in each row. <b>Pivot value</b> is the number in the pivot position.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+<br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Echelon form </span>
+        A matrix is in <b>(row) echelon form</b> if it has the following three properties:
+        <ol type="1">
+        <li>Any row that contains all zeros occurs at the bottom of the matrix (i.e., any row with a nonzero entry must appear above it).</li>
+        <li>The pivot position of each row is located in a column to the right of the pivot position in the row directly above it.</li>
+        <li>All entries in a column below a pivot position are zeros.</li>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+::::
+
+## Review: Echelon Form
+
+:::{style="font-size: .8em"}
+
+For example:
+
+$$
+\left[\begin{array}{ccccccccc|c}
+0&\blacksquare&*&*&*&*&*&*&*&*\\
+0&0&0&\blacksquare&*&*&*&*&*&*\\
+0&0&0&0&\blacksquare&*&*&*&*&*\\
+0&0&0&0&0&\blacksquare&*&*&*&*\\
+0&0&0&0&0&0&0&0&\blacksquare&*\\
+0&0&0&0&0&0&0&0&0&0\\
+\end{array}\right]
+$$
+
+In this diagram, the $\blacksquare$ symbols denote pivot positions, and the $*$ symbols can be any value.   
+:::
+
+:::{.notes}
+The pivot position of each row is located in a column to the right of the pivot position in the row directly above it.
+:::
+
+## Review: Echelon Form
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Reduced echelon form </span>
+        A matrix is in <b>reduced (row) echelon form</b> if it is echelon form, <i>and</i>:
+        <ol start="4">
+        <li>The pivot value in each nonzero row is 1.</li>
+        <li>Each pivot value is the only nonzero entry in its column.</li>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+$$\small{
+\left[\begin{array}{ccccccccc|c}
+0&\fbox{1}&*&0&0&0&*&*&0&*\\
+0&0&0&\fbox{1}&0&0&*&*&0&*\\
+0&0&0&0&\fbox{1}&0&*&*&0&*\\
+0&0&0&0&0&\fbox{1}&*&*&0&*\\
+0&0&0&0&0&0&0&0&\fbox{1}&*\\
+0&0&0&0&0&0&0&0&0&0\\
+\end{array}
+\right]}
+$$
+:::
+
+## Review: Echelon Form
+:::{style="font-size: .8em"}
+__Example.__ <br>
+Step 1: $\text{row}_3 \gets \text{row}_3 - 6 \cdot \text{row}_1$ <br>
+Step 2: $\text{row}_2 \gets \frac{1}{2} \cdot \text{row}_2$
+$$\small{
+\left[
+\begin{array}{rrr|r}
+        1  & -2  & 1 & 5\\
+        0 & 2 &  - 8 & -4\\
+        \color{red}{6} & 5 &9 & -4
+\end{array}
+\right] \sim \left[
+\begin{array}{rrr|r}
+        1  & -2  & 1 & 5\\
+        0 & \color{red}{2} &  - 8 & -4\\
+        0 & 17 & 3 & -34
+\end{array}
+\right] \sim 
+\left[
+\begin{array}{rrr|r}
+        1  & -2  & 1 & 5\\
+        0 & 1 &  - 4 & -2\\
+        0 & \color{red}{17} & 3 & -34
+\end{array}
+\right]}
+$$
+
+Step 3: $\text{row}_3 \gets \text{row}_3 - 17 \cdot \text{row}_2$<br>
+Step 4: $\text{row}_3 \gets \frac{1}{71} \cdot \text{row}_3$
+$$ \small{\sim \left[
+\begin{array}{rrr|r}
+        1  & -2  & 1 & 5\\
+        0 & 1 &  -4 & -2\\
+        0 & 0 & \color{red}{71} & 0
+\end{array}
+\right] \sim \left[
+\begin{array}{rrr|r}
+        1  & -2  & 1 & 5\\
+        0 & 1 &  -4 & -2\\
+        0 & 0 & 1 & 0
+\end{array}
+\right]}
+$$
+:::
+
+## Review: Echelon Form
+:::{style="font-size: .8em"}
+__Example (continued).__ <br>
+The obtained matrix is in echelon form. We apply the final steps to transform it into reduced echelon form.<br>
+Step 5: $\text{row}_1 \gets \text{row}_1 - \text{row}_3$ and $\text{row}_2 \gets \text{row}_2 + 4 \cdot \text{row}_3$ <br>
+Step 6: $\text{row}_1 \gets \text{row}_1 + 2 \cdot \text{row}_2$
+$$\left[
+\begin{array}{rrr|r}
+        1  & -2  & \color{red}{1} & 5\\
+        0 & 1 &  \color{red}{-4} & -2\\
+        0 & 0 & 1 & 0
+\end{array}
+\right] \sim \left[
+\begin{array}{rrr|r}
+        1  & \color{red}{-2}  & 0 & 5\\
+        0 & 1 & 0 & -2\\
+        0 & 0 & 1 & 0
+\end{array}
+\right] \sim \left[
+\begin{array}{rrr|r}
+        1  & 0  & 0 & 1\\
+        0 & 1 & 0 & -2\\
+        0 & 0 & 1 & 0
+\end{array}
+\right].
+$$
+Now we can read off the solution: $x_1 = 1, x_2 = -2, x_3 = 0.$
+
+This process is known as Gauss-Jordan elimination.
+:::
+
+## Review: Gauss-Jordan Elimination
+
+::::{style="font-size:.75em"}
+Gauss-Jordan Elimination has two stages. Given an augmented matrix $A$ representing a linear system:
+
+1. __Elimination:__ Convert $A$ to one of its echelon forms, say $U.$
+
+2. __Backsubstitution:__ Convert $U$ to $A$'s reduced row echelon form.
+
+__Remark.__ The echelon form of a matrix is not unique, but the reduced echelon form is unique.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Is \(\small{\left[\begin{array}{rrr|r}2&-3&2&1\\0&1&-4&8\\0&0&0&-5\end{array}\right]}\) in echelon form?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+::::
+
+## Free and Basic Variables
+:::{style="font-size: .8em"}
+
+The columns that contain the pivots in the echelon form correspond to the __basic variables__, and the remaining variables are __free variables__.
+
+$$\small{
+\begin{array}{c}
+\left[\begin{array}{ccccccccc|c}
+\color{red}{0} & \color{blue}{\fbox{1}} & \color{red}{*} & \color{blue}{0} & \color{blue}{0} & \color{blue}{0} & \color{red}{*} & \color{red}{*} & \color{blue}{0} & *\\
+\color{red}{0} & \color{blue}{0}    & \color{red}{0} & \color{blue}{\fbox{1}} & \color{blue}{0} & \color{blue}{0} & \color{red}{*} & \color{red}{*} & \color{blue}{0} & *\\
+\color{red}{0} & \color{blue}{0}    & \color{red}{0} & \color{blue}{0}    & \color{blue}{\fbox{1}} & \color{blue}{0} & \color{red}{*} & \color{red}{*} & \color{blue}{0} & *\\
+\color{red}{0} & \color{blue}{0}    & \color{red}{0} & \color{blue}{0}    & \color{blue}{0}    & \color{blue}{\fbox{1}} & \color{red}{*} & \color{red}{*} & \color{blue}{0} & *\\
+\color{red}{0} & \color{blue}{0}    & \color{red}{0} & \color{blue}{0}    & \color{blue}{0}    & \color{blue}{0}    & \color{red}{0} & \color{red}{0}    & \color{blue}{\fbox{1}} & *\\
+\color{red}{0} & \color{blue}{0}    & \color{red}{0} & \color{blue}{0}    & \color{blue}{0}    & \color{blue}{0}    & \color{red}{0} & \color{red}{0}    & \color{blue}{0}    & 0\\
+\end{array}\right]
+\\[6pt]
+% \begin{array}{ccccccccc}
+% \color{red}{x_1} & \color{blue}{x_2} & \color{red}{x_3} & \color{blue}{x_4} & \color{blue}{x_5} & \color{blue}{x_6} & \color{red}{x_7} & \color{red}{x_8} & \color{blue}{x_9}
+% \end{array}
+\end{array}}
+$$
+
+- <font color=blue>$x_2$, $x_4$, $x_5$, $x_6$, and $x_9$ are the basic variables</font>, and
+- <font color=red>$x_1$, $x_3$, $x_7$, and $x_8$ are the free variables</font>.
+
+<!-- beautiful matrix... wow to whoever behind this -->
+
+:::
+
+## Consistency
+
+:::{style="font-size: .8em"}
+
+- Inconsistent system (no solutions): during Gauss-Jordan elimination we obtain the augmented matrix with a row that looks like this:
+$$
+\left[\begin{array}{cccccc|c}
+0&0&0& \cdots &0&0&\blacksquare
+\end{array}\right],
+$$
+
+where $\blacksquare$ denotes a non-zero entry. 
+
+
+Otherwise, the system is consistent.
+
+- Consistent system with a unique solution: each column left from the partition line contains a pivot. That is, there are _**no free variables**_.
+
+Otherwise, a consistent system has infinitely many solutions.
+
+:::
+
+## Linear Systems 
+:::{style="font-size: .8em"}
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+         Let \(A = \begin{bmatrix}
+        0 & 0 & 0 & 0\\
+        0 & 0 & 0 & 0
+    \end{bmatrix}\) and 
+    \(B = \begin{bmatrix}
+    1 & 0 \\
+    0 & 0 \\
+    0 & 1 \\ 
+    0 & 0 
+    \end{bmatrix}.\)<br> 
+    a. Which of these matrices is/are in reduced row echelon form?<br>
+    <br><br>
+    b. Is the system \(A\mathbf{x} = \mathbf{0}\) consistent? If so, is the solution unique?<br>
+    <br><br>
+    c. Is the system \(B\mathbf{x} = \mathbf{0}\) consistent? If so, is the solution unique?<br>
+    <br><br>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+:::
+
+:::{.notes}
+a. A
+b. yes, no
+c. yes,yes
+:::
+
+<!-- ## Consistency
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> <span class="label">Theorem</span>
+        Let \(A\) be an \(m \times n\) matrix.  Then the following statements are logically equivalent.  
+            <ol>
+            <li> For each \(\bf b\) in \(\mathbb{R}^m,\) the equation \(A{\bf x} = {\bf b}\) has a solution.</li>
+            <li> Each \(\bf b\) in \(\mathbb{R}^m\) is a linear combination of the columns of \(A.\)</li>
+            <li> The columns of \(A\) span \(\mathbb{R}^m\).</li>
+            <li> \(A\) has a pivot position in every row. </li>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+__Proof.__ See notes.
 ::: -->
+
+
