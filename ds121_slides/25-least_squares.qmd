@@ -17,18 +17,21 @@ format:
 
 :::{style="font-size: .8em"}
 
-- Orthogonal decomposition theorem
-- The best approximation theorem
-- Working with inconsistent systems
-- Least-squares 
+- Orthogonal decomposition theorem and best approximation theorem
+- Working with inconsistent (overdetermined) systems
+- Least-squares
     - Problem statement
     - Connection to projection
     - Normal equations
+
+:::{style="font-size: .75em"}
+_Recall from L24: QR factorization gives an efficient way to solve the normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}$ via back-substitution._
+:::
 :::
 
 
 
-## Projecting onto Subspaces
+## Orthogonal Decomposition Theorem{.smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -133,7 +136,7 @@ Given any orthogonal basis $\{\mathbf{u_1}, \mathbf{u_2}, \ldots, \mathbf{u_d}\}
 
 ::: -->
 
-## Projecting onto Subspaces {.really-smaller-title}
+## Best Approximation Theorem{.smaller-title}
 
 :::{style="font-size: 0.9em"}
 ```{python}
@@ -202,10 +205,10 @@ fig.hideAxes()
 ::: 
 
 
-## Solving Linear Systems
+## Motivating Example: Exercise and Exam Data{.smaller-title}
 
 :::{style="font-size: .75em"}
-<!-- It often happens that $A\mathbf{x} = \mathbf{b}$ has no solutions. The usual reason is: _too many equations_. The matrix $A$ has more rows than columns. If $A$ is $m \times n$, $m>n$. 
+<!-- It often happens that $A\mathbf{x} = \mathbf{b}$ has no solutions. The usual reason is: _too many equations_. The matrix $A$ has more rows than columns. If $A$ is $m \times n$, $m>n$.
 
 Let us consider the example below. -->
 
@@ -223,7 +226,7 @@ In 2014, data was collected regarding the percentage of linear algebra exercises
 
 :::
 
-## Solving Linear Systems
+## Setting Up the Linear Model{.smaller-title}
 :::{style="font-size: .8em"}
 
 We assume a linear relationship between the percentage of exercises completed and the exam grade. We can express this relationship using 
@@ -271,32 +274,14 @@ display(HTML(html_content))
 
 :::
 
-## Inconsistent Systems
+## Overdetermined Systems Have No Exact Solution{.smaller-title}
 
 :::{style="font-size: .8em"}
-The system from our example has no solutions. It is inconsistent.
+The system from our example has no solutions — it is inconsistent.
 
-</br>
+It often happens that $A\mathbf{x} = \mathbf{b}$ has no solutions when $A$ has more rows than columns ($m > n$): the columns of $A$ do not span $\mathbb{R}^m$, and $\mathbf{b}$ is not in the column space of $A$.
 
-It often happens that $A\mathbf{x} = \mathbf{b}$ has no solutions. The usual reason is: _too many equations_. The matrix $A$ has more rows than columns. If $A$ is $m \times n$, then $m>n$. 
-
-</br>
-
-Unless measuraments are perfect, Gauss-Jordan elimination reaches an impossible point and stops. But we can't stop because our data includes noise (or errors).
-
-
-:::
-
-
-
-## Inconsistent Systems
-
-:::{style="font-size: .8em"}
-
-If $A$ is $m\times n$ and $A\mathbf{x} = \mathbf{b}$ has no solutions, that is because the columns of $A$ do not span $\mathbb{R}^m$ and $\mathbf{b}$ is not in the column space of $A$.
-
-Our assumption is that the reason that $\mathbf{b}$ does not lie in $\operatorname{Col}\,A$ is due to an error in the data.
-Here is an example where $A$ is $3 \times 2$:
+Unless measurements are perfect, Gauss-Jordan elimination reaches an impossible equation. But we can't stop — our data includes noise. Here is an example where $A$ is $3 \times 2$:
 
 :::{.center-text}
 ```{python}
@@ -337,7 +322,7 @@ fig.hideAxes()
 :::
 :::
 
-## Inconsistent Systems
+## Strategy: Find the Best Approximation{.smaller-title}
 
 :::{style="font-size: .8em"}
 What can we do when $A\mathbf{x} = \mathbf{b}$ has _no solutions_?
@@ -353,7 +338,7 @@ If we make the assumption that the errors in the data are small, then we should 
 In other words, we are looking for an $\mathbf{x}$ such that $A\mathbf{x}$ makes a good __approximation__ to $\mathbf{b}.$
 :::
 
-## Inconsistent Systems
+## Visualizing: b Is Not in Col A{.smaller-title}
 
 :::{style="font-size: .8em"}
 :::{.center-text}
@@ -394,7 +379,7 @@ fig.hideAxes()
 We can think of the quality of the approximation of $A\mathbf{x}$ to $\mathbf{b}$ as the distance from $A\mathbf{x}$ to $\mathbf{b},$ which is $\Vert A\mathbf{x} - \mathbf{b}\Vert.$
 :::
 
-## Least-Squares Problem
+## Definition: The Least-Squares Problem{.smaller-title}
 
 :::{style="font-size: .8em"}
 The __general least-squares problem__ is to find an $\mathbf{x}$ that makes $\Vert A\mathbf{x}-\mathbf{b}\Vert$ as small as possible.
@@ -416,11 +401,10 @@ Where we interpret $y_i$ as the __estimated value__ and $b_i$ as the __measured 
 Hence, this expression is the __sum of squared errors.__  
 :::
 
-## Least-Squares Problem
+## Definition: Least-Squares Solution{.smaller-title}
 
 :::{style="font-size: .8em"}
 Minimizing the length of $A\mathbf{x} - \mathbf{b}$ is the same as minimizing the sum of squared error.
-<br>
 
 ```{python}
 from IPython.core.display import HTML
@@ -436,14 +420,13 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-<br>
 
-<!-- The point here is that no matter what $\mathbf{x}$ is, $A\mathbf{x}$ will be in the column space of $A.$  -->
-
+:::{.fragment}
 So $\mathbf{b}$ is outside $\operatorname{Col}A$, and we are looking for $\hat{\mathbf{x}}$, which specifies the closest point in $\operatorname{Col}A$ to $\mathbf{b}$.
 :::
+:::
 
-## Least-Squares Problem
+## Visualizing the Least-Squares Solution{.smaller-title}
 
 :::{style="font-size: .8em"}
 :::{.center-text}
@@ -516,7 +499,7 @@ display(HTML(html_content))
 
 :::
 
-## Projection Solves Least Squares{.really-smaller-title}
+## How Projection Solves Least Squares{.smaller-title}
 
 :::{style="font-size: .9em"}
 We want $A\hat{\mathbf{x}}$ to be the closest point in $\operatorname{Col}A$ to $\mathbf{b}$.
@@ -536,7 +519,7 @@ A\mathbf{\hat{x}} = \hat{\mathbf{b}}.
 $$
 :::
 
-## Projection Solves Least Squares{.smaller-title}
+## Geometric View: Projection as Least-Squares{.smaller-title}
 
 :::{style="font-size: .8em"}
 :::{.center-text}
@@ -580,7 +563,7 @@ Since $\hat{\mathbf{b}}$ is the closest point in $\operatorname{Col}A$ to $\math
 However, if $A$ has free variables (the columns of $A$ are dependent) there are infinitely many solutions of $A\mathbf{\hat{x}} =\hat{\mathbf{b}}$.
 :::
 
-## Projection Solves Least Squares{.really-smaller-title}
+## Finding the Least-Squares Solution: Example{.smaller-title}
 
 :::{style="font-size: .9em"}
 Let's go back to the case that we can visualize: $A$ is $3 \times 2.$ We have only two columns, $\mathbf{a}_1$ and $\mathbf{a}_2$, so they cannot span $\mathbb{R}^3$.  Hence, it is possible that a vector $\mathbf{b} \in \mathbb{R}^3$ might not lie in $\operatorname{Col}A$:
@@ -611,7 +594,7 @@ fig.ax.view_init(azim=30, elev=-80.0)
 :::
 :::
 
-## Projection Solves Least Squares{.really-smaller-title}
+## Projection as the Closest Point in Col A{.smaller-title}
 
 :::{style="font-size: .9em"}
 We want to find the projection of $\mathbf{b}$ into the column space of $A$:
@@ -645,7 +628,7 @@ fig.ax.view_init(azim=30, elev=-80.0)
 ```
 :::
 
-## Normal Equations
+## Deriving the Normal Equations{.smaller-title}
 
 :::{style="font-size: .8em"}
 How do we find this projection $\hat{b}$?
@@ -663,17 +646,28 @@ We can decompose $\mathbf{b} = \hat{\mathbf{b}} + \mathbf{z}$ -- so in other wor
 Suppose $\hat{\mathbf{b}}$ is $\mbox{proj}_{\operatorname{Col}A}\mathbf{b},$ and that $\mathbf{\hat{x}}$ satisfies $A\mathbf{\hat{x}} = \hat{\mathbf{b}}$. 
 
 Hence, $A\mathbf{\hat{x}} - \mathbf{b}$ is orthogonal to $\operatorname{Col}A$ or simply each column of $A$.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Why do we multiply both sides of \(A\mathbf{\hat{x}} = \hat{\mathbf{b}}\) by \(A^T\) to get the normal equations? What does this accomplish geometrically?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
 :::
 
-## Normal Equations
+## Orthogonality Conditions in Matrix Form{.smaller-title}
 
 :::{style="font-size: .8em"}
 If $\mathbf{a}_j$ is any column of $A$, then $\mathbf{a}_j^\top (A\mathbf{\hat{x}} - \mathbf{b}) = 0.$
 
 Now, each $\mathbf{a}_j^\top$ is a row of $A^\top$.
 
-<br>
-
+:::{.fragment}
 We can collect the equations for all the $\mathbf{a}_j$ as:
 
 $$
@@ -683,13 +677,14 @@ A^\top A\mathbf{\hat{x}} - A^\top\mathbf{b} &= {\bf 0} \\
 A^\top A\mathbf{\hat{x}} &= A^\top \mathbf{b}
 \end{align*}
 $$
-
-<br>
-
-$A^\top A$ is a matrix and $A^\top \mathbf{b}$ is a vector, so this is a standard linear system.  
 :::
 
-## Normal Equations
+:::{.fragment}
+$A^\top A$ is a matrix and $A^\top \mathbf{b}$ is a vector, so this is a standard linear system.
+:::
+:::
+
+## Theorem: Normal Equations Give Least-Squares Solutions{.smaller-title}
 
 :::{style="font-size: .8em"}
 Specifically, that linear system is called the __normal equations__ for $A\mathbf{x} = \mathbf{b}.$
@@ -716,7 +711,7 @@ display(HTML(html_content))
 Proof: see the notes.
 :::
 
-## Normal Equations
+## Solving the Normal Equations: Example{.smaller-title}
 
 :::{style="font-size: .8em"}
 Let us find the least squares solution of the inconsistent system $A\mathbf{x} = \mathbf{b}$ for
@@ -742,7 +737,7 @@ A^\top \mathbf{b} =  \begin{bmatrix}4&0&1\\0&2&1\end{bmatrix} \begin{bmatrix}2\\
 $$
 :::
 
-## Normal Equations
+## Computing the Final Least-Squares Solution{.smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -776,7 +771,7 @@ However, the solution does not have to be unique. There can be multiple solution
 We know that a linear system has multiple solutions when there are columns that are not pivot columns. Equivalently, when $A \bf{\hat{x}} = \bf{\hat{b}}$ has multiple solutions, the columns of $A$ are linearly dependent.
 :::
 
-## Normal Equations
+## When Do Normal Equations Have Multiple Solutions?{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 <!-- We know that a linear system has multiple solutions when there are columns that are not pivot columns. Equivalently, when $A \bf{\hat{x}} = \bf{\hat{b}}$
@@ -821,7 +816,7 @@ The orthogonal projection $\hat{\mathbf{b}}$ is always unique.   Some least squa
 
 ::: -->
 
-<!-- ## Normal Equations
+<!-- ## Non-Unique Example: Setting Up Normal Equations{.really-smaller-title}
 
 :::{style="font-size:.8em"}
 
@@ -844,7 +839,7 @@ A^{\top} A = \begin{bmatrix}1&1&1&1&1&1\\1&1&0&0&0&0\\0&0&1&1&0&0\\0&0&0&0&1&1\e
 $$
 :::
 
-## Normal Equations
+## Non-Unique Example: Row Reduction{.really-smaller-title}
 
 :::{style="font-size:.6em"}
 
@@ -868,7 +863,7 @@ $$
 In the RREF, there are only 3 pivot columns, so there is a free variable.
 :::
 
-## Normal Equations
+## Non-Unique Example: Interpreting the RREF{.really-smaller-title}
 
 :::{style="font-size:.8em"}
 <!-- To solve $A^{\top} A\hat{\mathbf{x}} = A^{\top} \mathbf{b},$ we'll use row reduction.  The augmented matrix $[A^{\top} A \vert A^{\top} \mathbf{b}]$ is:
@@ -894,7 +889,7 @@ The columns of $A^\top A$ are linearly dependent, because the columns of $A$ are
 You can see this as follows: if $A$ has a non-trivial null space, then $A^\top A$ also has a nontrival null space.
 :::
 
-## Normal Equations
+## Non-Unique Example: General Solution{.really-smaller-title}
 
 :::{style="font-size:.8em"}
 The general solution of the normal equations is $x_1 = 3-x_4,$ $x_2 = -5+x_4,$ $x_3 = -2 + x_4,$ and $x_4$ is free.
@@ -908,7 +903,7 @@ $$
 $$
 :::
 
-## Normal Equations
+## Theorem: Uniqueness of Least-Squares Solution{.really-smaller-title}
 
 :::{style="font-size:.8em"}
 
@@ -962,8 +957,75 @@ This equation shows how to project onto a subspace (namely $\operatorname{Col} A
 
 - The best $\hat{\mathbf{x}}$ comes from the normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}.$
 
-- Normal equations always have a solution, but it is not unique when the solumns of $A$ are linearly dependent.
+- Normal equations always have a solution, but it is not unique when the columns of $A$ are linearly dependent.
 ::: -->
+
+## Visualizing Residuals{.smaller-title}
+
+:::{style="font-size: .8em"}
+The **residual** $\mathbf{r} = \mathbf{b} - A\hat{\mathbf{x}}$ measures the error at each data point. Least squares minimizes the total squared length of the residuals.
+:::
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Exercise/exam data
+pct = np.array([20, 100, 90, 70, 50, 10, 30], dtype=float)
+grade = np.array([50, 100, 100, 70, 75, 25, 60], dtype=float)
+
+# Least-squares fit
+A = np.column_stack([np.ones_like(pct), pct])
+xhat = np.linalg.lstsq(A, grade, rcond=None)[0]
+fitted = A @ xhat
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.scatter(pct, grade, color='steelblue', s=80, zorder=5, label='Observed')
+xs = np.linspace(0, 110, 200)
+ax.plot(xs, xhat[0] + xhat[1]*xs, 'k-', lw=2, label=r'$A\hat{\mathbf{x}}$ (fit)')
+for xi, yi, fi in zip(pct, grade, fitted):
+    ax.plot([xi, xi], [fi, yi], 'r-', lw=1.5, alpha=0.7)
+ax.scatter(pct, fitted, color='black', s=40, zorder=5)
+ax.set_xlabel('% of Exercises Completed', fontsize=12)
+ax.set_ylabel('Exam Grade', fontsize=12)
+ax.set_title('Residuals (red) = observed − fitted', fontsize=12)
+ax.legend(fontsize=11)
+ax.set_xlim(0, 110); ax.set_ylim(0, 115)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+## Practice: Least Squares End-to-End{.smaller-title}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Consider the inconsistent system \(A\mathbf{x} = \mathbf{b}\) with
+        \[A = \begin{bmatrix}1 & 0\\ 0 & 1\\ 1 & 1\end{bmatrix}, \quad \mathbf{b} = \begin{bmatrix}2\\ 1\\ 5\end{bmatrix}.\]
+        <ol type="a">
+            <li>Verify that \(\mathbf{b}\) is not in \(\operatorname{Col}A\) (i.e., the system is inconsistent).</li>
+            <li>Set up the normal equations \(A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}\).</li>
+            <li>Solve for \(\hat{\mathbf{x}}\).</li>
+            <li>Compute \(A\hat{\mathbf{x}}\) and the residual \(\mathbf{r} = \mathbf{b} - A\hat{\mathbf{x}}\). Verify that \(\mathbf{r} \perp \operatorname{Col}A\).</li>
+        </ol>
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.notes}
+a. Augmented matrix [A|b] → row reduce → row [0,0|1] appears → inconsistent.
+b. A^T A = [[2,1],[1,2]], A^T b = [[7],[6]].
+c. Normal equations: [[2,1],[1,2]]x = [7,6]. det = 3. x-hat = (1/3)[[2,-1],[-1,2]][7,6] = (1/3)[[8],[5]] = [8/3, 5/3].
+d. A x-hat = [8/3, 5/3, 13/3]. r = [2-8/3, 1-5/3, 5-13/3] = [-2/3, -2/3, 2/3].
+Check: a1^T r = [1,0,1]·[-2/3,-2/3,2/3] = -2/3+2/3 = 0 ✓. a2^T r = [0,1,1]·[-2/3,-2/3,2/3] = -2/3+2/3 = 0 ✓.
+:::
 
 
 

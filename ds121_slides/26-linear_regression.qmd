@@ -26,10 +26,10 @@ format:
     - multiple
 :::
 
-## Normal Equations
+## Normal Equations Don't Always Have Unique Solutions{.smaller-title}
 
 :::{style="font-size: .8em"}
-The normal equations _**always**_ have a solution.  
+The normal equations _**always**_ have a solution.
 </br>
 
 However, the solution does not have to be unique. There can be multiple solutions that all minimize $\Vert A\mathbf{x} - \mathbf{b}\Vert.$
@@ -39,7 +39,7 @@ However, the solution does not have to be unique. There can be multiple solution
 We know that a linear system has multiple solutions when there are columns that are not pivot columns. Equivalently, when $A \bf{\hat{x}} = \bf{\hat{b}}$ has multiple solutions, the columns of $A$ are linearly dependent.
 :::
 
-## Normal Equations
+## When Columns Are Dependent: Multiple Solutions{.smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -87,7 +87,7 @@ The orthogonal projection $\hat{\mathbf{b}}$ is always unique. Some least square
 
 ::: 
 
-## Normal Equations
+## Normal Equations with Dependent Columns: Example{.smaller-title}
 
 :::{style="font-size:.8em"}
 
@@ -110,7 +110,7 @@ A^{\top} A = \begin{bmatrix}1&1&1&1&1&1\\1&1&0&0&0&0\\0&0&1&1&0&0\\0&0&0&0&1&1\e
 $$
 :::
 
-## Normal Equations
+## Normal Equations with Dependent Columns: Example{.smaller-title}
 
 :::{style="font-size:.6em"}
 
@@ -134,7 +134,7 @@ $$
 In the RREF, there are only 3 pivot columns, so there is a free variable.
 :::
 
-## Normal Equations
+## Normal Equations with Dependent Columns: Example{.smaller-title}
 
 :::{style="font-size:.8em"}
 From the RREF we see that only the first three columns of $A^\top A$ are linearly independent. The last column can be written as a linear combination of them.
@@ -148,7 +148,7 @@ The columns of $A^\top A$ are linearly dependent, because the columns of $A$ are
 You can see this as follows: if $A$ has a non-trivial null space, then $A^\top A$ also has a nontrival null space.
 :::
 
-## Normal Equations
+## Normal Equations with Dependent Columns: Example{.smaller-title}
 
 :::{style="font-size:.8em"}
 The general solution of the normal equations is $x_1 = 3-x_4,$ $x_2 = -5+x_4,$ $x_3 = -2 + x_4,$ and $x_4$ is free.
@@ -162,7 +162,7 @@ $$
 $$
 :::
 
-## Normal Equations
+## Uniqueness of Least-Squares Solutions{.smaller-title}
 
 :::{style="font-size:.8em"}
 
@@ -193,7 +193,7 @@ display(HTML(html_content))
 
 :::
 
-## Projection Using Any Basis
+## Projection Using Any Basis{.smaller-title}
 
 :::{style="font-size: .8em"}
 When $A^\top A$ is invertible, we can put together the two equations
@@ -210,21 +210,22 @@ Let's stop and look at this another way.  Up until now we have seen how to proje
 This equation shows how to project onto a subspace (namely $\operatorname{Col} A$) given an _**arbitrary**_ basis.  This is a general formula that can be very useful.
 ::: 
 
-## Simple Regression 
+## Linear Regression: Fitting a Line to Data{.smaller-title}
 
 :::{style="font-size: .8em"}
 Let's imagine for a moment a data set where the data fit a line perfectly.
 
 Then, if each of the data points happened to fall exactly on the line, the parameters $\beta_0$ and $\beta_1$ would satisfy the equations:
 
+:::{.fragment}
 $$
-\beta_0 + \beta_1 x_1 = y_1 
-$$
-$$
-\beta_0 + \beta_1 x_2 = y_2 
+\beta_0 + \beta_1 x_1 = y_1
 $$
 $$
-\beta_0 + \beta_1 x_3 = y_3 
+\beta_0 + \beta_1 x_2 = y_2
+$$
+$$
+\beta_0 + \beta_1 x_3 = y_3
 $$
 $$
 \vdots
@@ -234,9 +235,10 @@ $$
 \beta_0 + \beta_1 x_n = y_n
 $$
 :::
+:::
 
 
-## Simple Regression 
+## Matrix Formulation of Simple Regression{.smaller-title}
 
 :::{style="font-size: .8em"}
 We can write this system as the following matrix equation:
@@ -252,10 +254,22 @@ $$
 * The independent variables are collected into the __design matrix__ $X.$
 * The dependent variables are collected into an __observation__ vector $\mathbf{y}.$
 * The parameters of the model are collected into a __parameter__ vector $\beta.$
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Why is the first column of the design matrix \(X\) all ones? What role does this play in the regression model \(y = \beta_0 + \beta_1 x\)?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
 :::
 
 
-## Simple Regression 
+## Minimizing Squared Residuals{.smaller-title}
 
 :::{style="font-size: .8em"}
 If the data points don't actually lie exactly on a line: 
@@ -275,7 +289,7 @@ _The sum of squares of the residuals is exactly the square of the distance betwe
 :::
 :::
 
-## Simple Regression 
+## Regression as a Least-Squares Problem{.smaller-title}
 
 :::{style="font-size: .8em"}
 This is a least-squares problem, $A\mathbf{x} = \mathbf{b},$ just with different notation. That is, computing the least-squares solution of $X\mathbf{\beta} = \mathbf{y}$ is equivalent to finding the $\mathbf{\beta}$ that determines the least-squares line.
@@ -295,7 +309,7 @@ plt.text(-9,3,r'$y = \beta_0 + \beta_1x$',size=20);
 :::
 :::
 
-## Simple Regression 
+## Simple Regression: Example Setup{.smaller-title}
 
 :::{style="font-size: .8em"}
 :::{.columns}
@@ -327,10 +341,10 @@ plt.ylabel('y', size = 20);
 :::
 :::
 
-## Simple Regression 
+## Simple Regression: Solution{.smaller-title}
 
 :::{style="font-size: .8em"}
-__Solution.__ Use the $x$-coordinates of the data to build the design matrix $X$, and the $y$-coordinates to build the observation vector $\mathbf{y}$:
+Use the $x$-coordinates of the data to build the design matrix $X$, and the $y$-coordinates to build the observation vector $\mathbf{y}$:
 
 $$
 X = \begin{bmatrix}1&2\\1&5\\1&7\\1&8\end{bmatrix},\;\;\;\mathbf{y}=\begin{bmatrix}1\\2\\3\\3\end{bmatrix}
@@ -348,7 +362,7 @@ X^\top X\mathbf{\beta} = X^\top \mathbf{y}.
 $$
 :::
 
-## Simple Regression 
+## Computing X^T X and X^T y{.smaller-title}
 
 :::{style="font-size: .8em"}
 $$
@@ -363,7 +377,7 @@ The normal equations are: $\begin{bmatrix}4&22\\22&142\end{bmatrix}\begin{bmatri
 
 :::
 
-## Simple Regression 
+## Solving for the Regression Coefficients{.smaller-title}
 
 :::{style="font-size: .8em"}
 Solving, we get:
@@ -381,7 +395,7 @@ $$
 $$
 :::
 
-## Simple Regression 
+## The Fitted Line and Its Visualization{.smaller-title}
 
 :::{style="font-size: .8em"}
 So the least-squares line has the equation $y = \frac{2}{7} + \frac{5}{14}x.$
@@ -399,7 +413,7 @@ plt.text(6,1.5, r'$y = \frac{2}{7} + \frac{5}{14}x$', size=24);
 :::
 :::
 
-## Simple Regression 
+## Extending to Polynomial Regression{.smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -425,9 +439,20 @@ $$
 
 The approach to solve this problem would be exactly the same as with a simpler design matrix.
 
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Write the design matrix \(X\) for fitting a cubic model \(y = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3\) to data points \((x_1, y_1), \dots, (x_n, y_n)\).</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
 :::
 
-## Simple Regression
+## Visualizing the Quadratic Fit{.smaller-title}
 :::{.center-text}
 ```{python}
 #
@@ -444,7 +469,56 @@ ax.plot(xquad, yquad, 'ro', markersize = 8);
 ```
 :::
 
-## Multiple Regression
+## Linear vs. Quadratic Fit{.smaller-title}
+
+:::{style="font-size: .8em"}
+Choosing the right model matters. Here we compare a linear fit and a quadratic fit on the same data — the quadratic captures the curvature while the linear fit systematically misses it.
+:::
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+np.random.seed(42)
+x = np.linspace(-3, 3, 40)
+y_true = 0.5 * x**2 - x + 1
+y = y_true + np.random.normal(scale=0.6, size=len(x))
+
+# Linear fit
+X_lin = np.column_stack([np.ones_like(x), x])
+b_lin = np.linalg.lstsq(X_lin, y, rcond=None)[0]
+
+# Quadratic fit
+X_quad = np.column_stack([np.ones_like(x), x, x**2])
+b_quad = np.linalg.lstsq(X_quad, y, rcond=None)[0]
+
+xs = np.linspace(-3, 3, 200)
+fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True)
+
+for ax, betas, label, color in zip(
+    axes,
+    [b_lin, b_quad],
+    ['Linear: $y=\\beta_0+\\beta_1 x$', 'Quadratic: $y=\\beta_0+\\beta_1 x+\\beta_2 x^2$'],
+    ['steelblue', 'darkorange']
+):
+    if len(betas) == 2:
+        ys_fit = betas[0] + betas[1]*xs
+    else:
+        ys_fit = betas[0] + betas[1]*xs + betas[2]*xs**2
+    ax.scatter(x, y, color='red', s=30, zorder=5)
+    ax.plot(xs, ys_fit, color=color, lw=2, label=label)
+    ax.set_title(label, fontsize=11)
+    ax.set_xlabel('x', fontsize=11)
+    ax.legend(fontsize=10)
+
+axes[0].set_ylabel('y', fontsize=11)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+## Introduction to Multiple Regression{.smaller-title}
 
 :::{style="font-size: .8em"}
 Suppose an experiment involves two independent variables -- say, $u$ and $v$, -- and one dependent variable, $y$. A linear equation for predicting $y$ from $u$ and $v$ has the form
@@ -463,7 +537,7 @@ $$
 $$
 :::
 
-## Multiple Regression
+## The General Linear Model{.smaller-title}
 
 :::{style="font-size: .8em"}
 A more general prediction equation might have the form
@@ -474,8 +548,7 @@ $$
 
 A least squares fit to equations like this is called a __trend surface.__
 
-<br>
-
+:::{.fragment}
 In general, a linear model will arise whenever $y$ is to be predicted by an equation of the form
 
 $$y = \beta_0 \: f_0(u,v) + \beta_1 \: f_1(u,v) + \cdots + \beta_k \: f_k(u,v)$$
@@ -483,12 +556,25 @@ $$y = \beta_0 \: f_0(u,v) + \beta_1 \: f_1(u,v) + \cdots + \beta_k \: f_k(u,v)$$
 with $f_0,\dots,f_k$ any sort of known functions and $\beta_0, \ldots,\beta_k$ unknown weights.
 :::
 
-## Multiple Regression
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Could we fit the model \(y = \beta_0 e^{\beta_1 x}\) using this linear framework? Why or why not?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+
+## Visualizing Multivariate Data{.smaller-title}
 
 :::{.center-text}
 ```{python}
 #
-fig = ut.three_d_figure((8, 8), 'multivariate regression example', 
+fig = ut.three_d_figure((8, 8), 'multivariate regression example',
                        -7, 7, -7, 7, -8, 8,
                         equalAxes = False, figsize = (7, 7), qr = qr_setting)
 np.random.seed(6)
@@ -515,7 +601,7 @@ fig.ax.view_init(azim=30, elev = 15)
 ```
 :::
 
-## Multiple Regression
+## Fitting a Plane to 3D Data{.smaller-title}
 
 :::{.center-text}
 ```{python}
@@ -548,7 +634,7 @@ fig.ax.view_init(azim=30, elev = 30)
 ```
 :::
 
-## Multiple Regression
+## Uniqueness in Multiple Regression{.smaller-title}
 
 :::{style="font-size: .8em"}
 The linear model for multiple regression has the same abstract form as the model for the simple regression.
@@ -579,7 +665,7 @@ display(HTML(html_content))
 ```
 :::
 
-## Regression in Practice
+## Regression in Practice: Car Price Example{.smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -618,9 +704,11 @@ __Example.__ Say I have a 10 year old car I want to sell. To find the ideal pric
 
 
 
-## Regression in Practice
+## Regression in Practice: The Data{.smaller-title}
 
 :::{style="font-size: .8em"}
+Before fitting a model, it's useful to plot the data. Here we see a general downward trend — older cars sell for less — but with considerable scatter.
+
 ```{python}
 #| echo: false
 ax = ut.plotSetup(0, 20, 0, 27000, size = (12, 6))
@@ -632,7 +720,7 @@ plt.ylabel('selling price ($)', size = 20);
 ```
 :::
 
-## Regression in Practice
+## Setting Up the Design Matrix{.smaller-title}
 
 :::{style="font-size: .8em"}
 __Solution.__ First we need to set up our design matrix $X$, which contains the independent variable (age), and our observation vector $\mathbf{y}$, which contains our dependent variable (price).
@@ -649,7 +737,7 @@ print(X)
 ```
 :::
 
-## Regression in Practice
+## Computing Predictions from the Fitted Model{.smaller-title}
 
 :::{style="font-size: .8em"}
 Now that we have $X$ and $\mathbf{y}$, we want to solve for $\beta$. We can again use the normal equations to do this.
@@ -682,7 +770,7 @@ display(HTML(html_content))
 ```
 :::
 
-## Regression in Practice
+## Visualizing the Fitted Regression Line{.smaller-title}
 
 :::{style="font-size: .8em"}
 Using this model, we can estimate prices of cars we did not train the model on. For example, with this model if my car was 10 years old, I might charge \$12,900.
@@ -703,6 +791,37 @@ ax.plot([0,20], [beta_hat[0], beta_hat[0] + beta_hat[1]*20], '-', label='yhat = 
 plt.xlabel('age of car', size = 20)
 plt.ylabel('selling price ($)', size = 20);
 ```
+:::
+
+## Practice: Simple Linear Regression{.smaller-title}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>A researcher measures study hours and exam scores for 4 students:
+        <br>
+        \[\begin{array}{c|c} \text{Hours } x & \text{Score } y \\ \hline 1 & 60 \\ 2 & 70 \\ 3 & 75 \\ 4 & 85 \end{array}\]
+        <ol type="a">
+            <li>Set up the design matrix \(X\) and observation vector \(\mathbf{y}\).</li>
+            <li>Write the normal equations \(X^\top X \hat{\boldsymbol{\beta}} = X^\top \mathbf{y}\).</li>
+            <li>Solve for \(\hat{\beta}_0\) and \(\hat{\beta}_1\).</li>
+            <li>Predict the score for a student who studies 5 hours.</li>
+        </ol>
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.notes}
+X = [[1,1],[1,2],[1,3],[1,4]], y = [60,70,75,85].
+X^T X = [[4,10],[10,30]], X^T y = [290, 775].
+Normal eqs: 4β0+10β1=290, 10β0+30β1=775.
+From first: β0 = (290-10β1)/4. Sub into second: 10(290-10β1)/4 + 30β1 = 775 → 725-25β1+30β1=775 → 5β1=50 → β1=10. β0=(290-100)/4=47.5.
+Model: y = 47.5 + 10x. For x=5: y = 47.5+50 = 97.5.
 :::
 
 
