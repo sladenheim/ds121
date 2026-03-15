@@ -1,0 +1,469 @@
+---
+title: "Transformations"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+- Transformation
+    - Domain and codomain
+    - Image 
+    - Range
+- Linear transformations
+- Standard matrix
+<!-- - Common transformations
+    - Shear
+    - Dilation and contraction
+    - Rotation -->
+
+<!-- Today we will look at matrix-vector multiplication from a different perspective. Geometrically, a matrix $A$ "transforms" a vector $\bf v$ into a new vector $A \bf v.$ We will show that matrix-vector multiplication satisfies an algebraic property called linearity.
+
+:::{.fragment}
+In addition, we will visualize linear transformations of the plane $\mathbb{R}^2$.
+::: -->
+:::
+
+## Matrices as Functions
+
+:::{style="font-size: .8em"}
+
+In $A{\bf x} = {\bf b},$ we can think of $A$ as a function that is "acting on" the vector $\bf x$ to create a new vector $\bf b$.
+
+:::{.center-text}
+<img src="images/linearity/2d-transform.jpeg" width=400 />
+
+:::
+This gives us a new way of thinking about solving $A \bf x = \bf b$: we are finding the vector(s) $\bf x$ that are transformed into $\bf b$ under the "action" of $A.$
+:::
+
+## Matrices as Functions
+
+:::{style="font-size: .7em"}
+For example, consider $A = \left[\begin{array}{rrr}2&1&1\\3&1&-1\end{array}\right].$ Then $A \left[\begin{array}{r}1\\-4\\-3\end{array}\right] = \left[\begin{array}{r}-5\\2\end{array}\right].$
+
+In other words, if ${\bf x} = \left[\begin{array}{r}1\\-4\\-3\end{array}\right]$ and ${\bf b} = \left[\begin{array}{r}-5\\2\end{array}\right]$, then $A$ _**transforms**_ ${\bf x}$ into ${\bf b}$.
+
+
+:::{.center-text}
+<img src="images/linearity/3d-2d-transform.jpeg" width=800 />
+
+:::
+:::
+
+## Matrices as Functions
+
+:::{style="font-size: .7em;"}
+$A$ took a vector in $\mathbb{R}^3$ and transformed it into a vector in $\mathbb{R}^2.$
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        How does this fact relate to the shape of \(A\)?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+:::{.notes}
+$A$ is $2 \times 3$ -- that is, $A \in \mathbb{R}^{2 \times 3}.$
+:::
+<!-- :::
+
+## Matrices as Functions
+
+:::{style="font-size: .8em;"} -->
+
+For a different $A$, the mapping might be from $\mathbb{R}^1$ to $\mathbb{R}^3$:
+
+:::{.center-text}
+<img src="images/linearity/1d-3d-transform.jpeg" width = 700/>
+
+:::
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What would be the shape of \(A\) be in this case?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.notes}
+Since $A$ maps from $\mathbb{R}^1$ to $\mathbb{R}^3$, $A \in \mathbb{R}^{3\times 1}$.  
+:::
+:::
+
+<!-- ## Matrices as Functions
+
+:::{.center-text}
+<img src="images/linearity/2d-transform.jpeg" width = 400/>
+
+:::
+
+:::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What would be the shape of \(A\) be in the situation above?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.fragment}
+$A$ is $2 \times 2.$
+:::
+::: -->
+
+## Transformations
+
+:::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> <span class="label">Transformation</span>
+        A <b>transformation</b> (or function/mapping) \(T\) from \(\mathbb{R}^n\) to \(\mathbb{R}^m\) is a rule that assigns to each vector \({\bf x}\) in \(\mathbb{R}^n\) a vector \(T({\bf x})\) in \(\mathbb{R}^m\).<br>
+        The set \(\mathbb{R}^n\) is called the <b>domain</b> of \(T\), and \(\mathbb{R}^m\) is called the <b>codomain</b> of \(T\).  
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+__Notation__: $T: \mathbb{R}^n \rightarrow \mathbb{R}^m$ indicates $T$'s domain is $\mathbb{R}^n$ and the codomain is $\mathbb{R}^m.$
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  <span class="label">Image</span>
+         For \(\bf x\) in \(\mathbb{R}^n,\) the vector \(T({\bf x})\) is called the <b>image</b> of \(\bf x\) (under \(T\)). 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+We sometimes write that $T$ maps ${\bf x}$ as ${\bf x} \mapsto T({\bf x})$.
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  <span class="label">Range</span>
+         The set of all images \(T({\bf x})\) is called the <b>range</b> of \(T\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Matrices as Functions
+
+:::{.center-text}
+<img src="images/linearity/1d-3d-plane.jpeg" width = 1000/>
+
+:::
+
+:::{style="font-size: .8em"}
+The green plane is the set of all possible outputs of some $T$ for some input $\bf x$.
+
+<div style="margin-bottom: 0.5em;"> </div> 
+
+$T$'s domain is $\mathbb{R}^2$, its codomain is $\mathbb{R}^3$, and its range is the green plane.
+
+:::
+
+<!-- ## Visualizing Transformations
+
+:::{style="font-size: .8em"}
+Consider four points in $\mathbb{R}^2$:
+$\left[\begin{array}{r}0\\1\end{array}\right],\left[\begin{array}{r}1\\1\end{array}\right],\left[\begin{array}{r}1\\0\end{array}\right],\left[\begin{array}{r}0\\0\end{array}\right].$
+
+<!-- Is it ok to just have the graph cutoff at the bottom? -->
+<!-- These points form a square with side length 1 in 2-dimensional space.
+
+:::{.center-text}
+```{python}
+import demoUtilities as dm
+import numpy as np
+
+square = np.array([[0, 1, 1, 0],
+                   [1, 1, 0, 0]])
+dm.plotSmallSetup()
+# print(square)
+dm.plotSquare(square)
+```
+:::
+::: -->
+
+<!-- ## Visualizing Transformations
+:::{style="font-size: .8em"}
+
+Let's transform each of these points according to the following rule.  Consider the following matrix, which is called a __shear matrix__:
+
+$$ A = \left[\begin{array}{rr}1&1.5\\0&1\end{array}\right]. $$
+
+We define $T({\bf x}) = A{\bf x}$.  Then we have $T: \mathbb{R}^2 \rightarrow \mathbb{R}^2.$
+
+What is the image of each of these points under $T$?
+
+$$ A\left[\begin{array}{r}0\\1\end{array}\right] = \left[\begin{array}{r}1.5\\1\end{array}\right],  A\left[\begin{array}{r}1\\1\end{array}\right] = \left[\begin{array}{r}2.5\\1\end{array}\right],$$
+
+
+$$ A\left[\begin{array}{r}1\\0\end{array}\right] = \left[\begin{array}{r}1\\0\end{array}\right], A\left[\begin{array}{r}0\\0\end{array}\right] = \left[\begin{array}{r}0\\0\end{array}\right].$$
+
+::: -->
+
+<!-- ## Visualizing Transformations
+
+:::{.center-text}
+```{python}
+#
+ax = dm.plotSetup()
+# print("square = "); print(square)
+dm.plotSquare(square)
+#
+# create the A matrix
+A = np.array([[1.0, 1.5],[0.0,1.0]])
+# print("A matrix = "); print(A)
+#
+# apply the shear matrix to the square
+ssquare = np.zeros(np.shape(square))
+for i in range(4):
+    ssquare[:,i] = dm.AxVS(A,square[:,i])
+# print("sheared square = "); print(ssquare)
+dm.plotSquare(ssquare,'r')
+```
+:::  -->
+
+<!-- :::{style="font-size: .7em"}
+This is called a **shear** transformation, because the points are succesively slid sideways.
+::: -->
+
+## Linearity
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> <span class="label">Linear transformation</span>
+         A transformation \(T\) is <b>linear</b> if:
+         <ol start="1">
+<li>\(T({\bf u} + {\bf v}) = T({\bf u}) + T({\bf v}) \;\) for all \(\bf u, \bf v\) in the domain of \(T\);</li>
+<li>\(T(c{\bf u}) = cT({\bf u}) \;\) for all scalars \(c\) and all \(\bf u\) in the domain of \(T\).</li>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Here, $T$ is a general function, not just matrix-vector multiplication.
+
+This definition captures many transformations such as
+
+$$
+T(f) = \int_0^1 f(t) \,dt. 
+$$
+
+:::
+
+## Linearity
+
+:::{style="font-size:.8em"}
+It is also possible to check if a transformation is linear using
+
+$$
+T(c\mathbf{u} + d\mathbf{v}) = cT(\mathbf{u}) + dT(\mathbf{v}).
+$$
+
+
+If a transformation satisfies this equation for all $\mathbf{u}, \mathbf{v}$ and $c, d,$ it must be a linear transformation.
+<br><br>
+Finally, it is important to note that if $T$ is a linear transformation, then
+
+$$
+T({\mathbf 0}) = T({\mathbf 0}) + T({\mathbf 0}), \quad \text{so} \quad T({\mathbf 0}) = {\mathbf 0}.
+$$
+
+:::
+
+## Linearity
+
+:::{style="font-size: .8em"}
+Given a scalar $r$, define $T: \mathbb{R}^2 \rightarrow \mathbb{R}^2$ by $T(\mathbf{x}) = r\mathbf{x}$. $T$ is called a __contraction__ when $0\leq r \leq 1$ and a __dilation__ when $r > 1$.
+
+__Example__: Consider $r = 3$, and let us show that $T$ is a linear transformation.
+
+Let $\mathbf{u}, \mathbf{v}$ be in $\mathbb{R}^2$ and let $c, d$ be scalars.   Then
+
+$$
+\begin{align}
+T(c\mathbf{u} + d\mathbf{v}) &= 3(c\mathbf{u} + d\mathbf{v}) \\
+&= 3c\mathbf{u} + 3d\mathbf{v} \\
+&= c(3\mathbf{u}) + d(3\mathbf{v}) \\
+&= cT(\mathbf{u}) + dT(\mathbf{v})
+\end{align}
+$$
+
+Thus, $T$ is a linear transformation because $T(c\mathbf{u} + d\mathbf{v}) = cT(\mathbf{u}) + dT(\mathbf{v}).$
+:::
+
+
+## Linearity
+
+:::{style="font-size: .8em"}
+__Example__: Let $T(\mathbf{x}) = \mathbf{x} + \mathbf{b}$ for some $\mathbf{b} \neq 0$. For example,  $T(\mathbf{x}) = \mathbf{x} + \begin{bmatrix}1 \\ 2\end{bmatrix}.$
+
+<!-- When $T$ is applied, the entire 2-dimensional plane $\mathbb{R}^2$ is shifted one unit right and two units up. -->
+
+
+This transformation is not linear. To see why, we can compare 
+
+$$
+\begin{align*}
+&T(\mathbf{u} + \mathbf{v}) = \mathbf{u} + \mathbf{v} + \mathbf{b} \\
+&T(\mathbf{u}) + T(\mathbf{v}) = (\mathbf{u} + \mathbf{b}) + (\mathbf{v} + \mathbf{b}) = \mathbf{u} + \mathbf{v} + 2 \mathbf{b}.
+\end{align*}
+$$
+
+Since $\mathbf{b} \neq 0$, those two expressions are not equal, so $T$ is _**not**_ a linear transformation.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Is the transformation \(T\left(\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}\right) = \begin{bmatrix} x_1 \\ x_1 \end{bmatrix}\) linear?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+:::
+
+## Matrix of a Linear Transformation{.smaller-title}
+
+:::{style="font-size: 0.9em"}
+Every linear transformation from vectors to vectors is a matrix multiplication.
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> <span class="label">Theorem</span>
+        Let \(T: \mathbb{R}^n \rightarrow \mathbb{R}^m\) be a linear transformation.   Then there is a unique matrix \(A\) such that:<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(T({\bf x}) = A{\bf x} \;\;\; \mbox{for all}\; {\bf x} \in \mathbb{R}^n.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Let ${\bf e_j}$ denote the $j$th column of $I$ in $\mathbb{R}^n$. Then ${\bf e_j}$ is a __standard basis vector__.
+
+:::{.center-text}
+```{python}
+ax = dm.plotSetup(-3,3,-1,3,size=(4,4))
+ax.plot([0],[1],'ro',markersize=8)
+ax.arrow(0, 0, 1, 0, head_width=0.2, head_length=0.2, length_includes_head = True)
+ax.arrow(0, 0, 0, 1, head_width=0.2, head_length=0.2, length_includes_head = True)
+ax.text(0.25,1,'(0,1)',size=20)
+ax.plot([1],[0],'ro',markersize=8)
+ax.text(1.25,0.25,'(1,0)',size=20);
+```
+
+:::
+:::
+
+## Matrix of a Linear Transformation{.smaller-title}
+
+:::{style="font-size: .9em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> <span class="label">Standard matrix</span>
+        The <b>standard matrix</b> of \(T\) is the \(m \times n\) matrix whose \(j\)th column is the vector \(T({\bf e_j})\). If we denote it by \(A\), then \(A = \left[T({\bf e_1}) \dots T({\bf e_n})\right].\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Let linear transformation \(T: \mathbb{R}^2 \rightarrow \mathbb{R}^3\) be such that \(\small T (\mathbf{e}_1)=\begin{bmatrix} 2\\ 1\\ 4\end{bmatrix}\) and \(\small T(\mathbf{e}_2)=\begin{bmatrix} 3\\ 0\\ -2\end{bmatrix}\).<br>
+        a. Find the standard matrix representation \(A\) of \(T\).<br>
+        b. Find a formula for \(T\left( \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}\right).\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
