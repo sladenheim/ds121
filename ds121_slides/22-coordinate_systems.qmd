@@ -1,5 +1,5 @@
 ---
-title: "Coordinate Systems"
+title: "Coordinate Systems and Orthogonal Bases"
 author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
@@ -18,14 +18,12 @@ format:
 :::{style="font-size: .8em"}
 - Geometric interpretation of a basis
 - Coordinates and coordinate vectors
-- Uniqueness of coordincates
-
-<!-- <br>
-
-Finally, we will also introduce the concept of an isomorphism. -->
+- Uniqueness of coordinates
+- Orthogonal sets and orthogonal bases
+- Finding coordinates efficiently with an orthogonal basis
 :::
 
-## Space Geometry{.smaller-title}
+## Coordinates Give Points Unique Names{.really-smaller-title}
 
 :::{style="font-size: 1.em"}
 :::{.center-text}
@@ -50,7 +48,7 @@ ax.text(-1.5,2.25,'(-1,2)',size=20);
 A coordinate system gives a _**unique name**_ to each point in a vector space. Traditionally, we label points using the standard basis. 
 :::
 
-## Space Geometry
+## Coordinates as Movements Along Basis Vectors{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 <!-- We write any point in space using coordinates, like $(-1, 2)$, but what do these coordinates represent?  -->
@@ -66,14 +64,10 @@ $$
 (-1, 2) = -1 {\bf e_1} + 2 {\bf e_2}.
 $$
 
-The standard basis spans $\mathbb{R}^n$. 
-
-<br>
-
-The Invertible Matrix Theorem says that _**any**_ set of $n$ linearly independent vectors spans all of $\mathbb{R}^n$.
+In fact, _**any**_ $n$ linearly independent vectors in $\mathbb{R}^n$ can serve as a basis — giving a different coordinate system for the same space.
 :::
 
-## Space Geometry
+## Unique Representation Theorem{.smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -93,6 +87,7 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
+:::{.fragment}
 __Proof.__ Suppose $\mathcal{B}\ = \{\mathbf{b}_1,\dots,\mathbf{b}_p\}$ is a basis for $H.$ In addition, suppose a vector $\mathbf{x}$ in $H$ can be generated in two ways:
 
 $$
@@ -100,14 +95,29 @@ $$
 \quad
 \mathbf{x} = d_1\mathbf{b}_1+\cdots+d_p\mathbf{b}_p.
 $$
+:::
 
+
+:::{.fragment}
 Subtracting gives ${\bf 0} = \mathbf{x} - \mathbf{x} = (c_1-d_1)\mathbf{b}_1+\cdots+(c_p-d_p)\mathbf{b}_p.$
 
 Since $\mathcal{B}$ is a basis, the vectors $\mathbf{b}_1\dots\mathbf{b}_p$ are linearly independent. Hence, the weights in the above expression must all be zero. That is, $c_j = d_j$ for all $j$. As a result, the two representations must be the same.
 :::
+:::
 
+```{python}
+from IPython.core.display import HTML
 
-## Space Geometry
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Can a vector in \(V\) have two different \(\mathcal{B}\)-coordinate vectors for the same basis \(\mathcal{B}\)? Why or why not?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+## Definition: B-Coordinates{.smaller-title}
 
 :::{style="font-size: .75em"}
 
@@ -119,7 +129,7 @@ def generate_html():
     <div class="purple-box">
         <p>
          <span class="label">Coordinates and coordinate vectors</span>
-         Suppose \(\mathcal{B}\ = \{\mathbf{b}_1,\dots,\mathbf{b}_p\}\) is a basis for vector space \(H\). For each \(\mathbf{x}\) in \(H\), the <b>coordinates</b> of \(\mathbf{x}\) relative to the basis \(\mathcal{B}\) are the weights \(c_1,\dots,c_p\) such that \(\mathbf{x} = c_1\mathbf{b}_1+\cdots+c_p\mathbf{b}_p\). \([\mathbf{x}]_\mathcal{B} = \begin{bmatrix}c_1\\\vdots\\c_p\end{bmatrix} \) is called the <b>coordinate vector</b> of \(\mathbf{x}\) (relative to \(\mathcal{B}\)) or the <b>\(\mathcal{B}\)-coordinate vector</b> of \(\mathbf{x}\).
+         Suppose \(\mathcal{B}\ = \{\mathbf{b}_1,\dots,\mathbf{b}_p\}\) is a basis for vector space \(H\). For each \(\mathbf{x}\) in \(H\), the <b>coordinates</b> of \(\mathbf{x}\) relative to the basis \(\mathcal{B}\) are the weights \(c_1,\dots,c_p\) such that \(\mathbf{x} = c_1\mathbf{b}_1+\cdots+c_p\mathbf{b}_p\). <br><br> \([\mathbf{x}]_\mathcal{B} = \begin{bmatrix}c_1\\\vdots\\c_p\end{bmatrix} \) is called the <b>coordinate vector</b> of \(\mathbf{x}\) (relative to \(\mathcal{B}\)) or the <b>\(\mathcal{B}\)-coordinate vector</b> of \(\mathbf{x}\).
          </p>
     </div>
     """
@@ -131,7 +141,7 @@ display(HTML(html_content))
 In $\mathbb{R}^2$, let's look at the point ${\bf x} = \begin{bmatrix}1\\6\end{bmatrix}$ in the standard basis and relative to a new basis $\mathcal{B} = \left\{\begin{bmatrix}1\\0\end{bmatrix}, \begin{bmatrix}1\\2\end{bmatrix}\right\}.$
 :::
 
-## Space Geometry
+## B-Coordinates: Side-by-Side Visualization{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -211,7 +221,7 @@ Notice that the _location_ of $\mathbf{x}$ relative to the origin does not chang
 Using the $\mathcal{B}$-basis, we get _different coordinates_. These are $[\mathbf{x}]_\mathcal{B} = \begin{bmatrix}-2\\3\end{bmatrix}$.
 :::
 
-## Coordinates of a Point in a Basis{.smaller-title}
+## Finding B-Coordinates: Setup{.smaller-title}
 
 :::{style="font-size: 1.em"}
 __Example.__ Let $\mathbf{v}_1 = \begin{bmatrix}3\\6\\2\end{bmatrix}, \mathbf{v}_2 = \begin{bmatrix}-1\\0\\1\end{bmatrix}, \mathbf{x} = \begin{bmatrix}3\\12\\7\end{bmatrix},$ and $\mathcal{B} = \{\mathbf{v}_1,\mathbf{v}_2\}.$
@@ -225,7 +235,7 @@ Then $\mathcal{B}$ is a basis for $H$ = Span$\{\mathbf{v}_1,\mathbf{v}_2\}$ beca
 We want to determine if $\mathbf{x}$ is in $H$, and if it is, find the coordinate vector of $\mathbf{x}$ relative to $\mathcal{B}.$
 :::
 
-## Coordinates of a Point in a Basis{.smaller-title}
+## Finding B-Coordinates: Row Reduction{.really-smaller-title}
 
 :::{style="font-size: 1.em"}
 If $\mathbf{x}$ is in $H,$ then the following vector equation is consistent:
@@ -244,7 +254,7 @@ $$
 
 :::
 
-## Coordinates of a Point in a Basis{.smaller-title}
+## Visualizing B-Coordinates on a Subspace{.really-smaller-title}
 
 :::{style="font-size: 1.em"}
 
@@ -293,11 +303,389 @@ fig.set_title('Basis-B coordinate system on the subspace H', size=16)
 ```
 :::
 
-<!-- _Important:_ Don't be confused because the "coordinate axes" are not perpendicular. Really, _they don't need to be._
+_Important:_ Don't be confused because the "coordinate axes" are not perpendicular. Really, _they don't need to be._
 
 As long as the independent vectors span the space, there is only _one_ way to express any point in terms of them.
 
-Thus, every point has a unique coordinate. -->
+Thus, every point has a unique coordinate.
+:::
+
+## Practice: Finding B-Coordinates{.smaller-title}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Let \(\mathcal{B} = \{\mathbf{b}_1, \mathbf{b}_2\}\) with \(\mathbf{b}_1 = \begin{bmatrix}1\\1\end{bmatrix}\) and \(\mathbf{b}_2 = \begin{bmatrix}1\\-1\end{bmatrix},\) and let \(\mathbf{x} = \begin{bmatrix}4\\2\end{bmatrix}.\)
+        <ol type="a">
+            <li>Verify that \(\mathcal{B}\) is a basis for \(\mathbb{R}^2.\)</li>
+            <li>Set up the linear system to find \([\mathbf{x}]_\mathcal{B}\) and solve it.</li>
+            <li>Is \(\mathcal{B}\) an orthogonal basis? If so, use the efficient formula \(c_j = \frac{\mathbf{x}^\top \mathbf{b}_j}{\mathbf{b}_j^\top \mathbf{b}_j}\) to verify your answer.</li>
+        </ol>
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.notes}
+(a) b₁ and b₂ are not scalar multiples; det = −1−1 = −2 ≠ 0, so they form a basis.
+(b) Solve c₁[1,1]ᵀ + c₂[1,−1]ᵀ = [4,2]ᵀ → c₁ = 3, c₂ = 1, so [x]_B = [3, 1]ᵀ.
+(c) b₁·b₂ = 1(1)+1(−1) = 0, yes orthogonal. c₁ = (4+2)/2 = 3, c₂ = (4−2)/2 = 1. ✓
+:::
+
+## Definition: Orthogonal Sets{.smaller-title}
+
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Orthogonal set</span>
+        A set of vectors \(\small \{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) in \(\mathbb{R}^n\) is said to be an <b>orthogonal set</b> if each pair of distinct vectors from the set is orthogonal, i.e., \(\small \mathbf{u}_i^\top \mathbf{u}_j = 0\;\;\mbox{if}\;i\neq j.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+__Example.__  Consider
+
+:::{style="font-size: .7em"}
+$$
+\mathbf{u}_1 = \begin{bmatrix}3\\1\\1\end{bmatrix},\;\;\mathbf{u}_2=\begin{bmatrix}-1\\2\\1\end{bmatrix},\;\;\mathbf{u}_3=\begin{bmatrix}-1/2\\-2\\7/2\end{bmatrix}.
+$$
+:::
+
+:::
+
+:::{style="font-size: .8em"}
+We take the inner product of each pair of distinct vectors:
+:::
+
+:::{.fragment}
+:::{style="font-size: .6em"}
+$$\mathbf{u}_1^\top \mathbf{u}_2 = 3(-1) + 1(2) + 1(1) = 0. \checkmark$$
+:::
+:::
+
+:::{.fragment}
+:::{style="font-size: .6em"}
+$$\mathbf{u}_1^\top \mathbf{u}_3 = 3(-1/2) + 1(-2) + 1(7/2) = 0. \checkmark$$
+:::
+:::
+
+:::{.fragment}
+:::{style="font-size: .6em"}
+$$\mathbf{u}_2^\top \mathbf{u}_3 = -1(-1/2) + 2(-2) + 1(7/2) = 0. \checkmark$$
+:::
+:::
+
+:::{.fragment}
+:::{style="font-size: .8em"}
+Hence, $\small \{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$ is an orthogonal set.
+:::
+:::
+
+## Orthogonal Sets Are Linearly Independent{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+
+:::{.center-text}
+```{python}
+import laUtilities as ut
+qr_setting = None
+import numpy as np
+fig = ut.three_d_figure((8, 1), fig_desc = 'An orthogonal set of vectors',
+                        xmin = -3, xmax = 3, ymin = -3, ymax = 3, zmin = -3, zmax = 3,
+                        figsize = (6, 4), qr = qr_setting)
+u1 = np.array([3, 1, 1])
+u2 = np.array([-1, 2, 1])
+u3 = np.array([-1/2, -2, 7/2])
+origin = np.array([0, 0, 0])
+fig.plotLine([origin, u1], 'r', '--')
+fig.plotPoint(u1[0], u1[1], u1[2], 'r')
+fig.text(u1[0]+.1, u1[1]+.1, u1[2]+.1, r'$\bf u_1$', 'u1', size=16, color='k')
+fig.plotLine([origin, u2], 'r', '--')
+fig.plotPoint(u2[0], u2[1], u2[2], 'r')
+fig.text(u2[0]+.1, u2[1]+.1, u2[2]+.1, r'$\bf u_2$', 'u2', size=16, color='k')
+fig.plotLine([origin, u3], 'r', '--')
+fig.plotPoint(u3[0], u3[1], u3[2], 'r')
+fig.text(u3[0]+.1, u3[1]+.1, u3[2]+.1, r'$\bf u_3$', 'u3', size=16, color = 'k')
+fig.text(origin[0]-.45, origin[1]-.45, origin[2]-.45, r'$\bf 0$', 0, size = 16)
+fig.plotPerpSym(origin, u1, u2, 0.5)
+fig.plotPerpSym(origin, u3, u2, 0.5)
+fig.plotPerpSym(origin, u3, u1, 0.5)
+fig.set_title(r'An orthogonal set of vectors in $\mathbb{R}^3$', 'An orthogonal set of vectors in R3', size = 16)
+```
+:::
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+       If \(S = \{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) is an orthogonal set of nonzero vectors in \(\mathbb{R}^n,\) then \(S\) is linearly independent.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Does every orthogonal set automatically form a basis for its ambient space? If not, what additional condition is needed?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+## Definition: Orthogonal Basis{.smaller-title}
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Orthogonal basis</span>
+       An <b>orthogonal basis</b> for a subspace \(H\) of \(\mathbb{R}^n\) is a <em>basis</em> for \(H\) that is also an <em>orthogonal set</em>.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Consider,
+
+$$
+\mathbf{u}_1 = \begin{bmatrix} -1/2\\ 2\\ 1 \end{bmatrix},
+\mathbf{u}_2 = \begin{bmatrix} 8/3\\ 1/3\\ 2/3 \end{bmatrix}.
+$$
+
+Since, $\mathbf{u}_1^\top \mathbf{u}_2 = 0,$ they form an orthogonal basis for subspace $\mbox{Span}\{\mathbf{u}_1,\mathbf{u}_2\}.$
+:::
+
+## Visualizing an Orthogonal Basis{.really-smaller-title}
+
+:::{.center-text}
+```{python}
+fig = ut.three_d_figure((8, 2), fig_desc = 'Orthogonal Basis on the subspace H', figsize = (6, 6),
+                        xmin = -2, xmax = 10, ymin = -1, ymax = 10, zmin = -1, zmax = 10, qr = qr_setting)
+
+v = 1/2 * np.array([-1, 4, 2])
+u = 1/3 * np.array([8, 1, 2])
+vpos = v + 0.4 * v - 0.5 * u
+upos = u - 0.5 * v + 0.15 * u
+fig.text(vpos[0], vpos[1], vpos[2], r'$\bf u_2$', 'v', size=16)
+fig.text(upos[0], upos[1], upos[2], r'$\bf u_1$', 'u', size=16)
+fig.plotSpan(u, v, 'Green')
+fig.plotPoint(0, 0, 0, 'y')
+fig.plotPoint(u[0], u[1], u[2], 'b')
+fig.plotPoint(2*u[0], 2*u[1], 2*u[2],'b')
+fig.plotPoint(3*u[0], 3*u[1], 3*u[2], 'b')
+fig.plotLine([[0, 0, 0], 4*u], color='b')
+fig.plotLine([v, v+4*u], color='b')
+fig.plotLine([2*v, 2*v+3*u], color='b')
+fig.plotLine([3*v, 3*v+2.5*u], color='b')
+fig.plotPoint(v[0], v[1], v[2], 'r')
+fig.plotPoint(2*v[0], 2*v[1], 2*v[2], 'r')
+fig.plotPoint(3*v[0], 3*v[1], 3*v[2], 'r')
+fig.plotLine([[0, 0, 0], 3.5*v], color='r')
+fig.plotLine([u, u+3.5*v], color='r')
+fig.plotLine([2*u, 2*u+3.5*v], color='r')
+fig.plotLine([3*u, 3*u+2*v], color='r')
+fig.plotPerpSym(np.array([0, 0, 0]), v, u, 1)
+fig.plotPerpSym(u, v+u, u+u, 1)
+fig.plotPerpSym(2*u, v+2*u, 3*u, 1)
+fig.plotPerpSym(np.array([0, 0, 0])+v, 2*v, v+u, 1)
+fig.plotPerpSym(u+v, 2*v+u, v+2*u, 1)
+```
+:::
+
+## Computing Coordinates: General Method{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+To compute the coordinates of $\mathbf{y}$ in terms of basis $\mathcal{B} = \{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$, $[\mathbf{y}]_\mathcal{B}$, we need to solve the linear system:
+
+$$
+c_1 \mathbf{u}_1 + c_2\mathbf{u}_2 + c_3\mathbf{u}_3 = \mathbf{y}
+$$
+
+or
+
+$$
+U\mathbf{c} = \mathbf{y}.
+$$
+
+In general, to solve the system we'd need to perform Gauss-Jordan Elimination that takes on the order of $n^3$ floating point operations.
+
+<br>
+
+However, in an orthogonal basis the coordinates of any point can be computed more efficiently.
+:::
+
+## Efficient Coordinates via Orthogonal Basis{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        Let \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) be an orthogonal basis for a subspace \(H\) of \(\mathbb{R}^n\). For each \(\mathbf{y}\) in \(H\), the weights of the linear combination \(c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p = \mathbf{y}\) are given by \(c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^{\top} \mathbf{u}_j}\) with \(j = 1,\dots,p.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+__Proof.__  Let's consider the inner product of $\mathbf{y}$ and one of the $\mathbf{u}$ vectors --- say, $\mathbf{u}_1$.
+
+The orthogonality of $\{\mathbf{u}_1,\dots,\mathbf{u}_p\}$ means that
+
+$$\small \begin{align*}
+\mathbf{y}^\top \mathbf{u}_1 &= (c_1\mathbf{u}_1 + c_2\mathbf{u}_2 + \dots + c_p\mathbf{u}_p)^\top \mathbf{u}_1 \\
+&= c_1(\mathbf{u}_1^\top \mathbf{u}_1).
+\end{align*}
+$$
+
+Since $\mathbf{u}_1^\top \mathbf{u}_1$ is not zero, the equation above can be solved as $c_1 = \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}.$
+To find any other $c_j,$ compute $\mathbf{y}^\top \mathbf{u}_j$ and solve for $c_j$.
+
+:::
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Why is computing \(\mathcal{B}\)-coordinates easier when \(\mathcal{B}\) is an orthogonal basis compared to a non-orthogonal basis?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+## Expressing a Vector in an Orthogonal Basis{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+__Example__. The set $S$ that we saw earlier,
+
+$$
+\mathbf{u}_1 = \begin{bmatrix}3\\1\\1\end{bmatrix},\;\;\mathbf{u}_2=\begin{bmatrix}-1\\2\\1\end{bmatrix},\;\;\mathbf{u}_3=\begin{bmatrix}-1/2\\-2\\7/2\end{bmatrix},
+$$
+
+is an orthogonal basis for $\mathbb{R}^3.$
+
+Let's express $\mathbf{y} = \begin{bmatrix}6\\1\\-8\end{bmatrix}$ as a linear combination of the vectors in $S.$
+
+That is, find $\mathbf{y}$'s coordinates in the basis $S$ --- i.e., in the coordinate system $S$.
+:::
+
+## Visualizing y in an Orthogonal Basis{.really-smaller-title}
+
+:::{.center-text}
+```{python}
+fig = ut.three_d_figure((8, 3), fig_desc = 'y in an orthogonal basis',
+                        xmin = -3, xmax = 7, ymin = -5, ymax = 5, zmin = -8, zmax = 4,
+                        figsize = (6, 6), qr = qr_setting, equalAxes = False)
+u1 = np.array([3, 1, 1])
+u2 = np.array([-1, 2, 1])
+u3 = np.array([-1/2, -2, 7/2])
+origin = np.array([0, 0, 0])
+fig.plotLine([origin, u1], 'r', '--')
+fig.plotPoint(u1[0], u1[1], u1[2], 'r')
+fig.text(u1[0]+.1, u1[1]+.1, u1[2]+.1, r'$\bf u_1$', 'u1', size=16, color='k')
+fig.plotLine([origin, u2], 'r', '--')
+fig.plotPoint(u2[0], u2[1], u2[2], 'r')
+fig.text(u2[0]+.1, u2[1]+.1, u2[2]+.1, r'$\bf u_2$', 'u2', size=16, color='k')
+fig.plotLine([origin, u3], 'r', '--')
+fig.plotPoint(u3[0], u3[1], u3[2], 'r')
+fig.text(u3[0]+.1, u3[1]+.1, u3[2]+.1, r'$\bf u_3$', 'u3', size=16, color = 'k')
+fig.text(origin[0]-.45, origin[1]-.45, origin[2]-.45, r'$\bf 0$', 0, size = 16)
+fig.plotPerpSym(origin, u3, u2, 0.5)
+fig.plotPerpSym(origin, u3, u1, 0.5)
+y = u1 - 2 * u2 - 2 * u3
+fig.plotPoint(y[0], y[1], y[2], 'b')
+fig.text(y[0]-2, y[1]+.1, y[2]+.1, r'$\bf y$ = (6, 1, -8)', 'y = (6, 1, -8)', size=16, color = 'b')
+fig.text(y[0]-2, y[1]+.1, y[2]-2.5, r'${\bf y} = 1{\bf u}_1 -2 {\bf u}_2 - 2 {\bf u}_3$', 'y = (6, 1, -8)', size=13, color = 'b')
+fig.set_title(r'${\bf y}$ in an Orthogonal Basis', 'y in an Orthogonal Basis', size = 16)
+```
+:::
+
+## Computing Orthogonal Basis Coordinates: Example{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+__Example__. Compute
+
+$$
+\mathbf{y}^\top \mathbf{u}_1 = 11,\;\;\;\mathbf{y}^\top \mathbf{u}_2 = -12,\;\;\;\mathbf{y}^\top \mathbf{u}_3 = -33,
+$$
+
+$$
+\mathbf{u}_1^\top \mathbf{u}_1 = 11,\;\;\;\mathbf{u}_2^\top \mathbf{u}_2 = 6,\;\;\;\mathbf{u}_3^\top \mathbf{u}_3 = 33/2.
+$$
+
+$$
+\begin{align*}
+\Rightarrow \mathbf{y} &= \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}\mathbf{u}_1 + \frac{\mathbf{y}^\top \mathbf{u}_2}{\mathbf{u}_2^\top \mathbf{u}_2}\mathbf{u}_2 + \frac{\mathbf{y}^\top \mathbf{u}_3}{\mathbf{u}_3^\top \mathbf{u}_3}\mathbf{u}_3 \\
+&= \left(\frac{11}{11}\right)\mathbf{u}_1 + \left(\frac{-12}{6}\right)\mathbf{u}_2 + \left(\frac{-33}{33/2}\right)\mathbf{u}_3 \\
+&= \mathbf{u}_1 - 2\mathbf{u}_2 - 2 \mathbf{u}_3.
+\end{align*}
+$$
+
+Hence, $[{\bf y}]_{\mathcal{B}} = \begin{bmatrix} 1 & -2 & -2 \end{bmatrix}^\top$.
+
+:::
+
+## Why Orthogonal Bases Are Computationally Efficient{.really-smaller-title}
+
+:::{style="font-size:.8em"}
+
+Finding the coordinates of $\mathbf{y}$ in the orthogonal basis is efficient because
+
+- There are $2n$ inner products, each requiring $2n$ flops.
+- Each coefficient $c_i$ can be calculated separately, allowing for parallel computation in linear time.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Do the vectors \(\begin{bmatrix} 2 \\ 2\\ 1\end{bmatrix}\), \(\begin{bmatrix} 0 \\ -1\\ 2\end{bmatrix}\), and \(\begin{bmatrix} -5 \\ 4\\ 2\end{bmatrix}\) form an orthogonal set in \(\mathbb{R}^3\)?
+            <br>
+            <br>
+            <br>
+            <br>
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
 :::
 
 <!-- ## Isomorphisms
@@ -352,3 +740,13 @@ This is _even through the vectors in $H$ themselves may have more than $p$ entri
 
 - When we have a one-to-one correspondence between two subspaces that preserves linear combinations, we call such a correspondence an isomorphism. -->
 ::: -->
+
+## Looking Ahead: Projection{.smaller-title}
+
+:::{style="font-size: 1em"}
+We've seen two key benefits of orthogonal bases:
+
+1. **Coordinates** are easy to compute: $c_j = \dfrac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^\top \mathbf{u}_j}$ — no matrix inversion needed.
+
+2. In the next lecture, we'll see that orthogonal bases also make **projection** easy — finding the closest point in a subspace to any vector.
+:::

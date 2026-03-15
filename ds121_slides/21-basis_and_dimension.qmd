@@ -16,7 +16,7 @@ format:
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
-- Review bases and dimensions
+- Connecting column/null spaces to bases and dimensions
 - Basis for a nullspace
 - Basis for a column space
 - Matrix rank
@@ -24,7 +24,7 @@ format:
 - New statements for IMT
 :::
 
-## Basis
+## Spanning Sets Can Have Redundancy{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 Consider the subspace $H$ of $\mathbb{R}^3$ described by $\text{Span}\{\mathbf{a}_1, \mathbf{a}_2, \mathbf{a}_3\}$ with
@@ -67,7 +67,7 @@ fig.text(9, -9, -7, r'H', 'H', size = 16)
 :::
 :::
 
-## Basis 
+## Smallest Spanning Set: Finding a Basis{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 Since $\mathbf{a}_3$ is a scalar multiple of $\mathbf{a}_2,$ the most concise way of writing $H$ is
@@ -103,7 +103,7 @@ fig.text(9, -9, -7, r'H', 'H', size = 16)
 :::
 :::
 
-## Basis
+## Definition: Basis for a Vector Space{.smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -128,11 +128,13 @@ Similarly, a **basis for a subspace**  $H$ of $V$ is a linearly independent set 
 
 <br>
 
+:::{.fragment}
 Note that in our example, $\{\mathbf{a}_1, \mathbf{a}_2, \mathbf{a}_3\}$ is not a basis for $H,$ because $\mathbf{a}_2$ and $\mathbf{a}_3$ are not linearly independent.
 Furthermore, $\{\mathbf{a}_1\}$ is also not a basis for $H,$ because it does not span $H.$
 :::
+:::
 
-## Basis
+## The Standard Basis for $\mathbb{R}^n${.smaller-title}
 
 :::{style="font-size: .7em"}
 The columns of _**any**_ invertible $n\times n$ matrix form a basis for $\mathbb{R}^n,$ because, by the IMT, they are linearly independent and span $\mathbb{R}^n.$
@@ -175,7 +177,7 @@ fig.plotIntersection([0, 1, 0, 0], [1, 0, 0, 0]);
 :::
 :::
 
-## Dimension 
+## Definition: Dimension of a (Sub)space{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 If a vector space $V$ has a basis of $p$ vectors, then _**every**_ basis of $V$ must consist of exactly $p$ vectors. 
@@ -195,13 +197,16 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
+
+
+:::{.fragment}
 __Remark__: The dimension of the zero subspace $\{{\bf 0}\}$ is defined to be zero.  
 
 For example, a plane through the origin ${\bf 0}$ is two-dimensional, and a line through ${\bf 0}$ is one-dimensional.
-
+:::
 :::
 
-## Basis for a Nullspace
+## Finding a Basis for Nul A: Row Reduction{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 __Example__.
@@ -215,7 +220,11 @@ $$
 
 :::{style="font-size: .8em"}
 We need to describe the set of all solutions of $A\mathbf{x} = {\bf 0}.$
+:::
 
+
+:::{.fragment}
+:::{style="font-size: .8em"}
 We start by performing Gaussian elimination on the augmented matrix:
 :::
 
@@ -224,13 +233,27 @@ $$
 \left[ \begin{array}{c|c} A & {\bf 0} \end{array}\right] \sim \left[\begin{array}{ccccc|c}1&-2&0&-1&3&0\\0&0&1&2&-2&0\\0&0&0&0&0&0\end{array}\right], \;\;\;
 \begin{array}{rrrrrcl}x_1&-2x_2&&-x_4&+3x_5&=&0\\&&x_3&+2x_4&-2x_5&=&0\\&&&&0&=&0\end{array}
 $$
+
 :::
 
 :::{style="font-size: .8em"}
-$x_1$ and $x_3$ are basic variables, and $x_2, x_4,$ and $x_5$ are free variables.
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Which are basic variables and which are free?</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
 :::
 
-## Basis for a Nullspace
+## Expressing the Solution via Free Variables{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 __Example (continued)__.
@@ -240,13 +263,17 @@ $$
 \begin{array}{rcl}x_1&=&2x_2 + x_4 -3x_5,\\
 x_3&=&-2x_4 + 2x_5.\end{array}
 $$
+:::
 
+:::{.fragment}
+:::{style="font-size: .8em"}
 Now, what we write the solution set as a _**weighted combination of vectors**_, or simply a vector equation.
 
 The key idea is that the _**free variables will become the weights**_.
 :::
+:::
 
-## Basis for a Nullspace
+## Nul A as a Span of Vectors{.smaller-title}
 
 :::{style="font-size: .6em"}
 $$
@@ -266,7 +293,7 @@ This expression describes the entire solution set of $A\mathbf{x} = {\bf 0}.$ <b
 Hence, ${\operatorname{Nul}}\ A$ is the set of all linear combinations of $\mathbf{u}, \mathbf{v},$ and ${\bf w}$.  That is, ${\operatorname{Nul}}\ A$ is the subspace _**spanned**_ by $\{\mathbf{u}, \mathbf{v}, {\bf w}\}.$
 :::
 
-## Basis for a Nullspace
+## Nul A: Confirming Linear Independence{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 __Example (continued)__.
@@ -298,7 +325,7 @@ display(HTML(html_content))
 It is 3. To find the dimension of $\operatorname{Nul} A$, we can count the number of free variables in RREF.
 :::
 
-## Basis for a Column Space
+## Basis for Col B: Reading Off Pivot Columns{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 Since a basis for the column space must span it, we can use all matrix columns as our starting point. How do we select from all columns the linearly independent ones?
@@ -313,7 +340,7 @@ Denote the columns by $\mathbf{b}_1,\dots,\mathbf{b}_5$.
 Then $\mathbf{b}_3 = -3\mathbf{b}_1 + 2\mathbf{b}_2$ and $\mathbf{b}_4 = 5\mathbf{b}_1-\mathbf{b}_2.$ Hence, any combination of $\mathbf{b}_1,\dots,\mathbf{b}_5$ is actually just a combination of $\mathbf{b}_1, \mathbf{b}_2,$ and $\mathbf{b}_5.$
 :::
 
-## Basis of a Column Space
+## Pivots of B Form a Basis for Col B{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 That is, $\{\mathbf{b}_1, \mathbf{b}_2, \mathbf{b}_5\}$ spans ${\operatorname{Col}}\ B$.
@@ -331,7 +358,7 @@ Hopefully now the term "basic variable" makes sense!
 :::
 :::
 
-## Basis of a Column Space
+## Corresponding Columns Work for Col A{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 This idea generalizes even to matrices that aren't in reduced echelon form: the pivot columns of $A$ form a basis for ${\operatorname{Col}}\ A$ _for any_ $A$.
@@ -362,7 +389,7 @@ In other words:
 > If some columns of $B$ are a basis for ${\operatorname{Col}}\ B$, then the corresponding columns of $A$ are a basis for ${\operatorname{Col}}\ A$.
 :::
 
-## Basis of a Column Space
+## Finding a Basis for Col A: Example{.smaller-title}
 
 :::{style="font-size: .8em"}
 __Example__.
@@ -386,7 +413,7 @@ $$
 $$
 :::
 
-## Matrix Rank
+## Definition: Rank of a Matrix{.smaller-title}
 
 :::{style="font-size: .8em"}
 ```{python}
@@ -406,6 +433,7 @@ display(HTML(html_content))
 
 <br>
 
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
@@ -421,13 +449,13 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 
-
-Since the pivot columns of $A$ form a basis for $\operatorname{Col} A,$ the rank of $A$ is just the number of pivot columns in $A$. 
+Since the pivot columns of $A$ form a basis for $\operatorname{Col} A,$ the rank of $A$ is just the number of pivot columns in $A$.
 
 In other words, the rank of $A$ is the number of basic variables in a linear system of the form $A {\bf x} = {\bf b}$.
 :::
+:::
 
-## Matrix Rank
+## Properties of Rank and Practice Problems{.smaller-title}
 
 :::{style="font-size: .8em"}
 For matrices $A$ and $B$ of appropriate sizes it can be shown that<br>
@@ -456,7 +484,7 @@ display(HTML(html_content))
 :::
 
 
-## Matrix Rank
+## Computing Rank: Example{.smaller-title}
 
 :::{style="font-size: .8em"}
 __Example__.
@@ -467,6 +495,7 @@ $$
 A = \begin{bmatrix}2&5&-3&-4&8\\4&7&-4&-3&9\\6&9&-5&2&4\\0&-9&6&5&-6\end{bmatrix}.
 $$
 :::
+:::{.fragment}
 :::{style="font-size: .8em"}
 Reduce $A$ to an echelon form. One result is:
 :::
@@ -478,18 +507,22 @@ $$
 :::{style="font-size: .8em"}
 Hence the matrix $A$ has 3 pivot columns, so $\operatorname{Rank} A = 3.$
 :::
+:::
 
 ## Rank-Nullity Theorem
 
 :::{style="font-size: .8em"}
-Consider a matrix $A$ with  $n$ columns. 
+Consider a matrix $A$ with  $n$ columns.
 
+:::{.fragment}
 -  $\dim\operatorname{Nul}\ A$ = the number of free variables in $A\mathbf{x} = {\bf 0}$,  which is the number of non-pivot columns in $A$.
 
 - $\dim\operatorname{Col}\ A$ = the number of basis variables in $A\mathbf{x} = {\bf 0}$, which is the number of pivot columns.
 
 So we can now make this important connection:
 :::
+:::
+:::{.fragment}
 :::{style="font-size: .6em"}
 $$
 \begin{array}{rcl}
@@ -498,6 +531,8 @@ $$
 \end{array}
 $$
 :::
+:::
+:::{.fragment}
 :::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
@@ -506,7 +541,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
     <span class="label">Theorem </span>
-        <p>If a matrix \(A\) has \(n\) columns, then \(n=\operatorname{Rank} A + \dim\operatorname{Nul}\).</p>
+        <p>If a matrix \(A\) has \(n\) columns, then \(n=\operatorname{Rank} A + \dim\operatorname{Nul} A\).</p>
     </div>
     """
 
@@ -514,9 +549,98 @@ html_content = generate_html()
 display(HTML(html_content))
 ```
 :::
+:::
 <!-- :::{style="font-size: .8em"}
 This relationship involving dimension is true even though the two subspaces themselves live in different spaces: $\operatorname{Nul}\ A \subset \mathbb{R}^n$ and $\operatorname{Col}\ A \subset \mathbb{R}^m$.
 ::: -->
+
+## Rank-Nullity: A Funnel Diagram{.really-smaller-title}
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
+fig, ax = plt.subplots(figsize=(11, 3.8))
+ax.set_xlim(0, 11)
+ax.set_ylim(0, 4)
+ax.axis('off')
+
+# Left box: R^n
+left_box = mpatches.FancyBboxPatch((0.1, 0.2), 3.0, 3.4,
+    boxstyle="round,pad=0.1", linewidth=2, edgecolor='steelblue', facecolor='#e8f4f8')
+ax.add_patch(left_box)
+ax.text(1.6, 3.35, r'$\mathbb{R}^n$ (domain)', ha='center', fontsize=12, fontweight='bold', color='steelblue')
+
+# Nul A region
+nul_rect = mpatches.FancyBboxPatch((0.3, 0.35), 2.6, 1.3,
+    boxstyle="round,pad=0.05", linewidth=1.5, edgecolor='blue', facecolor='lightblue', alpha=0.7)
+ax.add_patch(nul_rect)
+ax.text(1.6, 1.05, r'Nul $A$', ha='center', va='center', fontsize=11, color='navy')
+ax.text(1.6, 0.62, r'dim = $n - r$', ha='center', va='center', fontsize=9, color='navy')
+
+# Remaining region in R^n
+rem_rect = mpatches.FancyBboxPatch((0.3, 1.75), 2.6, 1.6,
+    boxstyle="round,pad=0.05", linewidth=1.5, edgecolor='cornflowerblue', facecolor='#b8d4f0', alpha=0.7)
+ax.add_patch(rem_rect)
+ax.text(1.6, 2.55, r'rest of $\mathbb{R}^n$', ha='center', va='center', fontsize=11, color='navy')
+ax.text(1.6, 2.1, r'dim = $r$', ha='center', va='center', fontsize=9, color='navy')
+
+# Arrow: Nul A to 0
+ax.annotate('', xy=(4.85, 0.8), xytext=(3.2, 0.8),
+    arrowprops=dict(arrowstyle='->', color='blue', lw=2))
+ax.text(4.0, 0.52, r'maps to $\mathbf{0}$', ha='center', fontsize=9, color='blue')
+
+# Right box: R^m
+right_box = mpatches.FancyBboxPatch((7.9, 0.2), 3.0, 3.4,
+    boxstyle="round,pad=0.1", linewidth=2, edgecolor='darkgreen', facecolor='#eef8ee')
+ax.add_patch(right_box)
+ax.text(9.4, 3.35, r'$\mathbb{R}^m$ (codomain)', ha='center', fontsize=12, fontweight='bold', color='darkgreen')
+
+# Col A region
+col_rect = mpatches.FancyBboxPatch((8.1, 0.35), 2.6, 2.4,
+    boxstyle="round,pad=0.05", linewidth=1.5, edgecolor='green', facecolor='lightgreen', alpha=0.7)
+ax.add_patch(col_rect)
+ax.text(9.4, 1.55, r'Col $A$', ha='center', va='center', fontsize=11, color='darkgreen')
+ax.text(9.4, 1.1, r'dim = $r$ = rank', ha='center', va='center', fontsize=9, color='darkgreen')
+
+# Arrow: rest of R^n maps onto Col A
+ax.annotate('', xy=(7.8, 2.0), xytext=(3.2, 2.3),
+    arrowprops=dict(arrowstyle='->', color='cornflowerblue', lw=2))
+ax.text(5.5, 2.55, r'$A$  (maps onto Col $A$)', ha='center', fontsize=10, color='cornflowerblue')
+
+# Zero vector point in R^m
+ax.plot([9.4], [3.0], 'ko', markersize=6)
+ax.text(9.7, 3.05, r'$\mathbf{0}$', fontsize=11)
+
+plt.tight_layout()
+```
+:::
+
+:::{style="font-size: .85em"}
+**Rank-Nullity:** $n = \operatorname{rank} A + \dim \operatorname{Nul} A = r + (n-r).$ The nullspace is "thrown away"; the remaining $r$ dimensions map onto $\operatorname{Col} A.$
+:::
+
+## Practice: Bases, Rank, and Rank-Nullity{.really-smaller-title}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Let \(A = \begin{bmatrix}1&2&0&1\\-1&-2&1&0\\2&4&-1&1\end{bmatrix}.\)
+        <ol type="a">
+            <li>Row-reduce \(A\) and identify the pivot columns.</li>
+            <li>Find a basis for \(\operatorname{Col} A\) and state \(\operatorname{rank} A.\)</li>
+            <li>Find a basis for \(\operatorname{Nul} A\) and state \(\dim \operatorname{Nul} A.\)</li>
+            <li>Verify the rank-nullity theorem: confirm \(\operatorname{rank} A + \dim \operatorname{Nul} A = n.\)</li>
+        </ol>
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
 
 <!-- ## Rank-Nullity Theorem
 
@@ -542,7 +666,7 @@ Let's think about a matrix $A$ and the associated linear transformation $T(x) = 
 - _However,_ if $A$ "throws away" a nullspace of dimension $p$, it _reduces_ the column space of $A$ to $n-p$. Meaning, the dimension of $T$'s range is reduced to $n-p$.
 ::: -->
 
-## Extending the Invertible Matrix Theorem{.really-smaller-title}
+## Basis and the Invertible Matrix Theorem{.smaller-title}
 
 :::{style="font-size: 1em"}
 <!-- The above arguments show that when $A$ has $n$ columns, then the "larger" that the column space is, the "smaller" that the null space is.  -->
@@ -553,12 +677,14 @@ Let's consider what this means when $A$ is a square $n\times n$ matrix.
 
 - Recall that the IMT said that an $n\times n$ matrix is invertible if and only if its columns are linearly independent, and if and only if its columns span $\mathbb{R}^n$.
 
+:::{.fragment}
 We can now see that an $n\times n$ matrix is invertible if and only if the columns of $A$ form a basis for $\mathbb{R}^n.$
 :::
+:::
 
-## Extending the Invertible Matrix Theorem{.really-smaller-title}
+## New IMT Statements: Rank, Dimension, Basis{.smaller-title}
 
-:::{style="font-size: 1em"}
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
