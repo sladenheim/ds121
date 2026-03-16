@@ -15,7 +15,7 @@ format:
 
 ## Learning Objectives
 :::{style="font-size: .8em"}
-- (Review of) Invertible transformations
+- Invertible transformations
 - Invertible matrices
 - Determinants
     - 2nd order determinants
@@ -33,7 +33,8 @@ format:
 When given a mathematical object, its "inverse" is another object that undoes the action of the first one. Some examples:
 
 - Given a non-zero real number $r$, its multiplicative inverse $r^{-1}$ has the property that it undoes multiplication by $r$, since $r^{-1} \cdot r = r \cdot r^{-1} = 1$.
-- Some functions over the real numbers like $f(x) = x^3$ have an inverse function $f^{-1}(x) = \sqrt[3]{x}$ such that $f^{-1} \circ f = f \circ f^{-1} =$ the identity function.
+- Some functions over the real numbers like $f(x) = x^3$ have an inverse function $f^{-1}(x) = \sqrt[3]{x}$ such that $f^{-1}(f(x)) = f(f^{-1}(x)) =x.$
+<!-- - Some functions over the real numbers like $f(x) = x^3$ have an inverse function $f^{-1}(x) = \sqrt[3]{x}$ such that $f^{-1} \circ f = f \circ f^{-1} =$ the identity function. -->
 
 Let's apply the concept of inverses to linear transformations -- that is, functions of vectors.
 :::
@@ -41,7 +42,7 @@ Let's apply the concept of inverses to linear transformations -- that is, functi
 ## Inverse of a Linear Transformation{.smaller-title}
 
 
-:::{style="font-size:0.9em"}
+:::{style="font-size:0.8em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -75,7 +76,11 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p><span class="label">Theorem</span>
-       A linear transformation \(T: \mathbb{R}^n \to \mathbb{R}^n\) is invertible if and only if it is one-to-one and onto.
+        If \(T: \mathbb{R}^n \to \mathbb{R}^n\) is a linear transformation, the following statemens are equivalent:
+    <ol>
+       <li> \(T\) is invertible.  </li> 
+       <li> \(T\) is one-to-one.  </li> 
+       <li> \(T\) is onto.  </li> 
         </p>
     </div>
     """
@@ -174,7 +179,7 @@ Geometrically, $A$ and $B$ correspond to counterclockwise rotations by 90 and 27
 - Similarly, $BA$ corresponds to performing a 90 degree rotation followed by a 270 degree rotation, so once again the result $BA = I$ is the identity matrix.
 :::
 
-## Inverse of a Matrix
+<!-- ## Inverse of a Matrix
 
 :::{style="font-size: .8em"}
 
@@ -210,7 +215,7 @@ It is _**not**_ invertible. There are many equivalent ways to reach this conclus
 - The columns of $A$ do not span $\mathbb{R}^2.$
 :::
 :::
-:::
+::: -->
 
 ## Inverse of a Matrix
 
@@ -242,9 +247,7 @@ display(HTML(html_content))
 ## Determinants
 
 :::{style="font-size: .8em"}
-When does a square matrix have an inverse?
-
-A possible way to answer this question is by looking at the determinant of the matrix.
+When does a square matrix have an inverse? A possible way to answer this question is by looking at the determinant of the matrix.
 
 
 If $A$ is the standard matrix of a linear transformation $T$. The factor by which the area changes due to $T$ is known as the determinant of $A$, $\text{det}(A).$
@@ -369,11 +372,11 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>  <span class="label">Theorem</span>
-For any linear transformation \(\mathbb{R}^2 \to \mathbb{R}^2\) represented by
+For any linear transformation \(T: \mathbb{R}^2 \to \mathbb{R}^2\) represented by
 
 \(A = \begin{bmatrix} a & b \\ c & d \end{bmatrix},\)
 
-the area of a unit square (or any shape) is scaled by a factor of \(\det(A) = ad-bc\).
+the area of a unit square (or any shape) is scaled by a factor of \(\det(A)= ad-bc\) (or \(|\det(A)|= |ad-bc|\) if \((ad-bc)<0.\))
         </p>
     </div>
     """
@@ -390,7 +393,7 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        When does it happen that \(\text{det}(A)=0\)?
+        Which kind of linear transformation \(T: \mathbb{R}^2 \to \mathbb{R}^2\) represented by the standard matrix \(A\) leads to \(\text{det}(A)=0\)?
         </p>
     </div>
     """
@@ -406,10 +409,10 @@ Recall that when $A$ is the matrix of a projection, the unit square collapses on
 ## 2nd Order Determinants
 
 :::{style="font-size: .8em;"}
-This is confirmed by the determinant:
+__Example.__ Projections are not invertible. This is confirmed by the determinant:
 
-$$
- \det\left(\begin{bmatrix}1 & 0 \\ 0 & 0\end{bmatrix}\right) = (1 \cdot 0) - (0 \cdot 0) = 0.
+$$\small{
+ \det\left(\begin{bmatrix}1 & 0 \\ 0 & 0\end{bmatrix}\right) = (1 \cdot 0) - (0 \cdot 0) = 0.}
 $$
 
 :::{.center-text}
@@ -434,11 +437,29 @@ ax.arrow(0.0,1.0,0,-0.9,head_width=0.15, head_length=0.1, length_includes_head=T
 :::{style="font-size: .8em;"}
 The determinant can be defined for _**any**_ square matrix. In general, we use the co-factor expansion to compute the determinant.
 
-Some useful facts about determinants:
+```{python}
+from IPython.core.display import HTML
 
-1. $\det (AB) = \det (A) \det (B).$
-2. $\det (A)^{\top} = \det (A).$
-3. If $A$ is triangular, then $\det (A)$ is the product of the entries on the main diagonal of $A$.
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  <span class="label">Theorem</span>
+        Let \(\small{A}\) and \(\small{B}\) be \(\small{n \times n}\) matrices. Then
+ <ol>
+        <li>\(\small{\det (AB) = \det (A) \det (B).}\)</li> 
+        <li>\(\small{\det (A^{\top}) = \det (A).}\)</li> 
+         <li>If \(\small{A}\) is triangular, then \(\small{\det (A)}\) is the product of the entries on the main diagonal of \(\small{A}\).</li> 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Determinants
+
+:::{style="font-size: .8em;"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -447,9 +468,8 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        Find \(\det(\mathbf{A})\) if 
-\(
-\mathbf{A} = \begin{bmatrix}2 & 0 & 0 \\1 & 3 & 0 \\4 & 2 & 1\end{bmatrix}  \begin{bmatrix}1 & 2 & 3 \\0 & 1 & 2 \\0 & 0 & 2\end{bmatrix}.\)
+        Find \(\small{\det(\mathbf{A})}\) if 
+\(\small{\mathbf{A} = \begin{bmatrix}2 & 0 & 0 \\1 & 3 & 0 \\4 & 2 & 1\end{bmatrix}  \begin{bmatrix}1 & 2 & 3 \\0 & 1 & 2 \\0 & 0 & 2\end{bmatrix}.}\)
         </p>
     </div>
     """
@@ -491,10 +511,10 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p>  <span class="label">Theorem</span>
-Let \(A\) = \(\left[\begin{array}{rr}a&b\\c&d\end{array}\right]\).  
+Let \(\small{A}\) = \(\small{\left[\begin{array}{rr}a&b\\c&d\end{array}\right]}\).  
 
-If \(\text{det}(A) = 0\), then \(A\) is not invertible.
-Otherwise, \(A\) is invertible and \(A^{-1} = \frac{1}{det(A)}\left[\begin{array}{rr}d&-b\\-c&a\end{array}\right].\)<br>
+If \(\small{\text{det}(A) = 0}\), then \(\small{A}\) is not invertible.
+Otherwise, \(\small{A}\) is invertible and \(\small{A^{-1} = \frac{1}{det(A)}\left[\begin{array}{rr}d&-b\\-c&a\end{array}\right].}\)<br>
         </p>
     </div>
     """
@@ -534,15 +554,19 @@ So a $2\times 2$ matrix with linearly dependent columns is _not invertible_.
 :::{.columns}
 
 :::{.column}
-Here is a horizontal contraction
+__Example.__ Here is a horizontal contraction:
 
 $$
-A = \left[\begin{array}{rr}0.5&0\\0&1\end{array}\right].
+\small{A = \left[\begin{array}{rr}0.5&0\\0&1\end{array}\right]}.
 $$
 :::
 
 :::{.column}
-```{python}
+:::{.center-text}
+![](images/inverses/horiz_contraction.png){width=70%}
+
+:::
+<!-- ```{python}
 import demoUtilities as dm
 import numpy as np
 square = np.array([[0.0,1,1,0],[1,1,0,0]])
@@ -554,7 +578,7 @@ dm.plotSmallSetup()
 dm.plotSquare(square)
 dm.plotSquare(A @ square,'r')
 # Latex(r'Horizontal Contraction')
-```
+``` -->
 :::
 :::
 
@@ -590,7 +614,7 @@ dm.plotSquare(A @ square,'r')
 ```
 :::
 ::: -->
-Its determinant is $1(0.5)-0(0) = 0.5,$ so this linear transformation is invertible. <br>
+__Example (continued).__ Its determinant is $1(0.5)-0(0) = 0.5,$ so this linear transformation is invertible. <br>
 Its inverse is:
 
 $$ \frac{1}{0.5}\left[\begin{array}{rr}1&0\\0&0.5\end{array}\right] = \left[\begin{array}{rr}2&0\\0&1\end{array}\right].$$
@@ -601,16 +625,12 @@ Geometrically, $A$ contracted the $x_1$-direction by 0.5 and $A^{-1}$ will expan
 ## Inverse of a $n \times n$ Matrix
 
 :::{style="font-size: .8em"}
-Let's look at the equation
+Let's look at the equation $AA^{-1} = I.$
+
+Denote $A^{-1}$ = $[{\bf x_1}\: {\bf x_2} \:\dots {\bf x_n}]$  and  $I$ as $[{\bf e_1} \: {\bf e_2} \dots {\bf e_n}]:$
 
 $$
-AA^{-1} = I.
-$$
-
-Denote $A^{-1}$ = $[{\bf x_1}, {\bf x_2}, \dots, {\bf x_n}]$  and  $I$ as $[{\bf e_1}, {\bf e_2}, \dots, {\bf e_n}]:$
-
-$$
-A[{\bf x_1}, {\bf x_2}, \dots, {\bf x_n}] = [{\bf e_1}, {\bf e_2}, \dots, {\bf e_n}].
+A[{\bf x_1} \: {\bf x_2} \dots {\bf x_n}] = [{\bf e_1} \: {\bf e_2} \dots {\bf e_n}].
 $$
 
 Notice that we can break this up into $n$ separate problems:

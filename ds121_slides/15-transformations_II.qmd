@@ -1,5 +1,5 @@
 ---
-title: "Transformations"
+title: "Visualizing Transformations"
 author: "CDS DS-121<br>Boston University"
 format: 
     revealjs:
@@ -15,16 +15,223 @@ format:
 
 ## Learning Objectives
 :::{style="font-size: .8em"}
-- Visualizing Transformations in $\mathbb{R}^2$
+- Standard matrix
+- Visualizing linear transformations in $\mathbb{R}^2$
     - Dilations/contractions
     - Reflections
-    - Rotations
     - Shear
     - Projection
+    - Rotations
 - Composing transformations
-- One-to-one and onto transformations
-- Invertible transformations
+<!-- - One-to-one and onto transformations
+- Invertible transformations -->
 :::
+
+## Linearity
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Is the transformation \(T\left(\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}\right) = \begin{bmatrix} x_1 \\ x_1 \end{bmatrix}\) linear?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Matrix of a Linear Transformation{.smaller-title}
+
+:::{style="font-size: 0.9em"}
+Every linear transformation from vectors to vectors is a matrix multiplication.
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> <span class="label">Theorem</span>
+        Let \(T: \mathbb{R}^n \rightarrow \mathbb{R}^m\) be a linear transformation.   Then there is a unique matrix \(A\) such that:<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(T({\bf x}) = A{\bf x} \;\;\; \mbox{for all}\; {\bf x} \in \mathbb{R}^n.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+Let ${\bf e_j}$ denote the $j$th column of $I$ in $\mathbb{R}^n$. Then ${\bf e_j}$ is a __standard basis vector__.
+
+:::{.center-text}
+```{python}
+import demoUtilities as dm
+import numpy as np
+ax = dm.plotSetup(-3,3,-1,3,size=(4,4))
+ax.plot([0],[1],'ro',markersize=8)
+ax.arrow(0, 0, 1, 0, head_width=0.2, head_length=0.2, length_includes_head = True)
+ax.arrow(0, 0, 0, 1, head_width=0.2, head_length=0.2, length_includes_head = True)
+ax.text(0.25,1,'(0,1)',size=20)
+ax.plot([1],[0],'ro',markersize=8)
+ax.text(1.25,0.25,'(1,0)',size=20);
+```
+
+:::
+:::
+
+## Matrix of a Linear Transformation{.smaller-title}
+
+:::{style="font-size: .9em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> <span class="label">Standard matrix</span>
+        The <b>standard matrix</b> of \(T\) is the \(m \times n\) matrix whose \(i\)th column is the vector \(T({\bf e_i})\). If we denote it by \(A\), then \(A = \left[T({\bf e_1}) \dots T({\bf e_n})\right].\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Let linear transformation \(T: \mathbb{R}^2 \rightarrow \mathbb{R}^3\) be such that \(\small T (\mathbf{e}_1)=\begin{bmatrix} 2\\ 1\\ 4\end{bmatrix}\) and \(\small T(\mathbf{e}_2)=\begin{bmatrix} 3\\ 0\\ -2\end{bmatrix}\).<br>
+        a. Find the standard matrix representation \(A\) of \(T\).<br>
+        b. Find a formula for \(T\left( \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}\right).\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Visualizing Transformations
+
+:::{style="font-size: .8em"}
+Consider four points in $\mathbb{R}^2$:
+$\left[\begin{array}{r}0\\1\end{array}\right],\left[\begin{array}{r}1\\1\end{array}\right],\left[\begin{array}{r}1\\0\end{array}\right],\left[\begin{array}{r}0\\0\end{array}\right].$
+
+<!-- Is it ok to just have the graph cutoff at the bottom? -->
+These points form a square with side length 1 in 2-dimensional space.
+
+:::{.center-text}
+```{python}
+import demoUtilities as dm
+import numpy as np
+
+square = np.array([[0, 1, 1, 0],
+                   [1, 1, 0, 0]])
+dm.plotSmallSetup()
+# print(square)
+dm.plotSquare(square)
+```
+:::
+:::
+
+## Visualizing Transformations
+:::{style="font-size: .8em"}
+
+Let's transform each of these points according to the following rule.  Consider the following matrix, which is called a __shear matrix__:
+
+$$ A = \left[\begin{array}{rr}1&1.5\\0&1\end{array}\right]. $$
+
+We define $T({\bf x}) = A{\bf x}$.  Then we have $T: \mathbb{R}^2 \rightarrow \mathbb{R}^2.$
+
+What is the image of each of these points under $T$?
+
+$$ A\left[\begin{array}{r}0\\1\end{array}\right] = \left[\begin{array}{r}1.5\\1\end{array}\right],  A\left[\begin{array}{r}1\\1\end{array}\right] = \left[\begin{array}{r}2.5\\1\end{array}\right],$$
+
+
+$$ A\left[\begin{array}{r}1\\0\end{array}\right] = \left[\begin{array}{r}1\\0\end{array}\right], A\left[\begin{array}{r}0\\0\end{array}\right] = \left[\begin{array}{r}0\\0\end{array}\right].$$
+
+:::
+
+## Visualizing Transformations
+
+:::{.center-text}
+```{python}
+#
+ax = dm.plotSetup()
+# print("square = "); print(square)
+dm.plotSquare(square)
+#
+# create the A matrix
+A = np.array([[1.0, 1.5],[0.0,1.0]])
+# print("A matrix = "); print(A)
+#
+# apply the shear matrix to the square
+ssquare = np.zeros(np.shape(square))
+for i in range(4):
+    ssquare[:,i] = dm.AxVS(A,square[:,i])
+# print("sheared square = "); print(ssquare)
+dm.plotSquare(ssquare,'r')
+```
+:::
+
+## Visualizing Transformations
+
+:::{style="font-size: .8em"}
+We can also use more complex shapes, such as the following `note`, to visualize transformations. The note is constructed using an array of 26 vectors in $\mathbb{R}^2$. In other words, it is a 2 $\times$ 26 matrix.
+
+```{python}
+#| echo: true
+note = np.array(
+        [[193,47],
+        [140,204],
+        [123,193],
+        [99,189],
+        [74,196],
+        [58,213],
+        [49,237],
+        [52,261],
+        [65,279],
+        [86,292],
+        [113,295],
+        [135,282],
+        [152,258],
+        [201,95],
+        [212,127],
+        [218,150],
+        [213,168],
+        [201,185],
+        [192,200],
+        [203,214],
+        [219,205],
+        [233,191],
+        [242,170],
+        [244,149],
+        [242,131],
+        [233,111]])
+note = note.T/150.0    # now a 2 x 26 matrix
+```
+:::
+
+## Visualizing Transformations
+
+:::{style="font-size: .8em"}
+:::{.center-text}
+```{python}
+dm.plotSetup()
+dm.plotShape(note)
+```
+:::
+:::
+
 
 
 
@@ -442,6 +649,151 @@ dm.plotShape(A @ note,'r')
 :::
 :::
 
+## Rotations
+
+:::{style="font-size:.8em"}
+Let $T: \mathbb{R}^2 \rightarrow \mathbb{R}^2$ be the transformation that rotates each point in $\mathbb{R}^2$ about the origin through an angle $\theta$, with counterclockwise rotation for a positive angle.  
+
+Let's find this transformation's standard matrix $A$.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        It is known that rotations preserve length. Since rotation preserves length, where does \(T\) map the standard basis vectors \({\bf e_1}\) and \({\bf e_2}​\)​? (Hint: describe the set of all possible images of these vectors.)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Rotations
+
+:::{style="font-size:.8em"}
+
+Referring to the diagram below, we can see that $\left[\begin{array}{r}1\\0\end{array}\right]$ rotates into $\left[\begin{array}{r}\cos\theta\\\sin\theta\end{array}\right],$ and $\left[\begin{array}{r}0\\1\end{array}\right]$ rotates into $\left[\begin{array}{r}-\sin\theta\\\cos\theta\end{array}\right].$
+
+:::{.center-text}
+```{python}
+#
+import matplotlib.patches as patches
+ax = dm.plotSetup(-1.2, 1.2, -0.5, 1.2)
+# red circle portion
+arc = patches.Arc((0, 0), width=2, height=2, angle=0, 
+                  theta1=340, theta2=200, linewidth=2, color='r', linestyle='-.')
+
+# Add arc to the plot
+ax.add_patch(arc)
+#
+# labels
+ax.text(1.1, 0.1, r'$\mathbf{e}_1 = (1, 0)$', size = 20)
+ax.text(0.1, 1.1, r'$\mathbf{e}_2 = (0, 1)$', size = 20)
+#
+# angle of rotation and rotated points
+theta = np.pi / 6
+e1t = [np.cos(theta), np.sin(theta)]
+e2t = [-np.sin(theta), np.cos(theta)]
+#
+# theta labels
+ax.text(0.5, 0.08, r'$\theta$', size = 20)
+ax.text(-0.25, 0.5, r'$\theta$', size = 20)
+#
+# arrows from origin
+ax.arrow(0, 0, e1t[0], e1t[1],
+        length_includes_head = True,
+        width = .02)
+ax.arrow(0, 0, e2t[0], e2t[1],
+        length_includes_head = True,
+        width = .02)
+#
+# new point labels
+ax.text(e1t[0]+.05, e1t[1]+.05, r'$[\cos\; \theta, \sin \;\theta]$', size = 20)
+ax.text(e2t[0]-1.1, e2t[1]+.05, r'$[-\sin\; \theta, \cos \;\theta]$', size = 20)
+#
+# curved arrows showing rotation
+ax.annotate("",
+            xytext=(0.7, 0), xycoords='data',
+            xy=(0.7*e1t[0], 0.7*e1t[1]), textcoords='data',
+            size=10, va="center", ha="center",
+            arrowprops=dict(arrowstyle="simple",
+                            connectionstyle="arc3,rad=0.3"),
+            )
+ax.annotate("",
+            xytext=(0, 0.7), xycoords='data',
+            xy=(0.7*e2t[0], 0.7*e2t[1]), textcoords='data',
+            size=10, va="center", ha="center",
+            arrowprops=dict(arrowstyle="simple",
+                            connectionstyle="arc3,rad=0.3"),
+            )
+#
+# new points
+plt.plot([e1t[0], e2t[0]], [e1t[1], e2t[1]], 'bo', markersize = 10)
+plt.plot([0, 1], [1, 0], 'go', markersize = 10);
+```
+<!-- Yet another beautiful plot.. humbled. -->
+:::
+:::
+
+## Rotations
+
+:::{style="font-size: .8em"}
+By the theorem above,
+
+$$
+A = \left[\begin{array}{rr}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{array}\right].
+$$
+
+In particular, a 90 degree counterclockwise rotation corresponds to the matrix
+$$
+\left[\begin{array}{rr}0&-1\\1&0\end{array}\right].
+$$
+
+:::
+
+
+<!-- ## Rotations
+
+:::{.center-text}
+```{python}
+dm.plotSetup()
+dm.plotShape(note)
+```
+:::
+
+:::{style="font-size: .75em"}
+To rotate `note` we need to multiply each column of `note` by the rotation matrix $A$.
+::: -->
+
+## Rotations
+:::{style="font-size:.78em"}
+To rotate `note` we need to multiply each of its columns by the rotation matrix $A$.
+```{python}
+#| echo: true
+angle = 90
+theta = (angle/180) * np.pi
+A = np.array(
+    [[np.cos(theta), -np.sin(theta)],
+     [np.sin(theta), np.cos(theta)]])
+rnote = A @ note
+```
+:::
+
+:::{.center-text}
+
+```{python}
+dm.plotSmallSetup()
+dm.plotShape(rnote)
+```
+
+:::
+
+
 ## Composing Transformations
 
 :::{style="font-size: .8em"}
@@ -512,6 +864,25 @@ The order matters, and we read them __from right to left__!
 
 :::
 
+## Composing Transformations
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Find the standard matrix of the linear transformation \(T: \mathbb{R}^2 \to \mathbb{R}^2\) that first rotates points counterclockwise around the origin through \(\frac{\pi}{4}\) radians and then projects orthogonally onto the \(x_2\)-axis.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+<!-- 
 ## One-to-One and Onto
 
 :::{style="font-size: .8em;"}
@@ -619,9 +990,9 @@ Here, we see that $T$ maps points in $\mathbb{R}^2$ to a plane lying _within_ $\
 So $T$ is _not onto_ $\mathbb{R}^3$.
 ::: -->
 
-:::
+<!-- ::: -->
 
-## One-to-One and Onto
+<!-- ## One-to-One and Onto
 
 :::{style="font-size: .8em;"}
 ```{python}
@@ -670,7 +1041,7 @@ display(HTML(html_content))
 
 :::
 
-:::
+::: -->
 
 
 <!-- ## Key Ideas
@@ -684,7 +1055,7 @@ display(HTML(html_content))
 - A linear transformation can be written as $T( {\bf u}) = A{\bf u}.$ $A$ is called the standard matrix of $T.$ To find $A,$ we look at what $T$ does to the columns of $I.$
 ::: -->
 
-## Inverses
+<!-- ## Inverses
 
 :::{style="font-size: .8em"}
 When given a mathematical object, its "inverse" is another object that undoes the action of the first one. Some examples:
@@ -739,11 +1110,11 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-<br>
+<br> -->
 
 <!-- __Proof.__ In this case, it is easier to reason about the contrapositive statement: if a transformation $T$ is not one-to-one or is not onto, then it cannot be invertible. This is called a _proof by contradiction_. -->
 
-:::
+<!-- ::: -->
 
 <!-- ## Inverse of a Linear Transformation{.smaller-title}
 

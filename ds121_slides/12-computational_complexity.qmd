@@ -18,15 +18,18 @@ format:
 import numpy as np
 ```
 
+
 ## Learning Objectives
 
 :::{style="font-size:.8em"}
-- Computing with real numbers
-- Floating-point representation
-- Special values in IEEE-754
+- Floating-point arithmetic
+    - Floating-point representation
+    - Special values in IEEE-754
 - Computational costs of an algorithm
     - Flops
-    - Highest-powered terms
+    - Big-O notation
+    - Cost of linear algebra algorithms
+    - Parallelization
 
 
 <!-- :::{.fragment}
@@ -39,9 +42,9 @@ An important goal of this course is to get computers to do matrix math with acce
 
 :::
 
-## Computing Quickly and Accurately{.smaller-title}
+## Speed and Accuracy
 
-:::{style="font-size: .9em"}
+:::{style="font-size: .8em"}
 __Data science is largely about manipulating matrices__ because almost all data can be represented as a matrix: time-series, structured data, images, and text.
 
 There are four main things to keep in mind when choosing or designing an algorithm for vector and matrix computations:
@@ -55,9 +58,9 @@ Often there will be trade-offs between these categories.
 
 :::
 
-## Computing Quickly and Accurately{.smaller-title}
+## Speed and Accuracy
 
-:::{style="font-size:.9em"}
+:::{style="font-size: .8em"}
 
 __Example:__ Computational speed. Let's create three matrices of different sizes.
 
@@ -93,10 +96,10 @@ $AB$ is $20000 \times 20000,$ while $BC$ is $2 \times 2.$
 
 :::
 
-## Computing Quickly and Accurately{.smaller-title}
+## Speed and Accuracy
 
+:::{style="font-size: .8em"}
 
-:::{style="font-size:.8em"}
 Let's run both operations in `Python` and time how long they take to compute.
 :::
 
@@ -144,158 +147,27 @@ $AB$ is $20000 \times 20000,$ while $BC$ is $2 \times 2.$
 :::
 
 
-## Computing Quickly and Accurately{.smaller-title}
+## Speed and Accuracy
 
-:::{style="font-size: .9em"}
+:::{style="font-size: .8em"}
 __Example:__ The previous example exposed another issue. The two output matrices $D_{slow}$ and $D_{fast}$ should have been equal, but it turns out they were slightly different.
-
-This is why the code above used the Numpy command `allclose` to check whether two matrices were _**approximately equal**_ in each coordinate, rather than checking for exact equality.
 
 ```{python}
 #|echo: true
 diff = Dslow-Dfast; diff.max()
 ```
 
-Sometimes for the same question, the answers we get from a computer are very different from the answers we get mathematically!
-:::
-
-## Computing with Real Numbers{.smaller-title}
-
-:::{style=font-size:.9em}
-Sometimes Python gets even basic arithmetic wrong.
-
+Sometimes for the same question, the answers we get from a computer are very different from the answers we get mathematically! Even for very basic arithmetic:
 ```{python}
 #| echo: true
 1.1 - 1.0
 ```
-
-:::{.fragment}
-Here's a more complicated example. Look at the piecewise-linear function $f$ whose code is shown below.
-
-```{python}
-#| echo: true
-def f(x):
-    if x <= 1/2:
-        return 2 * x
-    if x > 1/2:
-        return 2 * x - 1
-```
-
-<div style="margin-bottom: 0.5em;"> </div> 
-
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-        If I run \(f(1)\), what will be the output?
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
 :::
 
-::::{.fragment}
 
-```{python}
-#| echo: true
-f(1)
-```
+## Floating Points 
 
-::::
-:::
-
-## Computing with Real Numbers{.smaller-title}
-
-:::{style=font-size:.9em}
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-        If I compute \(\small x_1=f(0.2)\), what will be the output?
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
-
-<div style="margin-bottom: 0.5em;"> </div> 
-
-:::{.fragment}
-```{python}
-#| echo: true
-f(0.2)
-```
-:::
-
-:::{.fragment}
-What if I keep going? Suppose I set
-$$\small x_1 = f(0.2), x_2 = f(x_1), x_3 = f(x_2),...
-$$
-
-```{python}
-#| echo: true
-def f(x):
-    if x <= 1/2:
-        return 2 * x
-    if x > 1/2:
-        return 2 * x - 1
-```
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-        Keep going for 10 iterations. What is the result?
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
-:::
-:::
-
-:::{.notes}
-0.2
-0.4
-0.8
-0.6
-0.2
-:::
-
-## Computing with Real Numbers{.smaller-title}
-
-:::{style="font-size:.9em"}
-
-Let's run the code for 60 iterations on a computer starting with $x = 0.2$ and see if it agrees with our calculation.
-
-```{python}
-#| echo: true
-x = 0.2
-for i in range(60):
-    print("iteration", "{:2d}".format(i), "   x =", x)
-    x = f(x)
-```
-
-:::
-
-## Computing with Real Numbers{.smaller-title}
-
-:::{style=font-size:.9em}
+:::{style=font-size:.8em}
 What happened?
 
 
@@ -308,45 +180,53 @@ We say the bit pattern is the number's _**representation.**_
 
 For example, the number '3.14' might have the representation '01000000010010001111010111000011'.
 
-For reasons of efficiency, we use a fixed number of bits for these representations.   In most computers nowadays we use _**64 bits**_ to represent a number.
+In most computers nowadays we use _**64 bits**_ to represent a number.
+
+<!-- For reasons of efficiency, we use a fixed number of bits for these representations.   In most computers nowadays we use _**64 bits**_ to represent a number. -->
+
+
 
 :::
 
-## Floating-Point Representation
+## Floating Points 
 
 :::{style="font-size:.8em"}
 Representing a real number in a computer is very complicated, much more so than representing integers (where computer arithmetic is, mostly, correct). 
 
-In fact, most real numbers cannot be represented exactly in a computer. For many decades after electronic computers were developed, there was no accepted "best" way to do this!
+In fact, most real numbers cannot be represented exactly in a computer. A __floating point__ is an approximation of some particular real number.
 
-Eventually (in the 1980s) a widely accepted standard emerged, called the IEEE-754 standard for __floating-point arithmetic__.
+Early computers used many different, incompatible methods for handling real numbers. Eventually (in the 1980s) a widely accepted standard emerged, called the IEEE-754 standard for __floating-point arithmetic__.
+
+
 :::
 
-## Floating-Point Representation
+## Floating Points 
 
 :::{style="font-size: .8em"}
-Conceptually, floating-point arithmetic is similar to "scientific notation."
+Conceptually, floating-point arithmetic is similar to "scientific notation", except that it is encoded in binary:
+<!-- Conceptually, floating-point arithmetic is similar to "scientific notation."
 $$
 123456 = \underbrace{1.23456}_{\mbox{significand}}\times {\underbrace{10}_{\mbox{base}}}^{\overbrace{5}^{exponent}}
 $$
 
-Except that it is encoded in binary:
+Except that it is encoded in binary: -->
 
 $$
 17 = \underbrace{1.0001}_{significand}\times {\underbrace{2}_{base}}^{\overbrace{4}^{exponent}}
 $$
 
-:::
-
-## Floating-Point Representation
-
-:::{style="font-size: .8em"}
 In a double-precision floating point number: the sign, significand, and exponent are all contained within 64 bits (or 8 bytes).
 
 :::{.center-text}
 <img src="/images/vector_matrix_algebra/floating-point-format.png" width = 800/>
 
 :::
+:::
+
+:::{.notes}
+$$
+123456 = \underbrace{1.23456}_{\mbox{significand}}\times {\underbrace{10}_{\mbox{base}}}^{\overbrace{5}^{exponent}}
+$$
 :::
 
 ## Special Values
@@ -376,39 +256,22 @@ var
 
 :::
 
-## Special Values
-
+## Cost of an Algorithm 
 :::{style="font-size:.8em"}
-<!-- As far as we are concerned, there is no difference between positive and negative zero. You can ignore the minus sign in front of a negative zero. -->
-
-```{python}
-#| echo: true
-var = np.nan
-var + 7
-```
-
-```{python}
-#| echo: true
-var = np.inf
-var + 7
-```
-:::
-
-## Computational Cost of an Algorithm {.really-smaller-title}
 
 How do we measure cost of an algorithm?
 
 
-First, we need to define our _**units**_. In this course, we will measure the cost of an algorithm by counting the number of _**additions, multiplications, divisions, subtractions, or square roots.**_
+First, we need to define our _**units**_. In this course, we will measure the cost of an algorithm by counting the number of _**additions, multiplications, divisions, or subtractions.**_
 
 In modern processors, each of these operations requires only a single instruction. _**When performed over real numbers in _floating point representation_, these operations are called**_ __flops__ (floating point operations).
 
-Second, when counting operations we will primarily be concerned with the _**highest-powered**_ term in the expression that counts flops.
+Second, when counting flops we will primarily be concerned with the _**highest-powered term**_ and _**the order**_ of the expression that counts flops. They tell us how the flop count scales for very large inputs.
+:::
 
-This tells us how the flop count scales for very large inputs.
 
-
-## Computational Cost of an Algorithm {.really-smaller-title}
+## Cost of an Algorithm 
+:::{style="font-size:.8em"}
 
 Let's say for a problem with input size $n$, an algorithm has flop count $12n^2 + 3n + 2$.  
 
@@ -423,17 +286,43 @@ $$
 We will use the symbol $\sim$ to denote this relationship.
 
 So we would say that this algorithm has flop count $\sim 12n^2$.
+:::
 
+## Big-O Notation
 
-## Costs of Matrix and Vector Algorithms {.smaller}
+:::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  <span class="label">Big-O notation</span>
+        Let \(f\) and \(g\) be real-valued functions. We say that \(f(n)\) is \(O(g(n))\) if there are constants \(c\) and \(k\) so that
+        $$|f(n)| \leq cg(n)$$
+        for all \(n > k.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+__Remark__: We read this as "$f$ is big-O of $g$" or "$g$ assymptotically dominates $f$." The constants $c$ and $k$ are called __witnesses__. Only one pair of witnesses is needed.
+
+__Example__: $f(n) = n^2+3n$ is $O(n^2),$ because for $n>1$, $|n^2+3n| \leq 4 n^2.$
+:::
+
+## Cost of an Algorithm 
+:::{style="font-size:.8em"}
 
 <!-- .9 and not .8 for same reason stated above -->
 
-:::{style="font-size:1.em"}
-Let's calculate the cost of common linear algebra operations, starting with the inner product.
+<!-- :::{style="font-size:1.em"} -->
+Let's calculate the cost of the inner product:
 
-$$
-[x_1\;x_2\;\dots\;x_n] \left[\begin{array}{c}y_1\\y_2\\\vdots\\y_n\end{array}\right] = \sum_{i=1}^n x_i y_i.
+$$\small{
+[x_1\;x_2\;\dots\;x_n] \left[\begin{array}{c}y_1\\y_2\\\vdots\\y_n\end{array}\right] = \sum_{i=1}^n x_i y_i.}
 $$
 
 
@@ -442,15 +331,17 @@ Given two vectors of length $n$, calculating an inner product requires:
 - $n$ multiplications
 - $n - 1$ additions
 
+The exact overall flop count is $2n - 1,$ the cost is $2n,$ and, in big-O notation, this is $O(n).$
+<!-- ::: -->
 
-So the overall flop count of the inner product is $2n - 1$.
-
-As stated before, we'll often focus on the dominant term: $2n$.
 :::
 
-## Costs of Matrix and Vector Algorithms {.smaller}
+:::{.notes}
+Handclasp
+:::
 
-:::{style="font-size: 1.em"}
+## Cost of an Algorithm 
+:::{style="font-size:.8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -458,8 +349,8 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        What is the flop count when multiplying an \(n \times n\) matrix \(A\) with a \(n \times 1\) column vector \( \bf x\)? <br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\(A{\bf x} = \left[\begin{array}{cccc}\begin{array}{c}\vdots\\\vdots\\{\bf a_1}\\\vdots\\\vdots\end{array}&\begin{array}{c}\vdots\\\vdots\\{\bf a_2}\\\vdots\\\vdots\end{array}&\dots&\begin{array}{c}\vdots\\\vdots\\{\bf a_n}\\\vdots\\\vdots\end{array}\\\end{array}\right]\;\left[\begin{array}{c}x_1\\x_2\\\vdots\\x_n\end{array}\right]\)
+        What is the exact flop count when multiplying an \(n \times n\) matrix \(A\) with a \(n \times 1\) column vector \( \bf x\)? <br>
+        $$A{\bf x} = \left[\begin{array}{cccc}\begin{array}{c}\vdots\\\vdots\\{\bf a_1}\\\vdots\\\vdots\end{array}&\begin{array}{c}\vdots\\\vdots\\{\bf a_2}\\\vdots\\\vdots\end{array}&\dots&\begin{array}{c}\vdots\\\vdots\\{\bf a_n}\\\vdots\\\vdots\end{array}\\\end{array}\right]\;\left[\begin{array}{c}x_1\\x_2\\\vdots\\x_n\end{array}\right]$$
         </p>
     </div>
     """
@@ -467,101 +358,79 @@ html_content = generate_html()
 display(HTML(html_content))
 
 ```
-
-<!-- :::{.fragment}
-To perform matrix-vector multiplication, you must compute $n$ inner products. We just saw that each one has a flop count of approximately $2n$, so the overall cost is
-
-$$
-n \cdot 2n = 2n^2.
-$$
-::: -->
-
-<!-- :::{.fragment}
-Note that $n^2$ grows *much* quicker than $n$. This cost can be written as $O(n^2)$. In __Big-O notation__, the $O$ signifies that the cost does not exceed $cn^2$, where $c$ is a constant.
-::: -->
 :::
 
 :::{.notes}
 $$
-n \cdot 2n = 2n^2.
+n \cdot (2n-1) = 2n^2-n. 
 $$
-:::
 
-<!-- ## Absolute and Relative Errors
-
-:::{style="font-size:.8em"}
-A floating point is an approximation of some particular real number.
-
-
-- Floating point numbers cannot be arbitrarily large or small. Numbers can be as large as $1.79 \times 10^{308}$ and as small as $2.23 \times 10^{-308}$.
-
-
-- There are discrete gaps between floating point numbers. For instance, the interval $[1,2]$ is represented by discrete subset:
-    $$
-    1, \: 1+2^{-52}, \: 1+2 \times 2^{-52},\: 1+3 \times 2^{-52},\: \ldots, 2
-    $$
-
-
-Floats are discrete but not equidistant:
-
-:::{.center-text}
-<img src="/images/vector_matrix_algebra/fltscale-wh.png" width = 1000/>
-
-:::
-
-:::
-
-## Absolute and Relative Errors
-
-:::{style="font-size:.8em"}
-Generally when we try to store a real number in a computer, what we wind up storing is the nearest floating point number that the computer can represent.
-
-What does "nearest" mean? It means "rounded to the nearest representable value."
-
-Let's say we have a particular real number $x, x\in \mathbb{R}.$
-
-**Rounding** $x$ means that $x$ will be replaced with the floating point number closest to $x,$ which is called $fl(x).$ 
-
-The error caused by this process is called **rounding error,** and $fl(x)$ is written as
+OR
 
 $$
-fl(x) = x(1 + \varepsilon).
-$$
+n \cdot 2n = 2n^2.$$
 :::
 
-## Absolute and Relative Errors
-
+## Cost of an Algorithm 
 :::{style="font-size:.8em"}
+
+What is the computational cost of matrix multiplication of two $n \times n$ matrices $A$ and $B$?
+
+ -  Matrix-matrix multiplication involves computing $A \mathbf{b}_i$  for each of the $n$  columns in matrix $B.$ 
+-  Matrix-vector multiplication costs $2n^2$ operations.
+- Therefore, matrix-matrix multiplication costs $n \times 2n^2 = 2n^3$ operations.
+- For matrices of size $10{,}000 \times 10{,}000$, this results in $2 \times 10^{12}$ operations (2 teraflops).
+- In Big-O notation, this is $O(n^3),$ which is considered slow.
+- When possible, we should seek faster algorithms with complexity $O(n^2)$ or $O(n).$
+
+:::
+
+## Cost of an Algorithm
+:::{style="font-size:.8em"}
+_**What is the most efficient way to compute $A^2{\bf x}$?**_ I or II?
+
+I. First compute $A^2$, then compute $(A^2){\bf x}$
+
+II. First compute $A{\bf x}$, then compute $A(A{\bf x})$
 
 :::{.fragment}
-How big can $\varepsilon$ be? Let's say $x$ is a number that is ever so slightly larger than 1 (or more generally, any power of two $2^n$). The computer has two choices:
+I. First compute $A^2$, then compute $(A^2){\bf x}$:
 
-$$
-\underbrace{1.000...00}_{53~bits}\times 2^n \quad \text{or} \quad \underbrace{1.000...01}_{53~bits}\times 2^n.
-$$
+- Cost: $2n^3 + 2n^2$
+- Runtime for $n = 10,000$ rows: about 2 Trillion flops
 
-:::{.fragment}
-The difference between these numbers is
+II. First compute $A{\bf x}$, then compute $A(A{\bf x})$: 
 
-$$
-0.\underbrace{000...01}_{53~bits}\times 2^n
-$$
-
-:::
+- Cost: $2n^2 + 2n^2 = 4n^2$
+- Runtime for $n = 10,000$ rows: 4 Million flops ${\large \checkmark}$
 :::
 :::
 
+## Parallelization
+
+:::{style="font-size:.8em"}
+Although matrix multiplication is computationally demanding, it is _**highly parallel**_.
 
 
-## Absolute and Relative Errors
+- Each entry of the product can be computed independently: no entry depends on the computation of others.
+- If multiple processors have access to both matrices, the work can be divided cleanly.
 
-:::{style="font-size: .8em"}
+- With $n$ processors, each can compute one column $A\mathbf{b}_i$ independently.
+- No coordination between processors is needed.
+- Parallel execution reduces time from $2n^3$ to $2n^2$.
 
-The value $x - fl(x) = \varepsilon x$ is called the absolute error. It is bounded by:
+:::
 
-$$ 
-|\varepsilon x| \leq | \underbrace{0.000 \ldots 01}_{53~bits} \times 2^n |. 
-$$
+## Costs of an Algorithm
+:::{style="font-size:.8em"}
+For Gauss-Jordan Elimination:
+
+* The cost of the Elimination stage is $\frac{2}{3} n^3$.
+* The cost of the Backsubstitution stage is $O(n^2)$.
+    
+Thus we say that:
+
+> The cost of Gauss-Jordan Elimination is $\frac{2}{3} n^3$.
 
 ```{python}
 from IPython.core.display import HTML
@@ -570,84 +439,21 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        Can you see why?
+        Provide the exact flop count for the computation of \(\mathbf{z}\) when \(\mathbf{z} = (A-B)\mathbf{x}+C\mathbf{y}.\) Here, \(A, B,\) and \(C\) are \(k\times m\) matrices, and \(\mathbf{x}\) and \(\mathbf{y}\) are \(m \times 1\) vectors.
         </p>
     </div>
     """
 html_content = generate_html()
 display(HTML(html_content))
-
-```
-
-:::{.fragment}
-
-The **relative error** is defined as:
-
-$$  
-\frac{\left|x - fl(x)\right|}{|x|}.
-$$
-
-$$ \text{Note:}\quad 
-\frac{\left|x - fl(x)\right|}{|x|} = \frac{|\varepsilon x|}{|x|}= |\varepsilon|. 
-$$
-
-:::
-:::
-
-## Relative Error
-
-:::{style="font-size: .8em"}
-
-Let us find an upper bound for it.
-
-Since we assumed that $x$ is larger than 1, we know that:
-
-$$ 
-|x| > 1 \geq \underbrace{1.000 \ldots 00}_{53~bits} \times 2^n.
-$$
-
-In addition, we just found that:
-
-$$ 
-|\varepsilon x| < \frac{1}{2} \left( \underbrace{0.000 \ldots 01}_{53~bits} \times 2^n \right). 
-$$
-:::
-
-## Relative Error
-
-:::{style="font-size: .8em"}
-Hence, 
-
-$$  
-|\varepsilon| = \frac{|\varepsilon x|}{|x|} \leq \frac{1}{2} \left( \frac{0.000 \ldots 01 \times 2^n} {\underbrace{1.000 \ldots 00}_{53~bits} \times 2^n} \right) = \frac{1}{2} (2^{-52}) = 2^{-53} \approx 1.11 \times 10^{-16}. 
-$$
-
-
-$2^{-53} \approx 1.11 \times 10^{-16}$, is known as __machine epsilon__ for double precision. It is typically denoted by $\varepsilon_{machine}$.
-
-:::
-
-## Machine Epsilon
-::::{style="font-size: .8em"}
-
-Machine epsilon is half the distance between 1 and the next larger floating point number. 
-
-The total distance between $1$ and the next larger floating point number is denoted as $\epsilon$ (yet another epsilon).
-
-:::{.fragment}
-
-`Numpy` can show your computer's epsilon.
-
-```{python}
-#| echo: true
-print(np.finfo(float).eps)
-print(np.finfo(float).eps == 2**-52)
 ```
 :::
 
-:::{.fragment}
-This value $10^{-16}$ is an important one to remember.
+:::{.notes}
+    - $km$ flops are needed to find $A-B.$
+    - $k(2m-1)$ flops are needed to compute the product of $A-B$ and $\mathbf{x}$.
+    - $k(2m-1)$ flops are needed for the product of $c$ and $\mathbf{y}$.
+    - $k$ flops are needed for the sum of $(A-B)\mathbf{x}$ and $C\mathbf{y}$.
+    - The total number of flops is equal to $5km-k.$ 
+\end{itemize}
 :::
-
-:::: -->
 
