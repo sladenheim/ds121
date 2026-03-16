@@ -674,6 +674,25 @@ This is similar to Gauss-Jordan elimination but faster than matrix inversion.
 
 :::
 
+## QR in Practice: Why Not Just Invert $A^\top A$?{.smaller-title}
+
+:::{style="font-size: .85em"}
+The normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}$ give the least-squares solution, but computing $(A^\top A)^{-1}$ directly has a serious drawback: **numerical instability**.
+
+When two features are nearly collinear (e.g., sqft and bedrooms in our housing data are correlated), $A^\top A$ becomes nearly singular. Small rounding errors in computing its inverse get amplified, producing wildly inaccurate coefficients.
+
+**QR avoids this entirely.** Because $Q$ has orthonormal columns, $Q^\top Q = I$ exactly — no inversion needed. The only system left to solve is $R\hat{\mathbf{x}} = Q^\top \mathbf{b}$, which is already upper triangular.
+
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box" style="padding: 8px 20px;">
+<p><b>What numpy and sklearn actually do:</b> <code>np.linalg.lstsq</code>, <code>scipy.linalg.lstsq</code>, and <code>sklearn.linear_model.LinearRegression</code> all use QR (or the related Householder/SVD) internally — <em>not</em> the normal equations. The next time you call <code>.fit()</code> on a linear model, this lecture is what's happening under the hood.</p>
+</div>
+"""))
+```
+:::
+
 ## Looking Ahead: Least Squares{.smaller-title}
 
 :::{style="font-size: .85em"}

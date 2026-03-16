@@ -23,6 +23,20 @@ format:
 - Finding coordinates efficiently with an orthogonal basis
 :::
 
+## Coordinate Systems as Feature Representations{.smaller-title}
+
+:::{style="font-size: .8em"}
+The standard basis $\{\mathbf{e}_1, \mathbf{e}_2\}$ is just one way to name points in $\mathbb{R}^2$. Any two linearly independent vectors define a valid coordinate system — a different lens on the same space.
+
+**In data science, changing basis = changing feature representation:**
+
+- Raw features (sqft, bedrooms) are coordinates in the standard basis.
+- A rotated basis might align with "size" and "luxury tier" — uncorrelated directions that capture the data's structure more directly.
+- **PCA (Principal Component Analysis)** finds the basis in which your data has the most variance in the first coordinate, the second most in the second, and so on. It's literally a change of basis — rewriting your data in coordinates that are more informative.
+
+Today's lecture builds the foundation for that idea: what does it mean to have coordinates in a non-standard basis, and when is that useful?
+:::
+
 ## Coordinates Give Points Unique Names{.really-smaller-title}
 
 :::{style="font-size: 1.em"}
@@ -749,4 +763,6 @@ We've seen two key benefits of orthogonal bases:
 1. **Coordinates** are easy to compute: $c_j = \dfrac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^\top \mathbf{u}_j}$ — no matrix inversion needed.
 
 2. In the next lecture, we'll see that orthogonal bases also make **projection** easy — finding the closest point in a subspace to any vector.
+
+**The bigger picture:** Finding the right coordinate system — one aligned with your data's structure rather than the arbitrary standard axes — is one of the most powerful ideas in data science. The efficiency advantage of orthogonal bases ($O(n^2)$ vs $O(n^3)$) is exactly why PCA and related methods are computationally practical on large datasets.
 :::

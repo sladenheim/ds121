@@ -26,6 +26,23 @@ format:
     - multiple
 :::
 
+## The Thread Comes Together{.smaller-title}
+
+:::{style="font-size: .85em"}
+
+| Lecture | Concept | Housing-data interpretation |
+|---------|---------|----------------------------|
+| L20 | Column & Null Space | $\mathbf{y} \notin \operatorname{Col} X$; collinear features → nontrivial null space |
+| L21 | Rank & Dimension | Rank of design matrix = estimable parameters |
+| L22 | Coordinate Systems | Choosing a feature basis; orthogonal = uncorrelated |
+| L23 | Projection & Gram-Schmidt | $\hat{\mathbf{y}} = \operatorname{proj}_{\operatorname{Col} X}\mathbf{y}$ = fitted values |
+| L24 | QR | Stable computation of the projection |
+| L25 | Least Squares | Normal equations $X^\top X \hat{\boldsymbol{\beta}} = X^\top \mathbf{y}$ |
+| **L26** | **Regression** | **Fitting, interpreting, and extending the model** |
+
+Today we close the loop: fit the housing model with both features, interpret the coefficients, and see what happens when the design matrix loses rank.
+:::
+
 ## Normal Equations Don't Always Have Unique Solutions{.smaller-title}
 
 :::{style="font-size: .8em"}
@@ -537,6 +554,36 @@ $$
 $$
 :::
 
+## Housing Data: Multiple Regression{.smaller-title}
+
+:::{style="font-size: .8em"}
+Our housing dataset now fits the multiple regression framework perfectly. We predict price from **both** sqft and bedrooms:
+
+```{python}
+#| echo: true
+import numpy as np
+
+X_multi = np.array([
+    [1, 800,  1],
+    [1, 1150, 2],
+    [1, 1500, 2],
+    [1, 1800, 3],
+    [1, 2100, 3],
+    [1, 2450, 4],
+], dtype=float)
+y_house = np.array([118, 157, 193, 236, 264, 312], dtype=float)
+
+beta_multi = np.linalg.lstsq(X_multi, y_house, rcond=None)[0]
+print(f"β₀ = {beta_multi[0]:.2f}  (intercept)")
+print(f"β₁ = {beta_multi[1]:.4f}  (per sqft)")
+print(f"β₂ = {beta_multi[2]:.2f}   (per bedroom)")
+```
+
+**Interpretation:** holding bedrooms fixed, each additional sqft is worth $\approx \beta_1 \times 1000$ in price. Holding sqft fixed, an extra bedroom adds $\approx \beta_2 \times 1000$.
+
+Notice: because sqft and bedrooms are *correlated* in our data, the individual coefficients shift compared to the simple regression. This is the multicollinearity effect we flagged in L20.
+:::
+
 ## The General Linear Model{.smaller-title}
 
 :::{style="font-size: .8em"}
@@ -791,6 +838,30 @@ ax.plot([0,20], [beta_hat[0], beta_hat[0] + beta_hat[1]*20], '-', label='yhat = 
 plt.xlabel('age of car', size = 20)
 plt.ylabel('selling price ($)', size = 20);
 ```
+:::
+
+## Multicollinearity: When Rank Drops{.smaller-title}
+
+:::{style="font-size: .8em"}
+In L20 we noted that if sqft and bedrooms were perfectly correlated, the design matrix would lose rank and the null space would become nontrivial. Let's see what that looks like in practice:
+
+```{python}
+#| echo: true
+# Make bedrooms exactly sqft/600 (perfectly collinear)
+sqft = np.array([800., 1150., 1500., 1800., 2100., 2450.])
+beds_exact = sqft / 600  # perfectly correlated
+
+X_collinear = np.column_stack([np.ones(6), sqft, beds_exact])
+print("Rank of collinear design matrix:", np.linalg.matrix_rank(X_collinear))
+
+# Normal equations: A^T A is now singular
+ATA = X_collinear.T @ X_collinear
+print("det(X^T X) ≈", np.linalg.det(ATA).round(6))  # near zero
+```
+
+When rank drops, $X^\top X$ is singular — it has no inverse, and the normal equations have **infinitely many solutions**. The coefficients $\hat{\beta}_1$ and $\hat{\beta}_2$ are individually meaningless even though $X\hat{\boldsymbol{\beta}}$ (the predictions) remains perfectly determined.
+
+**Practical takeaway:** Always check the rank of your design matrix — or equivalently, watch for high correlations among your predictors.
 :::
 
 ## Practice: Simple Linear Regression{.smaller-title}

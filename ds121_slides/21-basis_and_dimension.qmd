@@ -24,6 +24,37 @@ format:
 - New statements for IMT
 :::
 
+## Rank and Redundancy in Data{.smaller-title}
+
+:::{style="font-size: .8em"}
+Recall our housing data: $A$ is a $6 \times 3$ design matrix (intercept, sqft, bedrooms).
+
+**Key question:** are all three columns truly independent, or does one carry redundant information?
+
+```{python}
+import numpy as np
+from IPython.core.display import HTML
+
+A_house = np.array([
+    [1, 800,  1],
+    [1, 1150, 2],
+    [1, 1500, 2],
+    [1, 1800, 3],
+    [1, 2100, 3],
+    [1, 2450, 4],
+], dtype=float)
+
+# Show the matrix
+display(HTML(r"""
+<p style="font-size:.85em">In a real dataset, sqft and bedrooms are <em>correlated but not identical</em>, so the rank is 3 — all three parameters (intercept, sqft coefficient, bedrooms coefficient) are estimable.<br><br>
+If bedrooms were exactly sqft/600 for every house, column 3 would be a scalar multiple of column 2. The rank would drop to 2, one parameter would become unidentifiable, and the null space of \(A\) would be nontrivial.<br><br>
+<b>Rank</b> = the number of truly independent pieces of information in your feature matrix.<br>
+<b>Null dimension</b> = the number of redundant directions — parameter combinations your data can never distinguish.
+</p>
+"""))
+```
+:::
+
 ## Spanning Sets Can Have Redundancy{.really-smaller-title}
 
 :::{style="font-size: .8em"}
@@ -509,6 +540,20 @@ Hence the matrix $A$ has 3 pivot columns, so $\operatorname{Rank} A = 3.$
 :::
 :::
 
+## Rank in Data Science: Effective Dimensionality{.smaller-title}
+
+:::{style="font-size: .8em"}
+The rank of a data matrix tells you the **effective number of degrees of freedom** in your data — not just how many features you collected.
+
+**Examples:**
+- 100 patient features but rank 8: the data lives in an 8-dimensional subspace. Only 8 independent patterns exist, no matter how many columns you add.
+- sqft and bedrooms in our housing data: rank 2 (ignoring intercept). Adding a third feature "price per bedroom" (= price / bedrooms) won't help — it's a nonlinear combination, but if it *were* linear and redundant, rank would stay at 2.
+
+This is the mathematical foundation of **dimensionality reduction**: real high-dimensional datasets often have low rank (approximately), so we can represent them with far fewer coordinates without losing much information.
+
+_The rank-nullity theorem makes this precise._
+:::
+
 ## Rank-Nullity Theorem
 
 :::{style="font-size: .8em"}
@@ -619,6 +664,8 @@ plt.tight_layout()
 
 :::{style="font-size: .85em"}
 **Rank-Nullity:** $n = \operatorname{rank} A + \dim \operatorname{Nul} A = r + (n-r).$ The nullspace is "thrown away"; the remaining $r$ dimensions map onto $\operatorname{Col} A.$
+
+_In a data science context:_ you may collect $n$ features, but if rank $= r < n$, only $r$ parameters are estimable. The other $n - r$ feature directions are redundant — they live in the null space and contribute nothing to your model's predictions.
 :::
 
 ## Practice: Bases, Rank, and Rank-Nullity{.really-smaller-title}

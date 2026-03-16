@@ -26,6 +26,31 @@ format:
 
 :::
 
+## A Running Example: Housing Prices{.smaller-title}
+
+:::{style="font-size: .8em"}
+Over the next several lectures we'll return to one small dataset, adding new insight each time, until we can fully solve it in L25–L26.
+
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<table style="font-size:.85em; border-collapse:collapse; margin:auto">
+<tr style="background:#e8f4f8"><th style="padding:4px 12px">House</th><th>sqft</th><th>bedrooms</th><th>price ($k)</th></tr>
+<tr><td style="text-align:center">1</td><td style="text-align:center">800</td><td style="text-align:center">1</td><td style="text-align:center">118</td></tr>
+<tr style="background:#f5f5f5"><td style="text-align:center">2</td><td style="text-align:center">1150</td><td style="text-align:center">2</td><td style="text-align:center">157</td></tr>
+<tr><td style="text-align:center">3</td><td style="text-align:center">1500</td><td style="text-align:center">2</td><td style="text-align:center">193</td></tr>
+<tr style="background:#f5f5f5"><td style="text-align:center">4</td><td style="text-align:center">1800</td><td style="text-align:center">3</td><td style="text-align:center">236</td></tr>
+<tr><td style="text-align:center">5</td><td style="text-align:center">2100</td><td style="text-align:center">3</td><td style="text-align:center">264</td></tr>
+<tr style="background:#f5f5f5"><td style="text-align:center">6</td><td style="text-align:center">2450</td><td style="text-align:center">4</td><td style="text-align:center">312</td></tr>
+</table>
+"""))
+```
+
+**Goal:** Given sqft and bedrooms, predict price. Can we write this as $A\mathbf{x} = \mathbf{b}$? Will it have a solution? If not — what's the best we can do?
+
+_We'll build the tools to answer these questions across L20–L26._
+:::
+
 ## Vector Space Example{.smaller-title}
 
 <!-- super special rare .55 em appearance to get text all in one line. -->
@@ -471,6 +496,21 @@ display(HTML(generate_html()))
 ```
 :::
 
+## Column Space in Data Science{.smaller-title}
+
+:::{style="font-size: .8em"}
+For our housing dataset, $A$ is the $6 \times 3$ design matrix (intercept, sqft, bedrooms) and $\mathbf{b}$ is the price vector:
+
+$$
+A = \begin{bmatrix}1 & 800 & 1\\1 & 1150 & 2\\1 & 1500 & 2\\1 & 1800 & 3\\1 & 2100 & 3\\1 & 2450 & 4\end{bmatrix}, \quad
+\mathbf{b} = \begin{bmatrix}118\\157\\193\\236\\264\\312\end{bmatrix}.
+$$
+
+- **$\operatorname{Col} A$** is the set of all price vectors our model can *possibly* produce — the "reachable outputs."
+- $\mathbf{b} \in \operatorname{Col} A$ only if the data falls *exactly* on a linear surface — almost never true with real measurements.
+- When $\mathbf{b} \notin \operatorname{Col} A$ we need a best approximation. That's where least squares comes in (L25).
+:::
+
 ## Definition: Null Space{.smaller-title}
 
 :::{style="font-size: .8em"}
@@ -575,6 +615,22 @@ def generate_html():
 display(HTML(generate_html()))
 ```
 :::
+:::
+
+## Null Space in Data Science: Multicollinearity{.smaller-title}
+
+:::{style="font-size: .8em"}
+In a data matrix, $\operatorname{Nul} A$ captures **redundant parameter directions** — changes to $\mathbf{x}$ that leave $A\mathbf{x}$ completely unchanged.
+
+Suppose in our housing data, bedrooms happened to equal sqft $/ 600$ exactly (perfect collinearity). Then column 3 of $A$ is a scalar multiple of column 2, so $A$ drops a rank and gains a nontrivial null space. Any $\hat{\mathbf{x}}$ with a nonzero null-space component gives exactly the same predictions:
+
+$$
+A(\hat{\mathbf{x}} + t\mathbf{v}) = A\hat{\mathbf{x}} \quad \text{for all } t, \text{ whenever } \mathbf{v} \in \operatorname{Nul} A.
+$$
+
+In practice this means the model can't distinguish the contribution of sqft from that of bedrooms — their coefficients become arbitrary and numerically unstable. This is **multicollinearity**, one of the most common pitfalls in applied regression.
+
+_We'll see how rank diagnoses this problem precisely in L21._
 :::
 
 ## Col A and Nul A Live in Different Spaces{.really-smaller-title}
@@ -718,4 +774,22 @@ If the answer is _no_, we have the desired $A.$
 If the answer is _yes_, then it is not possible to construct $A.$ <br>
 When the column space contains $\bf b_1$ and $\bf b_2$, it will have to contain all their linear combinations. <br>
 So $\bf{b_3}$ would necessarily be in that column space and $A \bf{x} = \bf{b_3}$ would necessarily be solvable.
+:::
+
+## Looking Ahead{.smaller-title}
+
+:::{style="font-size: .9em"}
+We've introduced two fundamental subspaces of any matrix $A$:
+
+- **$\operatorname{Col} A \subset \mathbb{R}^m$** — the reachable outputs; whether $\mathbf{b} \in \operatorname{Col} A$ determines if $A\mathbf{x} = \mathbf{b}$ is solvable.
+- **$\operatorname{Nul} A \subset \mathbb{R}^n$** — the invisible inputs; a nontrivial null space signals redundant or collinear features.
+
+In the next lectures we build the tools to characterize these spaces more precisely:
+
+| Lecture | Topic | DS Payoff |
+|---------|-------|-----------|
+| L21 | Basis & Dimension | How many truly independent features? |
+| L22 | Coordinate Systems | Representing data in a new basis |
+| L23–24 | Projection & QR | Best approximation when $\mathbf{b} \notin \operatorname{Col} A$ |
+| L25–26 | Least Squares & Regression | Fitting models to noisy data |
 :::

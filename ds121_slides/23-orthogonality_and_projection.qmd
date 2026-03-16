@@ -28,6 +28,22 @@ format:
 _Recall from L22: orthogonal bases make coordinates easy to compute. Today we'll see they also make projection easy._
 :::
 
+## Projection: The Core of Prediction{.smaller-title}
+
+:::{style="font-size: .85em"}
+Recall the central question from L20: our housing price vector $\mathbf{b}$ is almost certainly **not** in $\operatorname{Col} A$.
+
+But we can still find the **closest** vector in $\operatorname{Col} A$ to $\mathbf{b}$ — the best possible prediction given our model. That closest vector is the **orthogonal projection** of $\mathbf{b}$ onto $\operatorname{Col} A$.
+
+This single geometric idea is the foundation of:
+
+- **Least squares** (L25): the projection is exactly $A\hat{\mathbf{x}}$, the fitted values
+- **Residuals**: $\mathbf{b} - A\hat{\mathbf{x}}$ is the component of $\mathbf{b}$ orthogonal to $\operatorname{Col} A$ — the irreducible prediction error
+- **Linear regression** (L26): minimizing $\|\mathbf{b} - A\mathbf{x}\|^2$ is the same as projecting $\mathbf{b}$ onto $\operatorname{Col} A$
+
+Today we derive projection and learn Gram-Schmidt, which gives us the orthogonal bases that make projection efficient.
+:::
+
 ## Decomposing a Vector: Projection and Remainder{.smaller-title}
 
 :::{style="font-size: .8em"}
@@ -611,6 +627,20 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
+
+## Gram-Schmidt and Decorrelated Features{.smaller-title}
+
+:::{style="font-size: .85em"}
+Gram-Schmidt takes any basis and produces an **orthogonal** one spanning the same subspace. In data science terms: it replaces a set of correlated features with an equivalent set of **uncorrelated** ones.
+
+This matters because:
+
+- **Correlated features** cause numerical problems (multicollinearity, unstable coefficients)
+- **Orthogonal features** make computation and interpretation much cleaner
+- PCA applies Gram-Schmidt-style orthogonalization to the covariance structure of your data, producing "principal components" — the most informative uncorrelated directions
+
+The next step (L24) takes this further: Gram-Schmidt + normalization = **QR decomposition**, the practical engine behind least squares solvers in numpy, scipy, and sklearn.
+:::
 
 ## Looking Ahead: QR Decomposition{.smaller-title}
 

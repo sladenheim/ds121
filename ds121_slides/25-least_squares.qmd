@@ -31,6 +31,23 @@ _Recall from L24: QR factorization gives an efficient way to solve the normal eq
 
 
 
+## The Payoff: Fitting a Model to Data{.smaller-title}
+
+:::{style="font-size: .8em"}
+Over L20–L24 we've been building toward a concrete problem. Here it is.
+
+Our housing data matrix (intercept, sqft) gives us the system $X\hat{\boldsymbol{\beta}} = \mathbf{y}$:
+
+$$
+X = \begin{bmatrix}1 & 800\\1 & 1150\\1 & 1500\\1 & 1800\\1 & 2100\\1 & 2450\end{bmatrix}, \quad
+\mathbf{y} = \begin{bmatrix}118\\157\\193\\236\\264\\312\end{bmatrix}.
+$$
+
+This system has **6 equations and 2 unknowns**. As we saw in L20, $\mathbf{y}$ is almost certainly not in $\operatorname{Col} X$. There is no exact solution.
+
+But we can find the $\hat{\boldsymbol{\beta}}$ that makes $X\hat{\boldsymbol{\beta}}$ **as close as possible** to $\mathbf{y}$ — minimizing the total squared prediction error. That's the least-squares problem.
+:::
+
 ## Orthogonal Decomposition Theorem{.smaller-title}
 
 :::{style="font-size: .8em"}
@@ -959,6 +976,36 @@ This equation shows how to project onto a subspace (namely $\operatorname{Col} A
 
 - Normal equations always have a solution, but it is not unique when the columns of $A$ are linearly dependent.
 ::: -->
+
+## Housing Data: Solving the Normal Equations{.smaller-title}
+
+:::{style="font-size: .8em"}
+Let's apply the normal equations to our housing dataset. With $X$ (intercept + sqft) and $\mathbf{y}$ (price in \$k):
+
+```{python}
+#| echo: true
+import numpy as np
+
+X_house = np.array([[1, 800], [1, 1150], [1, 1500],
+                    [1, 1800], [1, 2100], [1, 2450]], dtype=float)
+y_house = np.array([118, 157, 193, 236, 264, 312], dtype=float)
+
+beta_hat = np.linalg.inv(X_house.T @ X_house) @ X_house.T @ y_house
+print(f"β₀ = {beta_hat[0]:.2f}  (intercept, $k)")
+print(f"β₁ = {beta_hat[1]:.4f}  (per sqft, $k)")
+```
+
+The fitted model is approximately $\widehat{\text{price}} = \beta_0 + \beta_1 \cdot \text{sqft}$.
+
+The residuals $\mathbf{r} = \mathbf{y} - X\hat{\boldsymbol{\beta}}$ are orthogonal to $\operatorname{Col} X$ — exactly what the normal equations guarantee. We can also verify this with Python:
+
+```{python}
+#| echo: true
+residuals = y_house - X_house @ beta_hat
+print("Residuals:", residuals.round(2))
+print("X^T r ≈ 0:", (X_house.T @ residuals).round(8))
+```
+:::
 
 ## Visualizing Residuals{.smaller-title}
 
