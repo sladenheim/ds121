@@ -1,0 +1,320 @@
+---
+title: "Elementary Matrices"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+---
+
+## Learning Objectives
+
+::::{style="font-size: .8em"}
+- Elementary matrices
+- Inverses of elementary matrices
+- Multiplication of elementary matrices
+::::
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+Consider the following linear system $A\mathbf{x} = \mathbf{b}$:
+$$\small \begin{bmatrix}2 & 4 & -2\\ 4 & 9 & -3\\ -2 & -3 & 7 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix} = \begin{bmatrix} 2 \\ 8 \\ 10\end{bmatrix}.$$
+
+During Gauss-Jordan elimination, our first step would be to subtract 2 times the first equation form the second equation. On the right side, 2 times the first component of $\mathbf{b}$ is subtracted from the second component:
+$$\small \mathbf{b} = \begin{bmatrix} 2\\8 \\10 \end{bmatrix} \rightarrow 
+\mathbf{b}_{new} = \begin{bmatrix} 2\\4 \\10 \end{bmatrix}.$$ 
+<span style="color:rgb(1, 180, 180);">Is it possible to find a $3 \times 3$ matrix $E$ such that $\mathbf{b}_{new} = E \mathbf{b}$?</span>
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+The _elementary matrix_ $\small E = \begin{bmatrix}1 & 0 & 0\\ -2 & 1 & 0\\ 0 & 0 & 1 \end{bmatrix}$ subtracts 2 times the first component of $\mathbf{b}$ from its second component. In other words, $E$ subtracts 2 times row 1 from row 2. What happens to $A$ if we multiply it by $E$ on the left?
+
+$$\small EA = \begin{bmatrix}1 & 0 & 0\\ -2 & 1 & 0\\ 0 & 0 & 1 \end{bmatrix}\begin{bmatrix}2 & 4 & -2\\ 4 & 9 & -3\\ -2 & -3 & 7 \end{bmatrix} = \begin{bmatrix}2 & 4 & -2\\ 0 & 1 & 1\\ -2 & -3 & 7 \end{bmatrix}.$$
+
+We have expressed an elimination step using matrix multiplication. Our new system of equations is $EA\mathbf{x} = E\mathbf{b}.$ 
+
+__Note:__ Vector $\mathbf{x}$ stays the same. The solution is not changed by Gauss-Jordan elimination.
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+Every elementary row operation on a matrix, say $A$, is a linear transformation.
+
+$$
+\text{swap}(A+B) = \text{swap}(A) + \text{swap}(B),
+$$
+$$
+\text{swap}(cA) = c \cdot \text{swap}(A).
+$$
+
+Similar logic applies to the other row operations. As a result, each row operation has some matrix associated with it.
+
+<br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+    <span class="label">Elementary matrix</span>
+        An elementary matrix is a matrix that is obtained by <i>performing a single elementary row operation on the identity matrix.</i>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+- Swap the first two rows of $I_3$: $\begin{bmatrix}0&1&0\\1&0&0\\0&0&1\end{bmatrix}$.
+- Multiply the third row of $I_3$ by the nonzero scalar $c$: $\begin{bmatrix}1&0&0\\0&1&0\\0&0&c\end{bmatrix}$
+- Add $d$ times row 1 to row 3 of $I_3$: $\begin{bmatrix}1&0&0\\0&1&0\\d&0&1\end{bmatrix}$
+
+<!-- ```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        Is an elementary matrix invertible?
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+``` -->
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+         <ol>
+       Find the following matrices:
+       <li> a 3 by 3 matrix that subtracts 5 times row 1 from row 2,</li>
+       <li> a 3 by 3 matrix that subtracts -7 times row 2 from row 3,</li>
+       <li> a 3 by 3 matrix that exchanges rows 1 and 2.</li>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+Let's define the following matrices:
+$$
+E_1 = \left[\begin{array}{rrr}0&1&0\\1&0&0\\0&0&1\end{array}\right],\;\; E_2 = \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&5\end{array}\right],\;\; E_3 = \left[\begin{array}{rrr}1&0&0\\0&1&0\\-4&0&1\end{array}\right].
+$$
+
+Next, let's see what each matrix does to an arbitrary $3 \times 3$ matrix 
+$$A = \left[\begin{array}{rrr}a&b&c\\d&e&f\\g&h&i\end{array}\right].$$
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+Left-multiplication by $E_1$ swaps the first two rows of $A$ (for any matrix $A$).
+
+$$
+E_1 A = \left[\begin{array}{rrr}0&1&0\\1&0&0\\0&0&1\end{array}\right] \left[\begin{array}{rrr}a&b&c\\d&e&f\\g&h&i\end{array}\right] = \left[\begin{array}{rrr}d&e&f\\a&b&c\\g&h&i\end{array}\right].
+$$
+
+Left-multiplication by $E_2$ corresponds to a scalar multiplication of the third row by the scalar 5.
+
+$$
+E_2 A = \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&5\end{array}\right] \left[\begin{array}{rrr}a&b&c\\d&e&f\\g&h&i\end{array}\right] = \left[\begin{array}{rrr}a&b&c\\d&e&f\\5g&5h&5i\end{array}\right].
+$$
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+Left-multiplication by $E_3$ will add -4 times row 1 to row 3.
+
+$$
+E_3 A = \left[\begin{array}{rrr}1&0&0\\0&1&0\\-4&0&1\end{array}\right] \left[\begin{array}{rrr}a&b&c\\d&e&f\\g&h&i\end{array}\right] = \left[\begin{array}{rrr}a&b&c\\d&e&f\\g-4a&h-4b&i-4c\end{array}\right].
+$$
+
+<br>
+
+Every row reduction is an invertible linear transformation -- so every elementary matrix is invertible.
+
+Moreover, inverting elementary row operations is straightforward and simpler than general matrix inversion.
+
+__Note:__ The inverse of an elementary matrix is also an elementary matrix.
+
+
+<!-- Let $E$ be the matrix that implements the operation "add -4 times row 1 to row 3."  (Suppose we don't yet know what $E$ is.)
+
+Now, for any matrix, $EI = E$ by the definition of $I$.
+
+But note this also says: "matrix $E$ that implements the operation 'add -4 times row 1 to row 3' is what you get doing that operation on $I$." -->
+
+:::
+
+<!-- ## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+Let's perform this transformation starting from $I$:
+$$
+\left[\begin{array}{ccc}\color{red}{1}&\color{red}{0}&\color{red}{0}\\0&1&0\\0&0&1\end{array}\right] \quad \to \left[\begin{array}{ccc}1&0&0\\0&1&0\\\color{red}{-4}&\color{red}{0}&\color{red}{1}\end{array}\right]
+$$
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+    <span class="label">Theorem</span>
+        If an elementary row operation is performed on an \(m\times n\) matrix \(A,\) the resulting matrix can be written as \(EA\), where the \(m\times m\) matrix \(E\) is created by performing the same row operation on \(I_m\).
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+ -->
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+Let's invert $E_1$, $E_2$, and $E_3$.
+
+$$
+\begin{array}{rcrcl}
+E_1^{-1} &=& \left[\begin{array}{rrr}0&1&0\\1&0&0\\0&0&1\end{array}\right]^{-1} &=&\; \left[\begin{array}{rrr}0&1&0\\1&0&0\\0&0&1\end{array}\right]\\
+E_2^{-1} &=& \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&5\end{array}\right]^{-1} &=&\; \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&1/5\end{array}\right]\\
+E_3^{-1} &=& \left[\begin{array}{rrr}1&0&0\\0&1&0\\-4&0&1\end{array}\right]^{-1} &=&\;\left[\begin{array}{rrr}1&0&0\\0&1&0\\4&0&1\end{array}\right]
+\end{array}
+$$
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+We can verify these operations using `Python` with `Numpy`.
+
+```{python}
+#| echo: true
+import numpy as np 
+
+E1 = np.array([[0,1,0],[1,0,0],[0,0,1]])
+E2 = np.array([[1,0,0],[0,1,0],[0,0,5]])
+E3 = np.array([[1,0,0],[0,1,0],[-4,0,1]])
+print("E1 inverse = "); print(np.linalg.inv(E1))
+print("E2 inverse = "); print(np.linalg.inv(E2))
+print("E3 inverse = "); print(np.linalg.inv(E3))
+```
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+Multiplying elementary row operations is also straightforward: simply apply the operation indicated by the left matrix to the right matrix.
+$$
+\begin{array}{rcccl}
+E_2^{-1} E_3^{-1} &=& 
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&1/5\end{array}\right]
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\4&0&1\end{array}\right]
+&=&
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\\color{red}{4/5}&\color{red}{0}&\color{red}{1/5}\end{array}\right]\\
+E_3^{-1} E_2^{-1}  &=& 
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\4&0&1\end{array}\right]
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&1/5\end{array}\right]
+&=&
+\left[\begin{array}{rrr}1&0&0\\0&1&0\\\color{red}{4}&\color{red}{0}&\color{red}{1/5}\end{array}\right]
+\end{array}
+$$
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+```{python}
+#| echo: true
+import numpy as np
+E2inv = np.array([[1,0,0],[0,1,0],[0,0,1/5]])
+E3inv = np.array([[1,0,0],[0,1,0],[4,0,1]])
+print("E2inv * E3inv ="); print(E2inv @ E3inv)
+print("\nE3inv * E2inv ="); print(E3inv @ E2inv)
+```
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+         <ol>
+       Let \(\small E_1 = \begin{bmatrix}1 & 0 & 0\\ -5 & 1 & 0\\ 0& 0 & 1 \end{bmatrix}\), \(\small E_2 = \begin{bmatrix}1 & 0 & 0\\ 0 & 1 & 0\\ 0& 7 & 1 \end{bmatrix}\), and \(\small \mathbf{b} = \begin{bmatrix} 1 \\ 0 \\ 0\end{bmatrix}\).<br> 
+       Find
+       \(E_1 E_2 \mathbf{b}\) and  \(E_2 E_1 \mathbf{b}\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+         <ol>
+         Let \(A = \begin{bmatrix} 1 & 1 & 0\\ 4 & 6 & 1 \\ -2 & 2 & 0 \end{bmatrix}.\)
+       Which three matrices \(E_1, E_2, E_3\) put \(A\) into upper triangular form, \(E_3 E_2 E_1 A = U\)? 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::

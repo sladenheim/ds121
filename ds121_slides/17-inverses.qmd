@@ -391,7 +391,7 @@ from IPython.core.display import HTML
 
 def generate_html():
     return r"""
-    <div class="blue-box">
+    <div class="<li>-box">
         <p>
         Which kind of linear transformation \(T: \mathbb{R}^2 \to \mathbb{R}^2\) represented by the standard matrix \(A\) leads to \(\text{det}(A)=0\)?
         </p>
