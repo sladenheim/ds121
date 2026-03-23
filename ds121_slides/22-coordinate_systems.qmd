@@ -23,23 +23,70 @@ format:
 - Finding coordinates efficiently with an orthogonal basis
 :::
 
-## Coordinate Systems as Feature Representations{.smaller-title}
+## Addresses Are Coordinates{.smaller-title}
 
-:::{style="font-size: .8em"}
-The standard basis $\{\mathbf{e}_1, \mathbf{e}_2\}$ is just one way to name points in $\mathbb{R}^2$. Any two linearly independent vectors define a valid coordinate system — a different lens on the same space.
+:::{.columns}
+::: {.column width="58%"}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
 
-**In data science, changing basis = changing feature representation:**
+fig, ax = plt.subplots(figsize=(5.2, 3.7))
 
-- Raw features (sqft, bedrooms) are coordinates in the standard basis.
-- A rotated basis might align with "size" and "luxury tier" — uncorrelated directions that capture the data's structure more directly.
-- **PCA (Principal Component Analysis)** finds the basis in which your data has the most variance in the first coordinate, the second most in the second, and so on. It's literally a change of basis — rewriting your data in coordinates that are more informative.
+avenues = range(1, 9)
+streets  = range(38, 46)
 
-Today's lecture builds the foundation for that idea: what does it mean to have coordinates in a non-standard basis, and when is that useful?
+for a in avenues:
+    ax.axvline(a, color='#cccccc', lw=1)
+for s in streets:
+    ax.axhline(s, color='#cccccc', lw=1)
+
+for a in avenues:
+    ax.text(a, 37.6, f'{a}{"st" if a==1 else "nd" if a==2 else "rd" if a==3 else "th"}\nAve',
+            ha='center', va='top', fontsize=7.5, color='#555')
+for s in streets:
+    ax.text(0.65, s, f'{s}th', ha='right', va='center', fontsize=7.5, color='#555')
+
+# Mark 5th Ave & 42nd St
+ax.plot(5, 42, 'o', color='crimson', markersize=12, zorder=5)
+ax.annotate('5th Ave & 42nd St\n= coordinates $(5, 42)$',
+            xy=(5, 42), xytext=(6.2, 43.2),
+            fontsize=10, color='crimson',
+            arrowprops=dict(arrowstyle='->', color='crimson', lw=1.5))
+
+# Basis vectors
+ax.annotate('', xy=(2, 38), xytext=(1, 38),
+            arrowprops=dict(arrowstyle='->', color='steelblue', lw=2))
+ax.text(1.5, 37.7, '1 avenue east\n= $\\mathbf{e}_1$', ha='center', fontsize=8, color='steelblue')
+
+ax.annotate('', xy=(1, 39), xytext=(1, 38),
+            arrowprops=dict(arrowstyle='->', color='darkgreen', lw=2))
+ax.text(1.0, 39.3, '1 block north\n= $\\mathbf{e}_2$', ha='center', fontsize=8, color='darkgreen')
+
+ax.set_xlim(0.5, 9)
+ax.set_ylim(37.4, 45.8)
+ax.axis('off')
+ax.set_title('Schematic grid', fontsize=12, pad=4, color='#333')
+
+plt.tight_layout()
+```
+:::
+::: {.column width="42%"}
+![](images/midtown.jpg){width=200%}
+:::
+:::
+
+:::{style="font-size: .82em; margin-top: 4px"}
+An address is a coordinate vector in the basis $\{\text{one avenue east},\ \text{one block north}\}$.
+
+Latitude/longitude would also give coordinates.
+
+**Key questions for today:** Can any two independent directions serve as a basis? And are some bases more convenient than others?
 :::
 
 ## Coordinates Give Points Unique Names{.really-smaller-title}
 
-:::{style="font-size: 1.em"}
+:::{style="font-size: 1em"}
 :::{.center-text}
 ```{python}
 import laUtilities as ut
@@ -78,12 +125,12 @@ $$
 (-1, 2) = -1 {\bf e_1} + 2 {\bf e_2}.
 $$
 
-In fact, _**any**_ $n$ linearly independent vectors in $\mathbb{R}^n$ can serve as a basis — giving a different coordinate system for the same space.
+In fact, _**any**_ $n$ linearly independent vectors in $\mathbb{R}^n$ can serve as a basis, giving a different coordinate system for the same space.
 :::
 
 ## Unique Representation Theorem{.smaller-title}
 
-:::{style="font-size: .8em"}
+:::{style="font-size: .7em"}
 
 ```{python}
 from IPython.core.display import HTML
@@ -115,21 +162,17 @@ $$
 :::{.fragment}
 Subtracting gives ${\bf 0} = \mathbf{x} - \mathbf{x} = (c_1-d_1)\mathbf{b}_1+\cdots+(c_p-d_p)\mathbf{b}_p.$
 
-Since $\mathcal{B}$ is a basis, the vectors $\mathbf{b}_1\dots\mathbf{b}_p$ are linearly independent. Hence, the weights in the above expression must all be zero. That is, $c_j = d_j$ for all $j$. As a result, the two representations must be the same.
-:::
+Since $\mathcal{B}$ is a basis, the vectors $\mathbf{b}_1\dots\mathbf{b}_p$ are linearly independent. 
+
+Hence, the weights in the above expression must all be zero. 
+
+That is, $c_j = d_j$ for all $j$. 
+
+As a result, the two representations must be the same.
 :::
 
-```{python}
-from IPython.core.display import HTML
 
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>Can a vector in \(V\) have two different \(\mathcal{B}\)-coordinate vectors for the same basis \(\mathcal{B}\)? Why or why not?</p>
-    </div>
-    """
-display(HTML(generate_html()))
-```
+:::
 
 ## Definition: B-Coordinates{.smaller-title}
 
@@ -237,7 +280,7 @@ Using the $\mathcal{B}$-basis, we get _different coordinates_. These are $[\math
 
 ## Finding B-Coordinates: Setup{.smaller-title}
 
-:::{style="font-size: 1.em"}
+:::{style="font-size: .8em"}
 __Example.__ Let $\mathbf{v}_1 = \begin{bmatrix}3\\6\\2\end{bmatrix}, \mathbf{v}_2 = \begin{bmatrix}-1\\0\\1\end{bmatrix}, \mathbf{x} = \begin{bmatrix}3\\12\\7\end{bmatrix},$ and $\mathcal{B} = \{\mathbf{v}_1,\mathbf{v}_2\}.$
 
 <br>
@@ -251,7 +294,7 @@ We want to determine if $\mathbf{x}$ is in $H$, and if it is, find the coordinat
 
 ## Finding B-Coordinates: Row Reduction{.really-smaller-title}
 
-:::{style="font-size: 1.em"}
+:::{style="font-size: .8em"}
 If $\mathbf{x}$ is in $H,$ then the following vector equation is consistent:
 
 $$
@@ -270,7 +313,7 @@ $$
 
 ## Visualizing B-Coordinates on a Subspace{.really-smaller-title}
 
-:::{style="font-size: 1.em"}
+:::{style="font-size: .8em"}
 
 The reduced row echelon form shows that the system is consistent, so $\mathbf{x}$ is in $H$ and $c_1 = 2$ and $c_2 = 3,$ so $[\mathbf{x}]_\mathcal{B} = \begin{bmatrix}2\\3\end{bmatrix}.$
 
@@ -326,6 +369,8 @@ Thus, every point has a unique coordinate.
 
 ## Practice: Finding B-Coordinates{.smaller-title}
 
+
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -336,18 +381,12 @@ def generate_html():
         <ol type="a">
             <li>Verify that \(\mathcal{B}\) is a basis for \(\mathbb{R}^2.\)</li>
             <li>Set up the linear system to find \([\mathbf{x}]_\mathcal{B}\) and solve it.</li>
-            <li>Is \(\mathcal{B}\) an orthogonal basis? If so, use the efficient formula \(c_j = \frac{\mathbf{x}^\top \mathbf{b}_j}{\mathbf{b}_j^\top \mathbf{b}_j}\) to verify your answer.</li>
         </ol>
         </p>
     </div>
     """
 display(HTML(generate_html()))
 ```
-
-:::{.notes}
-(a) b₁ and b₂ are not scalar multiples; det = −1−1 = −2 ≠ 0, so they form a basis.
-(b) Solve c₁[1,1]ᵀ + c₂[1,−1]ᵀ = [4,2]ᵀ → c₁ = 3, c₂ = 1, so [x]_B = [3, 1]ᵀ.
-(c) b₁·b₂ = 1(1)+1(−1) = 0, yes orthogonal. c₁ = (4+2)/2 = 3, c₂ = (4−2)/2 = 1. ✓
 :::
 
 ## Definition: Orthogonal Sets{.smaller-title}
@@ -385,19 +424,19 @@ We take the inner product of each pair of distinct vectors:
 
 :::{.fragment}
 :::{style="font-size: .6em"}
-$$\mathbf{u}_1^\top \mathbf{u}_2 = 3(-1) + 1(2) + 1(1) = 0. \checkmark$$
+$$\mathbf{u}_1^\top \mathbf{u}_2 = 3(-1) + 1(2) + 1(1) = 0.$$
 :::
 :::
 
 :::{.fragment}
 :::{style="font-size: .6em"}
-$$\mathbf{u}_1^\top \mathbf{u}_3 = 3(-1/2) + 1(-2) + 1(7/2) = 0. \checkmark$$
+$$\mathbf{u}_1^\top \mathbf{u}_3 = 3(-1/2) + 1(-2) + 1(7/2) = 0. $$
 :::
 :::
 
 :::{.fragment}
 :::{style="font-size: .6em"}
-$$\mathbf{u}_2^\top \mathbf{u}_3 = -1(-1/2) + 2(-2) + 1(7/2) = 0. \checkmark$$
+$$\mathbf{u}_2^\top \mathbf{u}_3 = -1(-1/2) + 2(-2) + 1(7/2) = 0.$$
 :::
 :::
 
@@ -407,7 +446,7 @@ Hence, $\small \{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$ is an orthogonal set
 :::
 :::
 
-## Orthogonal Sets Are Linearly Independent{.really-smaller-title}
+## Orthogonal Sets Are Linearly Independent{.really-really-smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -418,7 +457,7 @@ qr_setting = None
 import numpy as np
 fig = ut.three_d_figure((8, 1), fig_desc = 'An orthogonal set of vectors',
                         xmin = -3, xmax = 3, ymin = -3, ymax = 3, zmin = -3, zmax = 3,
-                        figsize = (6, 4), qr = qr_setting)
+                        figsize = (4.5, 3), qr = qr_setting)
 u1 = np.array([3, 1, 1])
 u2 = np.array([-1, 2, 1])
 u3 = np.array([-1/2, -2, 7/2])
@@ -454,7 +493,22 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""<br>
+    <div class="blue-box">
+        <p>Does every orthogonal set automatically form a basis for its ambient space? If not, what additional condition is needed?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
 :::
+
+## Practice with Orthogonal Sets
+
 
 ```{python}
 from IPython.core.display import HTML
@@ -462,11 +516,16 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>Does every orthogonal set automatically form a basis for its ambient space? If not, what additional condition is needed?</p>
+        <p>Do the vectors \(\begin{bmatrix} 2 \\ 2\\ 1\end{bmatrix}\), \(\begin{bmatrix} 0 \\ -1\\ 2\end{bmatrix}\), and \(\begin{bmatrix} -5 \\ 4\\ 2\end{bmatrix}\) form an orthogonal set in \(\mathbb{R}^3\)?
+            <br>
+        </p>
     </div>
     """
-display(HTML(generate_html()))
+
+html_content = generate_html()
+display(HTML(html_content))
 ```
+
 
 ## Definition: Orthogonal Basis{.smaller-title}
 
@@ -507,8 +566,8 @@ v = 1/2 * np.array([-1, 4, 2])
 u = 1/3 * np.array([8, 1, 2])
 vpos = v + 0.4 * v - 0.5 * u
 upos = u - 0.5 * v + 0.15 * u
-fig.text(vpos[0], vpos[1], vpos[2], r'$\bf u_2$', 'v', size=16)
-fig.text(upos[0], upos[1], upos[2], r'$\bf u_1$', 'u', size=16)
+fig.text(vpos[0], vpos[1], vpos[2], r'$\bf u_1$', 'v', size=16)
+fig.text(upos[0], upos[1], upos[2], r'$\bf u_2$', 'u', size=16)
 fig.plotSpan(u, v, 'Green')
 fig.plotPoint(0, 0, 0, 'y')
 fig.plotPoint(u[0], u[1], u[2], 'b')
@@ -533,7 +592,7 @@ fig.plotPerpSym(u+v, 2*v+u, v+2*u, 1)
 ```
 :::
 
-## Computing Coordinates: General Method{.really-smaller-title}
+## Computing Coords: General Method{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 To compute the coordinates of $\mathbf{y}$ in terms of basis $\mathcal{B} = \{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$, $[\mathbf{y}]_\mathcal{B}$, we need to solve the linear system:
@@ -555,7 +614,7 @@ In general, to solve the system we'd need to perform Gauss-Jordan Elimination th
 However, in an orthogonal basis the coordinates of any point can be computed more efficiently.
 :::
 
-## Efficient Coordinates via Orthogonal Basis{.really-smaller-title}
+## Efficient Coords via Orthogonal Basis{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 ```{python}
@@ -600,7 +659,7 @@ def generate_html():
 display(HTML(generate_html()))
 ```
 
-## Expressing a Vector in an Orthogonal Basis{.really-smaller-title}
+## Expressing a Vector in an Orthogonal Basis{.really-really-smaller-title}
 
 :::{style="font-size: .8em"}
 __Example__. The set $S$ that we saw earlier,
@@ -676,93 +735,62 @@ Hence, $[{\bf y}]_{\mathcal{B}} = \begin{bmatrix} 1 & -2 & -2 \end{bmatrix}^\top
 
 :::{style="font-size:.8em"}
 
-Finding the coordinates of $\mathbf{y}$ in the orthogonal basis is efficient because
+For a basis of $p$ vectors in $\mathbb{R}^n$, finding coordinates $[\mathbf{y}]_\mathcal{B}$ costs:
 
-- There are $2n$ inner products, each requiring $2n$ flops.
-- Each coefficient $c_i$ can be calculated separately, allowing for parallel computation in linear time.
+| Method | Cost | Why |
+|--------|------|-----|
+| General basis | $O(n^3)$ | Gauss-Jordan on an $n \times p$ augmented matrix |
+| Orthogonal basis | $O(pn)$ | Compute $2p$ dot products ($\mathbf{y}^\top\mathbf{u}_j$ and $\mathbf{u}_j^\top\mathbf{u}_j$), each costing $O(n)$ |
 
+Each coefficient $c_j = \dfrac{\mathbf{y}^\top\mathbf{u}_j}{\mathbf{u}_j^\top\mathbf{u}_j}$ is **independent** of all others, so they can be computed in any order (or in parallel). The savings are substantial when $p \ll n$, which is exactly the regime of dimensionality reduction.
+
+:::
+
+## Returning to this question...
+
+
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>Do the vectors \(\begin{bmatrix} 2 \\ 2\\ 1\end{bmatrix}\), \(\begin{bmatrix} 0 \\ -1\\ 2\end{bmatrix}\), and \(\begin{bmatrix} -5 \\ 4\\ 2\end{bmatrix}\) form an orthogonal set in \(\mathbb{R}^3\)?
-            <br>
-            <br>
-            <br>
-            <br>
+        <p>Let \(\mathcal{B} = \{\mathbf{b}_1, \mathbf{b}_2\}\) with \(\mathbf{b}_1 = \begin{bmatrix}1\\1\end{bmatrix}\) and \(\mathbf{b}_2 = \begin{bmatrix}1\\-1\end{bmatrix},\) and let \(\mathbf{x} = \begin{bmatrix}4\\2\end{bmatrix}.\)
+        <ol type="a">
+            <li>Verify that \(\mathcal{B}\) is a basis for \(\mathbb{R}^2.\)</li>
+            <li>Set up the linear system to find \([\mathbf{x}]_\mathcal{B}\) and solve it.</li>
+            <li>Is \(\mathcal{B}\) an orthogonal basis? If so, use the efficient formula \(c_j = \frac{\mathbf{x}^\top \mathbf{b}_j}{\mathbf{b}_j^\top \mathbf{b}_j}\) to verify your answer.</li>
+        </ol>
         </p>
     </div>
     """
-
-html_content = generate_html()
-display(HTML(html_content))
+display(HTML(generate_html()))
 ```
-
 :::
 
-<!-- ## Isomorphisms
+
+## Coordinates in Data Science{.smaller-title}
 
 :::{style="font-size: .8em"}
-Another important idea is that, although points in $H$ are in $\mathbb{R}^3$, they are completely determined by their coordinate vectors, which belong to $\mathbb{R}^2.$
+**Changing basis = changing feature representation.**
 
-That is, the grid in the previous figure makes $H$ "look like" $\mathbb{R}^2.$
+- Raw features (sqft, bedrooms) are coordinates in the standard basis
+- A rotated orthogonal basis gives uncorrelated directions that may reflect structure (e.g. "overall size" and "layout type") more directly
+- The efficiency advantage we just saw ($O(n^2)$ vs $O(n^3)$) is exactly why these methods are practical at scale
 
-The correspondence $\mathbf{x} \mapsto [\mathbf{x}]_\mathcal{B}$ is one-to-one correspondence between $H$ and $\mathbb{R}^2$ that _preserves linear combinations_.
-
-In our example, $\begin{bmatrix}3\\12\\7\end{bmatrix}\mapsto\begin{bmatrix}2\\3\end{bmatrix}$.
+**PCA** finds the orthogonal basis in which your data has the most variance along the first axis, second most along the second, and so on: a change of basis optimized for information content.
 :::
 
-## Isomorphisms
+
+## Next step: Projections {.smaller-title}
 
 :::{style="font-size: .8em"}
-```{python}
-from IPython.core.display import HTML
+There are two key benefits of orthogonal bases:
 
-def generate_html():
-    return r"""
-    <div class="purple-box">
-        <p>
-         When we have a one-to-one correspondence between two subspaces that preserves linear combinations, we call such a correspondence an <b>isomorphism,</b> and we say that \(H\) is <b>isomorphic</b> to \(\mathbb{R}^2.\)
-         </p>
-    </div>
-    """
+1. Coordinates are **easy to compute**: $c_j = \dfrac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^\top \mathbf{u}_j}$ (no matrix inversion needed).
 
-html_content = generate_html()
-display(HTML(html_content))
-```
+2. In the next lecture, we'll see that orthogonal bases also **make projection easy**: finding the closest point in a subspace to any vector.
 
-<br>
-
-In general, if $\mathcal{B}\ = \{\mathbf{b}_1,\dots,\mathbf{b}_p\}$ is a basis for $H$, then the mapping $\mathbf{x} \mapsto [\mathbf{x}]_\mathcal{B}$ is a one-to-one correspondence that makes $H$ look and act the same as $\mathbb{R}^p.$   
-
-<br>
-
-This is _even through the vectors in $H$ themselves may have more than $p$ entries._
-::: -->
-
-<!-- ## Key Ideas
-
-:::{style="font-size: .8em"}
-
-- A basis provides a coordinate system for a subspace.
-
-- Suppose the set $\mathcal{B}\ = \{\mathbf{b}_1,\dots,\mathbf{b}_p\}$ is a basis for the subspace $H$. <br>For each $\mathbf{x}$ in $H$, the coordinates of $\mathbf{x}$ relative to the basis $\mathcal{B}$ are the weights $c_1,\dots,c_p$ such that $\mathbf{x} = c_1\mathbf{b}_1+\cdots+c_p\mathbf{b}_p$. 
-
-<!-- <br>
-
-- When we have a one-to-one correspondence between two subspaces that preserves linear combinations, we call such a correspondence an isomorphism. -->
-::: -->
-
-## Looking Ahead: Projection{.smaller-title}
-
-:::{style="font-size: 1em"}
-We've seen two key benefits of orthogonal bases:
-
-1. **Coordinates** are easy to compute: $c_j = \dfrac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^\top \mathbf{u}_j}$ — no matrix inversion needed.
-
-2. In the next lecture, we'll see that orthogonal bases also make **projection** easy — finding the closest point in a subspace to any vector.
-
-**The bigger picture:** Finding the right coordinate system — one aligned with your data's structure rather than the arbitrary standard axes — is one of the most powerful ideas in data science. The efficiency advantage of orthogonal bases ($O(n^2)$ vs $O(n^3)$) is exactly why PCA and related methods are computationally practical on large datasets.
+Finding the right coordinate system, one aligned with your data's structure rather than the arbitrary standard axes, is one of the most powerful ideas in data science. 
 :::

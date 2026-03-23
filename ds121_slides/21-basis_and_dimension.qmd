@@ -24,36 +24,6 @@ format:
 - New statements for IMT
 :::
 
-## Rank and Redundancy in Data{.smaller-title}
-
-:::{style="font-size: .8em"}
-Recall our housing data: $A$ is a $6 \times 3$ design matrix (intercept, sqft, bedrooms).
-
-**Key question:** are all three columns truly independent, or does one carry redundant information?
-
-```{python}
-import numpy as np
-from IPython.core.display import HTML
-
-A_house = np.array([
-    [1, 800,  1],
-    [1, 1150, 2],
-    [1, 1500, 2],
-    [1, 1800, 3],
-    [1, 2100, 3],
-    [1, 2450, 4],
-], dtype=float)
-
-# Show the matrix
-display(HTML(r"""
-<p style="font-size:.85em">In a real dataset, sqft and bedrooms are <em>correlated but not identical</em>, so the rank is 3 — all three parameters (intercept, sqft coefficient, bedrooms coefficient) are estimable.<br><br>
-If bedrooms were exactly sqft/600 for every house, column 3 would be a scalar multiple of column 2. The rank would drop to 2, one parameter would become unidentifiable, and the null space of \(A\) would be nontrivial.<br><br>
-<b>Rank</b> = the number of truly independent pieces of information in your feature matrix.<br>
-<b>Null dimension</b> = the number of redundant directions — parameter combinations your data can never distinguish.
-</p>
-"""))
-```
-:::
 
 ## Spanning Sets Can Have Redundancy{.really-smaller-title}
 
@@ -140,11 +110,28 @@ fig.text(9, -9, -7, r'H', 'H', size = 16)
 
 It can be shown that the smallest possible spanning set must be _**linearly independent**_.
 
+
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
+    <div class="blue-box" style="padding: 8px 20px;">
+        <p>Why?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""<br>
     <div class="purple-box">
         <span class="label">Basis for a vector space</span>
         <p>A <b>basis for a vector space</b>  \(V\) is a linearly independent set in \(V\) that spans \(V.\)</p>
@@ -156,12 +143,13 @@ display(HTML(html_content))
 ```
 
 Similarly, a **basis for a subspace**  $H$ of $V$ is a linearly independent set in $H$ that spans $H.$
-
+:::
 <br>
 
 :::{.fragment}
-Note that in our example, $\{\mathbf{a}_1, \mathbf{a}_2, \mathbf{a}_3\}$ is not a basis for $H,$ because $\mathbf{a}_2$ and $\mathbf{a}_3$ are not linearly independent.
-Furthermore, $\{\mathbf{a}_1\}$ is also not a basis for $H,$ because it does not span $H.$
+In our example, $\{\mathbf{a}_1, \mathbf{a}_2, \mathbf{a}_3\}$ is not a basis for $H,$ because $\mathbf{a}_2$ and $\mathbf{a}_3$ are not linearly independent.
+
+And $\{\mathbf{a}_1\}$ is also not a basis for $H,$ because it does not span $H.$
 :::
 :::
 
@@ -230,10 +218,14 @@ display(HTML(html_content))
 ```
 
 
-:::{.fragment}
-__Remark__: The dimension of the zero subspace $\{{\bf 0}\}$ is defined to be zero.  
+:::{.fragment}  
 
-For example, a plane through the origin ${\bf 0}$ is two-dimensional, and a line through ${\bf 0}$ is one-dimensional.
+For example:
+
+- A plane through the origin ${\bf 0}$ is two-dimensional
+- A line through ${\bf 0}$ is one-dimensional.
+
+__Remark__: The dimension of the zero subspace $\{{\bf 0}\}$ is defined to be zero.
 :::
 :::
 
@@ -298,9 +290,7 @@ $$
 
 :::{.fragment}
 :::{style="font-size: .8em"}
-Now, what we write the solution set as a _**weighted combination of vectors**_, or simply a vector equation.
-
-The key idea is that the _**free variables will become the weights**_.
+Now, when we write the solution set as a vector equation, the _**free variables will become the weights**_.
 :::
 :::
 
@@ -328,8 +318,7 @@ Hence, ${\operatorname{Nul}}\ A$ is the set of all linear combinations of $\math
 
 :::{style="font-size: .8em"}
 __Example (continued)__.
-Note that each vector has a unique pattern of non-zero entries and each weight appears only in one position. 
-Hence, this construction automatically makes $\mathbf{u}, \mathbf{v},$ and ${\bf w}$ _**linearly independent**_.  
+One can verify that $\mathbf{u}, \mathbf{v},$ and ${\bf w}$ are _**linearly independent**_.
 
 Thus, $\{\mathbf{u}, \mathbf{v}, {\bf w}\}$ is a _**basis**_ for ${\operatorname{Nul}}\ A.$
 
@@ -383,7 +372,14 @@ We conclude that the pivot columns of $B$ form a basis for $\operatorname{Col} B
 :::{.fragment}
 In general, _for matrices in reduced row echelon form_, we have a simple rule for the basis of the column space:
     
-> Choose the columns that hold the pivots, or in other words the columns corresponding to the _basic variables_.
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="purple-box">
+    <p>Choose the columns that hold the pivots, i.e., the columns corresponding to the <em>basic variables</em>.</p>
+</div>
+"""))
+```
 
 Hopefully now the term "basic variable" makes sense!
 :::
@@ -391,33 +387,14 @@ Hopefully now the term "basic variable" makes sense!
 
 ## Corresponding Columns Work for Col A{.really-smaller-title}
 
-:::{style="font-size: .8em"}
-This idea generalizes even to matrices that aren't in reduced echelon form: the pivot columns of $A$ form a basis for ${\operatorname{Col}}\ A$ _for any_ $A$.
-<br>
+:::{style="font-size: .85em"}
+Row reduction changes the columns of $A$, so the pivot columns of $B$ are **not** in $\operatorname{Col} A$. 
 
-Suppose that $A\mathbf{x} = {\bf 0}$ for some nonzero vector $\mathbf{x}$. This says that there is a linear dependence relation between some of the columns of $A$.
+But row reduction **preserves** linear dependence relations.  That is, $A\mathbf{x} = \mathbf{0}$ and $B\mathbf{x} = \mathbf{0}$ have the same solution set.
 
-If any of the entries in $\mathbf{x}$ are zero, then those columns do not participate in the linear dependence relation.
+So, whichever columns of $B$ are independent, the **corresponding columns of $A$** are independent too.
 
-<!-- When we row-reduce $A$ to its reduced echelon form $B$, the columns are changed, but the equations $A\mathbf{x} = {\bf 0}$ and $B\mathbf{x} = {\bf 0}$ have the same solution set.   -->
-<!-- :::
-
-## Basis of a Column Space
-
-:::{style="font-size: .8em"} -->
-<!-- The columns of $A$ and the columns of $B$ _have exactly the same dependence relationships_ as the columns of $B$.
-
-Specifically:
-
-1. If some set of columns of $B$ spans the column space of $B$ (meaning that the remaining columns can be written as a linear combination of the columns in the span), then the same columns of $A$ span the column space of $A$.
-
-2. If some set of columns of $B$ are linearly independent (meaning that no non-zero combination of these columns yields the zero vector), then the same columns of $A$ are linearly independent. -->
-
-When we row-reduce $A$ to its reduced echelon form $B$, the columns are changed, but the equations $A\mathbf{x} = {\bf 0}$ and $B\mathbf{x} = {\bf 0}$ have the same solution set.  
-
-In other words:
-
-> If some columns of $B$ are a basis for ${\operatorname{Col}}\ B$, then the corresponding columns of $A$ are a basis for ${\operatorname{Col}}\ A$.
+**Recipe for a basis of $\operatorname{Col} A$:** row-reduce to find the pivot positions, then take those columns from $A$ (not $B$).
 :::
 
 ## Finding a Basis for Col A: Example{.smaller-title}
@@ -494,6 +471,8 @@ For matrices $A$ and $B$ of appropriate sizes it can be shown that<br>
 1. $\small \operatorname{Rank}(A + B)\leq \operatorname{Rank} A + \operatorname{Rank}(B).$
 2. $\small \operatorname{Rank}(A B)\leq \min(\operatorname{Rank}A,\operatorname{Rank}B).$
 
+**Geometric intuition for (2):** Multiplication by $A$ then $B$ is a two-step transformation. The first step maps $\mathbb{R}^n$ onto $\operatorname{Col} A$, a space of dimension at most $\operatorname{rank} A$. The second step can only further reduce (or preserve) that dimension — it cannot conjure new independent directions. So the composition can never exceed the rank of either factor.
+
 ```{python}
 from IPython.core.display import HTML
 
@@ -501,9 +480,11 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>Let \(A = \begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}\) and  \(B = \begin{bmatrix} 2 & 1 & 4 \\ 3 & 1.5 & 6 \end{bmatrix}.\) <br>
-        1. What is the rank of A?<br>
-        2. What is the rank of B?<br>
-        3. What is the rank of AB?<br>
+        1. What is \(\operatorname{rank} A\)?<br>
+        2. What is \(\operatorname{rank} B\)?<br>
+        3. What is \(\operatorname{rank} AB\)?<br>
+        4. What does property (2) tell you the rank of \(AB\) must be? Does your answer confirm it?<br>
+        5. (<em>Challenge</em>) Can you construct a \(2\times 2\) example where \(\operatorname{rank}(AB) < \min(\operatorname{rank} A, \operatorname{rank} B)\), i.e., where the inequality is <em>strict</em>?
         </p>
     </div>
     """
@@ -540,18 +521,21 @@ Hence the matrix $A$ has 3 pivot columns, so $\operatorname{Rank} A = 3.$
 :::
 :::
 
-## Rank in Data Science: Effective Dimensionality{.smaller-title}
+## Rank in DS: Effective Dimensionality{.really-smaller-title}
 
-:::{style="font-size: .8em"}
-The rank of a data matrix tells you the **effective number of degrees of freedom** in your data — not just how many features you collected.
+:::{style="font-size: .9em"}
+**Rank = the number of truly independent pieces of information in your data.**
 
-**Examples:**
-- 100 patient features but rank 8: the data lives in an 8-dimensional subspace. Only 8 independent patterns exist, no matter how many columns you add.
-- sqft and bedrooms in our housing data: rank 2 (ignoring intercept). Adding a third feature "price per bedroom" (= price / bedrooms) won't help — it's a nonlinear combination, but if it *were* linear and redundant, rank would stay at 2.
+Collecting more features doesn't increase rank if they're redundant:
 
-This is the mathematical foundation of **dimensionality reduction**: real high-dimensional datasets often have low rank (approximately), so we can represent them with far fewer coordinates without losing much information.
+- 100 features, but rank 8 means data lives in an 8-dimensional subspace
+- This means linear models only have 8-dimensions worth of expressiveness
 
-_The rank-nullity theorem makes this precise._
+Real high-dimensional data is often **approximately low-rank**. 
+
+This is the mathematical foundation of dimensionality reduction (PCA, etc.).
+
+_The rank-nullity theorem quantifies exactly how much is redundant._
 :::
 
 ## Rank-Nullity Theorem
@@ -562,7 +546,7 @@ Consider a matrix $A$ with  $n$ columns.
 :::{.fragment}
 -  $\dim\operatorname{Nul}\ A$ = the number of free variables in $A\mathbf{x} = {\bf 0}$,  which is the number of non-pivot columns in $A$.
 
-- $\dim\operatorname{Col}\ A$ = the number of basis variables in $A\mathbf{x} = {\bf 0}$, which is the number of pivot columns.
+- $\dim\operatorname{Col}\ A$ = the number of basic variables in $A\mathbf{x} = {\bf 0}$, which is the number of pivot columns.
 
 So we can now make this important connection:
 :::
@@ -599,7 +583,7 @@ display(HTML(html_content))
 This relationship involving dimension is true even though the two subspaces themselves live in different spaces: $\operatorname{Nul}\ A \subset \mathbb{R}^n$ and $\operatorname{Col}\ A \subset \mathbb{R}^m$.
 ::: -->
 
-## Rank-Nullity: A Funnel Diagram{.really-smaller-title}
+## Rank-Nullity: A Diagram{.really-smaller-title}
 
 :::{.center-text}
 ```{python}
@@ -625,38 +609,38 @@ ax.text(1.6, 1.05, r'Nul $A$', ha='center', va='center', fontsize=11, color='nav
 ax.text(1.6, 0.62, r'dim = $n - r$', ha='center', va='center', fontsize=9, color='navy')
 
 # Remaining region in R^n
-rem_rect = mpatches.FancyBboxPatch((0.3, 1.75), 2.6, 1.6,
+rem_rect = mpatches.FancyBboxPatch((0.3, 1.75), 2.6, 1.35,
     boxstyle="round,pad=0.05", linewidth=1.5, edgecolor='cornflowerblue', facecolor='#b8d4f0', alpha=0.7)
 ax.add_patch(rem_rect)
 ax.text(1.6, 2.55, r'rest of $\mathbb{R}^n$', ha='center', va='center', fontsize=11, color='navy')
 ax.text(1.6, 2.1, r'dim = $r$', ha='center', va='center', fontsize=9, color='navy')
 
 # Arrow: Nul A to 0
-ax.annotate('', xy=(4.85, 0.8), xytext=(3.2, 0.8),
+ax.annotate('', xy=(8.3, 0.4), xytext=(3.2, 0.8),
     arrowprops=dict(arrowstyle='->', color='blue', lw=2))
 ax.text(4.0, 0.52, r'maps to $\mathbf{0}$', ha='center', fontsize=9, color='blue')
 
 # Right box: R^m
-right_box = mpatches.FancyBboxPatch((7.9, 0.2), 3.0, 3.4,
+right_box = mpatches.FancyBboxPatch((6.9, 0.2), 3.0, 3.4,
     boxstyle="round,pad=0.1", linewidth=2, edgecolor='darkgreen', facecolor='#eef8ee')
 ax.add_patch(right_box)
-ax.text(9.4, 3.35, r'$\mathbb{R}^m$ (codomain)', ha='center', fontsize=12, fontweight='bold', color='darkgreen')
+ax.text(8.4, 3.35, r'$\mathbb{R}^m$ (codomain)', ha='center', fontsize=12, fontweight='bold', color='darkgreen')
 
 # Col A region
-col_rect = mpatches.FancyBboxPatch((8.1, 0.35), 2.6, 2.4,
+col_rect = mpatches.FancyBboxPatch((7.1, 0.35), 2.6, 2.4,
     boxstyle="round,pad=0.05", linewidth=1.5, edgecolor='green', facecolor='lightgreen', alpha=0.7)
 ax.add_patch(col_rect)
-ax.text(9.4, 1.55, r'Col $A$', ha='center', va='center', fontsize=11, color='darkgreen')
-ax.text(9.4, 1.1, r'dim = $r$ = rank', ha='center', va='center', fontsize=9, color='darkgreen')
+ax.text(8.4, 1.55, r'Col $A$', ha='center', va='center', fontsize=11, color='darkgreen')
+ax.text(8.4, 1.1, r'dim = $r$ = rank', ha='center', va='center', fontsize=9, color='darkgreen')
 
 # Arrow: rest of R^n maps onto Col A
-ax.annotate('', xy=(7.8, 2.0), xytext=(3.2, 2.3),
+ax.annotate('', xy=(7.0, 2.0), xytext=(3.2, 2.3),
     arrowprops=dict(arrowstyle='->', color='cornflowerblue', lw=2))
-ax.text(5.5, 2.55, r'$A$  (maps onto Col $A$)', ha='center', fontsize=10, color='cornflowerblue')
+ax.text(5.0, 2.35, r'$A$  (maps onto Col $A$)', ha='center', fontsize=10, color='cornflowerblue')
 
 # Zero vector point in R^m
-ax.plot([9.4], [3.0], 'ko', markersize=6)
-ax.text(9.7, 3.05, r'$\mathbf{0}$', fontsize=11)
+ax.plot([8.4], [0.4], 'ko', markersize=6)
+ax.text(8.5, 0.45, r'$\mathbf{0}$', fontsize=11)
 
 plt.tight_layout()
 ```
@@ -665,7 +649,6 @@ plt.tight_layout()
 :::{style="font-size: .85em"}
 **Rank-Nullity:** $n = \operatorname{rank} A + \dim \operatorname{Nul} A = r + (n-r).$ The nullspace is "thrown away"; the remaining $r$ dimensions map onto $\operatorname{Col} A.$
 
-_In a data science context:_ you may collect $n$ features, but if rank $= r < n$, only $r$ parameters are estimable. The other $n - r$ feature directions are redundant — they live in the null space and contribute nothing to your model's predictions.
 :::
 
 ## Practice: Bases, Rank, and Rank-Nullity{.really-smaller-title}
@@ -713,23 +696,23 @@ Let's think about a matrix $A$ and the associated linear transformation $T(x) = 
 - _However,_ if $A$ "throws away" a nullspace of dimension $p$, it _reduces_ the column space of $A$ to $n-p$. Meaning, the dimension of $T$'s range is reduced to $n-p$.
 ::: -->
 
-## Basis and the Invertible Matrix Theorem{.smaller-title}
+## Basis and the Invertible Matrix Theorem{.really-smaller-title}
 
-:::{style="font-size: 1em"}
+:::{style="font-size: .85em"}
 <!-- The above arguments show that when $A$ has $n$ columns, then the "larger" that the column space is, the "smaller" that the null space is.  -->
 
 Let's consider what this means when $A$ is a square $n\times n$ matrix.
 
-- On one "extreme," the column space of $A$ could have maximum dimension -- i.e., $\dim\operatorname{Col}\ A= n.$
+- On one "extreme," the column space of $A$ could have maximum dimension, i.e., $\dim\operatorname{Col}\ A= n.$
 
 - Recall that the IMT said that an $n\times n$ matrix is invertible if and only if its columns are linearly independent, and if and only if its columns span $\mathbb{R}^n$.
 
 :::{.fragment}
-We can now see that an $n\times n$ matrix is invertible if and only if the columns of $A$ form a basis for $\mathbb{R}^n.$
+So an $n\times n$ matrix is invertible if and only if the columns of $A$ form a basis for $\mathbb{R}^n.$
 :::
 :::
 
-## New IMT Statements: Rank, Dimension, Basis{.smaller-title}
+## Updated IMT: Rank, Dimension, Basis{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 ```{python}
@@ -747,6 +730,7 @@ def generate_html():
         <li>\(\operatorname{Rank} A = n.\)</li>
         <li>\(\operatorname{Nul} A = \{{\bf 0}\}.\)</li>
         <li>\(\dim\operatorname{Nul} A = 0.\)</li>
+        </ol>
         </p>
     </div>
     """

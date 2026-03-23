@@ -28,32 +28,29 @@ format:
 _Recall from L22: orthogonal bases make coordinates easy to compute. Today we'll see they also make projection easy._
 :::
 
-## Projection: The Core of Prediction{.smaller-title}
+## Projection as the Core of Prediction{.really-smaller-title}
 
 :::{style="font-size: .85em"}
-Recall the central question from L20: our housing price vector $\mathbf{b}$ is almost certainly **not** in $\operatorname{Col} A$.
+Recall from the housing price problem vector, the vector $\mathbf{b}$ is almost certainly **not** in $\operatorname{Col} A$.
 
-But we can still find the **closest** vector in $\operatorname{Col} A$ to $\mathbf{b}$ — the best possible prediction given our model. That closest vector is the **orthogonal projection** of $\mathbf{b}$ onto $\operatorname{Col} A$.
+But we can still find the **closest** vector in $\operatorname{Col} A$ to $\mathbf{b}$, the best possible prediction given our model. 
 
-This single geometric idea is the foundation of:
+That closest vector is the **orthogonal projection** of $\mathbf{b}$ onto $\operatorname{Col} A$.
 
-- **Least squares** (L25): the projection is exactly $A\hat{\mathbf{x}}$, the fitted values
-- **Residuals**: $\mathbf{b} - A\hat{\mathbf{x}}$ is the component of $\mathbf{b}$ orthogonal to $\operatorname{Col} A$ — the irreducible prediction error
-- **Linear regression** (L26): minimizing $\|\mathbf{b} - A\mathbf{x}\|^2$ is the same as projecting $\mathbf{b}$ onto $\operatorname{Col} A$
+This single geometric idea is the foundation of **linear regression**
 
-Today we derive projection and learn Gram-Schmidt, which gives us the orthogonal bases that make projection efficient.
+Today we derive **projection** and learn **Gram-Schmidt**, which gives us the orthogonal bases that make projection efficient.
 :::
 
-## Decomposing a Vector: Projection and Remainder{.smaller-title}
+## Decomposing a Vector: Projection and Remainder{.really-smaller-title}
 
-:::{style="font-size: .8em"}
 :::{.center-text}
 ```{python}
 import laUtilities as ut
 import matplotlib.pyplot as plt
 import numpy as np
 
-ax = ut.plotSetup(-1,10,-1,4,(7,4))
+ax = ut.plotSetup(-1,10,-1,4,(6,3.5))
 ut.centerAxes(ax)
 pt = [4., 3.]
 plt.plot([0,pt[0]],[0,pt[1]],'b-',lw=2)
@@ -65,12 +62,15 @@ ax.text(2*pt[0],-0.75,r'$\mathbf{u}$',size=20)
 ax.text(pt[0]+0.1,pt[1]+0.2,r'$\mathbf{y}$',size=20);
 ```
 :::
+
+
+:::{style="font-size: .8em"}
 Suppose we have nonzero vectors $\mathbf{y}$ and $\mathbf{u}$ in $\mathbb{R}^n$.
 The goal of projection is to "decompose" $\mathbf{y}$ into the sum of two vectors $\mathbf{y} = \hat{\mathbf{y}} + \mathbf{z}$ such that
 
 - $\hat{\mathbf{y}}$ is the __orthogonal projection of $\mathbf{y}$ onto $\mathbf{u}$__: $\hat{\mathbf{y}} = \alpha\mathbf{u}$ for some scalar $\alpha$.
 
-- $\mathbf{z}$ is the __component of $\mathbf{y}$ orthogonal to $\mathbf{u}$__: it is orthogonal to $\mathbf{u}$.
+- $\mathbf{z}$ is the __component of $\mathbf{y}$ orthogonal to $\mathbf{u}$__: so $\mathbf{z}^\top \mathbf{u} = 0$.
 :::
 
 ## Geometric View of Projection{.really-smaller-title}
@@ -105,11 +105,13 @@ plt.plot(perpline2[0], perpline2[1], 'k', lw = 1);
 
 ## Deriving the Projection Formula{.smaller-title}
 
-:::{style="font-size: .8em"}
-Note $\mathbf{y} - \alpha\mathbf{u} = \mathbf{y}-\hat{\mathbf{y}} = \mathbf{z}.$ We want $\mathbf{z}$ to be orthogonal to $\mathbf{u}.$
-:::
+:::{style="font-size: .75em"}
+Note $\mathbf{z} = \mathbf{y}-\hat{\mathbf{y}} = \mathbf{y} - \alpha\mathbf{u}.$ 
 
-:::{style="font-size: .8em"}
+And want $\mathbf{z}$ to be orthogonal to $\mathbf{u}.$
+
+
+:::{.fragment}
 Now $\mathbf{z} = \mathbf{y} - \alpha{\mathbf{u}}$ is orthogonal to $\mathbf{u}$ if and only if
 
 $$
@@ -119,96 +121,73 @@ $$
 &= \mathbf{y}^\top \mathbf{u} - \alpha(\mathbf{u}^\top \mathbf{u}).
 \end{align*}
 $$
+:::
 
+:::{.fragment}
 Hence,  $\mathbf{z}$ is orthogonal to $\mathbf{u}$ happens if and only if $\alpha = \frac{\mathbf{y}^\top \mathbf{u}}{\mathbf{u}^\top \mathbf{u}}.$
+:::
 
+:::{.fragment}
 Since $\hat{\mathbf{y}} = \alpha\mathbf{u}$,
 
 $$
 \hat{\mathbf{y}} = \frac{\mathbf{y}^\top \mathbf{u}}{\mathbf{u}^\top \mathbf{u}}\mathbf{u}.
 $$
-
 :::
 
+
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
-    <div class="blue-box">
+    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
         <p>What happens to \(\hat{\mathbf{y}}\) if \(\mathbf{y}\) is already in \(\text{Span}\{\mathbf{u}\}\)? What if \(\mathbf{y}\) is orthogonal to \(\mathbf{u}\)?</p>
     </div>
     """
 display(HTML(generate_html()))
 ```
+:::
 
-## Only the Direction of u Matters{.smaller-title}
+
+:::
+
+## Projection Depends Only on the Subspace{.really-smaller-title}
 
 :::{style="font-size: .8em"}
+The projection $\hat{\mathbf{y}}$ is determined by the **subspace** $L = \text{Span}\{\mathbf{u}\}$, not by the vector $\mathbf{u}$. 
 
-:::{.center-text}
-```{python}
-ax = ut.plotSetup(-1,10,-1,4,(8,4))
-ut.centerAxes(ax)
-pt = [4., 3.]
-plt.plot([0,pt[0]],[0,pt[1]],'b-',lw=2)
-plt.plot([pt[0],pt[0]],[0,pt[1]],'b--',lw=2)
-plt.plot([0,pt[0]],[0,0],'r-',lw=3)
-plt.plot([0,0],[0,pt[1]],'g-',lw=3)
-ut.plotVec(ax,pt,'b')
-u = np.array([pt[0],0])
-v = [0,pt[1]]
-ut.plotVec(ax,u)
-ut.plotVec(ax,2*u)
-ut.plotVec(ax,v,'g')
-ax.text(pt[0],-0.75,r'${\bf \hat{y}}=\alpha{\bf u}$',size=20)
-ax.text(2*pt[0],-0.75,r'$\mathbf{u}$',size=20)
-ax.text(pt[0]+0.1,pt[1]+0.2,r'$\mathbf{y}$',size=20)
-ax.text(0+0.1,pt[1]+0.2,r'$\mathbf{z}$',size=20)
-ax.text(0+0.1,pt[1]+0.8,r'Component of $\mathbf{y}$ orthogonal to $\mathbf{u}$',size=16)
-ax.text(pt[0],-1.25,r'Orthogonal projection of $\mathbf{y}$ onto to $\mathbf{u}$',size=16);
-perpline1, perpline2 = ut.perp_sym(np.array([0,0]), u, v, 0.5)
-plt.plot(perpline1[0], perpline1[1], 'k', lw = 1)
-plt.plot(perpline2[0], perpline2[1], 'k', lw = 1);
-```
+Replacing $\mathbf{u}$ with $c\mathbf{u}$ gives:
+
+$$
+\frac{\mathbf{y}^{\top} c\mathbf{u}}{(c\mathbf{u})^{\top} (c\mathbf{u})}c\mathbf{u} = \frac{c(\mathbf{y}^{\top} \mathbf{u})}{c^2(\mathbf{u}^{\top} \mathbf{u})}c\mathbf{u} = \frac{\mathbf{y}^{\top} \mathbf{u}}{\mathbf{u}^{\top} \mathbf{u}}\mathbf{u} = \hat{\mathbf{y}}.
+$$
+
+So we write $\hat{\mathbf{y}} = \operatorname{proj}_L \mathbf{y}$. 
+
+:::{.fragment}
+Note also that $c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^\top \mathbf{u}_j}$ is exactly the orthogonal-basis coordinate formula from L22.
+
+**Projection and coordinate computation are the same operation.**
 :::
 
-When calculating the projection, only the direction of ${\bf u}$ is important.
-:::
 
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>Would the projection \(\hat{\mathbf{y}}\) change if we replaced \(\mathbf{u}\) with \(-\mathbf{u}\)? With \(5\mathbf{u}\)? Explain using the projection formula.</p>
-    </div>
-    """
-display(HTML(generate_html()))
+display(HTML(r"""
+<div class="blue-box">
+    <p>Would \(\hat{\mathbf{y}}\) change if we replaced \(\mathbf{u}\) with \(-\mathbf{u}\)? With \(5\mathbf{u}\)? What does this say geometrically?</p>
+</div>
+"""))
 ```
-
-## Only Direction Matters: Proof{.really-smaller-title}
-
-:::{style="font-size: .8em"}
-- Geometrically: if we scale $\mathbf{u}$, we do not change the location of $\hat{\mathbf{y}}.$
-
-- Algebraically: replace $\mathbf{u}$ with $c\mathbf{u}$ and recompute $\hat{\mathbf{y}}$: $\hat{\mathbf{y}} = \frac{\mathbf{y}^{\top} c\mathbf{u}}{c\mathbf{u}^{\top} c\mathbf{u}}c\mathbf{u} = \frac{\mathbf{y}^{\top} \mathbf{u}}{\mathbf{u}^{\top} \mathbf{u}}\mathbf{u}.$
-
-Therefore, the projection of $\mathbf{y}$ is determined by the __subspace__ $L$ that is spanned by $\mathbf{u},$ the line through $\mathbf{u}$ and the origin.
-
-<br>
-
-Hence, sometimes $\hat{\mathbf{y}}$ is denoted by $\mbox{proj}_L \mathbf{y}$ and is called the __orthogonal projection of $\mathbf{y}$ onto $L$:__
-
-$$
-\hat{\mathbf{y}} = \mbox{proj}_L \mathbf{y} = \frac{\mathbf{y}^{\top} \mathbf{u}}{\mathbf{u}^{\top} \mathbf{u}}\mathbf{u}.
-$$
+:::
 :::
 
 ## Computing a Projection: Example{.smaller-title}
 
-:::{style="font-size: .9em"}
+:::{style="font-size: .8em"}
 __Example__. Let $\mathbf{y} = \begin{bmatrix}7\\6\end{bmatrix}$ and $\mathbf{u} = \begin{bmatrix}4\\2\end{bmatrix}.$  We are going to write $\mathbf{y}$ as the sum of a vector in Span$\{\mathbf{u}\}$ and a vector orthogonal to $\mathbf{u}.$
 
 :::{.center-text}
@@ -243,29 +222,38 @@ ax.plot([0,z[0]],[0,z[1]],'b-');
 ## Computing a Projection: Inner Products{.really-smaller-title}
 
 :::{style="font-size: .8em"}
+
+
+:::{.fragment}
 First, we compute the inner products:
 
 $$
 \mathbf{y}^\top \mathbf{u} = \begin{bmatrix}7&6\end{bmatrix}\begin{bmatrix}4\\2\end{bmatrix} = 40,
 $$
 
+
 $$
 \mathbf{u}^\top \mathbf{u} = \begin{bmatrix}4&2\end{bmatrix}\begin{bmatrix}4\\2\end{bmatrix} = 20.
 $$
+:::
 
+
+:::{.fragment}
 The orthogonal projection of $\mathbf{y}$ onto $\mathbf{u}$ is
 
 $$
 \hat{\mathbf{y}} = \frac{\mathbf{y}^\top \mathbf{u}}{\mathbf{u}^\top \mathbf{u}} \mathbf{u}
 $$
+:::
 
+:::{.fragment}
 $$
 =\frac{40}{20}\mathbf{u} = 2\begin{bmatrix}4\\2\end{bmatrix} = \begin{bmatrix}8\\4\end{bmatrix}.
 $$
-
+:::
 :::
 
-## Verifying the Components Are Orthogonal{.smaller-title}
+## Verifying the Components Are Orthogonal{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 The component of $\small \mathbf{y}$ orthogonal to $\small \mathbf{u}$ is
@@ -274,6 +262,8 @@ $$ \small
 \mathbf{y}-\hat{\mathbf{y}} = \begin{bmatrix}7\\6\end{bmatrix} - \begin{bmatrix}8\\4\end{bmatrix} = \begin{bmatrix}-1\\2\end{bmatrix}.
 $$
 
+
+:::{.fragment}
 We can write
 $$ \small
 \begin{array}{ccccc}
@@ -281,12 +271,16 @@ $$ \small
 \begin{bmatrix}7\\6\end{bmatrix} &=& \begin{bmatrix}8\\4\end{bmatrix} &+& \begin{bmatrix}-1\\2\end{bmatrix}
 \end{array}.
 $$
+:::
 
+
+:::{.fragment}
 Furthermore, $\small \hat{\mathbf{y}}$ and $\small \mathbf{z}$ are orthogonal. We can quickly check this for ourselves using the inner product:
 
 $$\small
 \hat{\mathbf{y}}^\top \mathbf{z} = 8(-1) + 4(2) = -8 + 8 = 0.
 $$
+:::
 :::
 
 ## Practice: Compute a Projection{.smaller-title}
@@ -300,9 +294,6 @@ def generate_html():
     <div class="blue-box">
         <p>Let \(\mathbf{y} = \begin{bmatrix} 5 \\ 2 \end{bmatrix}\) and \(\mathbf{u} = \begin{bmatrix} 1 \\ 3 \end{bmatrix}.\) Calculate the orthogonal projection of \(\mathbf{y}\) onto the subspace spanned by \(\mathbf{u}.\)
             <br>
-            <br>
-            <br>
-            <br>
         </p>
     </div>
     """
@@ -312,17 +303,11 @@ display(HTML(html_content))
 ```
 :::
 
-:::{.notes}
-The orthogonal projection is $\operatorname{proj}_{\mathbf{u}}(\mathbf{y}) = \frac{\mathbf{y}^\top \mathbf{u}}{\mathbf{u}^\top \mathbf{u}}\mathbf{u} = \frac{5 \cdot 1 + 2 \cdot 3}{1^2 + 3^2}\mathbf{u} = \frac{5 + 6}{1 + 9}\mathbf{u} = \frac{11}{10}\mathbf{u} = \begin{bmatrix} 11/10 \\ 33/10 \end{bmatrix}.$
-:::
-
-## Projection Is the Closest Point in the Subspace{.smaller-title}
+## Projection Is the Closest Point in the Subspace{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 
-**1.** _The closest point._
-
-Recall from geometry that given a line and a point $P$, the closest point on the line to $P$ is given by the perpendicular from $P$ to the line.
+Recall from geometry that the shortest distance to a line is a segment perpendicular to the line.
 
 Hence, $\hat{\mathbf{y}}$ is __the closest point to $\mathbf{y}$ in the subspace $L$.__
 
@@ -359,7 +344,6 @@ ax.plot([0,z[0]],[0,z[1]],'b-');
 ## Distance from a Point to a Subspace{.smaller-title}
 
 :::{style="font-size: .8em"}
-**2.** _The distance from $\mathbf{y}$ to $L$_
 
 The distance from $\mathbf{y}$ to $L$ is the length of the perpendicular from $\mathbf{y}$ to its orthogonal projection on $L$, namely $\hat{\mathbf{y}}$.
 
@@ -371,8 +355,8 @@ $$
 \Vert\mathbf{y}-\hat{\mathbf{y}}\Vert = \Vert {\bf z} \Vert = \sqrt{(-1)^2 + 2^2} = \sqrt{5}.
 $$
 
-:::
 
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
@@ -384,10 +368,21 @@ def generate_html():
     """
 display(HTML(generate_html()))
 ```
+:::
+
+:::
 
 ## The Gram-Schmidt Algorithm{.smaller-title}
 
-The __Gram-Schmidt process__ is an algorithm that transforms a basis $\{ {\bf v}_1, {\bf v}_2, \ldots, {\bf v}_n \}$ for subspace $H$ into an orthogonal basis $\{ {\bf u}_1, {\bf u}_2, \ldots, {\bf u}_n \}$ for the same subspace $H$. It operates as follows.
+
+:::{style="font-size: .8em"}
+
+To project onto a multi-dimensional subspace, we need an **orthogonal** basis so the projection formula applies to each basis vector independently. 
+
+:::{.fragment}
+**Gram-Schmidt** converts any basis into an orthogonal one.
+
+We compute:
 
 $$
 \begin{eqnarray*}
@@ -398,23 +393,26 @@ $$
 {\bf u}_n &=& {\bf v}_n - \sum_{i=1}^{n-1} \mbox{proj}_{{\bf u}_i}({\bf v}_n)
 \end{eqnarray*}
 $$
+:::
 
-In other words, we can find an orthogonal basis by iteratively removing the projections of all previous vectors, in order to keep only the component of each vector that is orthogonal to all vectors before it.
-
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
-    <div class="blue-box">
+    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
         <p>In the Gram-Schmidt process, why must we subtract projections onto <em>all</em> previous orthogonal vectors, not just the first one?</p>
     </div>
     """
 display(HTML(generate_html()))
 ```
+:::
+:::
 
-## Gram-Schmidt: A Geometric Perspective{.smaller-title}
+## Gram-Schmidt: A Geometric View{.really-smaller-title}
 
+:::{style="font-size: .9em"}
 Here is another way to think about the Gram-Schmidt process.
 
 :::{.incremental}
@@ -424,6 +422,7 @@ Here is another way to think about the Gram-Schmidt process.
 - Overwrite each of ${\bf v}_3, {\bf v}_4, \ldots, {\bf v}_n$ with the component orthogonal to ${\bf u}_2$.
 - Now ${\bf v}_3 \perp {\bf u}_1$ and ${\bf v}_3 \perp {\bf u}_2.$ Set ${\bf u}_3 = {\bf v}_3$.
 - Continue until all vectors are processed.
+:::
 :::
 
 ## Warm-Up: Gram-Schmidt in $\mathbb{R}^2${.smaller-title}
@@ -452,7 +451,9 @@ u₂ = [1,0]ᵀ − [9/25, 12/25]ᵀ = [16/25, −12/25]ᵀ.
 Check: u₁·u₂ = 3(16/25)+4(−12/25) = 48/25−48/25 = 0. ✓
 :::
 
-## Gram-Schmidt: Example Setup{.smaller-title}
+## Gram-Schmidt: Example Setup{.really-smaller-title}
+
+:::{style="font-size: .9em"}
 
 We are going to apply the Gram-Schmidt process to the following three vectors in $\mathbb{R}^3$ to produce an orthogonal set:
 
@@ -468,6 +469,7 @@ For example, ${\bf v}_{\bf 1}^\top {\bf v_2} = 1$, not zero.
 <br><br>
 
 The first step of the Gram-Schmidt process is simple: ${\bf u_1} = {\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}.$
+:::
 
 ## Gram-Schmidt: Computing v₂{.smaller-title}
 
@@ -545,13 +547,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
-v1 = np.array([1., 1., 0.])
-v2 = np.array([1., 0., 1.])
-v3 = np.array([0., 1., 1.])
+# Vectors that obviously cluster toward the same corner — non-orthogonality is clear at a glance.
+v1 = np.array([2., 0., 0.])
+v2 = np.array([1., 1., 1.])
+v3 = np.array([1., 1., 0.])
 
-u1 = np.array([1., 1., 0.])
-u2 = np.array([0.5, -0.5, 1.])
-u3 = np.array([-2/3, 2/3, 2/3])
+# Gram-Schmidt results: proj onto u1 land at [1,0,0] — visibly shorter than u1=[2,0,0]
+u1 = np.array([2., 0., 0.])
+u2 = np.array([0., 1., 1.])
+u3 = np.array([0., 0.5, -0.5])
 
 fig = plt.figure(figsize=(11, 4.5))
 
@@ -563,20 +567,192 @@ for col, (vecs, labels, colors, title) in enumerate([
 ]):
     ax = fig.add_subplot(1, 2, col + 1, projection='3d')
     for v, lbl, clr in zip(vecs, labels, colors):
-        ax.quiver(0, 0, 0, v[0], v[1], v[2], color=clr, arrow_length_ratio=0.15, linewidth=2)
-        ax.text(v[0]*1.1, v[1]*1.1, v[2]*1.1, lbl, fontsize=13, color=clr, fontweight='bold')
-    ax.set_xlim([-1, 1.2]); ax.set_ylim([-1, 1.2]); ax.set_zlim([-0.2, 1.2])
+        ax.quiver(0, 0, 0, v[0], v[1], v[2], color=clr, arrow_length_ratio=0.12, linewidth=2.5)
+        ax.text(v[0]*1.12, v[1]*1.12, v[2]*1.12, lbl, fontsize=13, color=clr, fontweight='bold')
+    ax.set_xlim([-0.2, 2.2]); ax.set_ylim([-0.2, 1.4]); ax.set_zlim([-0.7, 1.4])
     ax.set_xlabel('x', fontsize=10); ax.set_ylabel('y', fontsize=10); ax.set_zlabel('z', fontsize=10)
     ax.set_title(title, fontsize=11, pad=8)
-    ax.view_init(elev=20, azim=35)
+    ax.view_init(elev=22, azim=30)
 
 plt.tight_layout()
 plt.show()
 ```
 :::
 
+## Gram-Schmidt: Step-by-Step{.smaller-title}
+
+:::{style="font-size: .8em"}
+Click through to see each orthogonal vector built step by step.
+:::
+
+:::{.center-text}
+```{python}
+import plotly.graph_objects as go
+import numpy as np
+
+v1 = np.array([2., 0., 0.])
+v2 = np.array([1., 1., 1.])
+v3 = np.array([1., 1., 0.])
+
+u1 = v1.copy()
+proj_u1_v2 = (v2 @ u1) / (u1 @ u1) * u1   # = [1, 0, 0]  — visibly shorter than u1
+u2 = v2 - proj_u1_v2                         # = [0, 1, 1]
+proj_u1_v3 = (v3 @ u1) / (u1 @ u1) * u1   # = [1, 0, 0]
+proj_u2_v3 = (v3 @ u2) / (u2 @ u2) * u2   # = [0, 0.5, 0.5]
+u3 = v3 - proj_u1_v3 - proj_u2_v3           # = [0, 0.5, -0.5]
+
+BLUE   = '#4477AA'
+GREEN  = '#228833'
+RED    = '#CC3311'
+ORANGE = '#EE7733'
+GRAY   = '#888888'
+
+def arr(v, color, width=5, opacity=1.0, dash=None):
+    ls = dict(color=color, width=width)
+    if dash:
+        ls['dash'] = dash
+    return go.Scatter3d(
+        x=[0, v[0]], y=[0, v[1]], z=[0, v[2]],
+        mode='lines+markers',
+        line=ls,
+        marker=dict(size=[0, 7], color=color),
+        opacity=opacity, showlegend=False
+    )
+
+def txt(v, text, color, scale=1.18, opacity=1.0):
+    return go.Scatter3d(
+        x=[v[0]*scale], y=[v[1]*scale], z=[v[2]*scale],
+        mode='text', text=[text],
+        textfont=dict(size=14, color=color),
+        opacity=opacity, showlegend=False
+    )
+
+# Fixed 16-slot layout (same trace count every step — required for Plotly frame animation).
+# Slots: u1-arrow, u1-label, v2-arrow, v2-label, v3-arrow, v3-label,
+#        u2-arrow, u2-label, u3-arrow, u3-label,
+#        proj_u1_v2-arrow, proj_u1_v2-label,
+#        proj_u1_v3-arrow, proj_u1_v3-label,
+#        proj_u2_v3-arrow, proj_u2_v3-label
+def hide_a(v): return arr(v, GRAY, opacity=0)
+def hide_t(v): return txt(v, '', GRAY, opacity=0)
+
+steps = [
+    # 0: original basis
+    [arr(v1, GRAY), txt(v1, 'v₁', GRAY),
+     arr(v2, GRAY), txt(v2, 'v₂', GRAY),
+     arr(v3, GRAY), txt(v3, 'v₃', GRAY),
+     hide_a(u2), hide_t(u2), hide_a(u3), hide_t(u3),
+     hide_a(proj_u1_v2), hide_t(proj_u1_v2),
+     hide_a(proj_u1_v3), hide_t(proj_u1_v3),
+     hide_a(proj_u2_v3), hide_t(proj_u2_v3)],
+    # 1: u1 = v1 highlighted
+    [arr(u1, BLUE, width=7), txt(u1, 'u₁ = v₁', BLUE),
+     arr(v2, GRAY, opacity=0.35), txt(v2, 'v₂', GRAY, opacity=0.35),
+     arr(v3, GRAY, opacity=0.35), txt(v3, 'v₃', GRAY, opacity=0.35),
+     hide_a(u2), hide_t(u2), hide_a(u3), hide_t(u3),
+     hide_a(proj_u1_v2), hide_t(proj_u1_v2),
+     hide_a(proj_u1_v3), hide_t(proj_u1_v3),
+     hide_a(proj_u2_v3), hide_t(proj_u2_v3)],
+    # 2: show proj of v2 onto u1
+    [arr(u1, BLUE, width=7), txt(u1, 'u₁', BLUE),
+     arr(v2, GRAY, opacity=0.5), txt(v2, 'v₂', GRAY, opacity=0.5),
+     arr(v3, GRAY, opacity=0.15), hide_t(v3),
+     hide_a(u2), hide_t(u2), hide_a(u3), hide_t(u3),
+     arr(proj_u1_v2, ORANGE, width=4, dash='dash'), txt(proj_u1_v2, 'proj(v₂)', ORANGE, scale=1.5),
+     hide_a(proj_u1_v3), hide_t(proj_u1_v3),
+     hide_a(proj_u2_v3), hide_t(proj_u2_v3)],
+    # 3: u2 = v2 - proj
+    [arr(u1, BLUE, width=7), txt(u1, 'u₁', BLUE),
+     arr(v2, GRAY, opacity=0.2), hide_t(v2),
+     arr(v3, GRAY, opacity=0.15), hide_t(v3),
+     arr(u2, GREEN, width=7), txt(u2, 'u₂ ⊥ u₁', GREEN),
+     hide_a(u3), hide_t(u3),
+     arr(proj_u1_v2, ORANGE, width=3, dash='dash', opacity=0.35), hide_t(proj_u1_v2),
+     hide_a(proj_u1_v3), hide_t(proj_u1_v3),
+     hide_a(proj_u2_v3), hide_t(proj_u2_v3)],
+    # 4: project v3 onto u1 and u2
+    [arr(u1, BLUE, width=7), txt(u1, 'u₁', BLUE),
+     hide_a(v2), hide_t(v2),
+     arr(v3, GRAY, opacity=0.5), txt(v3, 'v₃', GRAY, opacity=0.5),
+     arr(u2, GREEN, width=7), txt(u2, 'u₂', GREEN),
+     hide_a(u3), hide_t(u3),
+     hide_a(proj_u1_v2), hide_t(proj_u1_v2),
+     arr(proj_u1_v3, BLUE, width=4, dash='dash'), txt(proj_u1_v3, 'proj₁(v₃)', BLUE, scale=1.5),
+     arr(proj_u2_v3, GREEN, width=4, dash='dash'), txt(proj_u2_v3, 'proj₂(v₃)', GREEN, scale=1.4)],
+    # 5: u3 = v3 - both projections
+    [arr(u1, BLUE, width=7), txt(u1, 'u₁', BLUE),
+     hide_a(v2), hide_t(v2),
+     arr(v3, GRAY, opacity=0.15), hide_t(v3),
+     arr(u2, GREEN, width=7), txt(u2, 'u₂', GREEN),
+     arr(u3, RED, width=7), txt(u3, 'u₃ ⊥ u₁, u₂', RED),
+     hide_a(proj_u1_v2), hide_t(proj_u1_v2),
+     arr(proj_u1_v3, BLUE, width=2, dash='dash', opacity=0.25), hide_t(proj_u1_v3),
+     arr(proj_u2_v3, GREEN, width=2, dash='dash', opacity=0.25), hide_t(proj_u2_v3)],
+    # 6: clean final orthogonal basis
+    [arr(u1, BLUE, width=7), txt(u1, 'u₁', BLUE),
+     hide_a(v2), hide_t(v2),
+     hide_a(v3), hide_t(v3),
+     arr(u2, GREEN, width=7), txt(u2, 'u₂', GREEN),
+     arr(u3, RED, width=7), txt(u3, 'u₃', RED),
+     hide_a(proj_u1_v2), hide_t(proj_u1_v2),
+     hide_a(proj_u1_v3), hide_t(proj_u1_v3),
+     hide_a(proj_u2_v3), hide_t(proj_u2_v3)],
+]
+
+btn_labels = [
+    "0. Start: v₁, v₂, v₃",
+    "1. u₁ = v₁",
+    "2. proj(v₂) onto u₁",
+    "3. u₂ = v₂ − proj",
+    "4. proj(v₃) onto u₁, u₂",
+    "5. u₃ = v₃ − both",
+    "6. Done: {u₁, u₂, u₃}",
+]
+
+frames = [go.Frame(data=d, name=str(i)) for i, d in enumerate(steps)]
+buttons = [
+    dict(
+        args=[[str(i)], {"frame": {"duration": 300, "redraw": True}, "mode": "immediate"}],
+        label=bl, method="animate"
+    )
+    for i, bl in enumerate(btn_labels)
+]
+
+fig = go.Figure(data=steps[0], frames=frames)
+
+axis_cfg = dict(showgrid=True, zeroline=False, showticklabels=False,
+                showbackground=True, backgroundcolor='#f8f8f8', gridcolor='#dddddd')
+
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(**axis_cfg, range=[-0.3, 2.2], title='x'),
+        yaxis=dict(**axis_cfg, range=[-0.7, 1.3], title='y'),
+        zaxis=dict(**axis_cfg, range=[-0.7, 1.3], title='z'),
+        camera=dict(eye=dict(x=1.6, y=1.6, z=0.9)),
+        aspectmode='cube'
+    ),
+    height=460,
+    margin=dict(l=0, r=0, t=10, b=110),
+    updatemenus=[
+        dict(type="buttons", showactive=True,
+             y=-0.12, x=0.5, xanchor="center",
+             buttons=buttons[:4], direction="right",
+             font=dict(size=10)),
+        dict(type="buttons", showactive=False,
+             y=-0.22, x=0.5, xanchor="center",
+             buttons=buttons[4:], direction="right",
+             font=dict(size=10)),
+    ]
+)
+
+fig.show()
+```
+:::
+
 ## Practice: Apply Gram-Schmidt{.smaller-title}
 
+
+:::{style="font-size: .9em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -586,15 +762,13 @@ def generate_html():
         <p>
         Given are the following vectors in \(\small \mathbb{R}^4:\)
 
-$$\small \vec a_1 = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 0 \end{bmatrix},
+\[\small \vec a_1 = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 0 \end{bmatrix},
 \vec a_2 = \begin{bmatrix} 0 \\ 1 \\ 2 \\ 1 \end{bmatrix},
-\vec a_3 = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}.$$
+\vec a_3 = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}.\]
 
 a. Calculate an orthogonal basis for \(\small W = \text{Span}\{\vec a_1, \vec a_2, \vec a_3\}.\)<br>
+b. Using your work from part a, calculate the projection \(\hat{y}\: \) of \(\: \vec y\) into \(\text{Span}\{\vec a_1, \vec a_2, \vec a_3\}.\)<br>
 <br>
-<br>
-<br>
-<br><br>
 <br>
 
         </p>
@@ -603,53 +777,31 @@ a. Calculate an orthogonal basis for \(\small W = \text{Span}\{\vec a_1, \vec a_
 html_content = generate_html()
 display(HTML(html_content))
 ```
+:::
 
-## Practice: Projection into an Orthogonal Basis{.smaller-title}
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-    b. Using your work from part a, calculate the projection \(\hat{y}\: \) of \(\: \vec y\) into \(\text{Span}\{\vec a_1, \vec a_2, \vec a_3\}.\)<br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
 
 ## Gram-Schmidt and Decorrelated Features{.smaller-title}
 
 :::{style="font-size: .85em"}
-Gram-Schmidt takes any basis and produces an **orthogonal** one spanning the same subspace. In data science terms: it replaces a set of correlated features with an equivalent set of **uncorrelated** ones.
+Gram-Schmidt takes a basis and produces an **orthogonal** one with the same span. 
 
-This matters because:
+In data science terms: it replaces correlated features with an equivalent set of **uncorrelated** ones, 
 
-- **Correlated features** cause numerical problems (multicollinearity, unstable coefficients)
-- **Orthogonal features** make computation and interpretation much cleaner
-- PCA applies Gram-Schmidt-style orthogonalization to the covariance structure of your data, producing "principal components" — the most informative uncorrelated directions
+This prevents numerical problems and make computation and interpretation much cleaner.
 
-The next step (L24) takes this further: Gram-Schmidt + normalization = **QR decomposition**, the practical engine behind least squares solvers in numpy, scipy, and sklearn.
+Next lecture takes this further: Gram-Schmidt + normalization = **QR decomposition**, the practical engine behind least squares solvers in numpy, scipy, and sklearn.
 :::
 
 ## Looking Ahead: QR Decomposition{.smaller-title}
 
 :::{style="font-size: .85em"}
-Gram-Schmidt produces an orthogonal basis — but we can go further.
+Gram-Schmidt produces an orthogonal basis, but we can go further.
 
 - If we **normalize** each $\mathbf{u}_i$ to unit length, we get an **orthonormal** basis $\{\mathbf{q}_1, \mathbf{q}_2, \ldots, \mathbf{q}_n\}$.
 - Stacking these as columns gives an orthonormal matrix $Q$.
 - The original matrix $A = [\mathbf{v}_1 \; \mathbf{v}_2 \; \cdots \; \mathbf{v}_n]$ factors as $A = QR$, where $R$ is upper triangular.
 
-**Next lecture (L24):** We'll derive the QR decomposition and see how it simplifies solving least-squares problems.
+**Next lecture:** We'll derive the QR decomposition
+
+**On Friday:** We'll see how it simplifies solving least-squares problems
 :::

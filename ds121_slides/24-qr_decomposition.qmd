@@ -165,7 +165,7 @@ We say that the transformation corresponding to $U$ is __orthonormal__.
 ## Visualizing Distance Preservation{.smaller-title}
 
 :::{.center-text}
-<img src="/images/orthogonality/orthonormal-to-u.png" />
+<img src="images/orthogonality/orthonormal-to-u.png" />
 
 :::
 
@@ -181,7 +181,7 @@ Also, the orthogonality of vectors will not be changed.
 :::
 
 :::{.center-text}
-<img src="/images/orthogonality/orthonormal-to-u-2.png" width=1000 />
+<img src="images/orthogonality/orthonormal-to-u-2.png" width=1000 />
 
 :::
 
@@ -668,9 +668,9 @@ For this reason, QR factorization is a __fundamentally different way of solving 
 
 <br>
 
-Algorithmically, QR factorization in general for an $n \times n$ matrix can be performed in about $\frac{2}{3} n^3$ floating point operations.
+Algorithmically, QR factorization for an $n \times n$ matrix costs about $\frac{2}{3} n^3$ floating point operations — comparable to Gauss-Jordan elimination.
 
-This is similar to Gauss-Jordan elimination but faster than matrix inversion.
+The advantage of QR is not raw speed but **numerical stability**: because $Q$ has orthonormal columns, rounding errors do not accumulate the way they do when computing $(A^\top A)^{-1}$ directly.
 
 :::
 
@@ -681,13 +681,13 @@ The normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}$ give the le
 
 When two features are nearly collinear (e.g., sqft and bedrooms in our housing data are correlated), $A^\top A$ becomes nearly singular. Small rounding errors in computing its inverse get amplified, producing wildly inaccurate coefficients.
 
-**QR avoids this entirely.** Because $Q$ has orthonormal columns, $Q^\top Q = I$ exactly — no inversion needed. The only system left to solve is $R\hat{\mathbf{x}} = Q^\top \mathbf{b}$, which is already upper triangular.
+**QR avoids this entirely.** Because $Q$ has orthonormal columns, $Q^\top Q = I$ exactly, so no inversion is needed. The only system left to solve is $R\hat{\mathbf{x}} = Q^\top \mathbf{b}$, which is already upper triangular.
 
 ```{python}
 from IPython.core.display import HTML
 display(HTML(r"""
 <div class="blue-box" style="padding: 8px 20px;">
-<p><b>What numpy and sklearn actually do:</b> <code>np.linalg.lstsq</code>, <code>scipy.linalg.lstsq</code>, and <code>sklearn.linear_model.LinearRegression</code> all use QR (or the related Householder/SVD) internally — <em>not</em> the normal equations. The next time you call <code>.fit()</code> on a linear model, this lecture is what's happening under the hood.</p>
+<p><b>What numpy and sklearn actually do:</b> <code>np.linalg.lstsq</code>, <code>scipy.linalg.lstsq</code>, and <code>sklearn.linear_model.LinearRegression</code> all use QR (or the related Householder/SVD) internally, <em>not</em> the normal equations. The next time you call <code>.fit()</code> on a linear model, this lecture is what's happening under the hood.</p>
 </div>
 """))
 ```
@@ -696,11 +696,11 @@ display(HTML(r"""
 ## Looking Ahead: Least Squares{.smaller-title}
 
 :::{style="font-size: .85em"}
-QR factorization is the key to solving **overdetermined systems** — systems $A\mathbf{x} = \mathbf{b}$ where $\mathbf{b}$ is not in $\text{Col}\,A$.
+QR factorization is the key to solving **overdetermined systems**: systems $A\mathbf{x} = \mathbf{b}$ where $\mathbf{b}$ is not in $\text{Col}\,A$.
 
-- When there is no exact solution, we seek $\hat{\mathbf{x}}$ that **minimizes** $\|\mathbf{b} - A\hat{\mathbf{x}}\|$ — the **least-squares solution**.
+- When there is no exact solution, we seek $\hat{\mathbf{x}}$ that **minimizes** $\|\mathbf{b} - A\hat{\mathbf{x}}\|$, the **least-squares solution**.
 - The least-squares solution satisfies the **normal equations**: $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}$.
-- With QR: substitute $A = QR$ to get $R\hat{\mathbf{x}} = Q^\top \mathbf{b}$ — already in triangular form.
+- With QR: substitute $A = QR$ to get $R\hat{\mathbf{x}} = Q^\top \mathbf{b}$, already in triangular form.
 
 **Next lecture (L25):** We'll derive the least-squares problem and see how QR makes it efficient to solve.
 :::

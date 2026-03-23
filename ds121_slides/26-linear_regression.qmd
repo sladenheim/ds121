@@ -104,79 +104,51 @@ The orthogonal projection $\hat{\mathbf{b}}$ is always unique. Some least square
 
 ::: 
 
-## Normal Equations with Dependent Columns: Example{.smaller-title}
+## Non-Unique Solutions: Example Setup{.smaller-title}
 
 :::{style="font-size:.8em"}
-
-Let's find a least-squares solution for $A\mathbf{x} = \mathbf{b}$ for
+Let's find a least-squares solution for $A\mathbf{x} = \mathbf{b}$ where the columns of $A$ are dependent:
 :::
 
 :::{style="font-size:.6em"}
 $$
-A = \begin{bmatrix}1&1&0&0\\1&1&0&0\\1&0&1&0\\1&0&1&0\\1&0&0&1\\1&0&0&1\end{bmatrix},\;\;\; \mathbf{b} = \begin{bmatrix}-3\\-1\\0\\2\\5\\1\end{bmatrix}.
-$$
-:::
-
-:::{style="font-size:.8em"}
-We compute the components of the normal equations.
-:::
-
-:::{style="font-size:.6em"}
-$$
-A^{\top} A = \begin{bmatrix}1&1&1&1&1&1\\1&1&0&0&0&0\\0&0&1&1&0&0\\0&0&0&0&1&1\end{bmatrix}\begin{bmatrix}1&1&0&0\\1&1&0&0\\1&0&1&0\\1&0&1&0\\1&0&0&1\\1&0&0&1\end{bmatrix} = \begin{bmatrix}6&2&2&2\\2&2&0&0\\2&0&2&0\\2&0&0&2\end{bmatrix},
-$$
-:::
-
-## Normal Equations with Dependent Columns: Example{.smaller-title}
-
-:::{style="font-size:.6em"}
-
-$$
-A^{\top} \mathbf{b} = \begin{bmatrix}1&1&1&1&1&1\\1&1&0&0&0&0\\0&0&1&1&0&0\\0&0&0&0&1&1\end{bmatrix}\begin{bmatrix}-3\\-1\\0\\2\\5\\1\end{bmatrix} = \begin{bmatrix}4\\-4\\2\\6\end{bmatrix}.
+A = \begin{bmatrix}1&1&0&0\\1&1&0&0\\1&0&1&0\\1&0&1&0\\1&0&0&1\\1&0&0&1\end{bmatrix},\quad \mathbf{b} = \begin{bmatrix}-3\\-1\\0\\2\\5\\1\end{bmatrix},\quad
+A^{\top} A = \begin{bmatrix}6&2&2&2\\2&2&0&0\\2&0&2&0\\2&0&0&2\end{bmatrix},\quad
+A^{\top} \mathbf{b} = \begin{bmatrix}4\\-4\\2\\6\end{bmatrix}.
 $$
 :::
 
 :::{style="font-size:.8em"}
-To solve $A^{\top} A\hat{\mathbf{x}} = A^{\top} \mathbf{b},$ we'll use row reduction.  The augmented matrix $[A^{\top} A \vert A^{\top} \mathbf{b}]$ is:
+Row-reducing $[A^{\top} A \mid A^{\top} \mathbf{b}]$:
 :::
-
-:::{style="font-size:.6em"}
+:::{style="font-size:.65em"}
 $$
 \left[\begin{array}{cccc|c}6&2&2&2&4\\2&2&0&0&-4\\2&0&2&0&2\\2&0&0&2&6\end{array}\right] \sim \left[\begin{array}{cccc|c}1&0&0&1&3\\0&1&0&-1&-5\\0&0&1&-1&-2\\0&0&0&0&0\end{array}\right]
 $$
 :::
-
 :::{style="font-size:.8em"}
-
-In the RREF, there are only 3 pivot columns, so there is a free variable.
+Only 3 pivot columns → one free variable → infinitely many least-squares solutions. This happens because $A$ has a nontrivial null space, and $A^\top A$ inherits it.
 :::
 
-## Normal Equations with Dependent Columns: Example{.smaller-title}
+## Non-Unique Solutions: The General Solution{.smaller-title}
 
 :::{style="font-size:.8em"}
-From the RREF we see that only the first three columns of $A^\top A$ are linearly independent. The last column can be written as a linear combination of them.
-
-<br>
-
-The columns of $A^\top A$ are linearly dependent, because the columns of $A$ are linearly dependent.
-
-<br>
-
-You can see this as follows: if $A$ has a non-trivial null space, then $A^\top A$ also has a nontrival null space.
-:::
-
-## Normal Equations with Dependent Columns: Example{.smaller-title}
-
-:::{style="font-size:.8em"}
-The general solution of the normal equations is $x_1 = 3-x_4,$ $x_2 = -5+x_4,$ $x_3 = -2 + x_4,$ and $x_4$ is free.
-
-<br>
-
-Hence, the general least-squares solution of $A\hat{\mathbf{x}} = \mathbf{b}$ has the form
+From the RREF: $x_1 = 3-x_4,\; x_2 = -5+x_4,\; x_3 = -2+x_4,\; x_4$ free. The general least-squares solution is:
 
 $$
 \mathbf{\hat{x}} = \begin{bmatrix}3\\-5\\-2\\0\end{bmatrix} + x_4\begin{bmatrix}-1\\1\\1\\1\end{bmatrix}.
 $$
+
+Every vector in this family gives the **same** fitted values $A\hat{\mathbf{x}} = \hat{\mathbf{b}}$ — the projection is unique, but the coefficients are not.
+
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box">
+    <p>In this example, columns 2, 3, and 4 of \(A\) each indicate group membership. Why does adding a constraint that the group effects sum to zero resolve the non-uniqueness? (This is the idea behind "contrast coding" in statistics.)</p>
+</div>
+"""))
+```
 :::
 
 ## Uniqueness of Least-Squares Solutions{.smaller-title}
@@ -489,7 +461,7 @@ ax.plot(xquad, yquad, 'ro', markersize = 8);
 ## Linear vs. Quadratic Fit{.smaller-title}
 
 :::{style="font-size: .8em"}
-Choosing the right model matters. Here we compare a linear fit and a quadratic fit on the same data — the quadratic captures the curvature while the linear fit systematically misses it.
+Choosing the right model matters. Here we compare a linear fit and a quadratic fit on the same data: the quadratic captures the curvature while the linear fit systematically misses it.
 :::
 
 :::{.center-text}
@@ -538,7 +510,7 @@ plt.show()
 ## Introduction to Multiple Regression{.smaller-title}
 
 :::{style="font-size: .8em"}
-Suppose an experiment involves two independent variables -- say, $u$ and $v$, -- and one dependent variable, $y$. A linear equation for predicting $y$ from $u$ and $v$ has the form
+Suppose an experiment involves two independent variables, say $u$ and $v$, and one dependent variable, $y$. A linear equation for predicting $y$ from $u$ and $v$ has the form
 
 $$
 y = \beta_0 + \beta_1 u + \beta_2 v.
@@ -754,7 +726,7 @@ __Example.__ Say I have a 10 year old car I want to sell. To find the ideal pric
 ## Regression in Practice: The Data{.smaller-title}
 
 :::{style="font-size: .8em"}
-Before fitting a model, it's useful to plot the data. Here we see a general downward trend — older cars sell for less — but with considerable scatter.
+Before fitting a model, it's useful to plot the data. Here we see a general downward trend (older cars sell for less) but with considerable scatter.
 
 ```{python}
 #| echo: false
@@ -859,9 +831,211 @@ ATA = X_collinear.T @ X_collinear
 print("det(X^T X) ≈", np.linalg.det(ATA).round(6))  # near zero
 ```
 
-When rank drops, $X^\top X$ is singular — it has no inverse, and the normal equations have **infinitely many solutions**. The coefficients $\hat{\beta}_1$ and $\hat{\beta}_2$ are individually meaningless even though $X\hat{\boldsymbol{\beta}}$ (the predictions) remains perfectly determined.
+When rank drops, $X^\top X$ is singular, so it has no inverse, and the normal equations have **infinitely many solutions**. The coefficients $\hat{\beta}_1$ and $\hat{\beta}_2$ are individually meaningless even though $X\hat{\boldsymbol{\beta}}$ (the predictions) remains perfectly determined.
 
-**Practical takeaway:** Always check the rank of your design matrix — or equivalently, watch for high correlations among your predictors.
+**Practical takeaway:** Always check the rank of your design matrix, or equivalently, watch for high correlations among your predictors.
+:::
+
+## How Good Is the Fit? Introducing $R^2${.smaller-title}
+
+:::{style="font-size: .8em"}
+Once we have $\hat{\boldsymbol{\beta}}$, we need to ask: **how much of the variation in $\mathbf{y}$ does the model explain?**
+
+Define three quantities:
+
+$$
+SS_{\text{tot}} = \|\mathbf{y} - \bar{y}\mathbf{1}\|^2, \quad
+SS_{\text{res}} = \|\mathbf{y} - X\hat{\boldsymbol{\beta}}\|^2 = \|\mathbf{r}\|^2, \quad
+R^2 = 1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}.
+$$
+
+- $SS_{\text{tot}}$: total variation in $\mathbf{y}$ (how spread out the data is)
+- $SS_{\text{res}}$: variation left unexplained (squared length of the residual vector)
+- $R^2 \in [0, 1]$: fraction of variation explained. $R^2 = 1$ means perfect fit; $R^2 = 0$ means the model does no better than predicting the mean.
+
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box">
+    <p>\(R^2 = 1 - SS_\text{res}/SS_\text{tot}\). Geometrically, \(SS_\text{res} = \|\mathbf{y} - \hat{\mathbf{y}}\|^2\) is the squared distance from \(\mathbf{y}\) to \(\operatorname{Col} X\), and \(SS_\text{tot} = \|\mathbf{y} - \bar{y}\mathbf{1}\|^2\) is the squared distance from \(\mathbf{y}\) to the "intercept-only" subspace. What does \(R^2 = 0\) look like geometrically?</p>
+</div>
+"""))
+```
+:::
+
+## $R^2$ on the Housing and Car Data{.smaller-title}
+
+:::{style="font-size: .8em"}
+```{python}
+#| echo: true
+import numpy as np
+
+# Housing data
+X_house = np.array([[1,800],[1,1150],[1,1500],[1,1800],[1,2100],[1,2450]], dtype=float)
+y_house = np.array([118, 157, 193, 236, 264, 312], dtype=float)
+beta_h = np.linalg.lstsq(X_house, y_house, rcond=None)[0]
+r_house = y_house - X_house @ beta_h
+ss_res_h = r_house @ r_house
+ss_tot_h = ((y_house - y_house.mean())**2).sum()
+print(f"Housing  R² = {1 - ss_res_h/ss_tot_h:.4f}")
+
+# Car data
+age = np.array([1,2,3,3,4,5,6,10,11,14,14,16,17], dtype=float)
+price = np.array([23650,19988,20998,20448,15700,25985,16964,15000,11500,7950,9000,3950,5250], dtype=float)
+X_car = np.column_stack([np.ones_like(age), age])
+beta_c = np.linalg.lstsq(X_car, price, rcond=None)[0]
+r_car = price - X_car @ beta_c
+ss_res_c = r_car @ r_car
+ss_tot_c = ((price - price.mean())**2).sum()
+print(f"Car      R² = {1 - ss_res_c/ss_tot_c:.4f}")
+```
+:::
+
+## Reading Residual Plots{.smaller-title}
+
+:::{style="font-size: .8em"}
+A high $R^2$ doesn't tell the whole story. **Residual plots** (residuals vs. fitted values) reveal whether the model is correctly specified.
+:::
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+np.random.seed(7)
+x = np.linspace(0, 4, 40)
+
+# Good fit: linear data, random residuals
+y_good = 2*x + 1 + np.random.normal(0, 0.4, 40)
+X_g = np.column_stack([np.ones_like(x), x])
+b_g = np.linalg.lstsq(X_g, y_good, rcond=None)[0]
+r_good = y_good - X_g @ b_g
+
+# Bad fit: quadratic data, linear model
+y_bad = (x - 2)**2 + 1 + np.random.normal(0, 0.3, 40)
+b_bad = np.linalg.lstsq(X_g, y_bad, rcond=None)[0]
+fitted_bad = X_g @ b_bad
+r_bad = y_bad - fitted_bad
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 3.5))
+for ax, resid, fitted, title, color in zip(
+    axes,
+    [r_good, r_bad],
+    [X_g @ b_g, fitted_bad],
+    ['Random scatter → model is well-specified', 'Curved pattern → model is missing something'],
+    ['steelblue', 'crimson']
+):
+    ax.scatter(fitted, resid, color=color, s=35, alpha=0.8)
+    ax.axhline(0, color='black', lw=1.5, linestyle='--')
+    ax.set_xlabel('Fitted values', fontsize=11)
+    ax.set_ylabel('Residuals', fontsize=11)
+    ax.set_title(title, fontsize=10.5)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+:::{style="font-size: .8em"}
+**Rule of thumb:** residuals should look like random noise around zero. A visible curve means the model is misspecified — try adding polynomial terms or a new feature.
+:::
+
+## Overfitting: When the Model Is Too Flexible{.smaller-title}
+
+:::{style="font-size: .8em"}
+A degree-$(n-1)$ polynomial passes through all $n$ data points exactly: $R^2 = 1$, residuals = 0. But it **generalizes terribly.**
+:::
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+np.random.seed(3)
+x_train = np.array([0.5, 1.2, 2.0, 2.8, 3.5, 4.2])
+y_train = 0.8*x_train + 1 + np.random.normal(0, 0.4, len(x_train))
+x_test = np.linspace(0, 5, 200)
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True)
+for ax, deg, title, color in zip(
+    axes,
+    [1, 5],
+    ['Degree 1 (linear): underfits a bit,\nbut generalizes well',
+     'Degree 5 (interpolating): perfect training fit,\ngeneralizes very poorly'],
+    ['steelblue', 'crimson']
+):
+    coeffs = np.polyfit(x_train, y_train, deg)
+    ax.scatter(x_train, y_train, color='black', zorder=5, s=60, label='Training data')
+    ax.plot(x_test, np.polyval(coeffs, x_test), color=color, lw=2, label=f'Degree {deg} fit')
+    ax.set_xlim(0, 5); ax.set_ylim(-2, 8)
+    ax.set_title(title, fontsize=10.5)
+    ax.set_xlabel('x', fontsize=11); ax.legend(fontsize=9)
+axes[0].set_ylabel('y', fontsize=11)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box">
+    <p>You saw overfitting before with KNN: a very small \(k\) memorizes the training data but fails on new points. How is that the same phenomenon as fitting a degree-5 polynomial here?</p>
+</div>
+"""))
+```
+:::
+
+## Feature Scaling and Regression{.smaller-title}
+
+:::{style="font-size: .8em"}
+When predictors have very different scales, the regression fit is dominated by the largest-valued feature — even if it's less informative.
+
+**Example:** in our housing data, sqft ranges from 800–2450 while bedrooms ranges from 1–4. The sqft coefficient is numerically tiny ($\approx 0.09$) and the bedrooms coefficient large, but this is just a scaling artifact.
+
+```{python}
+#| echo: true
+import numpy as np
+
+X = np.array([[1,800,1],[1,1150,2],[1,1500,2],[1,1800,3],[1,2100,3],[1,2450,4]], dtype=float)
+y = np.array([118,157,193,236,264,312], dtype=float)
+
+# Standardize sqft and bedrooms (subtract mean, divide by std)
+X_std = X.copy()
+X_std[:, 1] = (X[:,1] - X[:,1].mean()) / X[:,1].std()
+X_std[:, 2] = (X[:,2] - X[:,2].mean()) / X[:,2].std()
+
+beta_raw = np.linalg.lstsq(X, y, rcond=None)[0]
+beta_std = np.linalg.lstsq(X_std, y, rcond=None)[0]
+
+print("Raw coefficients:         ", beta_raw.round(3))
+print("Standardized coefficients:", beta_std.round(3))
+```
+
+After standardizing, the coefficients are on the **same scale** — you can compare them directly to see which feature matters more.
+:::
+
+## Scaling: The Connection to KNN and K-Means{.smaller-title}
+
+:::{style="font-size: .8em"}
+This is the same problem you encountered with **KNN** and **K-means**: when features have different units, Euclidean distance is dominated by the largest-scale feature.
+
+| Method | What breaks without scaling | Fix |
+|--------|---------------------------|-----|
+| KNN | Distance dominated by high-scale features → wrong neighbors | Standardize features |
+| K-means | Cluster boundaries distorted by scale | Standardize features |
+| Regression | Coefficients not comparable; nearly collinear features amplified | Standardize features |
+
+**The underlying math is the same in all three cases.** You are computing distances or inner products in a space where the axes have mismatched units. Standardization makes the geometry meaningful.
+
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box">
+    <p>If you standardize the features before regression, do the <em>predictions</em> change? Does \(R^2\) change? What about the coefficients?</p>
+</div>
+"""))
+```
 :::
 
 ## Practice: Simple Linear Regression{.smaller-title}

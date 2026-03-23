@@ -45,7 +45,7 @@ $$
 
 This system has **6 equations and 2 unknowns**. As we saw in L20, $\mathbf{y}$ is almost certainly not in $\operatorname{Col} X$. There is no exact solution.
 
-But we can find the $\hat{\boldsymbol{\beta}}$ that makes $X\hat{\boldsymbol{\beta}}$ **as close as possible** to $\mathbf{y}$ — minimizing the total squared prediction error. That's the least-squares problem.
+But we can find the $\hat{\boldsymbol{\beta}}$ that makes $X\hat{\boldsymbol{\beta}}$ **as close as possible** to $\mathbf{y}$ by minimizing the total squared prediction error. That's the least-squares problem.
 :::
 
 ## Orthogonal Decomposition Theorem{.smaller-title}
@@ -294,11 +294,11 @@ display(HTML(html_content))
 ## Overdetermined Systems Have No Exact Solution{.smaller-title}
 
 :::{style="font-size: .8em"}
-The system from our example has no solutions — it is inconsistent.
+The system from our example has no solutions and is inconsistent.
 
 It often happens that $A\mathbf{x} = \mathbf{b}$ has no solutions when $A$ has more rows than columns ($m > n$): the columns of $A$ do not span $\mathbb{R}^m$, and $\mathbf{b}$ is not in the column space of $A$.
 
-Unless measurements are perfect, Gauss-Jordan elimination reaches an impossible equation. But we can't stop — our data includes noise. Here is an example where $A$ is $3 \times 2$:
+Unless measurements are perfect, Gauss-Jordan elimination reaches an impossible equation. But we can't stop; our data includes noise. Here is an example where $A$ is $3 \times 2$:
 
 :::{.center-text}
 ```{python}
@@ -656,7 +656,7 @@ Here is the key idea:
 
 > We know that the projection $\hat{\mathbf{b}}$ has the property that $\hat{\mathbf{b}}-\mathbf{b}$ is orthogonal to $\operatorname{Col}A.$
 
-We can decompose $\mathbf{b} = \hat{\mathbf{b}} + \mathbf{z}$ -- so in other words, $\mathbf{z} = \mathbf{b} - \hat{\mathbf{b}}$.
+We can decompose $\mathbf{b} = \hat{\mathbf{b}} + \mathbf{z}$, so $\mathbf{z} = \mathbf{b} - \hat{\mathbf{b}}$.
 
 <br>
 
@@ -716,7 +716,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""
     <div class="purple-box">
-        <p>span class="label">Theorem</span>
+        <p><span class="label">Theorem</span>
         The set of least-squares solutions of \(A\mathbf{x} = \mathbf{b}\) is equal to the (nonempty) set of solutions of the normal equations \(A^\top A\mathbf{x} = A^\top \mathbf{b}.\)
         </p>
     </div>
@@ -997,7 +997,7 @@ print(f"β₁ = {beta_hat[1]:.4f}  (per sqft, $k)")
 
 The fitted model is approximately $\widehat{\text{price}} = \beta_0 + \beta_1 \cdot \text{sqft}$.
 
-The residuals $\mathbf{r} = \mathbf{y} - X\hat{\boldsymbol{\beta}}$ are orthogonal to $\operatorname{Col} X$ — exactly what the normal equations guarantee. We can also verify this with Python:
+The residuals $\mathbf{r} = \mathbf{y} - X\hat{\boldsymbol{\beta}}$ are orthogonal to $\operatorname{Col} X$, exactly as the normal equations guarantee. We can also verify this with Python:
 
 ```{python}
 #| echo: true
@@ -1072,6 +1072,20 @@ b. A^T A = [[2,1],[1,2]], A^T b = [[7],[6]].
 c. Normal equations: [[2,1],[1,2]]x = [7,6]. det = 3. x-hat = (1/3)[[2,-1],[-1,2]][7,6] = (1/3)[[8],[5]] = [8/3, 5/3].
 d. A x-hat = [8/3, 5/3, 13/3]. r = [2-8/3, 1-5/3, 5-13/3] = [-2/3, -2/3, 2/3].
 Check: a1^T r = [1,0,1]·[-2/3,-2/3,2/3] = -2/3+2/3 = 0 ✓. a2^T r = [0,1,1]·[-2/3,-2/3,2/3] = -2/3+2/3 = 0 ✓.
+:::
+
+## Looking Ahead: Regression{.smaller-title}
+
+:::{style="font-size: .85em"}
+The least-squares framework we've built applies directly to fitting models to data — this is **linear regression**.
+
+A few things to note before L26:
+
+- The normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}$ **always** have a solution, but the solution is unique only when the columns of $A$ are linearly independent (equivalently, when $A^\top A$ is invertible). L26 starts by examining what happens when they aren't.
+
+- Once we have $\hat{\mathbf{x}}$, we need tools to ask: **how good is the fit?** L26 introduces $R^2$, residual analysis, and the consequences of using too many (or too few) predictors.
+
+- The connection to KNN and K-means: all three methods depend critically on how we measure distance. In regression, **feature scaling** determines which predictors dominate the fit — just as it determined which neighbors were "nearest" in KNN.
 :::
 
 
