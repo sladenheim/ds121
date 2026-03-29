@@ -657,7 +657,7 @@ QR is a __fundamentally different way of solving linear systems__. No matrix inv
 :::{style="font-size: .8em"}
 
 | | **LU** | **QR** |
-|---|---|---|
+|---|----|------|
 | **Factorization cost** | $\sim \frac{2}{3}n^3$ | $\sim \frac{2}{3}n^3$ |
 | **Per-solve cost** | $O(n^2)$ | $O(n^2)$ |
 | **Matrix shape** | Any $m \times n$ | $m \times n$ with $m \geq n$, linearly independent columns |
@@ -666,7 +666,7 @@ QR is a __fundamentally different way of solving linear systems__. No matrix inv
 
 <br>
 
-**Key difference:** Both handle rectangular matrices, but QR requires linearly independent columns. The main reason to prefer QR is **numerical stability** — and it naturally handles overdetermined ($m > n$) systems for least squares.
+Both handle rectangular matrices, but QR requires linearly independent columns. The main reason to prefer QR is **numerical stability**, and it naturally handles overdetermined ($m > n$) systems for least squares.
 
 :::
 
