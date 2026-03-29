@@ -23,6 +23,40 @@ format:
 - Finding coordinates efficiently with an orthogonal basis
 :::
 
+## Quick logistics
+
+:::{style="font-size: .8em"}
+- Grasple survey due this *Sunday night** for 1% of your course grade
+- Midterm 2 grades should be released over the weekend
+- Midterm 3 on April 8 (< 2 weeks) will cover LU factorization and new material through next week
+:::
+
+## Coordinates Give Points Unique Names{.really-smaller-title}
+
+:::{style="font-size: 1em"}
+:::{.center-text}
+```{python}
+import laUtilities as ut
+import demoUtilities as dm
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy as sp
+
+ax = dm.plotSetup(-3,3,-3,3,size=(5,5))
+ax.plot([0],[1],'ro',markersize=8)
+ax.arrow(0, 0, 1, 0, head_width=0.2, head_length=0.2, length_includes_head = True)
+ax.arrow(0, 0, 0, 1, head_width=0.2, head_length=0.2, length_includes_head = True)
+ax.text(0.25,1,'(0,1)',size=20)
+ax.plot([1],[0],'ro',markersize=8)
+ax.text(1.25,0.25,'(1,0)',size=20)
+ax.plot([-1],[2],'ro',markersize=8)
+ax.text(-1.5,2.25,'(-1,2)',size=20);
+```
+:::
+A coordinate system gives a _**unique name**_ to each point in a vector space. Traditionally, we label points using the standard basis. 
+:::
+
+
 ## Addresses Are Coordinates{.smaller-title}
 
 :::{.columns}
@@ -57,7 +91,7 @@ ax.annotate('5th Ave & 42nd St\n= coordinates $(5, 42)$',
 # Basis vectors
 ax.annotate('', xy=(2, 38), xytext=(1, 38),
             arrowprops=dict(arrowstyle='->', color='steelblue', lw=2))
-ax.text(1.5, 37.7, '1 avenue east\n= $\\mathbf{e}_1$', ha='center', fontsize=8, color='steelblue')
+ax.text(2.3, 38.3, '1 avenue east\n= $\\mathbf{e}_1$', ha='center', fontsize=8, color='steelblue')
 
 ax.annotate('', xy=(1, 39), xytext=(1, 38),
             arrowprops=dict(arrowstyle='->', color='darkgreen', lw=2))
@@ -84,30 +118,6 @@ Latitude/longitude would also give coordinates.
 **Key questions for today:** Can any two independent directions serve as a basis? And are some bases more convenient than others?
 :::
 
-## Coordinates Give Points Unique Names{.really-smaller-title}
-
-:::{style="font-size: 1em"}
-:::{.center-text}
-```{python}
-import laUtilities as ut
-import demoUtilities as dm
-import matplotlib.pyplot as plt
-import numpy as np
-import scipy as sp
-
-ax = dm.plotSetup(-3,3,-3,3,size=(5,5))
-ax.plot([0],[1],'ro',markersize=8)
-ax.arrow(0, 0, 1, 0, head_width=0.2, head_length=0.2, length_includes_head = True)
-ax.arrow(0, 0, 0, 1, head_width=0.2, head_length=0.2, length_includes_head = True)
-ax.text(0.25,1,'(0,1)',size=20)
-ax.plot([1],[0],'ro',markersize=8)
-ax.text(1.25,0.25,'(1,0)',size=20)
-ax.plot([-1],[2],'ro',markersize=8)
-ax.text(-1.5,2.25,'(-1,2)',size=20);
-```
-:::
-A coordinate system gives a _**unique name**_ to each point in a vector space. Traditionally, we label points using the standard basis. 
-:::
 
 ## Coordinates as Movements Along Basis Vectors{.really-smaller-title}
 
@@ -290,7 +300,25 @@ Then $\mathcal{B}$ is a basis for $H$ = Span$\{\mathbf{v}_1,\mathbf{v}_2\}$ beca
 <br>
 
 We want to determine if $\mathbf{x}$ is in $H$, and if it is, find the coordinate vector of $\mathbf{x}$ relative to $\mathcal{B}.$
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <br>
+    <div class="blue-box" style="padding: 8px 20px;">
+        <p>How can we do this?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
 :::
+
+:::
+
+
 
 ## Finding B-Coordinates: Row Reduction{.really-smaller-title}
 
@@ -303,25 +331,30 @@ $$
 
 If they exist, the scalars $c_1$ and $c_2,$ are the $\mathcal{B}$-coordinates of $\mathbf{x}.$
 
+:::{.fragment}
 Row operations show that
 
 $$
 \left[ \begin{array}{cc|c}3&-1&3\\6&0&12\\2&1&7\end{array} \right] \sim \left[ \begin{array}{cc|c}1&0&2\\0&1&3\\0&0&0\end{array}\right].
 $$
+:::
+
+
+:::{.fragment}
+The reduced row echelon form shows that the system is consistent, so $\mathbf{x}$ is in $H$ and $c_1 = 2$ and $c_2 = 3,$ so $[\mathbf{x}]_\mathcal{B} = \begin{bmatrix}2\\3\end{bmatrix}.$
+:::
 
 :::
 
 ## Visualizing B-Coordinates on a Subspace{.really-smaller-title}
 
 :::{style="font-size: .8em"}
-
-The reduced row echelon form shows that the system is consistent, so $\mathbf{x}$ is in $H$ and $c_1 = 2$ and $c_2 = 3,$ so $[\mathbf{x}]_\mathcal{B} = \begin{bmatrix}2\\3\end{bmatrix}.$
-
-:::{.center-text}
+:::{.columns}
+::: {.column width="55%"}
 ```{python}
 #
 qr_setting = None
-fig = ut.three_d_figure((7, 7), fig_desc = 'Basis-B coordinate system on the subspace H', figsize = (6, 5),
+fig = ut.three_d_figure((7, 7), fig_desc = 'Basis-B coordinate system on the subspace H', figsize = (5, 4.5),
                         xmin = -1, xmax = 10, ymin = -1, ymax = 10, zmin = -1, zmax = 14, qr = qr_setting)
 v = [3.0, 6, 2]
 u = [-1,  0, 1]
@@ -359,12 +392,15 @@ fig.plotIntersection([0,1,0,0], [1,0,0,0], color='Black')
 fig.set_title('Basis-B coordinate system on the subspace H', size=16)
 ```
 :::
+::: {.column width="45%"}
 
 _Important:_ Don't be confused because the "coordinate axes" are not perpendicular. Really, _they don't need to be._
 
 As long as the independent vectors span the space, there is only _one_ way to express any point in terms of them.
 
 Thus, every point has a unique coordinate.
+:::
+:::
 :::
 
 ## Practice: Finding B-Coordinates{.smaller-title}
@@ -446,7 +482,7 @@ Hence, $\small \{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$ is an orthogonal set
 :::
 :::
 
-## Orthogonal Sets Are Linearly Independent{.really-really-smaller-title}
+## Orthogonal Sets Are Lin. Independent{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 
@@ -475,7 +511,6 @@ fig.text(origin[0]-.45, origin[1]-.45, origin[2]-.45, r'$\bf 0$', 0, size = 16)
 fig.plotPerpSym(origin, u1, u2, 0.5)
 fig.plotPerpSym(origin, u3, u2, 0.5)
 fig.plotPerpSym(origin, u3, u1, 0.5)
-fig.set_title(r'An orthogonal set of vectors in $\mathbb{R}^3$', 'An orthogonal set of vectors in R3', size = 16)
 ```
 :::
 
@@ -500,7 +535,7 @@ from IPython.core.display import HTML
 def generate_html():
     return r"""<br>
     <div class="blue-box">
-        <p>Does every orthogonal set automatically form a basis for its ambient space? If not, what additional condition is needed?</p>
+        <p>How could we prove it?</p>
     </div>
     """
 display(HTML(generate_html()))
@@ -510,13 +545,14 @@ display(HTML(generate_html()))
 ## Practice with Orthogonal Sets
 
 
+:::{style="font-size: .8em"}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>Do the vectors \(\begin{bmatrix} 2 \\ 2\\ 1\end{bmatrix}\), \(\begin{bmatrix} 0 \\ -1\\ 2\end{bmatrix}\), and \(\begin{bmatrix} -5 \\ 4\\ 2\end{bmatrix}\) form an orthogonal set in \(\mathbb{R}^3\)?
+        <p>Do the vectors \(\begin{bmatrix} 2 \\ 2\\ 1\end{bmatrix}\), \(\begin{bmatrix} 0 \\ -1\\ 2\end{bmatrix}\), and \(\begin{bmatrix} -5 \\ 4\\ 2\end{bmatrix}\) form an orthogonal set in \(\mathbb{R}^3\)? <br><br>If so, could we find a fourth vector that is orthogonal to all three?
             <br>
         </p>
     </div>
@@ -525,7 +561,7 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
-
+:::
 
 ## Definition: Orthogonal Basis{.smaller-title}
 
@@ -595,7 +631,7 @@ fig.plotPerpSym(u+v, 2*v+u, v+2*u, 1)
 ## Computing Coords: General Method{.really-smaller-title}
 
 :::{style="font-size: .8em"}
-To compute the coordinates of $\mathbf{y}$ in terms of basis $\mathcal{B} = \{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$, $[\mathbf{y}]_\mathcal{B}$, we need to solve the linear system:
+We saw we can compute the coordinates of $\mathbf{y}$ in terms of basis $\mathcal{B} = \{\mathbf{u}_1,\mathbf{u}_2, \mathbf{u}_3\}$, $[\mathbf{y}]_\mathcal{B}$ by solving the linear system:
 
 $$
 c_1 \mathbf{u}_1 + c_2\mathbf{u}_2 + c_3\mathbf{u}_3 = \mathbf{y}
@@ -607,33 +643,28 @@ $$
 U\mathbf{c} = \mathbf{y}.
 $$
 
-In general, to solve the system we'd need to perform Gauss-Jordan Elimination that takes on the order of $n^3$ floating point operations.
 
+:::{.fragment}
+To solve the system we'd need to perform Gauss-Jordan Elimination that takes on the order of $n^3$ floating point operations.
+:::
 <br>
 
+:::{.fragment}
 However, in an orthogonal basis the coordinates of any point can be computed more efficiently.
+:::
 :::
 
 ## Efficient Coords via Orthogonal Basis{.really-smaller-title}
 
 :::{style="font-size: .8em"}
-```{python}
-from IPython.core.display import HTML
 
-def generate_html():
-    return r"""
-    <div class="purple-box">
-        <p><span class="label">Theorem</span>
-        Let \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) be an orthogonal basis for a subspace \(H\) of \(\mathbb{R}^n\). For each \(\mathbf{y}\) in \(H\), the weights of the linear combination \(c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p = \mathbf{y}\) are given by \(c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^{\top} \mathbf{u}_j}\) with \(j = 1,\dots,p.\)
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
+Say we could write $\mathbf{y}$ as *some* combination like $\mathbf{y} = $c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p$ and see if we can find the values of $c_1$.
 
-__Proof.__  Let's consider the inner product of $\mathbf{y}$ and one of the $\mathbf{u}$ vectors --- say, $\mathbf{u}_1$.
+:::{.fragment}
+Let's see what happens when we take the inner product of $\mathbf{y}$ and one of the $\mathbf{u}$ vectors like $\mathbf{u}_1$.
+:::
 
+:::{.fragment}
 The orthogonality of $\{\mathbf{u}_1,\dots,\mathbf{u}_p\}$ means that
 
 $$\small \begin{align*}
@@ -641,27 +672,41 @@ $$\small \begin{align*}
 &= c_1(\mathbf{u}_1^\top \mathbf{u}_1).
 \end{align*}
 $$
-
-Since $\mathbf{u}_1^\top \mathbf{u}_1$ is not zero, the equation above can be solved as $c_1 = \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}.$
-To find any other $c_j,$ compute $\mathbf{y}^\top \mathbf{u}_j$ and solve for $c_j$.
-
 :::
 
+
+:::{.fragment}
+Since $\mathbf{u}_1^\top \mathbf{u}_1$ is not zero, we can divide by it and get 
+
+$c_1 = \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}.$
+
+To find any other $c_j,$ compute $\mathbf{y}^\top \mathbf{u}_j$ and solve for $c_j$.
+:::
+
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
-    <div class="blue-box">
-        <p>Why is computing \(\mathcal{B}\)-coordinates easier when \(\mathcal{B}\) is an orthogonal basis compared to a non-orthogonal basis?</p>
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        Let \(\{\mathbf{u}_1,\dots,\mathbf{u}_p\}\) be an orthogonal basis for a subspace \(H\) of \(\mathbb{R}^n\). For each \(\mathbf{y}\) in \(H\), the weights of the linear combination \(c_1\mathbf{u}_1 + \dots + c_p\mathbf{u}_p = \mathbf{y}\) are given by \(c_j = \frac{\mathbf{y}^\top \mathbf{u}_j}{\|\mathbf{u}_j\|^2}\) with \(j = 1,\dots,p.\)
+        </p>
     </div>
     """
-display(HTML(generate_html()))
+html_content = generate_html()
+display(HTML(html_content))
 ```
+:::
+
+
+:::
+
 
 ## Expressing a Vector in an Orthogonal Basis{.really-really-smaller-title}
 
-:::{style="font-size: .8em"}
+:::{style="font-size: .85em"}
 __Example__. The set $S$ that we saw earlier,
 
 $$
@@ -672,16 +717,18 @@ is an orthogonal basis for $\mathbb{R}^3.$
 
 Let's express $\mathbf{y} = \begin{bmatrix}6\\1\\-8\end{bmatrix}$ as a linear combination of the vectors in $S.$
 
-That is, find $\mathbf{y}$'s coordinates in the basis $S$ --- i.e., in the coordinate system $S$.
+That is, let's find $\mathbf{y}$'s coordinates in the basis $S$, i.e., in the coordinate system $S$.
 :::
 
-## Visualizing y in an Orthogonal Basis{.really-smaller-title}
+## Computing Orthogonal Basis Coordinates: Example{.really-smaller-title}
 
-:::{.center-text}
+:::{style="font-size: .7em"}
+:::{.columns}
+::: {.column width="50%"}
 ```{python}
 fig = ut.three_d_figure((8, 3), fig_desc = 'y in an orthogonal basis',
                         xmin = -3, xmax = 7, ymin = -5, ymax = 5, zmin = -8, zmax = 4,
-                        figsize = (6, 6), qr = qr_setting, equalAxes = False)
+                        figsize = (5, 5), qr = qr_setting, equalAxes = False)
 u1 = np.array([3, 1, 1])
 u2 = np.array([-1, 2, 1])
 u3 = np.array([-1/2, -2, 7/2])
@@ -705,20 +752,21 @@ fig.text(y[0]-2, y[1]+.1, y[2]-2.5, r'${\bf y} = 1{\bf u}_1 -2 {\bf u}_2 - 2 {\b
 fig.set_title(r'${\bf y}$ in an Orthogonal Basis', 'y in an Orthogonal Basis', size = 16)
 ```
 :::
+::: {.column width="50%"}
 
-## Computing Orthogonal Basis Coordinates: Example{.really-smaller-title}
-
-:::{style="font-size: .8em"}
-__Example__. Compute
+Let's compute
 
 $$
 \mathbf{y}^\top \mathbf{u}_1 = 11,\;\;\;\mathbf{y}^\top \mathbf{u}_2 = -12,\;\;\;\mathbf{y}^\top \mathbf{u}_3 = -33,
 $$
 
+:::{.fragment}
 $$
 \mathbf{u}_1^\top \mathbf{u}_1 = 11,\;\;\;\mathbf{u}_2^\top \mathbf{u}_2 = 6,\;\;\;\mathbf{u}_3^\top \mathbf{u}_3 = 33/2.
 $$
+:::
 
+:::{.fragment}
 $$
 \begin{align*}
 \Rightarrow \mathbf{y} &= \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}\mathbf{u}_1 + \frac{\mathbf{y}^\top \mathbf{u}_2}{\mathbf{u}_2^\top \mathbf{u}_2}\mathbf{u}_2 + \frac{\mathbf{y}^\top \mathbf{u}_3}{\mathbf{u}_3^\top \mathbf{u}_3}\mathbf{u}_3 \\
@@ -726,9 +774,14 @@ $$
 &= \mathbf{u}_1 - 2\mathbf{u}_2 - 2 \mathbf{u}_3.
 \end{align*}
 $$
+:::
 
+:::{.fragment}
 Hence, $[{\bf y}]_{\mathcal{B}} = \begin{bmatrix} 1 & -2 & -2 \end{bmatrix}^\top$.
+:::
 
+:::
+:::
 :::
 
 ## Why Orthogonal Bases Are Computationally Efficient{.really-smaller-title}
@@ -737,16 +790,20 @@ Hence, $[{\bf y}]_{\mathcal{B}} = \begin{bmatrix} 1 & -2 & -2 \end{bmatrix}^\top
 
 For a basis of $p$ vectors in $\mathbb{R}^n$, finding coordinates $[\mathbf{y}]_\mathcal{B}$ costs:
 
-| Method | Cost | Why |
-|--------|------|-----|
-| General basis | $O(n^3)$ | Gauss-Jordan on an $n \times p$ augmented matrix |
-| Orthogonal basis | $O(pn)$ | Compute $2p$ dot products ($\mathbf{y}^\top\mathbf{u}_j$ and $\mathbf{u}_j^\top\mathbf{u}_j$), each costing $O(n)$ |
+<br>
 
-Each coefficient $c_j = \dfrac{\mathbf{y}^\top\mathbf{u}_j}{\mathbf{u}_j^\top\mathbf{u}_j}$ is **independent** of all others, so they can be computed in any order (or in parallel). The savings are substantial when $p \ll n$, which is exactly the regime of dimensionality reduction.
+| Method | Cost | Why |
+|------|----|------------|
+| General basis | $O(n^2m)$ | Gauss-Jordan on an $m \times n$ augmented matrix |
+| Orthogonal basis | $O(nm)$ | Compute $2n$ dot products ($\mathbf{y}^\top\mathbf{u}_j$ and $\mathbf{u}_j^\top\mathbf{u}_j$), each costing $O(m)$ |
+
+<br>
+
+Each coefficient $c_j = \dfrac{\mathbf{y}^\top\mathbf{u}_j}{\mathbf{u}_j^\top\mathbf{u}_j}$ is **independent** of all others, so they can be computed in any order (or in parallel). The savings are substantial when $n$ is large, which is exactly the regime of dimensionality reduction.
 
 :::
 
-## Returning to this question...
+## Returning to this question...{.smaller-title}
 
 
 :::{style="font-size: .8em"}
@@ -758,8 +815,8 @@ def generate_html():
     <div class="blue-box">
         <p>Let \(\mathcal{B} = \{\mathbf{b}_1, \mathbf{b}_2\}\) with \(\mathbf{b}_1 = \begin{bmatrix}1\\1\end{bmatrix}\) and \(\mathbf{b}_2 = \begin{bmatrix}1\\-1\end{bmatrix},\) and let \(\mathbf{x} = \begin{bmatrix}4\\2\end{bmatrix}.\)
         <ol type="a">
-            <li>Verify that \(\mathcal{B}\) is a basis for \(\mathbb{R}^2.\)</li>
-            <li>Set up the linear system to find \([\mathbf{x}]_\mathcal{B}\) and solve it.</li>
+            <li style="color: #aaa;">Verify that \(\mathcal{B}\) is a basis for \(\mathbb{R}^2.\)</li>
+            <li style="color: #aaa;">Set up the linear system to find \([\mathbf{x}]_\mathcal{B}\) and solve it.</li>
             <li>Is \(\mathcal{B}\) an orthogonal basis? If so, use the efficient formula \(c_j = \frac{\mathbf{x}^\top \mathbf{b}_j}{\mathbf{b}_j^\top \mathbf{b}_j}\) to verify your answer.</li>
         </ol>
         </p>
@@ -772,25 +829,55 @@ display(HTML(generate_html()))
 
 ## Coordinates in Data Science{.smaller-title}
 
-:::{style="font-size: .8em"}
+:::{style="font-size: .85em"}
 **Changing basis = changing feature representation.**
 
 - Raw features (sqft, bedrooms) are coordinates in the standard basis
 - A rotated orthogonal basis gives uncorrelated directions that may reflect structure (e.g. "overall size" and "layout type") more directly
-- The efficiency advantage we just saw ($O(n^2)$ vs $O(n^3)$) is exactly why these methods are practical at scale
 
 **PCA** finds the orthogonal basis in which your data has the most variance along the first axis, second most along the second, and so on: a change of basis optimized for information content.
+
+Finding the right coordinate system, one aligned with your data's structure rather than the arbitrary standard axes, is one of the most powerful ideas in data science. 
 :::
 
 
-## Next step: Projections {.smaller-title}
+## Why use Orthogonal Bases {.smaller-title}
 
 :::{style="font-size: .8em"}
 There are two key benefits of orthogonal bases:
 
-1. Coordinates are **easy to compute**: $c_j = \dfrac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^\top \mathbf{u}_j}$ (no matrix inversion needed).
+1. **Coordinates are easy** to compute: $c_j = \dfrac{\mathbf{y}^\top \mathbf{u}_j}{\mathbf{u}_j^\top \mathbf{u}_j}$ (no matrix inversion needed).
 
-2. In the next lecture, we'll see that orthogonal bases also **make projection easy**: finding the closest point in a subspace to any vector.
-
-Finding the right coordinate system, one aligned with your data's structure rather than the arbitrary standard axes, is one of the most powerful ideas in data science. 
+2. Orthogonal bases also make it easy to find the closest point in a subspace to any vector, called **projection**.
 :::
+
+## Extra Practice{.smaller-title}
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box">
+    <p><b>1.</b> Let \(\mathcal{B} = \left\{\begin{bmatrix}2\\1\end{bmatrix}, \begin{bmatrix}-1\\1\end{bmatrix}\right\}\) and \([\mathbf{x}]_{\mathcal{B}} = \begin{bmatrix}3\\-1\end{bmatrix}.\)
+    <ol type="a">
+        <li>Find \(\mathbf{x}\) in standard coordinates.</li>
+        <li>Is \(\mathcal{B}\) orthogonal? Check using the dot product.</li>
+    </ol>
+    </p>
+    <p><b>2.</b> Let \(\mathcal{B} = \left\{\begin{bmatrix}1\\1\\0\end{bmatrix}, \begin{bmatrix}1\\-1\\0\end{bmatrix}, \begin{bmatrix}0\\0\\1\end{bmatrix}\right\}\) and \(\mathbf{x} = \begin{bmatrix}5\\3\\7\end{bmatrix}.\)<br>
+    Find \([\mathbf{x}]_{\mathcal{B}}\) using the orthogonal basis formula.
+    </p>
+</div>
+"""))
+```
+:::
+
+<!-- SOLUTIONS:
+1a. x = 3*[2,1]^T + (-1)*[-1,1]^T = [6,3]^T + [1,-1]^T = [7,2]^T
+1b. b1^T b2 = (2)(-1) + (1)(1) = -1 ≠ 0, so B is NOT orthogonal.
+
+2.  c1 = x^T b1 / b1^T b1 = (5+3+0)/(1+1+0) = 8/2 = 4
+    c2 = x^T b2 / b2^T b2 = (5-3+0)/(1+1+0) = 2/2 = 1
+    c3 = x^T b3 / b3^T b3 = (0+0+7)/(0+0+1) = 7/1 = 7
+    [x]_B = [4, 1, 7]^T
+-->

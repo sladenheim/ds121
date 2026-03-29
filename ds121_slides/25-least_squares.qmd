@@ -1074,6 +1074,47 @@ d. A x-hat = [8/3, 5/3, 13/3]. r = [2-8/3, 1-5/3, 5-13/3] = [-2/3, -2/3, 2/3].
 Check: a1^T r = [1,0,1]·[-2/3,-2/3,2/3] = -2/3+2/3 = 0 ✓. a2^T r = [0,1,1]·[-2/3,-2/3,2/3] = -2/3+2/3 = 0 ✓.
 :::
 
+## Why QR Beats the Normal Equations{.smaller-title}
+
+:::{style="font-size: .7em"}
+
+We just solved least squares via the normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}$. But computing $(A^\top A)^{-1}$ directly can be **numerically unstable** — when columns of $A$ are nearly collinear, small rounding errors get amplified into wildly wrong answers.
+
+Recall from L24 that QR gives us $R\hat{\mathbf{x}} = Q^\top \mathbf{b}$ instead — no inversion needed.
+
+```{python}
+#| echo: true
+import numpy as np
+
+# Hilbert matrix: a classic ill-conditioned matrix
+n = 12
+A = np.array([[1.0/(i+j+1) for j in range(n)] for i in range(n)])
+x_true = np.ones(n)        # true solution: all ones
+b = A @ x_true              # compute b so we know the answer
+
+# Method 1: Normal equations, (A^T A)^{-1} A^T b
+x_normal = np.linalg.solve(A.T @ A, A.T @ b)
+
+# Method 2: QR factorization
+Q, R = np.linalg.qr(A)
+x_qr = np.linalg.solve(R, Q.T @ b)
+
+print(f"True solution: all ones")
+print(f"Normal equations max error: {np.max(np.abs(x_normal - x_true)):.2f}")
+print(f"QR factorization max error: {np.max(np.abs(x_qr - x_true)):.2f}")
+```
+
+:::
+
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box" style="padding: 8px 20px;">
+<p><b>What numpy and sklearn actually do:</b> <code>np.linalg.lstsq</code>, <code>scipy.linalg.lstsq</code>, and <code>sklearn.linear_model.LinearRegression</code> all use QR (or the related SVD) internally, <em>not</em> the normal equations. The next time you call <code>.fit()</code> on a linear model, this lecture is what's happening under the hood.</p>
+</div>
+"""))
+```
+
 ## Looking Ahead: Regression{.smaller-title}
 
 :::{style="font-size: .85em"}

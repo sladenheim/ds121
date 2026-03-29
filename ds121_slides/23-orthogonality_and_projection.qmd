@@ -25,13 +25,30 @@ format:
 :::
 
 :::{style="font-size: .75em"}
-_Recall from L22: orthogonal bases make coordinates easy to compute. Today we'll see they also make projection easy._
+_From last time: orthogonal bases make coordinates easy to compute. Today we'll see they also make projection easy._
 :::
 
 ## Projection as the Core of Prediction{.really-smaller-title}
 
 :::{style="font-size: .85em"}
 Recall from the housing price problem vector, the vector $\mathbf{b}$ is almost certainly **not** in $\operatorname{Col} A$.
+
+
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""<br>
+<table style="font-size:.85em; border-collapse:collapse; margin:auto">
+<tr style="background:#e8f4f8"><th style="padding:4px 12px">House</th><th>sqft</th><th>bedrooms</th><th>price ($k)</th></tr>
+<tr><td style="text-align:center">1</td><td style="text-align:center">800</td><td style="text-align:center">1</td><td style="text-align:center">118</td></tr>
+<tr style="background:#f5f5f5"><td style="text-align:center">2</td><td style="text-align:center">1150</td><td style="text-align:center">2</td><td style="text-align:center">157</td></tr>
+<tr><td style="text-align:center">3</td><td style="text-align:center">1500</td><td style="text-align:center">2</td><td style="text-align:center">193</td></tr>
+<tr style="background:#f5f5f5"><td style="text-align:center">4</td><td style="text-align:center">1800</td><td style="text-align:center">3</td><td style="text-align:center">236</td></tr>
+<tr><td style="text-align:center">5</td><td style="text-align:center">2100</td><td style="text-align:center">3</td><td style="text-align:center">264</td></tr>
+<tr style="background:#f5f5f5"><td style="text-align:center">6</td><td style="text-align:center">2450</td><td style="text-align:center">4</td><td style="text-align:center">312</td></tr>
+</table>
+<br>
+"""))
+```
 
 But we can still find the **closest** vector in $\operatorname{Col} A$ to $\mathbf{b}$, the best possible prediction given our model. 
 
@@ -153,7 +170,7 @@ display(HTML(generate_html()))
 
 :::
 
-## Projection Depends Only on the Subspace{.really-smaller-title}
+## Projection Depends Only on the Direction, not Magnitude, of $\mathbf{u}$ {.really-smaller-title}
 
 :::{style="font-size: .8em"}
 The projection $\hat{\mathbf{y}}$ is determined by the **subspace** $L = \text{Span}\{\mathbf{u}\}$, not by the vector $\mathbf{u}$. 
@@ -372,22 +389,52 @@ display(HTML(generate_html()))
 
 :::
 
+## From One Vector to a Subspace{.smaller-title}
+
+:::{style="font-size: .8em"}
+We now know how to project $\mathbf{y}$ onto a single vector $\mathbf{u}$. But what if we want to project onto a _subspace_ $W$ spanned by several vectors?
+
+:::{.fragment}
+If $W$ has an **orthogonal** basis $\{\mathbf{u}_1, \dots, \mathbf{u}_p\}$, then the projection onto $W$ is just the _sum_ of the individual projections:
+
+$$
+\hat{\mathbf{y}} = \operatorname{proj}_{W}\mathbf{y} = \frac{\mathbf{y}^\top \mathbf{u}_1}{\mathbf{u}_1^\top \mathbf{u}_1}\mathbf{u}_1 + \cdots + \frac{\mathbf{y}^\top \mathbf{u}_p}{\mathbf{u}_p^\top \mathbf{u}_p}\mathbf{u}_p.
+$$
+
+This works _because_ the basis vectors are orthogonal, so each projection is independent of the others.
+:::
+
+:::{.fragment}
+**Problem:** We're not always _given_ an orthogonal basis. So we need a way to _make_ one.
+
+**Gram-Schmidt** converts any basis into an orthogonal one.
+:::
+:::
+
 ## The Gram-Schmidt Algorithm{.smaller-title}
 
 
-:::{style="font-size: .8em"}
+:::{style="font-size: .75em"}
 
-To project onto a multi-dimensional subspace, we need an **orthogonal** basis so the projection formula applies to each basis vector independently. 
-
-:::{.fragment}
 **Gram-Schmidt** converts any basis into an orthogonal one.
 
-We compute:
+:::{.fragment}
+We start by taking the first vector as is:
+
+$${\bf u}_1 = {\bf v}_1$$
+:::
+
+:::{.fragment}
+Then we remove from ${\bf u}_2$ any part that is in the ${\bf u}_1$ direction, keeping just the orthogonal part:
+
+$${\bf u}_2 = {\bf v}_2 - \mbox{proj}_{{\bf u}_1}({\bf v}_2)$$
+:::
+
+:::{.fragment}
+And we keep going, each time keeping just the part orthogonal to the vectors already locked in:
 
 $$
 \begin{eqnarray*}
-{\bf u}_1 &=& {\bf v}_1 \\
-{\bf u}_2 &=& {\bf v}_2 - \mbox{proj}_{{\bf u}_1}({\bf v}_2) \\
 {\bf u}_3 &=& {\bf v}_3 - \mbox{proj}_{{\bf u}_1}({\bf v}_3) - \mbox{proj}_{{\bf u}_2}({\bf v}_3) \\
 &\vdots& \\
 {\bf u}_n &=& {\bf v}_n - \sum_{i=1}^{n-1} \mbox{proj}_{{\bf u}_i}({\bf v}_n)
@@ -395,22 +442,10 @@ $$
 $$
 :::
 
-:::{.fragment}
-```{python}
-from IPython.core.display import HTML
 
-def generate_html():
-    return r"""
-    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
-        <p>In the Gram-Schmidt process, why must we subtract projections onto <em>all</em> previous orthogonal vectors, not just the first one?</p>
-    </div>
-    """
-display(HTML(generate_html()))
-```
-:::
 :::
 
-## Gram-Schmidt: A Geometric View{.really-smaller-title}
+## Gram-Schmidt: Alternative View{.really-smaller-title}
 
 :::{style="font-size: .9em"}
 Here is another way to think about the Gram-Schmidt process.
@@ -427,6 +462,8 @@ Here is another way to think about the Gram-Schmidt process.
 
 ## Warm-Up: Gram-Schmidt in $\mathbb{R}^2${.smaller-title}
 
+
+:::{style="font-size: .9em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -435,7 +472,7 @@ def generate_html():
     <div class="blue-box">
         <p>Apply Gram-Schmidt to \(\mathbf{v}_1 = \begin{bmatrix}3\\4\end{bmatrix},\;\mathbf{v}_2 = \begin{bmatrix}1\\0\end{bmatrix}\) in \(\mathbb{R}^2.\)
         <ol type="a">
-            <li>Set \(\mathbf{u}_1 = \mathbf{v}_1.\) What is \(\mathbf{u}_1\)?</li>
+            <li>Set \(\mathbf{u}_1 = \mathbf{v}_1.\) </li>
             <li>Compute \(\mathbf{u}_2 = \mathbf{v}_2 - \operatorname{proj}_{\mathbf{u}_1}(\mathbf{v}_2).\)</li>
             <li>Verify that \(\mathbf{u}_1 \perp \mathbf{u}_2.\)</li>
         </ol>
@@ -444,12 +481,8 @@ def generate_html():
     """
 display(HTML(generate_html()))
 ```
-
-:::{.notes}
-u₁ = [3,4]ᵀ. proj = (v₂·u₁)/(u₁·u₁) u₁ = (3/25)[3,4]ᵀ = [9/25, 12/25]ᵀ.
-u₂ = [1,0]ᵀ − [9/25, 12/25]ᵀ = [16/25, −12/25]ᵀ.
-Check: u₁·u₂ = 3(16/25)+4(−12/25) = 48/25−48/25 = 0. ✓
 :::
+
 
 ## Gram-Schmidt: Example Setup{.really-smaller-title}
 
@@ -463,17 +496,22 @@ $$
 {\bf v_3} = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}.
 $$
 
+
+:::{.fragment}
 Note that these vectors $\{ {\bf v_1}, {\bf v_2}, {\bf v_3} \}$ do not form an orthogonal set.
 
 For example, ${\bf v}_{\bf 1}^\top {\bf v_2} = 1$, not zero.
 <br><br>
+:::
 
+:::{.fragment}
 The first step of the Gram-Schmidt process is simple: ${\bf u_1} = {\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}.$
+:::
 :::
 
 ## Gram-Schmidt: Computing v₂{.smaller-title}
 
-:::{style="font-size: .9em"}
+:::{style="font-size: .8em"}
 
 Next, we need to calculate only the part of ${\bf v_2}$ that is orthogonal to ${\bf u_1}$.
 
@@ -482,21 +520,25 @@ $$
 \begin{align*}
 {\bf u_2} &= {\bf v_2} - \mbox{proj}_{{\bf u_1}}({\bf v_2}) \\
 &= {\bf v_2} - \left(\frac{{\bf v_2}^\top {\bf u_1}}{{\bf u_1}^\top {\bf u_1}}\right) {\bf u_1} \\
-&= \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix} - \frac{1}{2} \cdot \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} \\
-&= \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix}
+&= \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix} - \frac{1}{2} \cdot \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} = \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix}
 \end{align*}
 $$
 
+
+:::{.fragment}
 This process guarantees that ${\bf u_2}$ is orthogonal to ${\bf u_1}$. We can check this for ourselves.
 
 $$
 {\bf u}_{\bf 1}^\top {\bf u_2} = \begin{bmatrix} 1 & 1 & 0 \end{bmatrix}  \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix} = 1/2 - 1/2 + 0 = 0.
 $$
 :::
+
+:::
 :::
 
 ## Gram-Schmidt: Computing v₃{.smaller-title}
 
+:::{style="font-size: .8em"}
 Finally, we calculate $\bf{u_3}$:
 
 :::{.fragment}
@@ -509,6 +551,7 @@ $$
 \end{align*}
 $$
 :::
+:::
 
 ## Gram-Schmidt: Verifying the Result{.smaller-title}
 
@@ -516,6 +559,8 @@ We can verify that $\mathbf{u}_3 \perp \mathbf{u}_2$ and $\mathbf{u}_3 \perp \ma
 
 Therefore, $\{ {\bf u_1}, {\bf u_2}, {\bf u_3} \}$ is an orthogonal set.
 
+
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
@@ -534,6 +579,7 @@ def generate_html():
 html_content = generate_html()
 display(HTML(html_content))
 ```
+:::
 
 ## Gram-Schmidt: Before and After{.really-smaller-title}
 
@@ -762,15 +808,14 @@ def generate_html():
         <p>
         Given are the following vectors in \(\small \mathbb{R}^4:\)
 
-\[\small \vec a_1 = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 0 \end{bmatrix},
-\vec a_2 = \begin{bmatrix} 0 \\ 1 \\ 2 \\ 1 \end{bmatrix},
-\vec a_3 = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}.\]
+\[\small \mathbf{a}_1 = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 0 \end{bmatrix},\;
+\mathbf{a}_2 = \begin{bmatrix} 0 \\ 1 \\ 2 \\ 1 \end{bmatrix},\;
+\mathbf{a}_3 = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix},\;
+\mathbf{y} = \begin{bmatrix} 1 \\ 2 \\ 0 \\ 1 \end{bmatrix}.\]
 
-a. Calculate an orthogonal basis for \(\small W = \text{Span}\{\vec a_1, \vec a_2, \vec a_3\}.\)<br>
-b. Using your work from part a, calculate the projection \(\hat{y}\: \) of \(\: \vec y\) into \(\text{Span}\{\vec a_1, \vec a_2, \vec a_3\}.\)<br>
-<br>
-<br>
-
+a. Calculate an orthogonal basis for \(\small W = \text{Span}\{\mathbf{a}_1, \mathbf{a}_2, \mathbf{a}_3\}.\)<br>
+b. Using your work from part a, calculate the projection \(\hat{\mathbf{y}}\) of \(\mathbf{y}\) onto \(W.\)<br>
+c. (bonus) Compute an orthogonal basis in a different order (not starting with \(\mathbf{a}_1\)) - do you get a different answer? Why? <br>
         </p>
     </div>
     """
@@ -792,16 +837,53 @@ This prevents numerical problems and make computation and interpretation much cl
 Next lecture takes this further: Gram-Schmidt + normalization = **QR decomposition**, the practical engine behind least squares solvers in numpy, scipy, and sklearn.
 :::
 
-## Looking Ahead: QR Decomposition{.smaller-title}
+## Challenge Problems{.smaller-title}
 
-:::{style="font-size: .85em"}
-Gram-Schmidt produces an orthogonal basis, but we can go further.
-
-- If we **normalize** each $\mathbf{u}_i$ to unit length, we get an **orthonormal** basis $\{\mathbf{q}_1, \mathbf{q}_2, \ldots, \mathbf{q}_n\}$.
-- Stacking these as columns gives an orthonormal matrix $Q$.
-- The original matrix $A = [\mathbf{v}_1 \; \mathbf{v}_2 \; \cdots \; \mathbf{v}_n]$ factors as $A = QR$, where $R$ is upper triangular.
-
-**Next lecture:** We'll derive the QR decomposition
-
-**On Friday:** We'll see how it simplifies solving least-squares problems
+:::{style="font-size: .7em"}
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box">
+    <p><b>1.</b> Consider the vectors
+    \(\mathbf{v}_1 = \begin{bmatrix}1\\0\\1\end{bmatrix},\;
+    \mathbf{v}_2 = \begin{bmatrix}0\\1\\1\end{bmatrix},\;
+    \mathbf{v}_3 = \begin{bmatrix}2\\1\\3\end{bmatrix}.\)
+    <br><br>
+    Notice that \(\mathbf{v}_3 = 2\mathbf{v}_1 + \mathbf{v}_2.\)
+    <em>Before computing anything</em>, predict what will happen when you apply Gram-Schmidt to \(\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3\}.\)
+    Then carry it out and check.
+    </p>
+    <p><b>2.</b> Let \(W = \operatorname{Span}\left\{\begin{bmatrix}1\\1\\0\end{bmatrix}, \begin{bmatrix}1\\-1\\0\end{bmatrix}\right\}\) and \(\mathbf{y} = \begin{bmatrix}3\\1\\4\end{bmatrix}.\)
+    <ol type="a">
+        <li>Compute the projection \(\hat{\mathbf{y}}\) of \(\mathbf{y}\) onto \(W.\)</li>
+        <li>Now project \(\hat{\mathbf{y}}\) onto \(W\) again. What do you get? Why?</li>
+        <li>Project \(\mathbf{y} - \hat{\mathbf{y}}\) onto \(W.\) What do you get? Why?</li>
+    </ol>
+    </p>
+</div>
+"""))
+```
 :::
+
+<!-- SOLUTIONS:
+1. Gram-Schmidt on {v1, v2, v3}:
+   u1 = v1 = [1, 0, 1]
+   u2 = v2 - (v2·u1)/(u1·u1) u1 = [0,1,1] - (1/2)[1,0,1] = [-1/2, 1, 1/2]
+   u3 = v3 - (v3·u1)/(u1·u1) u1 - (v3·u2)/(u2·u2) u2 = [0, 0, 0]
+   The third vector collapses to zero because v3 is already in Span{v1,v2}.
+   Gram-Schmidt detects linear dependence: you get the zero vector exactly
+   when the next input vector is in the span of the previous ones.
+
+2a. The basis {[1,1,0], [1,-1,0]} is already orthogonal.
+    c1 = y·u1/(u1·u1) = 4/2 = 2,  c2 = y·u2/(u2·u2) = 2/2 = 1
+    ŷ = 2[1,1,0] + 1[1,-1,0] = [3, 1, 0]
+
+2b. Projecting ŷ = [3,1,0] onto W again:
+    c1 = 4/2 = 2, c2 = 2/2 = 1 → same ŷ = [3,1,0].
+    Projection is idempotent: ŷ is already in W, so projecting it again
+    changes nothing.
+
+2c. y - ŷ = [0, 0, 4]. Project onto W:
+    c1 = 0/2 = 0, c2 = 0/2 = 0 → projection is [0,0,0].
+    The residual is orthogonal to W, so its projection onto W is zero.
+-->

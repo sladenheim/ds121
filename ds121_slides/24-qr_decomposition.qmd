@@ -25,8 +25,6 @@ format:
 
 :::
 
-<!-- Need to add the definition of an orthonormal transformation. -->
-
 ## Definition: Orthonormal Sets{.smaller-title}
 
 :::{style="font-size: .8em"}
@@ -49,27 +47,30 @@ display(HTML(html_content))
 
 <br>
 
+:::{.fragment}
 Since orthogonal sets are linearly independent, so are orthonormal sets. Hence, when they span the space, they form an __orthonormal basis__ for that space.
-<!-- If $W$ is the subspace spanned by such as a set, then  $\{\mathbf{u}_1,\dots,\mathbf{u}_p\}$ is an __orthonormal basis__ for $W$ since the set is automatically linearly independent. -->
-<br>
 
-The most familiar example of an orthonormal basis is the standard basis $\{\mathbf{e}_1, \dots,\mathbf{e}_n\}$ for $\mathbb{R}^n$.
+<br><br>
 
 :::
 
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
 def generate_html():
     return r"""
     <div class="blue-box">
-        <p>Is the standard basis \(\{\mathbf{e}_1, \dots, \mathbf{e}_n\}\) for \(\mathbb{R}^n\) orthonormal? Verify using the definition.</p>
+        <p>Is the standard basis \(\{\mathbf{e}_1, \dots, \mathbf{e}_n\}\) for \(\mathbb{R}^n\) orthonormal?</p>
     </div>
     """
 display(HTML(generate_html()))
 ```
+:::
 
-## Characterizing Orthonormal Columns: U^T U = I{.smaller-title}
+:::
+
+## Orthonormal Columns:  $U^{\top} U = I${.smaller-title}
 
 :::{style="font-size: .8em"}
 ```{python}
@@ -90,30 +91,37 @@ display(HTML(html_content))
 __Proof.__ Let $U = [\mathbf{u}_1\;\mathbf{u}_2\; \dots \; \mathbf{u}_n]$ denote the column vectors of $U$. Then:
 :::
 :::{style="font-size: .55em"}
+
+
+:::{.fragment}
 $$
-\begin{eqnarray*}
-U^\top U &=& \begin{bmatrix}
+U^\top U = \begin{bmatrix}
 \cdots & \cdots & {\bf u}_1^\top & \cdots & \cdots \\
 \cdots & \cdots & {\bf u}_2^\top & \cdots & \cdots \\
 && \vdots && \\
 \cdots & \cdots & {\bf u}_n^\top & \cdots & \cdots
 \end{bmatrix}
-\left[\begin{array}{cccc}\begin{array}{c}\vdots\\\vdots\\{\bf u_1}\\\vdots\\\vdots\end{array}&\begin{array}{c}\vdots\\\vdots\\{\bf u_2}\\\vdots\\\vdots\end{array}&\dots&\begin{array}{c}\vdots\\\vdots\\{\bf u_n}\\\vdots\\\vdots\end{array}\\\end{array}\right] \\
-&=&
+\left[\begin{array}{cccc}\begin{array}{c}\vdots\\\vdots\\{\bf u_1}\\\vdots\\\vdots\end{array}&\begin{array}{c}\vdots\\\vdots\\{\bf u_2}\\\vdots\\\vdots\end{array}&\dots&\begin{array}{c}\vdots\\\vdots\\{\bf u_n}\\\vdots\\\vdots\end{array}\\\end{array}\right] 
+$$
+
+:::
+:::{.fragment}
+$$
+=
 \begin{bmatrix}
 \mathbf{u}_1^\top \mathbf{u}_1&\mathbf{u}_1^\top \mathbf{u}_2& \cdots & \mathbf{u}_1^\top \mathbf{u}_n\\
 \mathbf{u}_2^\top \mathbf{u}_1&\mathbf{u}_2^\top \mathbf{u}_2& \cdots & \mathbf{u}_2^\top \mathbf{u}_n\\
 \vdots & \vdots & \ddots & \vdots \\
 \mathbf{u}_n^\top \mathbf{u}_1&\mathbf{u}_n^\top \mathbf{u}_2& \cdots & \mathbf{u}_n^\top \mathbf{u}_n
 \end{bmatrix}.
-\end{eqnarray*}
 $$
 :::
+:::
 
-## Proof: U^T U = I{.smaller-title}
+##  $U^{\top} U = I$ proof continued{.smaller-title}
 
 :::{style="font-size: .8em"}
-Every diagonal entry of this matrix equals 1 because each $\mathbf{u}_i$ is a unit vector so $\mathbf{u}_i^\top \mathbf{u}_i = 1$.
+Every diagonal entry of this matrix equals 1 because each $\mathbf{u}_i$ is a unit vector so $\mathbf{u}_i^\top \mathbf{u}_i = 1$
 
 Every non-diagonal entry of this matrix equals 0 because each pair of vectors $\mathbf{u}_i$ and $\mathbf{u}_j$ are orthogonal, so $\mathbf{u}_i^\top \mathbf{u}_j = 0$.
 
@@ -121,6 +129,7 @@ Hence, $U^\top U = I.$
 
 :::
 
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
@@ -132,6 +141,7 @@ def generate_html():
     """
 display(HTML(generate_html()))
 ```
+:::
 
 ## Orthonormal Transformations Preserve Lengths{.smaller-title}
 
@@ -148,18 +158,14 @@ def generate_html():
 <li> \(\Vert U\mathbf{x}\Vert = \Vert\mathbf{x}\Vert.\)</li>
 <li> \((U\mathbf{x})^\top (U\mathbf{y}) = \mathbf{x}^\top \mathbf{y}.\)</li>
 <li> \((U\mathbf{x})^\top (U\mathbf{y}) = 0\;\mbox{if and only if}\; \mathbf{x}^\top \mathbf{y} = 0.\)</li>
+</ol>
+        <br><br>That is, the linear transformation \(\mathbf{x}\mapsto U\mathbf{x}\) preserves lengths, inner products, and orthogonality. We call this an <b>orthonormal transformation</b>.
         </p>
     </div>
     """
 html_content = generate_html()
 display(HTML(html_content))
 ```
-
-:::{.fragment}
-We can combine Properties 1 and 3: For $U$ with orthonormal columns, the linear transformation $\mathbf{x}\mapsto U\mathbf{x}$ preserves lengths and orthogonality.
-
-We say that the transformation corresponding to $U$ is __orthonormal__.
-:::
 :::
 
 ## Visualizing Distance Preservation{.smaller-title}
@@ -176,10 +182,6 @@ Since $U$ is $m \times n$, it may map vectors from one vector space to an entire
 
 ## Orthonormal Transformations Preserve Orthogonality{.smaller-title}
 
-:::{style="font-size: .8em"}
-Also, the orthogonality of vectors will not be changed.
-:::
-
 :::{.center-text}
 <img src="images/orthogonality/orthonormal-to-u-2.png" width=1000 />
 
@@ -189,8 +191,6 @@ Also, the orthogonality of vectors will not be changed.
 
 :::{style="font-size: .8em"}
 Note that we cannot in general construct an orthonormal transformation from a higher dimension to a lower one.
-
-For example, three orthonormal vectors in $\mathbb{R}^3$ cannot be mapped to three orthonormal vectors in $\mathbb{R}^2$.
 
 <br>
 
@@ -221,11 +221,13 @@ Verify that $U$ has orthonormal columns and that $\Vert U \mathbf{x}\Vert = \Ver
 
 <br>
 
+:::{.fragment}
 We can use our earlier theorem to check that $U$ has orthonormal columns.
 
 $$ \small
 U^{\top} U = \begin{bmatrix}1/\sqrt{2}&1/\sqrt{2}&0\\2/3&-2/3&1/3\end{bmatrix}\begin{bmatrix}1/\sqrt{2}&2/3\\1/\sqrt{2}&-2/3\\0&1/3\end{bmatrix} = \begin{bmatrix}1&0\\0&1\end{bmatrix}.
 $$
+:::
 :::
 
 ## Verifying Length Preservation: Example{.really-smaller-title}
@@ -237,6 +239,7 @@ $$ \small
 U\mathbf{x} = \begin{bmatrix}1/\sqrt{2}&2/3\\1/\sqrt{2}&-2/3\\0&1/3\end{bmatrix}\begin{bmatrix}\sqrt{2}\\3\end{bmatrix} = \begin{bmatrix}3\\-1\\1\end{bmatrix}
 $$
 
+:::{.fragment}
 As a result,
 
 $$ \small
@@ -246,24 +249,8 @@ $$ \small
 \end{eqnarray*}
 $$
 :::
+:::
 
-<!-- ## Square Orthonormal Matrices
-
-:::{style="font-size: .8em"}
-One of the most useful transformation matrices is obtained when the columns of the matrix are orthonormal _and_ the matrix is __square__.
-
-<br>
-
-These matrices map vectors in $\mathbb{R}^n$ to new locations in the same space, while preserving lengths, distances and orthogonality.
-
-<br>
-
-Now, consider when $U$ is square, and has orthonormal columns.
-
-<br>
-
-Then $U^{\top} U = I$ implies that $U^{-1} = U^{\top} .$  
-::: -->
 
 ## Orthogonal Matrices{.smaller-title}
 
@@ -287,31 +274,16 @@ display(HTML(html_content))
 
 When $U$ is orthogonal, then $U^{\top} U = I$ implies that $U^{-1} = U^{\top}.$ 
 
-A example of an orthogonal matrix is a __rotation__ matrix:
+An example of an orthogonal matrix is a __rotation__ matrix:
     
 $$
 {\displaystyle T ={\begin{bmatrix}\cos \theta &-\sin \theta \\\sin \theta &\cos \theta \\\end{bmatrix}}.}
 $$ 
-
-<!-- <br>
-
-Using trigonometric identities, you should be able to convince yourself that
-
-$$
-T^\top T =  I.
-$$ -->
 :::
-<!-- 
-## QR Factorization
-
-:::{style="font-size: .8em"}
-
-
-::: -->
 
 ## Definition: QR Factorization{.smaller-title}
 
-:::{style="font-size: .8em"}
+:::{style="font-size: .75em"}
 ```{python}
 from IPython.core.display import HTML
 
@@ -340,23 +312,13 @@ A&Q&R\\
 $$
 :::
 
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>If \(A = QR\), what property must the columns of \(A\) have for the factorization to exist?</p>
-    </div>
-    """
-display(HTML(generate_html()))
-```
 
 ## Steps of QR Factorization{.smaller-title}
 
 :::{style="font-size: .8em"}
 
-1. Find the columns of $Q$ by using Gram-Schmidt orthogonalization on the columns of $A$ and then normalizing each column individually.
+1. Use Gram-Schmidt orthogonalization on the columns of $A$
+2. Find the columns of $Q$ by normalizing each column individually.
 
 :::{.fragment}
 2. Calculate $R = Q^\top A$ as the matrix containing the inner products of the columns of $Q$ and $A$, as shown below in the $3 \times 3$ case.
@@ -366,11 +328,11 @@ R =
 \begin{bmatrix} {\bf u}_1^\top {\bf a}_1 & {\bf u}_1^\top {\bf a}_2 & {\bf u}_1^\top {\bf a}_3 \\ {\bf u}_2^\top {\bf a}_1 & {\bf u}_2^\top {\bf a}_2 & {\bf u}_2^\top {\bf a}_3 \\ {\bf u}_3^\top {\bf a}_1 & {\bf u}_3^\top {\bf a}_2 & {\bf u}_3^\top {\bf a}_3 \end{bmatrix}
 = \begin{bmatrix} {\bf u}_1^\top {\bf a}_1 & {\bf u}_1^\top {\bf a}_2 & {\bf u}_1^\top {\bf a}_3 \\ 0 & {\bf u}_2^\top {\bf a}_2 & {\bf u}_2^\top {\bf a}_3 \\ 0 & 0 & {\bf u}_3^\top {\bf a}_3 \end{bmatrix}
 $$
-
-Note that Gram-Schmidt guarantees that ${\bf u}_i^\top {\bf a}_j = 0$ when $i > j$, which is why this matrix is upper triangular.
 :::
 :::
 
+:::{style="font-size: .8em"}
+:::{.fragment}
 ```{python}
 from IPython.core.display import HTML
 
@@ -382,8 +344,10 @@ def generate_html():
     """
 display(HTML(generate_html()))
 ```
+:::
+:::
 
-## QR Factorization: Gram-Schmidt Step{.smaller-title}
+## QR Factorization: Example{.smaller-title}
 
 :::{style="font-size: .8em"}
 __Example__. Use Gram-Schmidt orthogonalization to find QR factorization of 
@@ -397,7 +361,7 @@ Let's find the corresponding orthogonal (not orthonormal!) set.
 
 :::
 
-## QR Factorization: Normalizing to Form Q{.smaller-title}
+## QR Step 1: Gram-Schmidt Step{.smaller-title}
 
 :::{style="font-size: .8em"}
 $$ \small
@@ -410,16 +374,101 @@ $$ \small
 $$
 :::
 
-## QR Factorization: Computing R{.smaller-title}
+## QR Step 2: Forming Q{.smaller-title}
 :::{style="font-size: .8em"}
 
- Let's normalize each of the vectors use them as the columns of $Q$:
+Now let's normalize each of the orthogonal vectors to get an orthonormal set, and use them as the columns of $Q$:
+
+$$\small
+{\bf u}_1 = \frac{{\bf v}_1}{\Vert {\bf v}_1 \Vert} = \frac{1}{\sqrt{2}}\begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}, \quad
+{\bf u}_2 = \frac{{\bf v}_2}{\Vert {\bf v}_2 \Vert} = \frac{1}{\sqrt{6}}\begin{bmatrix} 2 \\ -1 \\ 1 \end{bmatrix}, \quad
+{\bf u}_3 = \frac{{\bf v}_3}{\Vert {\bf v}_3 \Vert} = \frac{1}{\sqrt{3}}\begin{bmatrix} 1 \\ 1 \\ -1 \end{bmatrix}.
+$$
 
 $$\small
 Q = \begin{bmatrix}  0 & 2/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & -1/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & 1/\sqrt{6} & -1/\sqrt{3} \end{bmatrix}.
 $$
 
-Next, we calculate the upper triangular matrix:
+:::
+
+## Visualizing the Orthonormalization{.really-smaller-title}
+
+:::{.columns}
+::: {.column width="50%"}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = plt.figure(figsize=(5, 5))
+ax = fig.add_subplot(111, projection='3d')
+
+# Original columns of A
+a1 = np.array([0, 1, 1])
+a2 = np.array([1, 1, 2])
+a3 = np.array([1, 1, 1])
+
+# Orthonormal columns (Q)
+u1 = np.array([0, 1/np.sqrt(2), 1/np.sqrt(2)])
+u2 = np.array([2/np.sqrt(6), -1/np.sqrt(6), 1/np.sqrt(6)])
+u3 = np.array([1/np.sqrt(3), 1/np.sqrt(3), -1/np.sqrt(3)])
+
+origin = [0, 0, 0]
+
+# Plot original vectors (dashed)
+for v, label, c in [(a1, r'$\mathbf{a}_1$', '#d62728'),
+                      (a2, r'$\mathbf{a}_2$', '#2ca02c'),
+                      (a3, r'$\mathbf{a}_3$', '#1f77b4')]:
+    ax.quiver(*origin, *v, color=c, alpha=0.35, linewidth=2, linestyle='dashed',
+              arrow_length_ratio=0.1)
+    ax.text(*(v * 1.1), label, fontsize=12, color=c, alpha=0.5)
+
+# Plot orthonormal vectors (solid)
+for v, label, c in [(u1, r'$\mathbf{u}_1$', '#d62728'),
+                      (u2, r'$\mathbf{u}_2$', '#2ca02c'),
+                      (u3, r'$\mathbf{u}_3$', '#1f77b4')]:
+    ax.quiver(*origin, *v, color=c, linewidth=2.5, arrow_length_ratio=0.12)
+    ax.text(*(v * 1.15), label, fontsize=12, fontweight='bold', color=c)
+
+ax.set_xlim([-0.5, 2])
+ax.set_ylim([-0.5, 2])
+ax.set_zlim([-0.5, 2])
+ax.set_xlabel('x'); ax.set_ylabel('y'); ax.set_zlabel('z')
+ax.view_init(elev=20, azim=35)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+::: {.column width="50%"}
+:::{style="font-size: .7em"}
+
+<br>
+
+**Dashed:** original columns of $A$
+
+- Different lengths
+- Not orthogonal to each other
+
+<br>
+
+**Solid:** orthonormal columns of $Q$
+
+- All unit length
+- Mutually orthogonal
+
+<br>
+
+Gram-Schmidt reshapes the columns while preserving the same column space: $\text{Col}\, A = \text{Col}\, Q.$
+:::
+:::
+
+:::
+
+## QR Step 3: Computing R{.smaller-title}
+:::{style="font-size: .8em"}
+
+Finally, we calculate the upper triangular matrix:
 
 $$\small R = Q^\top A = \begin{bmatrix} {\bf u}_1^\top {\bf a}_1 & {\bf u}_1^\top {\bf a}_2 & {\bf u}_1^\top {\bf a}_3 \\ 0 & {\bf u}_2^\top {\bf a}_2 & {\bf u}_2^\top {\bf a}_3 \\ 0 & 0 & {\bf u}_3^\top {\bf a}_3 \end{bmatrix} =
 \begin{bmatrix}
@@ -435,7 +484,7 @@ It is easy to check that $A = Q R$.
 ## QR Factorization in Python{.smaller-title}
 :::{style="font-size: .8em"}
 
-Let us factorize the following matrix using Python. In particular, we will use the built-in method `np.linalg.qr`.
+Let us factorize the following matrix using Python. We will use the built-in method `np.linalg.qr`.
 $$\small
 A = \left[\begin{array}{rrrr}3&-7&-2&2\\-3&5&1&0\\6&-4&0&-5\\-9&5&-5&12\end{array}\right].
 $$
@@ -454,30 +503,8 @@ print(R)
 
 :::
 
-<!-- ## Computing QR Factorization
 
-:::{style="font-size: .6em"}
-`Numpy` includes a built-in command to calculate QR factorization. Note that:
-
-- Gram-Schmidt is just one algorithm that can be used to compute a QR factorization; there are others.
-- Some QR factorizations decompose $A$ into an $m \times m$ matrix $Q$ followed by an $m \times n$ matrix $R$ instead.
-
-Let's use the built-in method `np.linalg.qr` on the same matrix $A$ as before. We will get a similar result.
-
-```{python}
-#| echo: true
-import numpy as np
-A = np.array([[3,-7,-2,2],
-             [-3,5,1,0],
-             [6,-4,0,-5],
-             [-9,5,-5,12]])
-Qnew, Rnew = np.linalg.qr(A)
-print(Qnew)
-print(Rnew)
-```
-::: -->
-
-## Verifying Orthonormal Columns of Q{.smaller-title}
+## Verifying Orthonormal Columns of Q{.really-smaller-title}
 
 :::{style="font-size: .8em"}
 We can use `Numpy` to check that columns of $Q$ are orthonormal by computing pairwise inner products or directly verifying $Q^\top Q = I$.
@@ -498,19 +525,17 @@ print((Q.T @ Q).round(12))
 ```
 :::
 
-<!-- :::{style="font-size: .8em"}
-
-<br>
-
+:::{.fragment}
+:::{style="font-size: .8em"}
 This is a very useful property! It means we can take the inverse of $Q$ very efficiently, without using the typical (slow) matrix inverse algorithm.
-::: -->
+:::
+:::
 
 ## Solving Ax = b Using QR{.smaller-title}
 
-<!-- QR matrix factorization is a valuable tool that has many computational and data science applications.
+:::{style="font-size: .8em"}
 
-> "One algorithm in numerical linear algebra is more important than all the others: QR factorization."$\;$ -[Trefethen](https://people.maths.ox.ac.uk/trefethen/text.html), page 48 -->
-:::{style="font-size: 1.2em"}
+> "One algorithm in numerical linear algebra is more important than all the others: QR factorization." — [Trefethen](https://people.maths.ox.ac.uk/trefethen/text.html), p. 48
 
 Let's use QR factorization to make it faster to solve linear systems.
 
@@ -529,13 +554,13 @@ where the last step uses the fact that $Q^\top Q = I$.
 :::
 
 :::{.fragment}
-Because $R$ is upper triangular, solving this system only requires the (fast) backsubstitution step rather than the entirety of Gauss-Jordan elimination. In other words, we get the same speedup as in LU factorization.
+Because $R$ is upper triangular, solving this system only requires the (fast) backsubstitution step rather than the entirety of Gauss-Jordan elimination. 
 :::
 :::
 
 ## QR for Linear Systems: Example{.smaller-title}
 
-:::{style="font-size: 1.2em"}
+:::{style="font-size: .8em"}
 
 Solve the following system of equations using QR factorization.
 
@@ -556,47 +581,10 @@ R = \begin{bmatrix}
 $$
 
 :::
-<!-- ## Solving linear systems with QR factorization{.really-really-smaller-title}
 
-:::{style="font-size: .8em"}
-Let's apply Gram-Schmidt to find the corresponding orthogonal (not orthonormal!) set.
-
-$$
-\begin{eqnarray*}
-{\bf v}_1 &=& {\bf a}_1 = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} \\ \\ \\
-{\bf v}_2 &=& {\bf a}_2 - \mbox{proj}_{{\bf v}_1}({\bf a}_2) = \begin{bmatrix} 1 \\ 1 \\ 2 \end{bmatrix} - \frac{0\cdot1 + 1\cdot1 + 1\cdot2}{0 + 1^2 + 1^2} \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} = \begin{bmatrix} 1 \\ -1/2 \\ 1/2 \end{bmatrix} \\ \\ \\
-{\bf v}_3 &=& {\bf a}_3 - \mbox{proj}_{{\bf v}_1}({\bf a}_3) - \mbox{proj}_{{\bf v}_2}({\bf a}_3)\\
-&=& \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} - \frac{0\cdot1+1\cdot1+1\cdot1}{2} \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{1\cdot1+1\cdot(-1/2)+1\cdot1/2}{1 + (1/2)^2 + (1/2)^2} \begin{bmatrix} 1 \\ -1/2 \\ 1/2 \end{bmatrix} \\
-&=& \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} - \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{2}{3} \begin{bmatrix} 1 \\ -1/2 \\ 1/2 \end{bmatrix} \\
-&=& \begin{bmatrix} 1/3 \\ 1/3 \\ -1/3 \end{bmatrix}.
-\end{eqnarray*}
-$$
-::: -->
-
-<!-- ## Solving linear systems with QR factorization{.really-really-smaller-title}
-
-It is easy to check that all three of ${\bf v}_1, {\bf v}_2, {\bf v}_3$ are pairwise orthogonal to each other. Let's normalize each of the vectors, and call the resulting column vectors ${\bf u}_1, {\bf u}_2, {\bf u}_3$. We can use these columns to form the orthonormal matrix:
-
-$$
-Q = \begin{bmatrix}  0 & 2/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & -1/\sqrt{6} & 1/\sqrt{3} \\ 1/\sqrt{2} & 1/\sqrt{6} & -1/\sqrt{3} \end{bmatrix}.
-$$
-
-<br>
-
-Next, we calculate the upper triangular matrix:
-
-$$R = \begin{bmatrix} {\bf u}_1^\top {\bf a}_1 & {\bf u}_1^\top {\bf a}_2 & {\bf u}_1^\top {\bf a}_3 \\ 0 & {\bf u}_2^\top {\bf a}_2 & {\bf u}_2^\top {\bf a}_3 \\ 0 & 0 & {\bf u}_3^\top {\bf a}_3 \end{bmatrix} =
-\begin{bmatrix}
-2/\sqrt{2} & 3/\sqrt{2} & 2/\sqrt{2} \\
-0 & 3/\sqrt{6} & 2/\sqrt{6} \\
-0 & 0 & 1/\sqrt{3}
-\end{bmatrix}.
-$$
-
-It is easy to check that $A = Q R$. -->
 
 ## QR for Linear Systems: Back-Substitution{.smaller-title}
-:::{style="font-size: 1.2em"}
+:::{style="font-size: .8em"}
 
 To solve $A {\bf x} = {\bf b}$, it suffices to find the solutions for $R {\bf x} = Q^\top {\bf b}$.
 
@@ -621,7 +609,7 @@ $$\small
 \end{eqnarray*}
 $$
 
-Because $R$ is upper-triangular, this matrix equation is already in row echelon form. From the last row it is clear that $x_3 = 1$, then substituting that into the middle row gives us $x_2 = 1$, and finally in the top row we find that $x_1 = 1$ as well.
+From the last row it is clear that $x_3 = 1$, then substituting that into the middle row gives us $x_2 = 1$, and finally in the top row we find that $x_1 = 1$ as well.
 
 So the solution is ${\bf x} = \begin{bmatrix} 1 & 1 & 1 \end{bmatrix}^\top.$
 :::
@@ -655,42 +643,64 @@ R = Q^T A = [[√2, 1/√2],[0, √(3/2)]]. Verify A = QR.
 
 ## Computational Cost of QR vs. Other Methods{.smaller-title}
 
-:::{style="font-size: 1.2em"}
+:::{style="font-size: .8em"}
 
-While this process was tedious, note that we never computed a matrix inverse or Gauss-Jordan elimination. 
+QR is a __fundamentally different way of solving linear systems__. No matrix inverse, no Gauss-Jordan elimination.
 
-<br>
-
-For this reason, QR factorization is a __fundamentally different way of solving linear systems__ than the other methods we have seen so far in class, such as:
-
-- Gauss-Jordan elimination/LU factorization or
-- left-multiplying both sides by the inverse of the original matrix $A$.
-
-<br>
-
-Algorithmically, QR factorization for an $n \times n$ matrix costs about $\frac{2}{3} n^3$ floating point operations — comparable to Gauss-Jordan elimination.
-
-The advantage of QR is not raw speed but **numerical stability**: because $Q$ has orthonormal columns, rounding errors do not accumulate the way they do when computing $(A^\top A)^{-1}$ directly.
+- **Cost:** $\sim\frac{2}{3}n^3$ to factorize (comparable to LU), then $O(n^2)$ per solve
+- **Key advantage is numerical stability:** $Q$'s orthonormal columns prevent rounding errors from accumulating the way they do when computing inverses
 
 :::
 
-## QR in Practice: Why Not Just Invert $A^\top A$?{.smaller-title}
+## LU vs. QR: When to Use Which?{.smaller-title}
 
-:::{style="font-size: .85em"}
-The normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}$ give the least-squares solution, but computing $(A^\top A)^{-1}$ directly has a serious drawback: **numerical instability**.
+:::{style="font-size: .8em"}
 
-When two features are nearly collinear (e.g., sqft and bedrooms in our housing data are correlated), $A^\top A$ becomes nearly singular. Small rounding errors in computing its inverse get amplified, producing wildly inaccurate coefficients.
+| | **LU** | **QR** |
+|---|---|---|
+| **Factorization cost** | $\sim \frac{2}{3}n^3$ | $\sim \frac{2}{3}n^3$ |
+| **Per-solve cost** | $O(n^2)$ | $O(n^2)$ |
+| **Matrix shape** | Any $m \times n$ | $m \times n$ with $m \geq n$, linearly independent columns |
+| **Stability** | Good (with pivoting) | Better (orthonormal columns) |
+| **Best for** | General systems | Least-squares / ill-conditioned systems |
 
-**QR avoids this entirely.** Because $Q$ has orthonormal columns, $Q^\top Q = I$ exactly, so no inversion is needed. The only system left to solve is $R\hat{\mathbf{x}} = Q^\top \mathbf{b}$, which is already upper triangular.
+<br>
+
+**Key difference:** Both handle rectangular matrices, but QR requires linearly independent columns. The main reason to prefer QR is **numerical stability** — and it naturally handles overdetermined ($m > n$) systems for least squares.
+
+:::
+
+## Practice: QR and Rotations{.smaller-title}
 
 ```{python}
 from IPython.core.display import HTML
-display(HTML(r"""
-<div class="blue-box" style="padding: 8px 20px;">
-<p><b>What numpy and sklearn actually do:</b> <code>np.linalg.lstsq</code>, <code>scipy.linalg.lstsq</code>, and <code>sklearn.linear_model.LinearRegression</code> all use QR (or the related Householder/SVD) internally, <em>not</em> the normal equations. The next time you call <code>.fit()</code> on a linear model, this lecture is what's happening under the hood.</p>
-</div>
-"""))
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Let \(A = \begin{bmatrix} 1 & 0 \\ 1 & 1 \end{bmatrix}.\)
+        <ol type="a">
+            <li>Find the QR factorization of \(A\).</li>
+            <li>Look at \(Q\). What kind of transformation is it?</li>
+            <li>Use the factorization to solve \(A\mathbf{x} = \begin{bmatrix}1\\2\end{bmatrix}.\)</li>
+        </ol>
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
 ```
+
+:::{.notes}
+(a) Gram-Schmidt: v1 = a1 = [1,1]^T, ||v1|| = √2, u1 = [1/√2, 1/√2]^T.
+v2 = a2 − proj_{v1}(a2) = [0,1]^T − (1/2)[1,1]^T = [−1/2, 1/2]^T. ||v2|| = 1/√2, u2 = [−1/√2, 1/√2]^T.
+Q = [[1/√2, −1/√2],[1/√2, 1/√2]]. R = Q^T A = [[√2, 1/√2],[0, 1/√2]].
+
+(b) Q is a rotation matrix! Compare to [[cos θ, −sin θ],[sin θ, cos θ]] with θ = π/4 (45°).
+
+(c) Solve Rx = Q^T b: Q^T [1,2]^T = [3/√2, 1/√2]^T.
+Row 2: x2/√2 = 1/√2 → x2 = 1.
+Row 1: √2 x1 + 1/√2 = 3/√2 → √2 x1 = 2/√2 → x1 = 1.
+x = [1, 1]^T. Check: A[1,1]^T = [1, 2]^T.
 :::
 
 ## Looking Ahead: Least Squares{.smaller-title}
