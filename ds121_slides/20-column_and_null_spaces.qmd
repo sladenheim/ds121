@@ -841,33 +841,6 @@ display(HTML(html_content))
 ``` 
 :::
 
-<!--
-## Practice: Constructing a Matrix with Given Col A{.really-smaller-title}
-
-:::{style="font-size: .8em"}
-We want to have $\bf b_1$ and $\bf b_2$ in the column space of $A.$ Then $A \bf{x} = \bf{b_1}$ and $A \bf{x} = \bf{b_2}$ will be solvable. The quickest way is to make  $\bf b_1$ and $\bf b_2$ the two columns of $A.$ Then the solutions are $\bf{x} = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $\bf{x} = \begin{bmatrix} 0 \\ 1 \end{bmatrix}.$
-<br><br>
-
-We don't want $A \bf{x} = \bf{b_3}$ to be solvable. So we will not make the column space larger. Keeping only the columns of $b_1$ and $b_2,$ the question is:
-
-Is $A \bf{x} = \begin{bmatrix} \bf{b_1} & \bf{b_2}\end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \bf{b_3}$ solvable?
-:::
-
-## Practice: Constructing a Matrix with Given Col A{.really-smaller-title}
-
-:::{style="font-size: .8em"}
-That is, is $\bf{b_3}$ a combination of $\bf b_1$ and $\bf b_2$?
-<br><br>
-
-If the answer is _no_, we have the desired $A.$
-<br><br>
-
-If the answer is _yes_, then it is not possible to construct $A.$ <br>
-When the column space contains $\bf b_1$ and $\bf b_2$, it will have to contain all their linear combinations. <br>
-So $\bf{b_3}$ would necessarily be in that column space and $A \bf{x} = \bf{b_3}$ would necessarily be solvable.
-:::
-
--->
 
 ## Looking Ahead{.smaller-title}
 

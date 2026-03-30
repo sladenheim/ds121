@@ -484,148 +484,7 @@ display(HTML(generate_html()))
 :::
 
 
-## Gram-Schmidt: Example Setup{.really-smaller-title}
-
-:::{style="font-size: .9em"}
-
-We are going to apply the Gram-Schmidt process to the following three vectors in $\mathbb{R}^3$ to produce an orthogonal set:
-
-$$
-{\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}, \qquad
-{\bf v_2} = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix}, \qquad
-{\bf v_3} = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}.
-$$
-
-
-:::{.fragment}
-Note that these vectors $\{ {\bf v_1}, {\bf v_2}, {\bf v_3} \}$ do not form an orthogonal set.
-
-For example, ${\bf v}_{\bf 1}^\top {\bf v_2} = 1$, not zero.
-<br><br>
-:::
-
-:::{.fragment}
-The first step of the Gram-Schmidt process is simple: ${\bf u_1} = {\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}.$
-:::
-:::
-
-## Gram-Schmidt: Computing v₂{.smaller-title}
-
-:::{style="font-size: .8em"}
-
-Next, we need to calculate only the part of ${\bf v_2}$ that is orthogonal to ${\bf u_1}$.
-
-:::{.fragment}
-$$
-\begin{align*}
-{\bf u_2} &= {\bf v_2} - \mbox{proj}_{{\bf u_1}}({\bf v_2}) \\
-&= {\bf v_2} - \left(\frac{{\bf v_2}^\top {\bf u_1}}{{\bf u_1}^\top {\bf u_1}}\right) {\bf u_1} \\
-&= \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix} - \frac{1}{2} \cdot \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} = \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix}
-\end{align*}
-$$
-
-
-:::{.fragment}
-This process guarantees that ${\bf u_2}$ is orthogonal to ${\bf u_1}$. We can check this for ourselves.
-
-$$
-{\bf u}_{\bf 1}^\top {\bf u_2} = \begin{bmatrix} 1 & 1 & 0 \end{bmatrix}  \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix} = 1/2 - 1/2 + 0 = 0.
-$$
-:::
-
-:::
-:::
-
-## Gram-Schmidt: Computing v₃{.smaller-title}
-
-:::{style="font-size: .8em"}
-Finally, we calculate $\bf{u_3}$:
-
-:::{.fragment}
-$$
-\begin{align*}
-{\bf u}_3 &= {\bf v}_3 - \mbox{proj}_{{\bf u}_1}({\bf v}_3) - \mbox{proj}_{{\bf u}_2}({\bf v}_3) \\
-&= \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{{\bf v_3}^\top {\bf u_1}}{{\bf u_1}^\top {\bf u_1}}\begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} - \frac{{\bf v_3}^\top {\bf u_2}}{{\bf u_2}^\top {\bf u_2}}\begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix} \\
-&= \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{1}{2} \cdot \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} - \frac{1/2}{3/2} \cdot \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix} \\
-&= \begin{bmatrix} -2/3 \\ 2/3 \\ 2/3 \end{bmatrix}.
-\end{align*}
-$$
-:::
-:::
-
-## Gram-Schmidt: Verifying the Result{.smaller-title}
-
-We can verify that $\mathbf{u}_3 \perp \mathbf{u}_2$ and $\mathbf{u}_3 \perp \mathbf{u}_1.$
-
-Therefore, $\{ {\bf u_1}, {\bf u_2}, {\bf u_3} \}$ is an orthogonal set.
-
-
-:::{.fragment}
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="purple-box">
-         <p><span class="label">Theorem</span>
-        If we apply Gram-Schmidt starting from a basis \(\{ {\bf v}_1, {\bf v}_2, \ldots, {\bf v}_n \}\) for subspace \(H\), then the resulting set \(\mathcal{B} = \{ {\bf u}_1, {\bf u}_2, \ldots, {\bf u}_n \}\) satisfies the following properties:
-        <ol start=1>
-        <li>The vectors in \(\mathcal{B}\) are orthogonal.</li>
-        <li>\(\mathcal{B}\) spans the same subspace \(H\), and hence is a basis for \(H\).</li>
-        </ol>
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
-:::
-
-## Gram-Schmidt: Before and After{.really-smaller-title}
-
-:::{style="font-size: .8em"}
-The vectors $\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3\}$ are not orthogonal. Gram-Schmidt produces orthogonal $\{\mathbf{u}_1, \mathbf{u}_2, \mathbf{u}_3\}$ spanning the same subspace.
-:::
-
-:::{.center-text}
-```{python}
-import matplotlib.pyplot as plt
-import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-
-# Vectors that obviously cluster toward the same corner — non-orthogonality is clear at a glance.
-v1 = np.array([2., 0., 0.])
-v2 = np.array([1., 1., 1.])
-v3 = np.array([1., 1., 0.])
-
-# Gram-Schmidt results: proj onto u1 land at [1,0,0] — visibly shorter than u1=[2,0,0]
-u1 = np.array([2., 0., 0.])
-u2 = np.array([0., 1., 1.])
-u3 = np.array([0., 0.5, -0.5])
-
-fig = plt.figure(figsize=(11, 4.5))
-
-for col, (vecs, labels, colors, title) in enumerate([
-    ([v1, v2, v3], [r'$\mathbf{v}_1$', r'$\mathbf{v}_2$', r'$\mathbf{v}_3$'],
-     ['steelblue', 'darkorange', 'green'], 'Before: original basis\n(not orthogonal)'),
-    ([u1, u2, u3], [r'$\mathbf{u}_1$', r'$\mathbf{u}_2$', r'$\mathbf{u}_3$'],
-     ['steelblue', 'darkorange', 'green'], 'After: orthogonal basis\n(Gram-Schmidt result)')
-]):
-    ax = fig.add_subplot(1, 2, col + 1, projection='3d')
-    for v, lbl, clr in zip(vecs, labels, colors):
-        ax.quiver(0, 0, 0, v[0], v[1], v[2], color=clr, arrow_length_ratio=0.12, linewidth=2.5)
-        ax.text(v[0]*1.12, v[1]*1.12, v[2]*1.12, lbl, fontsize=13, color=clr, fontweight='bold')
-    ax.set_xlim([-0.2, 2.2]); ax.set_ylim([-0.2, 1.4]); ax.set_zlim([-0.7, 1.4])
-    ax.set_xlabel('x', fontsize=10); ax.set_ylabel('y', fontsize=10); ax.set_zlabel('z', fontsize=10)
-    ax.set_title(title, fontsize=11, pad=8)
-    ax.view_init(elev=22, azim=30)
-
-plt.tight_layout()
-plt.show()
-```
-:::
-
-## Gram-Schmidt: Step-by-Step{.smaller-title}
+## Gram-Schmidt in R3: Step-by-Step{.smaller-title}
 
 :::{style="font-size: .8em"}
 Click through to see each orthogonal vector built step by step.
@@ -795,6 +654,105 @@ fig.show()
 ```
 :::
 
+
+## Gram-Schmidt: Example Setup{.really-smaller-title}
+
+:::{style="font-size: .9em"}
+
+We are going to apply the Gram-Schmidt process to the following three vectors in $\mathbb{R}^3$ to produce an orthogonal set:
+
+$$
+{\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}, \qquad
+{\bf v_2} = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix}, \qquad
+{\bf v_3} = \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}.
+$$
+
+
+:::{.fragment}
+Note that these vectors $\{ {\bf v_1}, {\bf v_2}, {\bf v_3} \}$ do not form an orthogonal set.
+
+For example, ${\bf v}_{\bf 1}^\top {\bf v_2} = 1$, not zero.
+<br><br>
+:::
+
+:::{.fragment}
+The first step of the Gram-Schmidt process is simple: ${\bf u_1} = {\bf v_1} = \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}.$
+:::
+:::
+
+## Gram-Schmidt: Computing v₂{.smaller-title}
+
+:::{style="font-size: .8em"}
+
+Next, we need to calculate only the part of ${\bf v_2}$ that is orthogonal to ${\bf u_1}$.
+
+:::{.fragment}
+$$
+\begin{align*}
+{\bf u_2} &= {\bf v_2} - \mbox{proj}_{{\bf u_1}}({\bf v_2}) \\
+&= {\bf v_2} - \left(\frac{{\bf v_2}^\top {\bf u_1}}{{\bf u_1}^\top {\bf u_1}}\right) {\bf u_1} \\
+&= \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix} - \frac{1}{2} \cdot \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} = \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix}
+\end{align*}
+$$
+
+
+:::{.fragment}
+This process guarantees that ${\bf u_2}$ is orthogonal to ${\bf u_1}$. We can check this for ourselves.
+
+$$
+{\bf u}_{\bf 1}^\top {\bf u_2} = \begin{bmatrix} 1 & 1 & 0 \end{bmatrix}  \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix} = 1/2 - 1/2 + 0 = 0.
+$$
+:::
+
+:::
+:::
+
+## Gram-Schmidt: Computing v₃{.smaller-title}
+
+:::{style="font-size: .8em"}
+Finally, we calculate $\bf{u_3}$:
+
+:::{.fragment}
+$$
+\begin{align*}
+{\bf u}_3 &= {\bf v}_3 - \mbox{proj}_{{\bf u}_1}({\bf v}_3) - \mbox{proj}_{{\bf u}_2}({\bf v}_3) \\
+&= \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{{\bf v_3}^\top {\bf u_1}}{{\bf u_1}^\top {\bf u_1}}\begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} - \frac{{\bf v_3}^\top {\bf u_2}}{{\bf u_2}^\top {\bf u_2}}\begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix} \\
+&= \begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix} - \frac{1}{2} \cdot \begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} - \frac{1/2}{3/2} \cdot \begin{bmatrix} 1/2 \\ -1/2 \\ 1 \end{bmatrix} \\
+&= \begin{bmatrix} -2/3 \\ 2/3 \\ 2/3 \end{bmatrix}.
+\end{align*}
+$$
+:::
+:::
+
+## Gram-Schmidt: Verifying the Result{.smaller-title}
+
+We can verify that $\mathbf{u}_3 \perp \mathbf{u}_2$ and $\mathbf{u}_3 \perp \mathbf{u}_1.$
+
+Therefore, $\{ {\bf u_1}, {\bf u_2}, {\bf u_3} \}$ is an orthogonal set.
+
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+         <p><span class="label">Theorem</span>
+        If we apply Gram-Schmidt starting from a basis \(\{ {\bf v}_1, {\bf v}_2, \ldots, {\bf v}_n \}\) for subspace \(H\), then the resulting set \(\mathcal{B} = \{ {\bf u}_1, {\bf u}_2, \ldots, {\bf u}_n \}\) satisfies the following properties:
+        <ol start=1>
+        <li>The vectors in \(\mathcal{B}\) are orthogonal.</li>
+        <li>\(\mathcal{B}\) spans the same subspace \(H\), and hence is a basis for \(H\).</li>
+        </ol>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+
 ## Practice: Apply Gram-Schmidt{.smaller-title}
 
 
@@ -845,9 +803,9 @@ from IPython.core.display import HTML
 display(HTML(r"""
 <div class="blue-box">
     <p><b>1.</b> Consider the vectors
-    \(\mathbf{v}_1 = \begin{bmatrix}1\\0\\1\end{bmatrix},\;
-    \mathbf{v}_2 = \begin{bmatrix}0\\1\\1\end{bmatrix},\;
-    \mathbf{v}_3 = \begin{bmatrix}2\\1\\3\end{bmatrix}.\)
+    \(\mathbf{v}_1 = \begin{bmatrix}1\\1\\0\end{bmatrix},\;
+    \mathbf{v}_2 = \begin{bmatrix}0\\0\\1\end{bmatrix},\;
+    \mathbf{v}_3 = \begin{bmatrix}2\\2\\1\end{bmatrix}.\)
     <br><br>
     Notice that \(\mathbf{v}_3 = 2\mathbf{v}_1 + \mathbf{v}_2.\)
     <em>Before computing anything</em>, predict what will happen when you apply Gram-Schmidt to \(\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3\}.\)
@@ -864,26 +822,3 @@ display(HTML(r"""
 """))
 ```
 :::
-
-<!-- SOLUTIONS:
-1. Gram-Schmidt on {v1, v2, v3}:
-   u1 = v1 = [1, 0, 1]
-   u2 = v2 - (v2·u1)/(u1·u1) u1 = [0,1,1] - (1/2)[1,0,1] = [-1/2, 1, 1/2]
-   u3 = v3 - (v3·u1)/(u1·u1) u1 - (v3·u2)/(u2·u2) u2 = [0, 0, 0]
-   The third vector collapses to zero because v3 is already in Span{v1,v2}.
-   Gram-Schmidt detects linear dependence: you get the zero vector exactly
-   when the next input vector is in the span of the previous ones.
-
-2a. The basis {[1,1,0], [1,-1,0]} is already orthogonal.
-    c1 = y·u1/(u1·u1) = 4/2 = 2,  c2 = y·u2/(u2·u2) = 2/2 = 1
-    ŷ = 2[1,1,0] + 1[1,-1,0] = [3, 1, 0]
-
-2b. Projecting ŷ = [3,1,0] onto W again:
-    c1 = 4/2 = 2, c2 = 2/2 = 1 → same ŷ = [3,1,0].
-    Projection is idempotent: ŷ is already in W, so projecting it again
-    changes nothing.
-
-2c. y - ŷ = [0, 0, 4]. Project onto W:
-    c1 = 0/2 = 0, c2 = 0/2 = 0 → projection is [0,0,0].
-    The residual is orthogonal to W, so its projection onto W is zero.
--->
