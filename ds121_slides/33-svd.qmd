@@ -13,90 +13,6 @@ format:
         chalkboard: true
 ---
 
-
-## The Spectral Theorem
-:::{style="font-size: .8em"}
-__Example.__  Find an orthogonal diagonalization of the matrix $A = \begin{bmatrix}
-1 & -1 & -1 \\
--1 & 1 & -1 \\
--1 & -1 & 1
-\end{bmatrix}.$
-
-It can be shown that the eigenvalues of $A$ are $\lambda_1 = -1$, with algebraic multiplicity 1, and $\lambda_2 = 2$ with algebraic multiplicity 2.
-
-The eigenspace of $\lambda_1$ is spanned by $\mathbf{v}_1 = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}$.
-
-The eigenspace of $\lambda_2$ is spanned by $\mathbf{v}_2 = \begin{bmatrix} -1 \\ 1 \\ 0 \end{bmatrix}$ and $\mathbf{v}_3 = \begin{bmatrix} -1 \\ 0 \\ 1 \end{bmatrix}.$
-
-
-<!-- $$\lambda_1 = -1, \operatorname{span} \left\{ \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} \right\},$$
-$$\lambda_2 = \lamba_3, \operatorname{span} \left\{ \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} \right\},$$ -->
-:::
-
-## The Spectral Theorem
-:::{style="font-size: .8em"}
-Notice that $\mathbf{v}_2$ and $\mathbf{v}_3$ are orthogonal to $\mathbf{v}_1$, as must be the case for this $A$ is symmetric. 
-
-<br>
-
-On the other hand, $\mathbf{v}_2$ and $\mathbf{v}_3$ are not orthogonal. In fact, $\mathbf{v}_2^\top \mathbf{v}_3 = 1.$ 
-This is because they both belong to the eigenspace of $\lambda_2.$
-
-<br>
-
-Since we are interested in an orthogonal diagonalization of $A$ and $\mathbf{v}_2$ and $\mathbf{v}_3$ are linearly independent, we can use the Gram-Schmidt process to orthogonalize these vectors.
-
-:::
-
-## The Spectral Theorem
-:::{style="font-size: .8em"}
-
-
-We replace $\mathbf{v}_3$ by 
-
-$$\mathbf{u}_3 = \mathbf{v}_3 - \frac{\mathbf{v}_3^\top \mathbf{v}_2}{\mathbf{v}_2^\top \mathbf{v}_2} \mathbf{v}_2 = \begin{bmatrix} -1 \\ 0 \\ 1 \end{bmatrix} - \frac{1}{2}\begin{bmatrix} -1 \\ 1 \\ 0 \end{bmatrix} = \begin{bmatrix} -1/2 \\ -1/2 \\ 1 \end{bmatrix}.$$
-
-The set $\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{u}_3\}$ is orthogonal. We obtain $P$ by normalizing each of the vectors in this set:
-$$P = \begin{bmatrix} 1/\sqrt{3} & -1/\sqrt{2} & -1/\sqrt{6}\\
-1/\sqrt{3} & 1/\sqrt{2} & -1/\sqrt{6}\\ 1/\sqrt{3} & 0 & 2/\sqrt{6} \end{bmatrix}.$$
-
-<!-- The matrix $D$ is equal to $\begin{bmatrix} -1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 2\end{bmatrix}.$ -->
-
-:::
-
-## The Spectral Theorem
-:::{style="font-size: .8em"}
-
-The matrix $D$ is equal to $\begin{bmatrix} -1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 2\end{bmatrix}.$
-
-Hence, 
-:::
-:::{style="font-size: .6em"}
-$$A = \begin{bmatrix} 1/\sqrt{3} & -1/\sqrt{2} & -1/\sqrt{6}\\
-1/\sqrt{3} & 1/\sqrt{2} & -1/\sqrt{6}\\ 1/\sqrt{3} & 0 & 2/\sqrt{6}  \end{bmatrix} \begin{bmatrix} -1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 2\end{bmatrix} \begin{bmatrix} 1/\sqrt{3} & -1/\sqrt{2} & -1/\sqrt{6}\\
-1/\sqrt{3} & 1/\sqrt{2} & -1/\sqrt{6}\\ 1/\sqrt{3} & 0 & 2/\sqrt{6} \end{bmatrix}^T.$$
-:::
-:::{style="font-size: .8em"}
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-        Find an orthogonal diagonalization of \( \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}.\)
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
-
-:::
-
-
-
 ## Learning Objectives
 
 :::{style="font-size: .8em"}
@@ -117,6 +33,21 @@ Today we will talk about the intuition behind SVD, its geometric interpretation 
 
 :::
 
+## SVD and Diagonalization
+:::{style="font-size: .8em"}
+SVD is another factorization techinique that uses the concepts of eigenvalues and eigenvectors. It is similar to diagonalization, but does not create $PDP^{-1}$.
+
+The eigenvectors in $P$ have three big problems: 
+
+1. They are usually not orthogonal.
+2. There are not always enough eigenvectors.
+3. They can only be found for square matrices. 
+
+SVD solves  all those problems.
+
+SVD applies to _any_ matrix, no matter its size, symmetry, invertibility, or diagonalizability.
+:::
+
 ## SVD in Data Science
 
 :::{style="font-size: .8em"}
@@ -130,7 +61,7 @@ $${\mbox{$m$ data objects}}\left\{\begin{array}{c}\;\\\;\\\;\\\;\\\;\end{array}\
 \begin{array}{c}a_{1n}\\\vdots\\a_{in}\\\vdots\\a_{mn}\end{array}
 \end{array}\right]}^{\mbox{$n$ features}}$$
 
-Using SVD, we can "compress" such a matrix of real-world messy data into matrices of smaller dimensions, either exactly or approximately.
+SVD "compresses" such a matrix of real-world messy data into matrices of smaller dimensions.
 :::
 
 ## SVD in Data Science
@@ -191,20 +122,39 @@ SVD decomposes an $m \times n$ matrix into a sequence of three steps.
 
 ::: -->
 
+## Symmetric Matrices
+:::{style="font-size: .8em"}
+Given an $m \times n$ matrix $A$, the $n \times n$ matrix $A^\top A$ is always symmetric because
+
+$$
+(A^\top A)^\top = A^\top (A^\top)^\top = (A^\top A).
+$$
+
+Hence, $A^\top A$ can be _**orthogonally diagonalized**_. 
+
+This implies that 
+
+- $A^\top A$ has $n$ linearly independent eigenvectors
+
+- these eigenvectors can form an orthonormal set
+:::
+
+
 ## Singular Values
 
 :::{style="font-size: .8em"}
 
-Last week we saw that for an arbitrary $m\times n$ matrix $A$, the matrix $A^\top A$ is _**symmetric**_. So, $A^\top A$ can be _**orthogonally diagonalized**_. 
+Let $\{\mathbf{v}_1, \dots, \mathbf{v}_n\}$ be a set consisting of orthonormal eigenvectors of $A^\top A$. 
 
-This implies that there exists an orthonormal basis for $\mathbb{R}^n$, say $\{\mathbf{v}_1, \dots, \mathbf{v}_n\}$, consisting of eigenvectors of $A^\top A$. We let $\lambda_1, \dots, \lambda_n$ be the corresponding eigenvalues of $A^\top A$.  
+Let $\lambda_1, \dots, \lambda_n$ be the corresponding eigenvalues of $A^\top A$.  
 
 Then, for any eigenvector $\mathbf{v}_i$, 
 
 $$\begin{align*}
 \Vert A\mathbf{v}_i\Vert^2 &= (A\mathbf{v}_i)^\top A\mathbf{v}_i \\
 &= \mathbf{v}_i^\top A^\top A\mathbf{v}_i \\
-&= \mathbf{v}_i^\top (\lambda_i)\mathbf{v}_i \; \hphantom{\lambda_i} \text{(since $\mathbf{v}_i$ is an eigenvector of $A^{\top} A$)} \\
+&= \mathbf{v}_i^\top (\lambda_i\mathbf{v}_i) \; \hphantom{\lambda_i} \text{(since $\mathbf{v}_i$ is an eigenvector of $A^{\top} A$)} \\
+&= \lambda_i (\mathbf{v}_i^\top \mathbf{v}_i) \; \hphantom{\lambda_i}  \\
 &= \lambda_i \; \hphantom{\mathbf{v}_i^\top (\lambda_i)\mathbf{v}_i} \text{(since $\mathbf{v}_i$ is a unit vector).}
 \end{align*}$$
 
@@ -215,9 +165,7 @@ Since $\Vert\cdot\Vert^2$ is nonnegative, the eigenvalues of $A^\top A$ are all 
 
 :::{style="font-size: .8em"}
 
-Since all eigenvalues of $A^\top A$ are nonnegative, we can reorder the eigenvalues so that
-
-$$\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_n \geq 0.$$
+Since all eigenvalues of $A^\top A$ are nonnegative, their square roots are going to be real numbers.
 
 
 ```{python}
@@ -227,23 +175,90 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p><span class="label">Singular values</span>
-        The <b>singular values</b> of \(A\) are the square roots of the eigenvalues of \(A^\top A\).  They are denoted by \(\sigma_1,\dots,\sigma_n,\) and by convention they are arranged in decreasing order.
+        The <b>singular values</b> of \(A\) are the square roots of the eigenvalues of \(A^\top A\).  
         </p>
     </div>
     """
 html_content = generate_html()
 display(HTML(html_content))
 ```
+They are denoted by $\sigma_1,\dots,\sigma_n,$ and by convention they are arranged in decreasing order.
 
-That is, $\sigma_i = \sqrt{\lambda_i}$ for $i = 1,\dots,n$ where $\lambda_i$ denotes an eigenvalue of $A^\top A.$
 
-Note that by the argument on the previous slide _the singular values of $A$ are the lengths of the vectors $A\mathbf{v}_1, \dots, A\mathbf{v}_n.$_
+That is, $\sigma_i = \sqrt{\lambda_i}$ for $i = 1,\dots,n$ where $\lambda_i$ denotes an eigenvalue of $A^\top A$ and we can reorder the singular values so that
+
+$$\sigma_1 \geq \sigma_2 \geq \cdots \geq \sigma_n \geq 0.$$
+
+<!-- Note that by the argument on the previous slide _the singular values of $A$ are the lengths of the vectors $A\mathbf{v}_1, \dots, A\mathbf{v}_n.$_ -->
 :::
+
+## Singular Values
+:::{style="font-size: .8em"}
+__Example.__ Consider 
+$$A = \begin{bmatrix}
+    4 & 0\\
+    3 & -5
+\end{bmatrix}.$$
+Let us find the singular values of $A$. 
+
+First, we compute $A^TA$:
+
+$$A^TA =  \begin{bmatrix}
+    4 & 3\\ 0 & -5
+\end{bmatrix} \begin{bmatrix}
+    4 & 0 \\ 3 & -5
+\end{bmatrix} = 
+\begin{bmatrix}
+    25 & -15 \\
+    -15 & 25
+\end{bmatrix}.$$
+
+Note that the resulting matrix is symmetric!
+:::
+
+## Singular Values
+:::{style="font-size: .8em"}
+To find the eigenvalues of $A^TA$ we need to compute its characteristic polynomial.
+$$\det(A^TA - \lambda I) = \det\left( \begin{bmatrix}
+    25 - \lambda & -15\\
+    -15 & 25 - \lambda
+\end{bmatrix} \right) $$
+$$= \lambda^2 - 50 \lambda+400 = (\lambda-10)(\lambda-40).$$
+Hence, the eigenvalues of $A^\top A$ are $\lambda_1 = 40$ and $\lambda_2 = 10$. 
+
+The corresponding singular values are $\sigma_1 = \sqrt{40}$ and $\sigma_2 = \sqrt{10}.$<br>
+:::
+
+## Singular Values
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Find the singular values of \(A = \begin{bmatrix}
+    3 & 0 \\
+    4 & 5
+\end{bmatrix}.\)
+        </p>
+        <br> <br> <br>
+        <br> <br> <br>
+        <br> <br> <br>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
 
 ## Singular Vectors
 :::{style="font-size: .8em"}
 
-We know that vectors $\mathbf{v}_1, \dots, \mathbf{v}_n$ form an orthogonal set because they are eigenvectors of the symmetric matrix $A^\top A$.  
+<!-- We know that vectors $\mathbf{v}_1, \dots, \mathbf{v}_n$ form an orthogonal set because they are eigenvectors of the symmetric matrix $A^\top A$.   -->
 
 ```{python}
 from IPython.core.display import HTML
@@ -252,7 +267,7 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p><span class="label">Right singular vectors</span>
-        The eigenvectors \(\mathbf{v}_1, \dots, \mathbf{v}_n\) of \(A^\top A,\) normalized to be of unit length, are known as the <b>right singular vectors</b> of \(A.\)
+        The eigenvectors \(\mathbf{v}_1, \dots, \mathbf{v}_n\) of \(A^\top A,\) that form an orthonormal set, are known as the <b>right singular vectors</b> of \(A.\)
         </p>
     </div>
     """
@@ -261,7 +276,9 @@ display(HTML(html_content))
 ```
 
 It can be shown that $A\mathbf{v}_1, \dots, A\mathbf{v}_n$ form an orthogonal set as well. <br>
-If we define the vectors ${\bf u}_i$ such that $A{\bf v}_i = \sigma_i{\bf u}_i$. Since the length of $A{\bf v}_i$ is $\sigma_i,$  ${\bf u}_i$ must be a unit vector. 
+Since $\Vert A\mathbf{v}_i\Vert^2 = \lambda_i = \sigma_i^2,$ the length of $A{\bf v}_i$ is equal to $\sigma_i.$
+
+If we define the vectors ${\bf u}_i$ such that $A{\bf v}_i = \sigma_i{\bf u}_i$, then ${\bf u}_i$ must be a unit vector. 
 
 ```{python}
 from IPython.core.display import HTML
@@ -335,13 +352,13 @@ def generate_html():
     <div class="purple-box">
         <p><span class="label">Singular Value Decomposition</span>
         Let \(A\) be an \(m\times n\) matrix with rank \(r\).  Then there exist 
-        <ul> <li> an \(m\times n\) matrix \(\Sigma\) whose diagonal entries are the first \(r\) singular values of \(A\), \(\sigma_1 \geq \sigma_2 \geq \dots \geq \sigma_r > 0,\)
-            <li> an \(m\times m\) orthonormal matrix \(U\),
-            <li> an \(n\times n\) orthonormal matrix \(V\)
+        <ul> <li> an \(r\times r\) matrix \(\Sigma\) whose diagonal entries are the first \(r\) singular values of \(A\), \(\sigma_1 \geq \sigma_2 \geq \dots \geq \sigma_r > 0,\)
+            <li> an \(m\times r\) orthonormal matrix \(U\) whose columns are left singular vectors of \(A\),
+            <li> an \(n\times r\) orthonormal matrix \(V\) whose columns are right singular vectors of \(A\),
         </li>
         <br>
         such that 
-        \(A = U\Sigma V^{\top} \Leftrightarrow AV = U\Sigma.\)
+        \(A = U\Sigma V^{\top}.\)
         </p>
     </div>
     """
@@ -351,73 +368,35 @@ display(HTML(html_content))
 __Proof.__ See notes.
 :::
 
-## Singular Value Decomposition
-:::{style="font-size: .5em"}
-$$
-\overbrace{\left[\begin{array}{ccccc}\phantom{\ddots}&\phantom{\ddots}&&&\\&&A&&\\&&&\phantom{\ddots}&\phantom{\ddots}\end{array}\right]}^{\large m \times n}
-%
-= \overbrace{\left[\begin{array}{ccc}\vdots&\vdots& &\vdots\\\color{blue}{{\bf u}_1}&\color{blue}{{\bf u}_2} & \cdots &\color{blue}{{\bf u}_m}\\\vdots&\vdots& & \vdots\end{array}\right]}^{\large m \times m}
-%
-\quad
-\overbrace{\left[\begin{array}{ccccc}\color{blue}{\sigma_1}&0& &0&0&0\\0&\color{blue}{\sigma_2}& \cdots &0&0&0\\0&0& &\color{blue}{\sigma_m}&0&0\end{array}\right]}^{\large m \times n}
-%
-\quad
-\overbrace{\left[\begin{array}{ccccc}\cdots&\cdots&\color{blue}{{\bf v}_1}&\cdots&\cdots\\\cdots&\cdots&\color{blue}{{\bf v}_2}&\cdots&\cdots\\ & & \vdots & & \\ & & \vdots & & \\\cdots &\cdots &\color{blue}{{\bf v}_n}& \cdots &\cdots \end{array}\right]}^{\large n \times n}
-$$
-:::
-:::{style="font-size: .8em"}
-That is, the components of SVD are:
-
-* a diagonal matrix $\Sigma$, whose non-zero diagonal entries are the first $r$ singular values of $A$
-* an orthonormal matrix $U$, whose columns are left singular vectors of $A$
-* an orthonormal matrix $V$, whose columns are right singular vectors of $A$
-:::
-
 
 ## Singular Value Decomposition
 :::{style="font-size: .8em"}
-__Example.__ Consider 
+__Example.__ Let us return to
 $$A = \begin{bmatrix}
     4 & 0\\
     3 & -5
-\end{bmatrix}.$$
-Let us first find the singular values of $A$. Use them to construct matrix $\Sigma$ for the singular value decomposition (SVD) of $A.$
+\end{bmatrix}$$
+and find its singular value decomposition.
 
-First, we compute $A^TA$:
-
-$$A^TA =  \begin{bmatrix}
-    4 & 3\\ 0 & -5
-\end{bmatrix} \begin{bmatrix}
-    4 & 0 \\ 3 & -5
-\end{bmatrix} = 
-\begin{bmatrix}
-    25 & -15 \\
-    -15 & 25
-\end{bmatrix}.$$
-:::
-
-## Singular Value Decomposition
-:::{style="font-size: .8em"}
-To find the eigenvalues of $A^TA$ we need to compute its characteristic polynomial.
-$$\det(A^TA - \lambda I) = \det\left( \begin{bmatrix}
-    25 - \lambda & -15\\
-    -15 & 25 - \lambda
-\end{bmatrix} \right) $$
-$$= \lambda^2 - 50 \lambda+400 = (\lambda-10)(\lambda-40).$$
-Hence, the eigenvalues of $A^\top A$ are $\lambda_1 = 40$ and $\lambda_2 = 10$. The corresponding singular values are $\sigma_1 = \sqrt{40}$ and $\sigma_2 = \sqrt{10}.$<br>
-We find $$\Sigma = \begin{bmatrix}
+Since its singular values are $\sigma_1 = \sqrt{40}$ and $\sigma_2 = \sqrt{10},$ we find $$\Sigma = \begin{bmatrix}
     \sqrt{40} & 0\\
     0 & \sqrt{10}
 \end{bmatrix}.$$
+
+Next, we need to find the right and left singular vectors of $A$.
 :::
 
 ## Singular Value Decomposition
 :::{style="font-size: .8em"}
-Next, we find the right and left singular vectors of $A$. We will use them to construct orthonormal matrices $V$ and $U$ for the SVD of $A=U\Sigma V^\top.$ 
+<!-- Next, we find the right and left singular vectors of $A$. We will use them to construct orthonormal matrices $V$ and $U$ for the SVD of $A=U\Sigma V^\top.$  -->
 
-<!-- The right singular vectors are defined as the normalized eigenvectors of $A^TA.$ -->
+The right singular vectors are defined as the normalized (and orthogonalized) eigenvectors of $A^TA.$
+
 To find the eigenvectors of $A^TA$, we need to find the nullspace of $A^TA - \lambda_1I$ and $A^TA - \lambda_2I$.
-$$\begin{bmatrix} -15 & -15 \\ -15 & -15 \end{bmatrix} \sim 
+$$A^TA - \lambda_1I = \begin{bmatrix}
+    25 & -15 \\
+    -15 & 25
+\end{bmatrix} - 40 I = \begin{bmatrix} -15 & -15 \\ -15 & -15 \end{bmatrix} \sim 
 \begin{bmatrix} 1 & 1 \\ 0 & 0\end{bmatrix}.$$
 It follows that $x_2$ is free and $x_1 = -x_2.$ This implies that any vector of the form 
 $s\begin{bmatrix}
@@ -454,6 +433,31 @@ Hence, $U = \frac{1}{\sqrt{5}} \begin{bmatrix}
 \end{bmatrix}.$
 
 Together, $\Sigma, U,$ and $V$ form the singular value decomposition of $A$.
+:::
+
+## Singular Value Decomposition
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Find the singular value decomposition of \(A = \begin{bmatrix}
+    3 & 0 \\
+    4 & 5
+\end{bmatrix}.\)
+That is, provide matrices \(U, \Sigma,\) and \(V\) such that \(A = U\Sigma V^T.\)
+        </p>
+                <br> <br> <br>
+        <br> <br> <br>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
 :::
 <!-- 
 

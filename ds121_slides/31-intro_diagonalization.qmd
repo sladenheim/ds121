@@ -122,19 +122,25 @@ print(P @ D @ Pinv)                         # calculate A = P D P^{-1}
 ## Powers of a Matrix
 
 :::{style="font-size: .8em"}
-__Example (continued).__  By associativity of matrix multiplication,
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Use the associativity of matrix multiplication to show that \(A^2 = PD^2P^{-1}.\) 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
 
 $$
-\begin{align*}
-A^2 &= (PDP^{-1})(PDP^{-1}) \\
-&= PD(P^{-1}P)DP^{-1} \\
-&= PDDP^{-1} \\
-&= PD^2P^{-1}
-\end{align*}
-$$
-
-$$
-= \begin{bmatrix}1&1\\-1&-2\end{bmatrix}\begin{bmatrix}5^2&0\\0&3^2\end{bmatrix}\begin{bmatrix}2&1\\-1&-1\end{bmatrix}
+A^2 = \begin{bmatrix}1&1\\-1&-2\end{bmatrix}\begin{bmatrix}5^2&0\\0&3^2\end{bmatrix}\begin{bmatrix}2&1\\-1&-1\end{bmatrix}
 $$
 
 The same pattern occurs for $A^3$, $A^4$, and so on. In general, for $k\geq 1,$
@@ -152,6 +158,17 @@ A^k &= P D^k P^{-1} \\
 &=\begin{bmatrix}2\cdot5^k-3^k&5^k-3^k\\2\cdot3^k-2\cdot5^k&2\cdot3^k-5^k\end{bmatrix}.
 \end{align*}
 $$ -->
+:::
+
+:::{.notes}
+$$
+\begin{align*}
+A^2 &= (PDP^{-1})(PDP^{-1}) \\
+&= PD(P^{-1}P)DP^{-1} \\
+&= PDDP^{-1} \\
+&= PD^2P^{-1}
+\end{align*}
+$$
 :::
 
 
@@ -240,12 +257,12 @@ Next, note if $D$ is any diagonal matrix with diagonal entries $\lambda_1,\dots,
 
 $$
 PD =
-[\mathbf{v}_1\;\mathbf{v}_2\;\cdots\;\mathbf{v}_n]
+[\mathbf{v}_1\;\;\mathbf{v}_2\;\cdots\;\mathbf{v}_n]
 \begin{bmatrix}\lambda_1&0&\cdots&0\\0&\lambda_2&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\0&0&\cdots&\lambda_n\end{bmatrix}
-= [\lambda_1\mathbf{v}_1\;\lambda_2\mathbf{v}_2\;\cdots\;\lambda_n\mathbf{v}_n].
+= [\lambda_1\mathbf{v}_1\;\;\lambda_2\mathbf{v}_2\;\cdots\;\lambda_n\mathbf{v}_n].
 $$
 
-Since $AP = PD$, we find $[A\mathbf{v}_1\;A\mathbf{v}_2\;\cdots\;A\mathbf{v}_n] = [\lambda_1\mathbf{v}_1\;\lambda_2\mathbf{v}_2\;\cdots\;\lambda_n\mathbf{v}_n].$
+Since $AP = PD$, we find $[A\mathbf{v}_1\;A\mathbf{v}_2\;\cdots\;A\mathbf{v}_n] = [\lambda_1\mathbf{v}_1\;\;\lambda_2\mathbf{v}_2\;\cdots\;\lambda_n\mathbf{v}_n].$
 :::
 
 ## Diagonalization Theorem
@@ -298,11 +315,22 @@ $$
 AP = PD.
 $$
 
-Since the eigenvectors are given as linearly independent, $P$ is invertible (by the IMT) and so 
+Since these eigenvectors are linearly independent, $P$ is invertible (by the IMT) and $A = PDP^{-1}.$
 
-$$
-A = PDP^{-1}.
-$$
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Is the diagonalization of \(A\) unique?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
 :::
 
 <!-- ## The Need for Eigenvectors and Eigenvalues{.really-really-smaller-title}

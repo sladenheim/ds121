@@ -19,7 +19,7 @@ format:
 - Cases when diagonalization fails
 - A diagonalization criterion based on multiplicities 
 - Diagonalization of symmetric matrices
-- The spectral theorem 
+
 
 :::
 
@@ -27,7 +27,7 @@ format:
 
 :::{style="font-size: .8em"}
 
-Let's look at another example. 
+Let's look at another example of diagonalization. 
 
 __Example.__ If possible, diagonalize $A = \begin{bmatrix}2&4&3\\-4&-6&-3\\3&3&1\end{bmatrix}.$
 
@@ -57,22 +57,9 @@ Basis for $\lambda_2 = -2$: $\left\{\begin{bmatrix}-1\\1\\0\end{bmatrix}\right\}
 
 Every eigenvector of $A$ is a multiple of either $\begin{bmatrix}1\\-1\\1\end{bmatrix}$ or $\begin{bmatrix}-1\\1\\0\end{bmatrix}.$  
 
+<br>
+
 Hence, it is impossible to construct $n = 3$ linearly independent eigenvectors of $A$. 
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-        Why can't we use linearly dependent eigenvectors?
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
 
 We conclude that $A$ is __not__ diagonalizable.
 
@@ -145,67 +132,6 @@ $$
 
 - Since $A$ is (upper) triangular, its eigenvalues are $5, 0,$ and $-2$.
 - Since $A$ is a $3\times3$ with 3 distinct eigenvalues, $A$ is diagonalizable.
-:::
-
-## Diagonalization
-:::{style="font-size: .8em"}
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-        Consider the following matrix
-    $$A = \begin{bmatrix}
-    2 & 0 & 0\\
-    1 & 4 & -1\\
-    -2 & -4 & 4
-    \end{bmatrix}.$$
-    The characteristic polynomial of \(A\) is equal to \( (\lambda - 2)^2 (\lambda - 6). \) If possible, find an invertible matrix \(P\) and a diagonal matrix \( D \) such that \(A = PDP^{-1}.\)
-        </p>
-        <br><br><br>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
-:::
-
-## Diagonalization
-:::{style="font-size: .8em"}
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-        Suppose \(A = PDP^{-1}\) with
-    $$D = \begin{bmatrix}
-    -1 & 0 & 0 & 0\\
-    0 & 1 & 0 & 0\\
-    0 & 0 & -1 & 0\\
-    0 & 0 & 0 & 1
-    \end{bmatrix}.$$
-    What is \(A^{46}\) equal to?
-
-            <form>
-            <label><input type="radio" name="choice"> \( I\quad\)</label>
-            <label><input type="radio" name="choice"> \(D\quad\)</label>
-            <label><input type="radio" name="choice"> \(A\quad\)</label>
-                        <label><input type="radio" name="choice"> \( -I\quad\)</label>
-            <label><input type="radio" name="choice"> \(-D\quad\)</label>
-            <label><input type="radio" name="choice"> \(-A\quad\)</label>
-            <label><input type="radio" name="choice"> None of the above</label>
-        </form>
-        </p>
-        <br><br><br>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
 :::
 
 <!-- ## Geometric Interpretation
@@ -445,23 +371,6 @@ Diagonalization of $A$ changes the action of $A$ to a basis in which it is easy 
 Remember that not all matrices are diagonalizable! This particular matrix factorization only applies to square matrices, and not even all square matrices.
 ::: -->
 
-## Course Evaluations
-
-:::{style="font-size: .8em"}
-
-Please submit your course evaluations:
-
-- For Prof. Wheelock, CDS DS 121 A1/B1 - Foundations of Data Science 2
-
-- For Prof. Wobbes, CDS DS 121 A1/B1 - Foundations of Data Science 2
-
-- For your TA, CDS DS 122 A2/A3/A5/B2/B3/B5 - Foundations of Data Science 2
-
-<br>
-Your feedback is valuable to us!
-
-:::
-
 ## Symmetric Matrices
 
 :::{style="font-size: .8em"}
@@ -498,7 +407,7 @@ $$
 $$
 :::
 
-<!-- ## Symmetric Matrices
+## Symmetric Matrices
 
 :::{style="font-size: .8em"}
 Another example of a symmetric matrix is $A^\top A$ (starting from $A$ of _any_ size).
@@ -518,7 +427,7 @@ print(A.T @ A)
 ```
 
 Symmetric matrices have a number of interesting properties. 
-::: -->
+:::
 
 <!-- In the remainder of this week, we'll see that symmetric matrices have properties that relate to both eigendecomposition and orthogonality.
 ::: -->
@@ -533,18 +442,16 @@ def generate_html():
     return r"""
     <div class="purple-box">
         <p><span class="label">Theorem</span>
-        If \(A\) is symmetric, then any two eigenvectors of \(A\) from different eigenspaces (i.e., eigenspaces corresponding to different eigenvalues) are orthogonal.
+        If \(A\) is symmetric, then any two eigenvectors of \(A\) from different eigenspaces are orthogonal.
         </p>
     </div>
     """
 html_content = generate_html()
 display(HTML(html_content))
 ```
-:::
-:::{style="font-size: .7em"}
 
 __Proof.__  Let $\mathbf{v}_1$ and $\mathbf{v}_2$ be eigenvectors that correspond to distinct eigenvalues, say, $\lambda_1$ and $\lambda_2.$  To show that $\mathbf{v}_1^\top \mathbf{v}_2 = 0,$ compute
-$$ 
+$$
 \begin{align*}
 \lambda_1\mathbf{v}_1^\top \mathbf{v}_2 &= (\lambda_1\mathbf{v}_1)^\top \mathbf{v}_2 \\
 &=(A\mathbf{v}_1)^\top \mathbf{v}_2 \\
@@ -570,11 +477,10 @@ Therefore, $\mathbf{v}_1$ is orthogonal to $\mathbf{v}_2.$
 <br>
 
 The same argument applies to any other pair of eigenvectors with distinct eigenvalues.
-That means that any two eigenvectors of $A$ from different eigenspaces are orthogonal.
 
 <br>
 
-Recall that orthogonal vectors must be linearly independent.
+ That means that any two eigenvectors of $A$ from different eigenspaces are orthogonal.
 :::
 
 
@@ -740,7 +646,7 @@ which yields the eigenspace spanned by $\begin{bmatrix} 1 \\ 2 \end{bmatrix}.$
 :::{style="font-size: .8em"}
 Notice that the lengths of both $\begin{bmatrix} -2 \\ 1 \end{bmatrix}$ and $\begin{bmatrix} 1 \\ 2 \end{bmatrix}$ are equal to $\sqrt{5}.$
 
-It remains to construct $P$ and $D$: 
+It remains to contruct $P$ and $D$: 
 $$P = \begin{bmatrix} -2/\sqrt{5} & 1/\sqrt{5} \\ 1/\sqrt{5} & 2/\sqrt{5} \end{bmatrix} \text { and } D = \begin{bmatrix} 0 & 0 \\ 0 & 5\end{bmatrix}.$$
 
 Hence, the orthogonal diagonalization of $A$ is 
@@ -749,47 +655,18 @@ $$A = PDP^\top = \begin{bmatrix} -2/\sqrt{5} & 1/\sqrt{5} \\ 1/\sqrt{5} & 2/\sqr
 :::
 
 ## The Spectral Theorem
-
 :::{style="font-size: .8em"}
-Below is a five-step procedure to orthogonally diagonalize a symmetric matrix: 
-
-1. find eigenvalues, 
-2. find eigenvectors, 
-3. ensure the eigenvectors form an orthonormal set,
-4. construct $P$, and 
-5. construct $D$.
-
-```{python}
-from IPython.core.display import HTML
-
-def generate_html():
-    return r"""
-    <div class="blue-box">
-        <p>
-        Find an orthogonal diagonalization of \( \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}.\)
-        </p>
-    </div>
-    """
-html_content = generate_html()
-display(HTML(html_content))
-```
-
-:::
-
-## The Spectral Theorem
-:::{style="font-size: .8em"}
-__Example.__  Find an orthogonal diagonalization of the matrix 
-$$\small A = \begin{bmatrix}
+__Example.__  Find an orthogonal diagonalization of the matrix $A = \begin{bmatrix}
 1 & -1 & -1 \\
 -1 & 1 & -1 \\
 -1 & -1 & 1
-\end{bmatrix}.$$
+\end{bmatrix}.$
 
 It can be shown that the eigenvalues of $A$ are $\lambda_1 = -1$, with algebraic multiplicity 1, and $\lambda_2 = 2$ with algebraic multiplicity 2.
 
-The eigenspace of $\lambda_1$ is spanned by $\small \mathbf{v}_1 = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}$.
+The eigenspace of $\lambda_1$ is spanned by $\mathbf{v}_1 = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}$.
 
-The eigenspace of $\lambda_2$ is spanned by $\small \mathbf{v}_2 = \begin{bmatrix} -1 \\ 1 \\ 0 \end{bmatrix}$ and $\small \mathbf{v}_3 = \begin{bmatrix} -1 \\ 0 \\ 1 \end{bmatrix}.$
+The eigenspace of $\lambda_2$ is spanned by $\mathbf{v}_2 = \begin{bmatrix} -1 \\ 1 \\ 0 \end{bmatrix}$ and $\mathbf{v}_3 = \begin{bmatrix} -1 \\ 0 \\ 1 \end{bmatrix}.$
 
 
 <!-- $$\lambda_1 = -1, \operatorname{span} \left\{ \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} \right\},$$
@@ -834,14 +711,11 @@ The matrix $D$ is equal to $\begin{bmatrix} -1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 2
 
 Hence, 
 :::
-:::{style="font-size: .7em"}
+:::{style="font-size: .6em"}
 $$A = \begin{bmatrix} 1/\sqrt{3} & -1/\sqrt{2} & -1/\sqrt{6}\\
 1/\sqrt{3} & 1/\sqrt{2} & -1/\sqrt{6}\\ 1/\sqrt{3} & 0 & 2/\sqrt{6}  \end{bmatrix} \begin{bmatrix} -1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 2\end{bmatrix} \begin{bmatrix} 1/\sqrt{3} & -1/\sqrt{2} & -1/\sqrt{6}\\
 1/\sqrt{3} & 1/\sqrt{2} & -1/\sqrt{6}\\ 1/\sqrt{3} & 0 & 2/\sqrt{6} \end{bmatrix}^T.$$
 :::
-
-
-## The Spectral Theorem
 :::{style="font-size: .8em"}
 
 ```{python}
@@ -851,12 +725,7 @@ def generate_html():
     return r"""
     <div class="blue-box">
         <p>
-        Let \(A = \begin{bmatrix} 9 & 6 & -1 \\ 0 & 0 & 1 \\ 0 & 0 & -2\end{bmatrix}.\) Then \(A\) is
-        <form>
-            <label><input type="radio" name="choice"> invertible \(\quad\) </label>
-            <label><input type="radio" name="choice"> diagonalizable \(\quad\)</label>
-            <label><input type="radio" name="choice"> orthogonally diagonalizable \(\quad\)</label>
-        </form>
+        Find an orthogonal diagonalization of \( \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}.\)
         </p>
     </div>
     """
@@ -865,3 +734,5 @@ display(HTML(html_content))
 ```
 
 :::
+
+
