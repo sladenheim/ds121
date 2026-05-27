@@ -615,7 +615,7 @@ Hence, the eigenvalues of $A$ are $\lambda_1=0$ and $\lambda_2=5.$
 
 :::{style="font-size: 1.3em"}
 
-3. It remains to find the eigenvectors. Solve $\operatorname{det}(A - \lambda I) = 0$ seperately for $\lambda_1 = 0$ and $\lambda_2=5.$
+3. It remains to find the eigenvectors. Solve $\operatorname{det}(A - \lambda I) = 0$ separately for $\lambda_1 = 0$ and $\lambda_2=5.$
 
 $$
 \left[ A - 0I \,\middle|\, \mathbf{0} \right] = 
