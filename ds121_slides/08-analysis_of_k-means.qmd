@@ -1,0 +1,1119 @@
+---
+title: "Analysis of K-Means Clustering"
+author: "CDS DS-121<br>Boston University"
+format:
+    revealjs:
+        math: true
+        css:
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+
+---
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import load_wine
+import sklearn.datasets as sk_data
+import sklearn.metrics as metrics
+import seaborn as sns
+from IPython.core.display import HTML
+```
+
+## Learning Objectives
+
+::::{style="font-size: .8em;"}
+
+- Limitations of $k$-means
+    - Non-spherical clusters, unequal sizes
+    - The curse of dimensionality
+- Feature scaling with `StandardScaler`
+- Choosing k: three methods
+    - Elbow method (no labels needed)
+    - Silhouette score (no labels needed)
+    - Rand Index (when you have ground truth)
+- Real-world example: Wine dataset
+
+::::
+
+
+## <span style="font-size: 0.85em;">k-means on Crescent Moons</span>
+
+::::{style="font-size: .8em"}
+:::{.center-text}
+```{python}
+from sklearn.datasets import make_moons
+X_moons, y_moons = make_moons(n_samples=200, noise=0.08, random_state=42)
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.scatter(X_moons[:, 0], X_moons[:, 1], c='gray', s=30, alpha=0.7)
+ax.set_title('Two crescent-shaped clusters')
+ax.axis('equal')
+plt.tight_layout()
+```
+:::
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Predict:</b> If we run k-means with k=2, where will the centroids end up? What will the assignments look like?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## <span style="font-size: 0.85em;">k-means on Crescent Moons</span>
+
+::::{style="font-size: .75em"}
+
+:::{.center-text}
+```{python}
+import plotly.graph_objects as go
+
+# Manual k-means to capture each step
+def assign_clusters(X, centers):
+    distances = np.array([[np.linalg.norm(x - c) for c in centers] for x in X])
+    return np.argmin(distances, axis=1)
+
+def update_centers(X, labels, k):
+    return np.array([X[labels == i].mean(axis=0) for i in range(k)])
+
+# Initial centers
+centers_0 = np.array([[-0.5, 0.7], [1.5, 0.7]])
+
+# Run iterations
+labels_1 = assign_clusters(X_moons, centers_0)
+centers_1 = update_centers(X_moons, labels_1, 2)
+labels_2 = assign_clusters(X_moons, centers_1)
+centers_2 = update_centers(X_moons, labels_2, 2)
+labels_3 = assign_clusters(X_moons, centers_2)
+centers_3 = update_centers(X_moons, labels_3, 2)
+labels_4 = assign_clusters(X_moons, centers_3)
+
+colors = ['steelblue', 'coral']
+frames = []
+buttons = []
+
+# Frame 0: Initial
+f0 = [go.Scatter(x=X_moons[:,0], y=X_moons[:,1], mode='markers',
+                  marker=dict(color='gray', size=8), showlegend=False),
+      go.Scatter(x=centers_0[:,0], y=centers_0[:,1], mode='markers',
+                  marker=dict(color=colors, size=16, symbol='x', line=dict(width=3)), showlegend=False)]
+frames.append(go.Frame(data=f0, name='init'))
+buttons.append(dict(args=[['init'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                   label='1. Initialize', method="animate"))
+
+# Frames for assign/update steps
+for i, (labs, ctrs, next_ctrs) in enumerate([
+    (labels_1, centers_0, centers_1), (labels_2, centers_1, centers_2),
+    (labels_3, centers_2, centers_3)]):
+    # Assign frame
+    fa = [go.Scatter(x=X_moons[:,0], y=X_moons[:,1], mode='markers',
+                      marker=dict(color=[colors[l] for l in labs], size=8), showlegend=False),
+          go.Scatter(x=ctrs[:,0], y=ctrs[:,1], mode='markers',
+                      marker=dict(color=colors, size=16, symbol='x', line=dict(width=3)), showlegend=False)]
+    frames.append(go.Frame(data=fa, name=f'assign{i+1}'))
+    buttons.append(dict(args=[[f'assign{i+1}'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                       label=f'{2+i*2}. Assign', method="animate"))
+    # Update frame
+    fu = [go.Scatter(x=X_moons[:,0], y=X_moons[:,1], mode='markers',
+                      marker=dict(color=[colors[l] for l in labs], size=8), showlegend=False),
+          go.Scatter(x=next_ctrs[:,0], y=next_ctrs[:,1], mode='markers',
+                      marker=dict(color=colors, size=16, symbol='x', line=dict(width=3)), showlegend=False)]
+    frames.append(go.Frame(data=fu, name=f'update{i+1}'))
+    buttons.append(dict(args=[[f'update{i+1}'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                       label=f'{3+i*2}. Update', method="animate"))
+
+# Final converged
+fc = [go.Scatter(x=X_moons[:,0], y=X_moons[:,1], mode='markers',
+                  marker=dict(color=[colors[l] for l in labels_4], size=8), showlegend=False),
+      go.Scatter(x=centers_3[:,0], y=centers_3[:,1], mode='markers',
+                  marker=dict(color=colors, size=16, symbol='x', line=dict(width=3)), showlegend=False)]
+frames.append(go.Frame(data=fc, name='converged'))
+buttons.append(dict(args=[['converged'], {"frame": {"duration": 400, "redraw": True}, "mode": "immediate"}],
+                   label='8. Converged', method="animate"))
+
+fig = go.Figure(data=f0, frames=frames)
+fig.update_layout(
+    xaxis=dict(range=[-1.5, 2.5], scaleanchor='y', scaleratio=1),
+    yaxis=dict(range=[-1, 1.5]),
+    height=350, width=600, margin=dict(l=40, r=40, t=20, b=60),
+    updatemenus=[dict(type="buttons", showactive=True, y=-0.15, x=0.5, xanchor="center",
+                      buttons=buttons, direction="left", font=dict(size=9))]
+)
+fig.show()
+```
+:::
+k-means splits the data **vertically** — it can't find the crescent shapes!
+::::
+
+## Why Does k-Means Fail Here?
+
+::::{style="font-size: .85em"}
+
+:::{.center-text}
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+
+# k-means result
+axes[0].scatter(X_moons[:, 0], X_moons[:, 1], c=[colors[l] for l in labels_4], s=30, alpha=0.7)
+axes[0].scatter(centers_3[:, 0], centers_3[:, 1], c=colors, s=200, marker='X', edgecolors='black', linewidths=1.5)
+axes[0].set_title('k-Means result (wrong!)', fontsize=13)
+axes[0].axis('equal')
+
+# True clusters
+true_colors = ['steelblue', 'coral']
+axes[1].scatter(X_moons[:, 0], X_moons[:, 1], c=[true_colors[l] for l in y_moons], s=30, alpha=0.7)
+axes[1].set_title('True clusters', fontsize=13)
+axes[1].axis('equal')
+
+plt.tight_layout()
+```
+:::
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
+        <p><b>Why?</b> k-means uses distance to the centroid. The centroid of a crescent isn't inside the crescent! </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+
+## When k-Means Struggles
+
+::::{style="font-size: .85em"}
+$k$-means assumes clusters are **spherical** and **similar-sized**. It fails when:
+
+::::{.columns}
+:::{.column width="50%"}
+**Non-spherical clusters**
+<img src="/images/vectors_ds/k-means-nonsphere.png" width=100%/>
+:::
+
+:::{.column width="50%"}
+**Unequal cluster sizes**
+<img src="/images/vectors_ds/k-means-cluster-size.png" width=100%/>
+:::
+::::
+::::
+
+## The Curse of Dimensionality
+
+::::{style="font-size: .85em"}
+Both k-NN and k-means rely on **distance**. In high dimensions, distance becomes meaningless.
+
+**Setup**: Imagine data points uniformly distributed in a ball of radius 10 around a test point.
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What fraction of points are in the outer "shell" (distance 9 to 10)?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## The Shell Problem
+
+::::{style="font-size: .8em"}
+::::{.columns}
+:::{.column width="45%"}
+```{python}
+fig, ax = plt.subplots(figsize=(5, 5))
+# Draw circles
+circle_outer = plt.Circle((0, 0), 1, fill=False, color='steelblue', linewidth=2)
+circle_inner = plt.Circle((0, 0), 0.9, fill=False, color='coral', linewidth=2, linestyle='--')
+ax.add_patch(circle_outer)
+ax.add_patch(circle_inner)
+
+# Shade the shell region
+theta = np.linspace(0, 2*np.pi, 100)
+ax.fill_between(np.cos(theta), 0.9*np.sin(theta), np.sin(theta), alpha=0.3, color='gold')
+ax.fill_between(np.cos(theta), -np.sin(theta), -0.9*np.sin(theta), alpha=0.3, color='gold')
+
+ax.plot(0, 0, 'ko', markersize=8)
+ax.annotate('test point', (0, 0), xytext=(0.1, -0.15), fontsize=10)
+ax.annotate('r = 10', (0.7, 0.7), fontsize=11)
+ax.annotate('r = 9', (0.55, 0.55), fontsize=11, color='coral')
+ax.set_xlim(-1.3, 1.3)
+ax.set_ylim(-1.3, 1.3)
+ax.set_aspect('equal')
+ax.axis('off')
+ax.set_title('2D: What fraction is in the shell?', fontsize=12)
+plt.tight_layout()
+```
+:::
+
+:::{.column width="55%"}
+The volume of a $d$-dimensional ball scales as $r^d$.
+
+**Fraction in outer shell (9 to 10):**
+$$1 - \frac{\text{Vol}(r=9)}{\text{Vol}(r=10)} = 1 - \left(\frac{9}{10}\right)^d$$
+
+:::{.fragment}
+| Dimensions | Fraction in shell |
+|------------|-------------------|
+| d = 2      | 1 - 0.9² = 19%    |
+| d = 10     | 1 - 0.9¹⁰ = 65%   |
+| d = 50     | 1 - 0.9⁵⁰ = 99.5% |
+:::
+:::
+::::
+::::
+
+## Visualizing the Curse
+
+::::{style="font-size: .8em"}
+:::{.center-text}
+```{python}
+dims = range(1, 101)
+fractions = [1 - (0.9)**d for d in dims]
+
+plt.figure(figsize=(9, 4))
+plt.plot(dims, fractions, 'b-', linewidth=2)
+plt.xlabel('Number of dimensions (d)', fontsize=12)
+plt.ylabel('Fraction of points in shell (distance 9-10)', fontsize=12)
+plt.title('As dimensions increase, almost ALL points are in the outer shell', fontsize=13)
+plt.axhline(y=0.5, color='r', linestyle='--', alpha=0.5, label='50%')
+plt.axhline(y=0.99, color='orange', linestyle='--', alpha=0.5, label='99%')
+plt.legend()
+plt.tight_layout()
+```
+:::
+
+**The problem**: In high dimensions, your "nearest" neighbors are nearly the same distance as your "farthest" neighbors. Centroids become meaningless!
+::::
+
+## What To Do About It
+
+::::{style="font-size: .85em"}
+When you have many features:
+
+- **Get more data** (need exponentially more as dimensions grow)
+- **Reduce dimensions**: feature selection, PCA (we saw MDS last lecture!)
+- **Feature scaling**: use `StandardScaler` (coming up next)
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Rule of thumb:</b> Distance-based methods need training data that grows exponentially with the number of features.</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+
+## <span style="font-size: 0.75em;">Another Failure Mode: Bad Inits</span>
+
+
+::::{style="font-size: .85em"}
+Like all iterative methods, k-means can get stuck in poor local minima:
+
+:::{.center-text}
+<img src="/images/vectors_ds/k-means-bad-initialization.png" width=450/>
+:::
+
+**Solution**: **k-means++** picks initial centers that are far apart. Always use `init='k-means++'` in scikit-learn!
+::::
+
+:::{.notes}
+k-means++ is the default in scikit-learn. It picks the first center randomly, then picks subsequent centers with probability proportional to squared distance from existing centers.
+:::
+
+## Impact of Initialization
+
+::::{style="font-size: .75em"}
+10 overlapping clusters in 20D, asking k-means to find 8. With `n_init=1` and random init, each seed gives a different answer:
+
+```{python}
+# High-D overlapping clusters — ambiguous enough that init matters
+X_init_demo, _ = sk_data.make_blobs(n_samples=500, centers=10, n_features=20,
+                                     cluster_std=4.0, random_state=7)
+
+# MDS projection for visualization
+import sklearn.manifold
+dists_init = metrics.euclidean_distances(X_init_demo)
+mds_init = sklearn.manifold.MDS(n_components=2, random_state=0,
+                                 dissimilarity="precomputed", max_iter=3000)
+pos_init = mds_init.fit_transform(dists_init)
+
+fig, axs = plt.subplots(1, 4, figsize=(12, 3))
+for idx, rs in enumerate([1, 5, 12, 42]):
+    km = KMeans(n_clusters=8, init='random', n_init=1, random_state=rs)
+    km.fit(X_init_demo)
+    axs[idx].scatter(pos_init[:, 0], pos_init[:, 1], c=km.labels_,
+                     cmap='tab10', s=15, alpha=0.7)
+    axs[idx].set_title(f'seed={rs}\ninertia={km.inertia_:.0f}', fontsize=11)
+    axs[idx].set_xticks([])
+    axs[idx].set_yticks([])
+plt.tight_layout()
+```
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
+        <p style="margin: 4px 0;"><b>Notice:</b> Same data, same k — but different cluster assignments! Which result has the lowest inertia? Does lower inertia always look "better"?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## How k-means++ Works (FYI)
+
+::::{style="font-size: .85em"}
+The k-means++ algorithm spreads out initial centers:
+
+1. **Pick first center** $\mathbf{c}_1$ uniformly at random from the data
+2. **For each remaining center** $\mathbf{c}_j$:
+   - For each point $\mathbf{x}$, compute $D(\mathbf{x})$ = distance to nearest existing center
+   - Pick next center **with probability proportional** to $D(\mathbf{x})^2$ - biases towards far-away points
+3. **Run standard k-means** from these starting centers
+::::
+
+## Feature Scaling Matters
+
+::::{style="font-size: .85em"}
+Consider clustering people by age, income, and number of children:
+
+::::{.columns}
+:::{.column width="50%"}
+- Joe: age 27, income $75,000, 2 kids
+- Eve: age 45, income $42,000, 0 kids
+:::
+
+:::{.column width="50%"}
+$$\begin{bmatrix} 27 \\ 75000 \\ 2 \end{bmatrix}, \begin{bmatrix} 45 \\ 42000 \\ 0 \end{bmatrix}$$
+:::
+::::
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>What dominates the Euclidean distance here?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## StandardScaler to the Rescue
+
+::::{style="font-size: .85em"}
+**Feature scaling**: transform each feature to have mean 0 and standard deviation 1.
+
+For each feature, StandardScaler computes:
+
+$$z = \frac{x - \mu}{\sigma}$$
+
+where $\mu$ is the feature's mean and $\sigma$ is its standard deviation.
+
+::::
+
+
+## StandardScaler to the Rescue
+
+::::{style="font-size: .85em"}
+
+```{python}
+#| echo: true
+from sklearn.preprocessing import StandardScaler
+
+data = np.array([[27, 75000, 2],
+                 [45, 42000, 0],
+                 [32, 60000, 1]])
+
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(data)
+print("Scaled:\n", scaled_data.round(2))
+```
+
+Now all features contribute equally to distance calculations!
+::::
+
+## <span style="font-size: 0.85em;">Is StandardScaler Always Best?</span>
+
+
+::::{style="font-size: .75em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Think about it:</b> When might StandardScaler cause problems?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+**Potential issues:**
+
+- **Outliers**: Extreme values distort $\mu$ and $\sigma$, compressing "normal" data
+- **Meaningful scales**: Sometimes raw units matter (e.g., dollars vs. counts)
+- **Non-normal distributions**: StandardScaler assumes roughly symmetric data
+
+**Alternatives:**
+
+- `MinMaxScaler`: scales to [0, 1] range
+- `RobustScaler`: uses median and IQR (resistant to outliers)
+:::
+::::
+
+## Choosing k: Three Methods
+
+::::{style="font-size: .85em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>How do we know how many clusters to use?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+| Method | Requires Labels? | What it Measures |
+|--------|------------------|------------------|
+| **Elbow** | No | Cost (inertia) vs k |
+| **Silhouette** | No | Cluster separation |
+| **Rand Index** | Yes | Agreement with ground truth |
+
+Most real-world problems: **no labels** — use Elbow or Silhouette!
+:::
+::::
+
+## The Elbow Method
+
+::::{style="font-size: .85em"}
+Plot the k-means cost (inertia) for different values of k:
+
+:::{.center-text}
+```{python}
+# Generate data for elbow example
+X, y_true = sk_data.make_blobs(n_samples=100, centers=3, n_features=30,
+                                center_box=(-10.0, 10.0), random_state=0)
+
+errors = []
+k_range = range(1, 11)
+for k in k_range:
+    kmeans = KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=0)
+    kmeans.fit(X)
+    errors.append(kmeans.inertia_)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(k_range, errors, 'bo-', linewidth=2, markersize=8)
+ax.axvline(x=3, color='red', linestyle='--', alpha=0.7, label='Elbow at k=3')
+ax.set_xlabel('Number of clusters (k)')
+ax.set_ylabel('Inertia (within-cluster sum of squares)')
+ax.set_title('Elbow Method')
+ax.legend()
+plt.tight_layout()
+```
+:::
+Look for the "elbow" — where adding more clusters stops helping much.
+::::
+
+## Silhouette Score
+
+::::{style="font-size: .85em"}
+Measures how well-separated clusters are, **without needing labels**.
+
+For each point, compute:
+
+- $a$ = mean distance to points in **same** cluster
+- $b$ = mean distance to points in **nearest other** cluster
+
+$$s = \frac{b - a}{\max(a, b)}$$
+
+:::{.fragment}
+- $s \approx 1$: point is well-matched to its cluster
+- $s \approx 0$: point is on the boundary
+- $s < 0$: point might be in the wrong cluster
+:::
+::::
+
+## Silhouette vs k
+
+::::{style="font-size: .85em"}
+
+:::{.center-text}
+```{python}
+silhouettes = []
+k_range = range(2, 11)  # Silhouette needs at least 2 clusters
+for k in k_range:
+    kmeans = KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=0)
+    labels = kmeans.fit_predict(X)
+    silhouettes.append(metrics.silhouette_score(X, labels))
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(k_range, silhouettes, 'go-', linewidth=2, markersize=8)
+ax.axvline(x=3, color='red', linestyle='--', alpha=0.7, label='Peak at k=3')
+ax.set_xlabel('Number of clusters (k)')
+ax.set_ylabel('Silhouette Score')
+ax.set_title('Silhouette Method')
+ax.legend()
+plt.tight_layout()
+```
+:::
+Look for the **maximum** — that's the best cluster separation.
+::::
+
+
+## <span style="font-size: 0.8em;">Practice: Silhouette Calculation</span>
+
+::::{style="font-size: .85em"}
+::::{.columns}
+:::{.column width="45%"}
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+
+# Draw ellipses for clusters
+ellipse1 = plt.matplotlib.patches.Ellipse((0, -1.5), 2.5, 3.5, fill=False, edgecolor='steelblue', linewidth=2)
+ellipse2 = plt.matplotlib.patches.Ellipse((4, -1.5), 2.5, 3.5, fill=False, edgecolor='coral', linewidth=2)
+ax.add_patch(ellipse1)
+ax.add_patch(ellipse2)
+
+ax.scatter([0], [0], color='red', s=150, zorder=5, label='Point of interest')
+ax.scatter([0], [-3], color='steelblue', s=100, zorder=5)
+ax.scatter([4, 4], [-3, 0], color='coral', s=100, zorder=5)
+
+ax.set_xlim(-2, 6)
+ax.set_ylim(-5, 2)
+ax.grid(True, linestyle='--', alpha=0.5)
+ax.set_aspect('equal')
+ax.legend(loc='upper right')
+plt.tight_layout()
+```
+:::
+
+:::{.column width="55%"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Points:</b> \(\begin{bmatrix} 0 \\ 0 \end{bmatrix}, \begin{bmatrix} 0 \\ -3 \end{bmatrix}\) in Cluster 1 (blue)
+        <br>
+        \(\begin{bmatrix} 4 \\ 0 \end{bmatrix}, \begin{bmatrix} 4 \\ -3 \end{bmatrix}\) in Cluster 2 (orange)
+        <br><br>
+        What is the silhouette coefficient for point \(\begin{bmatrix} 0 \\ 0 \end{bmatrix}\)?
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+::::
+::::
+
+:::{.notes}
+a = distance to other point in same cluster = 3
+b = mean distance to points in other cluster = (4 + 5)/2 = 4.5
+s = (4.5 - 3) / max(3, 4.5) = 1.5 / 4.5 = 0.33
+:::
+
+
+## <span style="font-size: 0.85em;">Rand Index (When You Have Labels)</span>
+
+::::{style="font-size: .85em"}
+If you have ground truth labels, you can measure how well clustering matches:
+
+**Idea**: Look at all pairs of points. Do they agree?
+
+- $a$ = pairs in the **same cluster** in both true labels AND predicted labels
+- $b$ = pairs in **different clusters** in both true labels AND predicted labels
+
+$$\text{Rand Index} = \frac{a + b}{\binom{n}{2}}$$
+
+:::{.fragment}
+**Adjusted Rand Index** corrects for chance agreement — use this in practice.
+:::
+::::
+
+## Rand Index vs k
+
+::::{style="font-size: .85em"}
+:::{.center-text}
+```{python}
+rand_scores = []
+k_range = range(1, 11)
+for k in k_range:
+    kmeans = KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=0)
+    labels = kmeans.fit_predict(X)
+    rand_scores.append(metrics.adjusted_rand_score(y_true, labels))
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(k_range, rand_scores, 'mo-', linewidth=2, markersize=8)
+ax.axvline(x=3, color='red', linestyle='--', alpha=0.7, label='Peak at k=3')
+ax.set_xlabel('Number of clusters (k)')
+ax.set_ylabel('Adjusted Rand Index')
+ax.set_title('Rand Index (requires ground truth labels)')
+ax.legend()
+plt.tight_layout()
+```
+
+:::
+ARI = 1 means perfect agreement with true labels. Only use when you have labels!
+::::
+
+## <span style="font-size: 0.85em;">Summary: Which Method When?</span>
+
+
+::::{style="font-size: .85em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><b>Choosing k in practice:</b></p>
+        <ul>
+            <li><b>No labels (most common):</b> Use Elbow + Silhouette together</li>
+            <li><b>Have labels (rare):</b> Use Adjusted Rand Index to validate</li>
+            <li><b>Domain knowledge:</b> Sometimes you know k from the problem!</li>
+        </ul>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+**In practice**: Try multiple values of k and examine the resulting clusters. Do they make sense for your application?
+:::
+::::
+
+## Real Example: Wine Dataset
+
+::::{style="font-size: .85em"}
+The Wine dataset contains chemical analysis of 178 wines from 3 cultivars (grape varieties).
+
+```{python}
+#| echo: true
+wine = load_wine()
+# Shuffle so the data isn't pre-sorted by cultivar
+shuffle_idx = np.random.RandomState(42).permutation(len(wine.data))
+X_wine = wine.data[shuffle_idx]
+y_wine = wine.target[shuffle_idx]
+
+print(f"Samples: {X_wine.shape[0]}, Features: {X_wine.shape[1]}")
+print(f"Feature names: {wine.feature_names[:5]}...")
+print(f"Classes: {wine.target_names}")
+```
+::::
+
+## <span style="font-size: 0.8em;">Can You See the Clusters?</span>
+
+::::{style="font-size: .75em"}
+::::{.columns}
+:::{.column width="55%"}
+```{python}
+fig, ax = plt.subplots(figsize=(6, 4))
+sns.heatmap(X_wine, xticklabels=False, yticklabels=False, linewidths=0, cbar=True, ax=ax)
+ax.set_xlabel('Features (13 dimensions)')
+ax.set_ylabel('Wines (178 samples)')
+plt.tight_layout()
+```
+:::
+
+:::{.column width="45%"}
+```{python}
+wine_dists = metrics.euclidean_distances(X_wine)
+fig, ax = plt.subplots(figsize=(4, 4))
+sns.heatmap(wine_dists, xticklabels=False, yticklabels=False,
+            linewidths=0, square=True, ax=ax)
+ax.set_title('Pairwise distances\n(unsorted)')
+plt.tight_layout()
+```
+:::
+::::
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
+        <p style="margin: 4px 0;"><b>Look closely:</b> The data heatmap is dominated by one bright column, and the distance matrix looks almost uniform. Why might that be? </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## Why Scaling Matters
+
+::::{style="font-size: .85em"}
+```{python}
+#| echo: true
+# Look at the feature ranges
+print("Feature ranges (unscaled):")
+for i, name in enumerate(wine.feature_names[:4]):
+    print(f"  {name}: {X_wine[:, i].min():.1f} to {X_wine[:, i].max():.1f}")
+```
+
+:::{.fragment}
+"Proline" ranges from 278 to 1680, while "Nonflavanoid phenols" ranges from 0.13 to 0.66.
+
+Without scaling, proline would dominate the distance calculations!
+:::
+::::
+
+## Clustering with Scaling
+
+::::{style="font-size: .85em"}
+```{python}
+#| echo: true
+# Scale the features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X_wine)
+
+# Cluster
+kmeans = KMeans(n_clusters=3, init='k-means++', n_init=10, random_state=42)
+labels = kmeans.fit_predict(X_scaled)
+
+# Evaluate
+print(f"Silhouette Score: {metrics.silhouette_score(X_scaled, labels):.3f}")
+print(f"Adjusted Rand Index: {metrics.adjusted_rand_score(y_wine, labels):.3f}")
+```
+
+ARI ≈ 0.9 — clustering closely matches the true wine cultivars!
+::::
+
+## <span style="font-size: 0.8em;">Wine: After Scaling (Same Views)</span>
+
+::::{style="font-size: .75em"}
+Now the same heatmap and distance matrix, but with **scaled** features:
+
+::::{.columns}
+:::{.column width="55%"}
+```{python}
+fig, ax = plt.subplots(figsize=(6, 4))
+sns.heatmap(X_scaled, xticklabels=False, yticklabels=False, linewidths=0, cbar=True, ax=ax)
+ax.set_xlabel('Features (13 dimensions)')
+ax.set_ylabel('Wines (178 samples)')
+ax.set_title('Data heatmap (scaled)')
+plt.tight_layout()
+```
+:::
+
+:::{.column width="45%"}
+```{python}
+scaled_dists_unsorted = metrics.euclidean_distances(X_scaled)
+fig, ax = plt.subplots(figsize=(4, 4))
+sns.heatmap(scaled_dists_unsorted, xticklabels=False, yticklabels=False,
+            linewidths=0, square=True, ax=ax)
+ax.set_title('Pairwise distances\n(scaled, unsorted)')
+plt.tight_layout()
+```
+:::
+::::
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
+        <p style="margin: 4px 0;"><b>Compare to the unscaled version:</b> Now all features contribute equally. Can you start to see structure in the distance matrix? We'll sort by cluster soon!</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## <span style="font-size: 0.8em;">Wine: Scaled vs Unscaled (MDS View)</span>
+
+::::{style="font-size: .75em"}
+```{python}
+import sklearn.manifold
+
+# Cluster unscaled data
+km_unscaled = KMeans(n_clusters=3, init='k-means++', n_init=10, random_state=42)
+labels_unscaled = km_unscaled.fit_predict(X_wine)
+
+# MDS for both
+dists_unscaled = metrics.euclidean_distances(X_wine)
+dists_scaled = metrics.euclidean_distances(X_scaled)
+mds_un = sklearn.manifold.MDS(n_components=2, random_state=0, dissimilarity="precomputed", max_iter=3000)
+mds_sc = sklearn.manifold.MDS(n_components=2, random_state=0, dissimilarity="precomputed", max_iter=3000)
+pos_un = mds_un.fit_transform(dists_unscaled)
+pos_sc = mds_sc.fit_transform(dists_scaled)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+
+axes[0].scatter(pos_un[:, 0], pos_un[:, 1], c=labels_unscaled, cmap='viridis', s=40, alpha=0.8)
+axes[0].set_title(f'Without scaling\n ARI = {metrics.adjusted_rand_score(y_wine, labels_unscaled):.2f}', fontsize=12)
+axes[0].set_xlabel('MDS Dim 1')
+axes[0].set_ylabel('MDS Dim 2')
+
+axes[1].scatter(pos_sc[:, 0], pos_sc[:, 1], c=labels, cmap='viridis', s=40, alpha=0.8)
+axes[1].set_title(f'With StandardScaler\n ARI = {metrics.adjusted_rand_score(y_wine, labels):.2f}', fontsize=12)
+axes[1].set_xlabel('MDS Dim 1')
+axes[1].set_ylabel('MDS Dim 2')
+
+plt.tight_layout()
+```
+
+Scaling dramatically improves both the structure visible in MDS and the cluster quality!
+::::
+
+## Elbow and Silhouette Plots
+
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+# Elbow
+errors = []
+k_range = range(1, 11)
+for k in k_range:
+    km = KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=42)
+    km.fit(X_scaled)
+    errors.append(km.inertia_)
+
+axes[0].plot(k_range, errors, 'bo-', linewidth=2)
+axes[0].axvline(x=3, color='red', linestyle='--', alpha=0.7)
+axes[0].set_xlabel('k')
+axes[0].set_ylabel('Inertia')
+axes[0].set_title('Elbow Method')
+
+# Silhouette
+silhouettes = []
+for k in range(2, 11):
+    km = KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=42)
+    labs = km.fit_predict(X_scaled)
+    silhouettes.append(metrics.silhouette_score(X_scaled, labs))
+
+axes[1].plot(range(2, 11), silhouettes, 'go-', linewidth=2)
+axes[1].axvline(x=3, color='red', linestyle='--', alpha=0.7)
+axes[1].set_xlabel('k')
+axes[1].set_ylabel('Silhouette Score')
+axes[1].set_title('Silhouette Method')
+
+plt.tight_layout()
+```
+
+Both methods suggest k=3 — matching the 3 wine cultivars!
+
+## <span style="font-size: 0.85em;">Comparing to Ground Truth</span>
+
+
+::::{style="font-size: .85em"}
+```{python}
+#| echo: true
+# Cross-tabulation of true labels vs cluster labels
+comparison = pd.crosstab(y_wine, labels,
+                         rownames=['True Cultivar'],
+                         colnames=['Cluster'])
+print(comparison)
+```
+
+The clusters align well with the true cultivars (with some label permutation).
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Look at the crosstab:</b> Which cultivar is hardest to cluster correctly? Where do the misassignments go?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## <span style="font-size: 0.8em;">Wine Visualizations (Sorted)</span>
+
+::::{style="font-size: .75em"}
+Now let's sort the wines by cluster and look at those same views again:
+
+::::{.columns}
+:::{.column width="55%"}
+```{python}
+idx_wine = np.argsort(labels)
+sorted_X_wine = X_scaled[idx_wine, :]
+
+fig, ax = plt.subplots(figsize=(6, 4))
+sns.heatmap(sorted_X_wine, xticklabels=False, yticklabels=False, linewidths=0, cbar=True, ax=ax)
+ax.set_xlabel('Features (13 dimensions)')
+ax.set_ylabel('Wines (sorted by cluster)')
+
+# Add cluster dividers
+cluster_sizes = np.bincount(labels)
+cumsum = np.cumsum(cluster_sizes)
+for c in cumsum[:-1]:
+    ax.axhline(y=c, color='red', linewidth=2)
+plt.tight_layout()
+```
+:::
+
+:::{.column width="45%"}
+```{python}
+# Use scaled distances for consistency with clustering
+wine_dists_scaled = metrics.euclidean_distances(X_scaled)
+sorted_wine_dists = wine_dists_scaled[idx_wine, :][:, idx_wine]
+
+fig, ax = plt.subplots(figsize=(4, 4))
+sns.heatmap(sorted_wine_dists, xticklabels=False, yticklabels=False,
+            linewidths=0, square=True, ax=ax)
+ax.set_title('Pairwise distances\n(sorted by cluster)')
+plt.tight_layout()
+```
+:::
+::::
+
+Dark blocks on the diagonal = wines in the same cluster are close together. Compare this to the unsorted version!
+::::
+
+## Wine: Cluster Profiles
+
+::::{style="font-size: .75em"}
+What makes each cluster different? Let's look at the centroid values across all 13 features:
+
+```{python}
+fig, ax = plt.subplots(figsize=(11, 3))
+sns.heatmap(kmeans.cluster_centers_, ax=ax,
+            xticklabels=wine.feature_names, yticklabels=[f'Cluster {i}' for i in range(3)],
+            cbar_kws={'label': 'Scaled centroid value'})
+ax.set_title('Wine Cluster Centroids (scaled features)', fontsize=13)
+plt.xticks(rotation=45, ha='right', fontsize=9)
+plt.yticks(rotation=0)
+plt.tight_layout()
+```
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>With your neighbor:</b> Look at the centroid heatmap. Which features most distinguish the clusters? Can you connect the misclassified wines from the confusion matrix to similar centroid profiles?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## Silhouette Score Distributions
+
+:::{.center-text}
+```{python}
+from sklearn.metrics import silhouette_samples
+
+sil_vals = silhouette_samples(X_scaled, labels)
+sil_avg = metrics.silhouette_score(X_scaled, labels)
+
+fig, ax = plt.subplots(figsize=(5, 4))
+colors = [plt.cm.viridis(i / 3) for i in range(3)]
+bin_edges = np.linspace(sil_vals.min(), sil_vals.max(), 16)
+for i in range(3):
+    cluster_sils = sil_vals[labels == i]
+    ax.hist(cluster_sils, bins=bin_edges, alpha=0.45, color=colors[i],
+            edgecolor=colors[i], linewidth=1.2, label=f'Cluster {i}')
+
+ax.axvline(x=sil_avg, color='red', linestyle='--', linewidth=1.5,
+           label=f'Average = {sil_avg:.2f}')
+ax.set_xlabel('Silhouette coefficient', fontsize=12)
+ax.set_ylabel('Number of points', fontsize=12)
+ax.set_title('Silhouette Distribution: Wine Clusters', fontsize=13)
+ax.legend()
+plt.subplots_adjust(bottom=0.15, top=0.9)
+```
+:::
+
+::::{style="font-size: .75em; margin-top: -1.6em;"}
+- Distributions shifted right = well-separated cluster
+- Spread or left-leaning tails = points near cluster boundaries
+- Look for clusters with many points below the average (red line)
+::::
+
+
+## <span style="font-size: 0.8em;">WThe Ambiguous Wines</span>
+
+::::{style="font-size: .7em"}
+```{python}
+# Map clusters to cultivars (majority vote)
+cluster_to_cultivar = {}
+for c in range(3):
+    mask = labels == c
+    cluster_to_cultivar[c] = np.bincount(y_wine[mask]).argmax()
+mapped_labels = np.array([cluster_to_cultivar[l] for l in labels])
+misclassified = mapped_labels != y_wine
+mis_idx = np.where(misclassified)[0]
+
+# Distances from every point to each centroid
+dists_to_centers = metrics.euclidean_distances(X_scaled, kmeans.cluster_centers_)
+```
+
+::::{.columns}
+:::{.column width="50%"}
+```{python}
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.scatter(pos_sc[~misclassified, 0], pos_sc[~misclassified, 1],
+           c=labels[~misclassified], cmap='viridis', s=30, alpha=0.4, label='Correct')
+ax.scatter(pos_sc[misclassified, 0], pos_sc[misclassified, 1],
+           c='red', s=80, marker='X', edgecolors='black', linewidths=0.8, label='Misclassified')
+ax.set_title('Misclassified wines (red X)', fontsize=12)
+ax.set_xlabel('MDS Dim 1')
+ax.set_ylabel('MDS Dim 2')
+ax.legend(fontsize=9)
+plt.tight_layout()
+```
+:::
+
+:::{.column width="50%"}
+```{python}
+# Show distances to each centroid, grouped by wine
+fig, ax = plt.subplots(figsize=(5, 4))
+n_mis = len(mis_idx)
+x_pos = np.arange(n_mis)
+width = 0.25
+centroid_colors = [plt.cm.viridis(i / 3) for i in range(3)]
+for c in range(3):
+    offset = (c - 1) * width
+    ax.bar(x_pos + offset, dists_to_centers[mis_idx, c], width,
+           alpha=0.7, color=centroid_colors[c], label=f'Centroid {c}')
+ax.set_xticks(x_pos)
+ax.set_xticklabels([f'Wine {i}\nsil={sil_vals[i]:.2f}' for i in mis_idx], fontsize=7)
+ax.set_ylabel('Distance to centroid')
+ax.set_title('Why they\'re ambiguous', fontsize=12)
+ax.legend(fontsize=8)
+plt.tight_layout()
+```
+:::
+::::
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 4px 12px; margin: 0;">
+        <p style="margin: 4px 0;"><b>Notice:</b> These wines sit between clusters — their distances to multiple centroids are similar, and their silhouette scores are low. Clustering isn't always a clean partition!</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## Wrap-up
+
+::::{style="font-size: .75em"}
+**Today we learned:**
+
+- **Limitations**: k-means assumes spherical, similar-sized clusters
+- **Curse of dimensionality**: distance becomes meaningless in high-D
+- **Feature scaling**: Always use `StandardScaler` before clustering
+- **Choosing k**:
+  - **Elbow method**: look for the "bend" in the inertia plot
+  - **Silhouette score**: look for the maximum (no labels needed)
+  - **Rand Index**: compare to ground truth (when available)
+- **Real data**: Wine dataset clustered well after scaling
+
+In practice, you rarely have labels. Use Elbow + Silhouette, then examine clusters for interpretability.
+::::

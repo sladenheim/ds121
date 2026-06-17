@@ -1,0 +1,580 @@
+---
+title: "Invertible Matrices"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        css: 
+        - styles.css
+        html-math-method: mathjax
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+The main topic of today's lecture is the invertible matrix theorem (IMT). This theorem will connect different facts about invertible matrices. We will expand the IMT as the course progresses.
+
+In addition to the IMT, we will talk about algebraic and computational aspects of computing the inverse of a $n \times n$ matrix, and define elementary matrices.
+
+
+:::
+
+## Inverse of a $2 \times 2$ Matrix
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  
+Let \(A\) = \(\left[\begin{array}{rr}a&b\\c&d\end{array}\right]\).  
+
+If \(\text{det}(A) = 0\), then \(A\) is not invertible.
+Otherwise, \(A\) is invertible and \(A^{-1} = \frac{1}{det(A)}\left[\begin{array}{rr}d&-b\\-c&a\end{array}\right].\)<br>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<!-- <div style="margin-bottom: 0.5em;"> </div> 
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>  
+Suppose that the columns of a \(2\times 2\) matrix \(A\) are linearly dependent. Is \(A\) invertible?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+:::{.fragment}
+If the columns of $A$ are linearly dependent, then one of the columns is a multiple of the other. Let the multiplier be $m$. Then we can express $A$ as:
+
+$$
+\left[\begin{array}{rr}a&ma\\b&mb\end{array}\right].
+$$
+
+The determinant of $A$ is $a(mb) - b(ma) = 0.$  
+
+So a $2\times 2$ matrix with linearly dependent columns is _not invertible_.
+::: -->
+:::{.columns}
+
+:::{.column}
+Here is a horizontal contraction
+
+$$
+A = \left[\begin{array}{rr}0.5&0\\0&1\end{array}\right].
+$$
+:::
+
+:::{.column}
+```{python}
+import demoUtilities as dm
+import numpy as np
+square = np.array([[0.0,1,1,0],[1,1,0,0]])
+A = np.array(
+    [[0.5, 0], 
+     [  0, 1]])
+# print("A ="); print(A)
+dm.plotSmallSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+# Latex(r'Horizontal Contraction')
+```
+:::
+:::
+
+:::
+
+## Inverse of a $2 \times 2$ Matrix
+
+:::{style="font-size: .8em"}
+
+<!-- :::{.columns}
+
+:::{.column}
+Here is a horizontal contraction
+
+$$
+A = \left[\begin{array}{rr}0.5&0\\0&1\end{array}\right].
+$$
+:::
+
+:::{.column}
+```{python}
+import demoUtilities as dm
+import numpy as np
+square = np.array([[0.0,1,1,0],[1,1,0,0]])
+A = np.array(
+    [[0.5, 0], 
+     [  0, 1]])
+# print("A ="); print(A)
+dm.plotSmallSetup()
+dm.plotSquare(square)
+dm.plotSquare(A @ square,'r')
+# Latex(r'Horizontal Contraction')
+```
+:::
+::: -->
+Its determinant is $1(0.5)-0(0) = 0.5,$ so this linear transformation is invertible. <br>
+Its inverse is:
+
+$$ \frac{1}{0.5}\left[\begin{array}{rr}1&0\\0&0.5\end{array}\right] = \left[\begin{array}{rr}2&0\\0&1\end{array}\right].$$
+
+Clearly, just as $A$ contracted the $x_1$-direction by 0.5, $A^{-1}$ will expand the $x_1$-direction by 2.
+:::
+
+## Inverse of a $n \times n$ Matrix
+
+:::{style="font-size: .8em"}
+Let's look at the equation
+
+$$
+AA^{-1} = I.
+$$
+
+Denote $A^{-1}$ = $[{\bf x_1}, {\bf x_2}, \dots, {\bf x_n}]$  and  $I$ as $[{\bf e_1}, {\bf e_2}, \dots, {\bf e_n}]:$
+
+$$
+A[{\bf x_1}, {\bf x_2}, \dots, {\bf x_n}] = [{\bf e_1}, {\bf e_2}, \dots, {\bf e_n}].
+$$
+
+Notice that we can break this up into $n$ separate problems:
+    
+$$
+\begin{align*}
+A{\bf x_1} &= {\bf e_1} \\
+A{\bf x_2} &= {\bf e_2} \\
+& \; \vdots \\
+A{\bf x_n} &= {\bf e_n}
+\end{align*}
+$$
+
+:::
+
+## Inverse of a $n \times n$ Matrix
+
+:::{style="font-size: .8em"}
+To compute the inverse of $A$:
+
+* Solve the linear system $A{\bf x_1} = {\bf e_1}$ to get the first column of $A^{-1}.$
+* Solve the linear system $A{\bf x_2} = {\bf e_2}$ to get the second column of $A^{-1}, etc.$
+
+If any of the systems are inconsistent or has an infinite solution set, then $A^{-1}$ does not exist. We use Gauss-Jordan elimination on $[ A \mid I ]$ to get $[ I \mid A^{-1} ]$.
+
+Use `np.linalg.inv()` to invert a matrix in `Python.`
+
+```{python}
+#| echo: true
+import numpy as np
+A = np.array(
+    [[ 2.0, 5.0],
+     [-3.0,-7.0]])
+print('A =\n',A)
+```
+:::
+
+
+## Solving Linear Systems using Inverses{.really-smaller-title}
+
+
+:::{style="font-size: 1em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  
+If \(A\) is an invertible \(n\times n\) matrix, then for each \({\bf b}\) in \(\mathbb{R}^n,\) the equation \(A{\bf x} = {\bf b}\) has the unique solution \(A^{-1}{\bf b}.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<div style="margin-bottom: 0.5em;"> </div> 
+
+__Proof.__ Let's multiply both sides by $A^{-1}$ <u>on the left</u>:
+
+$$
+\begin{align*}
+A^{-1}(A{\bf x}) &= A^{-1}{\bf b} \\
+(A^{-1}A){\bf x} &= A^{-1}{\bf b} \\
+I{\bf x} &= A^{-1}{\bf b} \\
+{\bf x} &= A^{-1}{\bf b}
+\end{align*}
+$$
+
+Hence, if $A$ is invertible, then the system has a unique solution $\bf x = A^{-1}\bf b$.
+:::
+
+## Solving Linear Systems using Inverses{.really-smaller-title}
+
+<br>
+
+:::{style="font-size: 1em"}
+__Example.__ Solve the system:
+
+$$
+\begin{array}{rcl}
+3x_1 +4x_2 &=& 3\\
+5x_1 +6x_2 &=& 7
+\end{array}
+$$
+
+Rewrite this system as $A{\bf x} = {\bf b}:$
+
+$$
+\left[\begin{array}{rr}3&4\\5&6\end{array}\right] {\bf x} = \left[\begin{array}{r}3\\7\end{array}\right].
+$$
+
+The determinant of $A$ is $3(6)-4(5) = -2,$ which is nonzero, so $A$ has an inverse. 
+
+:::
+
+## Solving Linear Systems using Inverses{.really-smaller-title}
+
+:::{style="font-size: 1em"}
+
+According to our $2\times 2$ formula, the inverse of $A$ is:
+
+$$
+A^{-1} = \frac{1}{-2}\left[\begin{array}{rr}6&-4\\-5&3\end{array}\right] = \left[\begin{array}{rr}-3&2\\5/2&-3/2\end{array}\right].
+$$
+
+Now we can calculate $A^{-1}A\mathbf{x} = A^{-1}\mathbf{b}$:
+
+$$
+\left[\begin{array}{rr}-3&2\\5/2&-3/2\end{array}\right]\left[\begin{array}{rr}3&4\\5&6\end{array}\right] \mathbf{x} = \left[\begin{array}{rr}-3&2\\5/2&-3/2\end{array}\right]\left[\begin{array}{r}3\\7\end{array}\right]
+$$
+
+$$
+\mathbf{x} = \left[\begin{array}{r}5\\-3\end{array}\right].
+$$
+:::
+
+## Invertible Matrix Theorem
+
+:::{style="font-size: .6em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+Let \(A\) be an \(n\times n\) matrix.  
+
+Then the following statements are equivalent.<br>
+<ol start="1">
+    <li>\(A\) is an invertible matrix.</li>
+    <li>\(A^{\top}\) is an invertible matrix.</li>
+    <li> The equation \(A{\bf x} = {\bf b}\) has a unique solution for each \({\bf b}\) in \(\mathbb{R}^n.\)</li>
+    <li>A has \(n\) pivot positions.</li>
+    <li>A is row equivalent to the identity matrix.</li>
+    <li>The determinant of \(A\) is nonzero.</li>
+    <li>The homogeneous equation \(A{\bf x} = {\bf 0}\) has only the trivial solution.</li>
+    <li>The columns of \(A\) form a linearly independent set.</li>
+    <li>The columns of \(A\) span \(\mathbb{R}^n.\)</li>
+    <li>The linear transformation \({\bf x} \mapsto A{\bf x}\) maps \(\mathbb{R}^n\) <b>onto</b> \(\mathbb{R}^n.\)</li>
+    <li>The linear transformation \({\bf x} \mapsto A{\bf x}\) is <b>one-to-one</b>.</li>
+</ol>
+    </div>
+    """
+    
+    
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+<!-- ## Invertible Matrix Theorem
+
+:::{style="font-size:.8em"}
+__Example.__ Let $A = \left[\begin{array}{rr}3 & 7\\-6 & -14\end{array}\right]$.
+
+Decide if $A\mathbf{x} = \mathbf{b}$ has a solution for all $\mathbf{b}$... or in other words if the linear transformation defined by $A$ is onto.
+<br>
+<br>
+
+
+__Solution.__ The determinant of $A$ is $(3 \cdot -14) - (7 \cdot -6) = 0$.
+<br>
+
+So $A$ is not invertible, so by the IMT it follows that $A\mathbf{x} = \mathbf{b}$ does __not__ have a solution for all $\mathbf{b}$.
+::: -->
+
+## Invertible Matrix Theorem
+
+:::{style="font-size:.8em"}
+Is matrix $A$ provided below invertible?
+
+$$
+A = \left[\begin{array}{rrr}1&0&-2\\3&1&-2\\-5&-1&9\end{array}\right].
+$$
+
+Let's apply Gauss-Jordan elimination to $A$.
+
+$$
+\left[\begin{array}{rrr}1&0&-2\\3&1&-2\\-5&-1&9\end{array}\right] \underset{R_3 = R_3 + 5 R_1}{\overset{R_2 = R_2 - 3 R_1}{\Longrightarrow}} \left[\begin{array}{rrr}1&0&-2\\0&1&4\\0&-1&-1\end{array}\right] \overset{R_3 = R_3 + R_2}{\Longrightarrow} \left[\begin{array}{rrr}\fbox{1}&0&-2\\0&\fbox{1}&4\\0&0&\fbox{3}\end{array}\right].
+$$
+
+$A$ has three pivot positions and hence is invertible, by the IMT.
+:::
+
+## Computational Complexity
+
+:::{style="font-size:.8em"}
+```{python}
+#| echo: true
+import numpy as np
+A = np.array(
+    [[ 2.0, 5.0],
+     [-3.0,-7.0]])
+print('A =\n',A)
+B = np.linalg.inv(A)
+print('B = \n',B)
+```
+
+How long will this inverse operation take to run?
+:::
+
+## Computational Complexity
+
+:::{style="font-size:.8em"}
+We saw previously how to calculate the cost of Gauss-Jordan elimination for the $n \times (n+1)$ augmented matrix $[A | {\bf b}]$. The flop count was:
+
+- $\frac{2}{3} n^3$ floating point operations for the Elimination stage
+- $n^2$ floating point operations for the Backsubstitution stage
+
+<br>
+
+For matrix inversion, the total cost to calculate the inverse is $2 n^3$ flops. This is _three times_ the cost of an ordinary Gauss-Jordan elimination.
+:::
+
+<!-- ## Computational Complexity
+
+:::{style="font-size:.8em"}
+Recall our earlier derivation of the cost of Gauss-Jordan Elimination, then recalculate those results for a wider augmented matrix $[A | I]$. The costs now are:
+
+- $\frac{5}{3} n^3$ floating point operations for the Elimination stage
+- $\frac{1}{3} n^3$ floating point operations for the Backsubstitution stage
+
+Hence, the total cost to calculate the inverse is $2 n^3$ flops. This is _three times_ the cost of an ordinary Gauss-Jordan elimination.
+::: -->
+
+## Computational Complexity
+
+:::{style="font-size:.8em"}
+If I give you a matrix $A$ then you can:
+
+1. Calculate $A^{-1}$ at a cost of $2n^3$ flops and then be able to solve linear systems $A {\bf x} = {\bf b}$ for any vector ${\bf b}$ you receive in the future (at a cost of $2n^2$ flops each to perform the matrix-vector multiplication).
+
+2. Solve a single linear system $A {\bf x} = {\bf b}$ at a cost of $\frac{2}{3} n^3$ flops.
+
+It turns out that there is an alternative that provides the "best of both worlds":
+
+- Given $A$, you perform a one-time cost of $\frac{2}{3} n^3$ flops.
+- Then, you can solve any matrix equation of the form $A {\bf x} = {\bf b}$ in $O(n^2)$ flops.
+
+This alternative approach is called __LU factorization__.
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+In order to understand LU factorization, we must first revisit Gauss-Jordan elimination.
+
+Recall that the row reduction process consists of repeated applications of _elementary row operations_:
+
+> _Every elementary row operation on $A$ is a linear transformation, and therefore can be performed by multiplying $A$ by a suitable matrix._
+
+<br>
+
+Swapping two rows is a linear transformation.  It doesn't matter if you swap rows before or after adding two augmented matrices $A$ and $B$. The same applies to scalar multiplication: swapping rows before or after multiplying by a scalar $c$ yields the same result.
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+That is,
+$$
+\text{swap}(A+B) = \text{swap}(A) + \text{swap}(B),
+$$
+$$
+\text{swap}(cA) = c \cdot \text{swap}(A).
+$$
+
+Similar logic applies to the other row operations. As a result, each row operation has some matrix associated with it.
+
+<br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        An elementary matrix is a matrix that is obtained by <i>performing a single elementary row operation on the identity matrix.</i>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+Consider the following $3 \times 3$ matrices:
+$$
+E_1 = \left[\begin{array}{rrr}0&1&0\\1&0&0\\0&0&1\end{array}\right],\;\; E_2 = \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&5\end{array}\right],\;\; E_3 = \left[\begin{array}{rrr}1&0&0\\0&1&0\\-4&0&1\end{array}\right].
+$$
+
+Let's see what each matrix does to an arbitrary $3 \times 3$ matrix 
+$$A = \left[\begin{array}{rrr}a&b&c\\d&e&f\\g&h&i\end{array}\right].$$
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+Left-multiplication by $E_1$ swaps the first two rows of $A$ (for any matrix $A$).
+
+$$
+E_1 A = \left[\begin{array}{rrr}0&1&0\\1&0&0\\0&0&1\end{array}\right] \left[\begin{array}{rrr}a&b&c\\d&e&f\\g&h&i\end{array}\right] = \left[\begin{array}{rrr}d&e&f\\a&b&c\\g&h&i\end{array}\right].
+$$
+
+Left-multiplication by $E_2$ corresponds to a scalar multiplication of the third row by the scalar 5.
+
+$$
+E_2 A = \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&5\end{array}\right] \left[\begin{array}{rrr}a&b&c\\d&e&f\\g&h&i\end{array}\right] = \left[\begin{array}{rrr}a&b&c\\d&e&f\\5g&5h&5i\end{array}\right].
+$$
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+Left-multiplication by $E_3$ will add -4 times row 1 to row 3.
+
+$$
+E_3 A = \left[\begin{array}{rrr}1&0&0\\0&1&0\\-4&0&1\end{array}\right] \left[\begin{array}{rrr}a&b&c\\d&e&f\\g&h&i\end{array}\right] = \left[\begin{array}{rrr}a&b&c\\d&e&f\\g-4a&h-4b&i-4c\end{array}\right].
+$$
+
+Let $E$ be the matrix that implements the operation "add -4 times row 1 to row 3."  (Suppose we don't yet know what $E$ is.)
+
+Now, for any matrix, $EI = E$ by the definition of $I$.
+
+But note this also says: "matrix $E$ that implements the operation 'add -4 times row 1 to row 3' is what you get doing that operation on $I$."
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+Let's perform this transformation starting from $I$:
+$$
+\left[\begin{array}{ccc}\color{red}{1}&\color{red}{0}&\color{red}{0}\\0&1&0\\0&0&1\end{array}\right] \quad \to \left[\begin{array}{ccc}1&0&0\\0&1&0\\\color{red}{-4}&\color{red}{0}&\color{red}{1}\end{array}\right]
+$$
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        If an elementary row operation is performed on an \(m\times n\) matrix \(A,\) the resulting matrix can be written as \(EA\), where the \(m\times m\) matrix \(E\) is created by performing the same row operation on \(I_m\).
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+- Swap the first two rows: $\begin{bmatrix}0&1&0\\1&0&0\\0&0&1\end{bmatrix}$.
+- Multiply the third row by the nonzero scalar $c$: $\begin{bmatrix}1&0&0\\0&1&0\\0&0&c\end{bmatrix}$
+- Add $d$ times row 1 to row 3: $\begin{bmatrix}1&0&0\\0&1&0\\d&0&1\end{bmatrix}$
+
+<!-- ```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        Is an elementary matrix invertible?
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+``` -->
+Every row reduction is an invertible linear transformation -- so every elementary matrix is invertible.
+
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+
+:::{.fragment}
+
+Let's invert $E_1$, $E_2$, and $E_3$ from earlier.
+
+$$
+\begin{array}{rcrcl}
+E_1^{-1} &=& \left[\begin{array}{rrr}0&1&0\\1&0&0\\0&0&1\end{array}\right]^{-1} &=&\; \left[\begin{array}{rrr}0&1&0\\1&0&0\\0&0&1\end{array}\right]\\
+E_2^{-1} &=& \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&5\end{array}\right]^{-1} &=&\; \left[\begin{array}{rrr}1&0&0\\0&1&0\\0&0&1/5\end{array}\right]\\
+E_3^{-1} &=& \left[\begin{array}{rrr}1&0&0\\0&1&0\\-4&0&1\end{array}\right]^{-1} &=&\;\left[\begin{array}{rrr}1&0&0\\0&1&0\\4&0&1\end{array}\right]
+\end{array}
+$$
+:::
+:::
+
+## Elementary Matrices
+
+:::{style="font-size: .8em"}
+We can verify these operations using `Python` with `Numpy`.
+
+```{python}
+#| echo: true
+E1 = np.array([[0,1,0],[1,0,0],[0,0,1]])
+E2 = np.array([[1,0,0],[0,1,0],[0,0,5]])
+E3 = np.array([[1,0,0],[0,1,0],[-4,0,1]])
+print("E1 inverse = "); print(np.linalg.inv(E1))
+print("E2 inverse = "); print(np.linalg.inv(E2))
+print("E3 inverse = "); print(np.linalg.inv(E3))
+```
+:::
+
+## Key Ideas
+
+:::{.incremental style="font-size: .8em"}
+- The inverse of $\begin{bmatrix} a & b \\ c & d \end{bmatrix}$ is $\frac{1}{ad-bc} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}.$ <br> The inverse of an $n \times n$ matrix is found by applying Gauss-Jordan elimination to $[A | I].$
+
+- The Invertible Matrix Theorum provides equivalent statements about invertible matrices. For example, $A$ is invertible if and only if $det(A) \neq 0.$
+
+- The cost of the computation of an inverse is $O(n^3).$
+
+- An elementary matrix is obtained by applying a single elementary row operation on $I.$
+:::

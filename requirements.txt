@@ -1,0 +1,11 @@
+# For python blocks in slides
+numpy
+matplotlib
+plotly
+scikit-learn
+
+# Required by Quarto's Jupyter integration
+jupyter
+pyyaml
+nbformat
+nbclient

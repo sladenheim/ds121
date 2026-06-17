@@ -1,0 +1,986 @@
+---
+title: "Model Selection & Evaluation"
+author: "CDS DS-121<br>Boston University"
+format:
+    revealjs:
+        math: true
+        css:
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+
+---
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib as mp
+import matplotlib.pyplot as plt
+from numpy.random import default_rng
+import sklearn.datasets as datasets
+from sklearn.neighbors import KNeighborsClassifier
+import sklearn.metrics as metrics
+import sklearn.model_selection as model_selection
+```
+
+## Learning Objectives
+
+::::{style="font-size: .8em;"}
+
+- Train/test split: measuring generalization
+- Train/validation/test: preventing test set overfitting
+- Cross-validation: a more robust approach
+- Hyperparameters vs parameters
+- Evaluating classifiers beyond accuracy
+    - Confusion matrix
+    - Precision, recall, and F1 score
+    - Choosing the right metric for your problem
+- Worked example: Iris dataset
+::::
+
+## Recall: Overfitting
+
+::::{style="font-size: .8em"}
+Last lecture we learned:
+
+- **Overfitting**: when a model memorizes training data but fails on new data
+- Small $k$ in k-NN = overfitting (too sensitive to noise)
+- Large $k$ = underfitting (too smooth, misses patterns)
+::::
+
+## Recall: Overfitting vs Underfitting  {.smaller}
+
+::::{style="font-size: .8em"}
+Here's what over/underfitting looks like with k-NN decision boundaries:
+
+:::{.center-text}
+```{python}
+# Reminder plot from Lecture 4 - overlapping clusters show overfitting clearly
+import sklearn.datasets as sk_data
+X_demo, y_demo = sk_data.make_blobs(n_samples=150,
+                          centers=[[-2, 0],[1, 5], [2.5, 1.5]],
+                          cluster_std=[2, 2, 3],
+                          n_features=2,
+                          center_box=(-10.0, 10.0), random_state=0)
+
+h = 0.1
+x_min, x_max = X_demo[:, 0].min() - 1, X_demo[:, 0].max() + 1
+y_min, y_max = X_demo[:, 1].min() - 1, X_demo[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+
+fig, axs = plt.subplots(1, 3, figsize=(11, 3))
+for idx, k in enumerate([1, 5, 50]):
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_demo, y_demo)
+    Z = knn.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
+
+    axs[idx].pcolormesh(xx, yy, Z, shading='auto', alpha=0.3)
+    axs[idx].scatter(X_demo[:,0], X_demo[:,1], c=y_demo, s=20)
+    labels = ['k = 1 (Overfitting)', 'k = 5 (Just right?)', 'k = 50 (Underfitting)']
+    axs[idx].set_title(labels[idx], fontsize=13)
+    axs[idx].axis('equal')
+    axs[idx].axis('off')
+
+plt.subplots_adjust(top=0.9, bottom=0.05, left=0.02, right=0.98)
+```
+:::
+
+**Today's question**: How do we *systematically* find the right $k$?
+::::
+
+## The Key Question
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>How do we actually <i>measure</i> whether our model generalizes?</p>
+    </div>
+    """
+
+display(HTML(generate_html()))
+```
+
+## Train/Test Split
+
+::::{style="font-size: .8em"}
+We can't evaluate on data we trained on — of course it does well on that!
+
+**Solution: Hold out some data for testing.**
+
+:::{.center-text}
+```{python}
+fig, ax = plt.subplots(figsize=(10, 2))
+ax.barh(0, 0.7, left=0, color='steelblue', label='Training Data (70%)')
+ax.barh(0, 0.3, left=0.7, color='coral', label='Test Data (30%)')
+ax.set_xlim(0, 1)
+ax.set_ylim(-0.5, 0.5)
+ax.set_yticks([])
+ax.set_xticks([0, 0.7, 1])
+ax.set_xticklabels(['0%', '70%', '100%'])
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.4), ncol=2)
+ax.set_title('Train/Test Split')
+plt.tight_layout()
+```
+:::
+
+1. **Train** the model on the training data only
+2. **Evaluate** on the held-out test data
+3. Test accuracy tells us how well the model **generalizes**
+::::
+
+## Train/Test Split in Python
+
+::::{style="font-size: .8em"}
+```{python}
+#| echo: true
+from sklearn.model_selection import train_test_split
+import sklearn.datasets as sk_data
+
+# Generate example data: 3 classes with significant overlap
+X, y = sk_data.make_blobs(n_samples=400, centers=3, n_features=2,
+                          cluster_std=4.0, random_state=42)
+
+# Split: 70% train, 30% test
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42)
+
+print(f'Training samples: {len(X_train)}')
+print(f'Test samples: {len(X_test)}')
+```
+
+The `random_state` ensures we get the same split each time (reproducibility).
+::::
+
+## Train/Validation/Test Split
+
+::::{style="font-size: .8em"}
+What if we tune $k$ using the test set? We might **overfit to the test set**!
+
+**Solution: Three-way split**
+
+:::{.center-text}
+```{python}
+fig, ax = plt.subplots(figsize=(10, 2))
+ax.barh(0, 0.6, left=0, color='steelblue', label='Training (60%)')
+ax.barh(0, 0.2, left=0.6, color='gold', label='Validation (20%)')
+ax.barh(0, 0.2, left=0.8, color='coral', label='Test (20%)')
+ax.set_xlim(0, 1)
+ax.set_ylim(-0.5, 0.5)
+ax.set_yticks([])
+ax.set_xticks([0, 0.6, 0.8, 1])
+ax.set_xticklabels(['0%', '60%', '80%', '100%'])
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.5), ncol=3)
+plt.tight_layout()
+```
+:::
+
+- **Train**: fit the model
+- **Validation**: tune hyperparameters (like $k$)
+- **Test**: final evaluation (touch only once!)
+::::
+
+## Why Keep Test Data Separate?
+
+::::{style="font-size: .8em"}
+**The problem**: If you repeatedly check test accuracy while tuning, you're indirectly fitting to the test set.
+
+:::{.fragment}
+**Kaggle competitions** illustrate this perfectly:
+
+- **Public leaderboard**: you can submit and see your score (like validation)
+- **Private leaderboard**: revealed only at the end (the true test)
+
+Teams often do well on the public leaderboard but drop on the private one — they overfit to the public test data!
+:::
+
+:::{.fragment}
+**Rule**: The test set should be "locked away" until you've made all modeling decisions.
+:::
+::::
+
+## Discussion: Data Splits
+
+::::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Think-Pair-Share:</b></p>
+        <ol>
+            <li>You have 100 samples. What's wrong with using 95% for training and 5% for testing?</li>
+            <li>A colleague says "I tried 20 different values of \(k\) and picked the one with the best <i>test</i> accuracy." What's the problem?</li>
+        </ol>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## <span style="font-size: 0.85em;">Evaluating k-NN with a Validation Set</span>
+
+
+::::{style="font-size: .8em"}
+```{python}
+#| echo: true
+from sklearn.neighbors import KNeighborsClassifier
+
+# Train k-NN
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+
+# Evaluate on both sets
+train_accuracy = knn.score(X_train, y_train)
+val_accuracy = knn.score(X_test, y_test)  # Using as validation set here
+
+print(f'Training accuracy: {train_accuracy:.1%}')
+print(f'Validation accuracy: {val_accuracy:.1%}')
+```
+
+:::{.fragment}
+**Validation accuracy** tells us how well we'll do on new data — use it to tune hyperparameters!
+:::
+::::
+
+## <span style="font-size: 0.85em;">Comparing Different Values of k</span>
+
+
+::::{style="font-size: .8em"}
+:::{.center-text}
+```{python}
+# Note: Using our earlier split - in practice, X_test here acts as a validation set
+# since we're using it to choose k (we'd need a separate final test set)
+train_scores = []
+val_scores = []
+k_values = range(1, 51)
+
+for k in k_values:
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_train, y_train)
+    train_scores.append(knn.score(X_train, y_train))
+    val_scores.append(knn.score(X_test, y_test))
+
+plt.figure(figsize=(9, 4))
+plt.plot(k_values, train_scores, 'b.-', label='Training accuracy', markersize=4)
+plt.plot(k_values, val_scores, 'r.-', label='Validation accuracy', markersize=4)
+plt.xlabel('k (number of neighbors)')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.axvline(x=k_values[np.argmax(val_scores)], color='gray', linestyle='--', alpha=0.5)
+plt.title('Training vs Validation Accuracy for Different k')
+plt.tight_layout()
+```
+:::
+
+Notice: Training accuracy starts at ~100% for k=1 (overfitting), while validation accuracy peaks somewhere in the middle.
+::::
+
+## But Wait...
+
+::::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Questions to consider:</b></p>
+        <ul>
+            <li>What if we got "lucky" or "unlucky" with our random split?</li>
+            <li>Is accuracy the only thing we care about?</li>
+            <li>Does k-NN work well in all situations?</li>
+        </ul>
+    </div>
+    """
+
+display(HTML(generate_html()))
+```
+
+The rest of this lecture addresses these questions!
+::::
+
+## Understanding Overfitting
+
+::::{style="font-size: .8em"}
+Let's use polynomial regression to build intuition about overfitting.
+
+This example makes overfitting very visible — then we'll apply the same ideas to k-NN.
+::::
+
+
+## <span style="font-size: 0.85em;">Polynomial Regression Example</span>
+
+::::{style="font-size: .75em;"}
+Consider synthetic data generated from $y = \sin(2\pi x)$ plus noise:
+
+::::{.columns}
+:::{.column width="50%"}
+```{python}
+N_poly = 10
+x_poly = np.linspace(0, 1, N_poly)
+y_poly = np.sin(2 * np.pi * x_poly) + default_rng(2).normal(size = N_poly, scale = 0.20)
+
+cx = np.linspace(0, 1, 1000)
+cy = np.sin(2 * np.pi * cx)
+
+plt.figure(figsize = (5, 4.0))
+plt.plot(cx, cy, lw = 2, label='True function')
+plt.plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none', label='Noisy data')
+plt.xlabel('x', size = 14)
+plt.ylabel('y', size = 14)
+plt.legend()
+plt.tight_layout()
+```
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+We'll try to fit polynomials of different degrees:
+$$y(x, \mathbf{w})=w_0 + w_1x + w_2x^2 + \dots + w_kx^k$$
+
+- $k$ is a **hyperparameter** (we choose it)
+- The $w_i$ values are **parameters** (learned from data)
+:::
+:::
+::::
+::::
+
+## Model Selection: Choosing k
+
+::::{style="font-size: .8em"}
+The problem of choosing the hyperparameter $k$ is called **model selection**.
+
+Let's apply regression to build the best possible constant (order 0), linear (order 1), and cubic (order 3) models.
+```{python}
+# y = Aw, A is design matrix 1, [1, x^T], [1, x^T, x^T^2], etc, and w-hat = (A^TA)^-1 A^Ty
+def design_matrix(x, k):
+    N = len(x)
+    A = np.ones(N)
+    for i in range(1, k+1):
+        A = np.column_stack([A, (x.T)**i])
+    return A
+
+def fit_poly(x, y, k):
+    A = design_matrix(x, k)
+    [Q, R] = np.linalg.qr(A)
+    w_hat, _, _, _ = np.linalg.lstsq(A, y)
+    return w_hat
+
+w_hat_0 = 1/N_poly * np.sum(y_poly)
+w_hat_1 = fit_poly(x_poly, y_poly, 1)
+w_hat_3 = fit_poly(x_poly, y_poly, 3)
+fig, axs = plt.subplots(1, 3, sharey = True, figsize = (12, 3.5))
+#
+cy = 1000 * [w_hat_0]
+pred_y = N_poly * [w_hat_0]
+axs[0].plot(cx, cy, lw = 2, label = r'$k$ = 0')
+axs[0].plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none')
+axs[0].set_xlabel('x', size = 16)
+axs[0].set_ylabel('y', size = 16)
+axs[0].set_title(r'$k$ = 0, constant' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y_poly - pred_y)))
+#axs[0].legend(loc = 'best', fontsize = 16)
+#
+cy = design_matrix(cx, 1) @ w_hat_1
+pred_y = design_matrix(x_poly, 1) @ w_hat_1
+axs[1].plot(cx, cy, lw = 2, label = r'$k$ = 1')
+axs[1].plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none')
+axs[1].set_xlabel('x', size = 16)
+axs[1].set_title(r'$k$ = 1, linear' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y_poly - pred_y)))
+#axs[1].legend(loc = 'best', fontsize = 16)
+#
+cy = design_matrix(cx, 3) @ w_hat_3
+pred_y = design_matrix(x_poly, 3) @ w_hat_3
+axs[2].plot(cx, cy, lw = 2, label = r'$k$ = 3')
+axs[2].plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none')
+axs[2].set_xlabel('x', size = 16)
+axs[2].set_title('$k$ = 3, cubic' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(np.linalg.norm(y_poly - pred_y)))
+#axs[2].legend(loc = 'best', fontsize = 16)
+#
+fig.tight_layout();
+```
+
+Here, $E(\mathbf{w})$ is the **training error**.
+
+::::
+
+
+## Model Selection
+
+::::{style="font-size: .8em;"}
+A third-order polynomial ($k=3$) leads to small training error and hence is a good fit.
+What about _**higher order**_ polynomials?
+
+
+By setting $k=9$, we get the following polynomial to fit the data:
+
+:::{.center-text}
+```{python}
+w_hat_9 = fit_poly(x_poly, y_poly, 9)
+cy = design_matrix(cx, 9) @ w_hat_9
+plt.figure(figsize=(8, 2.5))
+plt.plot(cx, cy, lw = 2, label = r'$k$ = 9')
+plt.plot(x_poly, y_poly, 'ro', markersize = 8, fillstyle = 'none')
+plt.xlabel('x', size = 16)
+plt.ylabel('y', size = 16)
+plt.title(r'$k$ = 9' + '\n' + r'$E(\mathbf{w})$ =' + ' {:0.2f}'.format(0))
+plt.subplots_adjust(bottom=0.2, top=0.85)
+```
+:::
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box" style="text-align: left; margin-top: -10px;">
+       Is the 9th order polynomial a <em>"better"</em> model for this dataset?
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+::::
+
+## Model Selection
+
+::::{style="font-size: .8em;"}
+We want the model to have a good **generalization ability** (i.e., do a good job of predicting on _**future**_ data).
+
+The 9th degree polynomial has poor generalization ability for this dataset.
+
+:::{.center-text}
+<img src="/images/vectors_ds/train-test-graph.png" style="width:394px; height:271px;" />
+:::
+<!-- Unable to get this graph working :( -->
+
+**Test data** is data that was not used to train the model, but comes from the same source.
+
+::::
+
+
+## Model Selection
+
+::::{style="font-size: .85em;"}
+As polynomial order increases:
+
+- **Training error** always decreases (eventually hits zero)
+- **Test error** decreases, then *increases* again
+
+The best test error is at $k=3$ (cubic). Higher-order polynomials **overfit**.
+
+This is the core tradeoff: fitting training data well vs. generalizing to new data.
+::::
+
+## <span style="font-size: 0.75em;">Two Ways to Think About Overfitting</span>
+
+
+::::{style="font-size: .9em;"}
+1. **Too many parameters** for the amount of data
+
+2. **Model too complex** for the underlying pattern — fitting noise, not signal
+
+:::{.fragment}
+Both lead to the same solution: **control model complexity**.
+:::
+::::
+
+## More Data Helps
+
+::::{style="font-size: .85em"}
+Complex models need more data to avoid overfitting.
+
+Same 9th-degree polynomial with N = 15, 50, and 200 points:
+
+:::{.center-text}
+```{python}
+Ns = [15, 50, 200]
+xs = {Nval: np.linspace(0, 1, Nval) for Nval in Ns}
+ys = {Nval: np.sin(2 * np.pi * xs[Nval]) + default_rng(3).normal(size = Nval, scale = 0.20) for Nval in Ns}
+fig, axs = plt.subplots(1, 3, sharey = True, figsize = (9, 3))
+#
+cx = np.linspace(0, 1, 1000)
+for i, Nval in enumerate(Ns):
+    w_star = fit_poly(xs[Nval], ys[Nval], 9)
+    cy = design_matrix(cx, 9) @ w_star
+    pred_y = design_matrix(xs[Nval], 9) @ w_star
+    axs[i].plot(xs[Nval], ys[Nval], 'ro', markersize = 9, fillstyle = 'none', alpha = 0.5)
+    axs[i].plot(cx, cy, lw = 2, label = r'$N$ = {}'.format(Nval))
+    axs[i].set_xlabel('x', size = 16)
+    if i == 0:
+        axs[i].set_ylabel('y', size = 16)
+    axs[i].set_title(r'$k$ = 9, N = {}'.format(Nval))
+#
+fig.tight_layout();
+```
+:::
+
+::::
+
+## Hyperparameters
+
+::::{style="font-size: .9em;"}
+Can't always get more data. Instead: **control model complexity**.
+
+A **hyperparameter** is a setting we choose *before* training:
+
+- Polynomial degree $k$
+- Number of neighbors in k-NN
+- Learning rate, regularization strength, ...
+
+:::{.fragment}
+How do we choose the right value? **Hold out validation data and compare!**
+:::
+::::
+
+## Beyond a Single Train/Val Split  {.smaller}
+
+**Problem**: A single random split can be lucky or unlucky!
+
+:::{.fragment}
+**Solution 1: Random Subsampling** — do multiple random splits and average the results.
+
+**Solution 2: Cross-Validation** — systematically use all data for both training and testing.
+:::
+
+
+## Random Subsampling
+
+::::{style="font-size: .85em;"}
+For each hyperparameter value:
+
+1. Randomly split data 5+ times
+2. Train and evaluate on each split
+3. Average the results
+
+More robust than a single split — but there's an even better approach...
+::::
+
+## Cross-Validation
+
+::::{style="font-size: .85em;"}
+**$k$-fold cross-validation**: split data into $k$ parts. Each part takes a turn as validation set.
+
+:::{.center-text}
+![](/images/vectors_ds/k_folds.png)
+:::
+::::
+
+## Cross-Validation Variants
+
+::::{style="font-size: .85em;"}
+- **5-fold** or **10-fold**: common defaults, good balance
+- **Leave-one-out**: $k$ = dataset size. Maximum training data, but slow.
+
+Larger $k$ = more training data per fold, but more computation.
+::::
+
+## Quick Check: Cross-Validation
+
+::::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Turn to your neighbor:</b></p>
+        <p>You're doing 5-fold cross-validation on a dataset of 1000 samples (assume you've already set aside a test set of 200, and you have 1000 left).</p>
+        <ol>
+            <li>How many samples are in each fold?</li>
+            <li>How many times do you train the model?</li>
+            <li>How many samples does each model see during training?</li>
+        </ol>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## Grid Search with Cross-Validation {.scrollable}
+
+::::{style="font-size: .8em;"}
+**Grid search**: try many hyperparameter values, pick the best using CV.
+
+```{python}
+#| echo: true
+from sklearn.model_selection import cross_validate
+
+# Grid search over different values of k
+results = []
+for k in range(1, 16):
+    cv_results = cross_validate(
+        KNeighborsClassifier(n_neighbors=k), X, y, cv=5,
+        return_train_score=True  # Get both training and validation scores
+    )
+    for fold in range(5):
+        results.append([k, fold+1,
+                       cv_results['train_score'][fold],
+                       cv_results['test_score'][fold]])
+
+df = pd.DataFrame(results, columns=['k', 'Fold', 'Train Acc', 'Val Acc'])
+df.head(10)
+```
+::::
+
+## Grid Search Results
+
+::::{style="font-size: .8em;"}
+:::{.center-text}
+```{python}
+# Average across folds for each k
+summary = df.groupby('k')[['Train Acc', 'Val Acc']].mean()
+
+plt.figure(figsize=(8, 4))
+plt.plot(summary.index, summary['Train Acc'], 'b.-', label='Training accuracy', markersize=8)
+plt.plot(summary.index, summary['Val Acc'], 'r.-', label='Validation accuracy', markersize=8)
+plt.xlabel('k (number of neighbors)')
+plt.ylabel('Accuracy')
+plt.legend()
+best_k = summary['Val Acc'].idxmax()
+plt.axvline(x=best_k, color='gray', linestyle='--', alpha=0.5)
+plt.title(f'Cross-Validation Results (best k = {best_k})')
+plt.tight_layout()
+```
+:::
+
+CV averages over all folds → more robust estimate of generalization!
+::::
+
+## Beyond Accuracy
+
+::::{style="font-size: .85em"}
+**Accuracy** = fraction correct. Simple, but can be misleading.
+
+:::{.fragment}
+**Example**: Dataset is 90% positive, 10% negative.
+
+A model that *always* predicts "positive" gets 90% accuracy!
+
+Is that a good model? **No.** We need better metrics.
+:::
+::::
+
+## Confusion Matrix
+
+::::{style="font-size: .8em;"}
+::::{.columns}
+
+:::{.column width="45%"}
+<img src="/images/vectors_ds/confusion_matrix.png" style="width:500px;" />
+:::
+
+:::{.column width="55%"}
+**Diagonal** = correct, **Off-diagonal** = errors
+
+Key metrics:
+
+- **Recall** = TP / (TP + FN)
+  "Of all actual positives, how many did we catch?"
+
+- **Precision** = TP / (TP + FP)
+  "Of all predicted positives, how many were right?"
+:::
+::::
+::::
+
+## Precision vs Recall: A Tradeoff
+
+::::{style="font-size: .8em;" }
+You're building a cancer screening test:
+
+|               | Predicted + | Predicted − |
+|---------------|-------------|-------------|
+| **Actual +**  | 80          | 20          |
+| **Actual −**  | 10          | 90          |
+
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Precision = 80/90 ≈ 89%. Recall = 80/100 = 80%.</p>
+        <p>Which matters more here: fewer false alarms, or fewer missed cancers?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## More Metrics (Just FYI)
+
+::::{style="font-size: .65em"}
+::::{.columns}
+:::{.column width="50%"}
+**From the confusion matrix:**
+
+|               | Predicted + | Predicted − |
+|---------------|-------------|-------------|
+| **Actual +**  | TP          | FN          |
+| **Actual −**  | FP          | TN          |
+
+:::
+
+:::{.column width="50%"}
+**Key rates:**
+
+- **True Positive Rate (TPR)** = Recall = Sensitivity
+  $$\text{TPR} = \frac{TP}{TP + FN}$$
+
+- **False Positive Rate (FPR)**
+  $$\text{FPR} = \frac{FP}{FP + TN}$$
+
+- **Specificity** = 1 − FPR
+  $$\text{Specificity} = \frac{TN}{FP + TN}$$
+:::
+::::
+::::
+
+## The F1 Score (just FYI)
+
+::::{style="font-size: .8em"}
+What if you want a *single number* that balances precision and recall?
+
+:::{.fragment}
+**F1 Score**: The harmonic mean of precision and recall
+
+$$F_1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}$$
+:::
+
+:::{.fragment}
+**Why harmonic mean?** It penalizes extreme imbalance.
+
+| Precision | Recall | Arithmetic Mean | F1 Score |
+|-----------|--------|-----------------|----------|
+| 0.90      | 0.90   | 0.90            | 0.90     |
+| 0.99      | 0.01   | 0.50            | 0.02     |
+
+A model that ignores one metric can't hide behind a high average!
+:::
+::::
+
+## When to Use Which Metric?
+
+::::{style="font-size: .75em"}
+
+| Scenario | Prioritize | Why |
+|-------|------|---------|
+| Cancer screening | **Recall** | Don't miss actual cases |
+| Spam filter | **Precision** | Don't block legitimate emails |
+| Balanced importance | **F1 Score** | Single balanced metric |
+| Understanding errors | **Confusion matrix** | See full error breakdown |
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Key insight:</b> The "best" metric depends on the <i>cost</i> of different types of errors in your application.</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+::::
+
+## Computing Metrics in Python
+
+::::{style="font-size: .8em"}
+```{python}
+#| echo: true
+from sklearn.metrics import precision_score, recall_score, f1_score
+
+# Example: binary classification results
+y_true = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1]
+y_pred = [1, 1, 0, 1, 0, 1, 0, 0, 1, 0]
+
+print(f"Precision: {precision_score(y_true, y_pred):.2f}")
+print(f"Recall:    {recall_score(y_true, y_pred):.2f}")
+print(f"F1 Score:  {f1_score(y_true, y_pred):.2f}")
+```
+
+For multi-class problems, use `average='macro'` (treat all classes equally) or `average='weighted'` (weight by class frequency).
+::::
+
+## Practice: Computing Metrics
+
+::::{style="font-size: .65em"}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Your turn!</b> A model for detecting fraudulent transactions gives these results:</p>
+        <table style="margin: 10px auto; border-collapse: collapse;">
+            <tr><td></td><td style="padding: 5px 15px;"><b>Pred: Fraud</b></td><td style="padding: 5px 15px;"><b>Pred: Legit</b></td></tr>
+            <tr><td><b>Actual: Fraud</b></td><td style="padding: 5px 15px; text-align: center;">45</td><td style="padding: 5px 15px; text-align: center;">5</td></tr>
+            <tr><td><b>Actual: Legit</b></td><td style="padding: 5px 15px; text-align: center;">30</td><td style="padding: 5px 15px; text-align: center;">920</td></tr>
+        </table>
+        <p><b>Calculate:</b></p>
+        <ol>
+            <li>Accuracy</li>
+            <li>Precision (for detecting fraud)</li>
+            <li>Recall (for detecting fraud)</li>
+        </ol>
+        <p><i>Which metric matters most for fraud detection? Why?</i></p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+::::
+
+## <span style="font-size: 0.85em;">Worked Example: The Iris Dataset</span>
+
+::::{style="font-size: .8em"}
+The **Iris dataset** is a classic machine learning dataset with real measurements of 150 iris flowers from three species.
+
+```{python}
+#|echo: true
+from sklearn.datasets import load_iris
+iris = load_iris()
+X = iris.data
+y = iris.target
+print(f'Features: {iris.feature_names}')
+print(f'Classes: {iris.target_names}')
+print(f'Shape: {X.shape}')
+```
+
+Each flower is described by 4 features: sepal length, sepal width, petal length, petal width.
+::::
+
+## The Iris Dataset: Visualization
+
+:::{.center-text}
+```{python}
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+# Plot sepal dimensions
+scatter1 = axes[0].scatter(X[:, 0], X[:, 1], c=y, cmap='viridis', s=50)
+axes[0].set_xlabel('Sepal Length (cm)')
+axes[0].set_ylabel('Sepal Width (cm)')
+axes[0].set_title('Sepal Dimensions')
+
+# Plot petal dimensions
+scatter2 = axes[1].scatter(X[:, 2], X[:, 3], c=y, cmap='viridis', s=50)
+axes[1].set_xlabel('Petal Length (cm)')
+axes[1].set_ylabel('Petal Width (cm)')
+axes[1].set_title('Petal Dimensions')
+
+plt.tight_layout()
+```
+:::
+
+:::{style="font-size: .8em"}
+Colors: Setosa (purple), Versicolor (green), Virginica (yellow)
+:::
+
+
+## Iris: The Proper Workflow
+
+::::{style="font-size: .8em"}
+**Step 1**: Hold out a test set (we won't touch this until the end!)
+
+```{python}
+#|echo: true
+# Hold out 30% for final testing
+X_train_full, X_test, y_train_full, y_test = model_selection.train_test_split(
+    X, y, test_size=0.3, random_state=0)
+
+print(f'Training samples: {len(X_train_full)}, Test samples: {len(X_test)}')
+```
+::::
+
+## Iris: Finding the Best k with CV
+
+::::{style="font-size: .8em"}
+**Step 2**: Use cross-validation *on the training data* to find the best $k$:
+
+::::{.columns}
+:::{.column width="55%"}
+```{python}
+#| echo: true
+from sklearn.model_selection import cross_val_score
+
+k_values = range(1, 21)
+cv_scores = []
+
+for k in k_values:
+    knn = KNeighborsClassifier(n_neighbors=k)
+    # CV only on training data!
+    scores = cross_val_score(knn, X_train_full,
+                             y_train_full, cv=5)
+    cv_scores.append(scores.mean())
+
+best_k = k_values[np.argmax(cv_scores)]
+print(f'Best k from CV: {best_k}')
+```
+:::
+
+:::{.column width="45%"}
+```{python}
+plt.figure(figsize=(5, 4))
+plt.plot(k_values, cv_scores, 'bo-')
+plt.xlabel('k')
+plt.ylabel('Cross-validation accuracy')
+plt.title('Finding the best k')
+plt.xticks(range(0, 21, 5))
+plt.axvline(x=best_k, color='r', linestyle='--', alpha=0.5)
+plt.tight_layout()
+```
+:::
+::::
+::::
+
+## Iris: Final Evaluation
+
+::::{style="font-size: .8em"}
+**Step 3**: Train final model with best k, evaluate on held-out test set:
+
+```{python}
+#| echo: true
+# Train final model with best k
+final_knn = KNeighborsClassifier(n_neighbors=best_k)
+final_knn.fit(X_train_full, y_train_full)
+
+# NOW we touch the test set - only once!
+test_accuracy = final_knn.score(X_test, y_test)
+print(f'Final test accuracy with k={best_k}: {test_accuracy:.2%}')
+```
+::::
+
+## Iris: Confusion Matrix
+
+::::{style="font-size: .8em"}
+```{python}
+#| echo: true
+y_pred = final_knn.predict(X_test)
+cm = metrics.confusion_matrix(y_test, y_pred)
+pd.DataFrame(cm,
+             columns=['Pred: Setosa', 'Pred: Versicolor', 'Pred: Virginica'],
+             index=['True: Setosa', 'True: Versicolor', 'True: Virginica'])
+```
+
+Notice: Setosa is easy to classify. Versicolor and Virginica sometimes get confused — they're more similar!
+::::
+
+
+## Wrap-up
+
+::::{style="font-size: .8em"}
+
+**Key takeaways:**
+
+- **Overfitting**: When a model fits training data too well but fails on new data
+- **Train/test split**: Hold out data to evaluate generalization
+- **Train/validation/test**: Use validation to tune, keep test locked away
+- **Cross-validation**: More robust evaluation using multiple splits
+- **Confusion matrix**: Shows where classifier makes mistakes
+- **Precision, Recall, F1**: Important when classes are imbalanced or costs differ
+
+**Next lecture**: Our next model: unsupervised learning with $k$-means clustering
+
+::::

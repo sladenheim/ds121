@@ -1,0 +1,970 @@
+---
+title: Eigenvalues and Eigenvectors
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+---
+
+
+## Learning Objectives
+:::{style="font-size: .8em"}
+- Definition of an eigenvector and an eigenvalue
+- Geometric interpretation of eigenvectors and eigenvalues
+- Definition of an eigenspace
+- Geometric interpretation of eigenspaces
+- Computation of eigenvalues and eigenvectors
+    - Characteristic polynomial
+
+:::
+
+## Markov Chains
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+Consider the Markov chain described by \(P = \begin{bmatrix}
+    0.7 & 0.6\\ 0.3 & 0.4
+\end{bmatrix}\) and initial probability vector \(\mathbf{x}_0 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}.\) Find the probability vector \(\mathbf{x}_2\) specifying the probabilities of the states after 2 time periods.
+     <br>
+     <br>
+          <br>
+     <br>
+          <br>
+     <br>
+          <br>
+     <br>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+:::{.notes}
+    The question is asking us to compute $\mathbf{x}_2$: 
+
+    $$\mathbf{x}_2 = P^2 \mathbf{x}_0 = P(P\mathbf{x}_0) = \begin{bmatrix}
+    0.7 & 0.6\\ 0.3 & 0.4
+    \end{bmatrix} 
+    \left(
+    \begin{bmatrix}
+    0.7 & 0.6\\ 0.3 & 0.4
+    \end{bmatrix} 
+    \begin{bmatrix} 0 \\ 1 
+    \end{bmatrix} 
+    \right)= 
+    \begin{bmatrix}
+    0.7 & 0.6\\ 0.3 & 0.4
+    \end{bmatrix} 
+    \begin{bmatrix} 0.6 \\ 0.4 \end{bmatrix}
+    = \begin{bmatrix} 0.66 \\ 0.34 \end{bmatrix}.$$
+    
+:::
+
+
+## The Value of Eigenvalues
+
+:::{style="font-size: .8em"}
+* Better understanding of Markov Chains;
+
+* Concepts required for the PageRank algorithm and principle component analysis (PCA).
+
+:::{.center-text}
+<img src="images/eigenvectors/boat.png" width=700/>
+
+:::
+:::
+
+## Eigenvectors
+
+:::{style="font-size: .8em"}
+To explain eigenvalues, we first explain eigenvectors. 
+
+Almost all vectors change direction, when they are multiplied by a matrix $A$. Certain exceptional vectors $\mathbf{x}$ are in the same direction as $A \mathbf{x}$. 
+
+Those are the **eigenvectors.** Multiply an eigenvector $\mathbf{x}$ by $A,$ and the vector $A \mathbf{x}$ is a number $\lambda$ times $\mathbf{x}.$
+
+<br>
+
+<!-- :::{.center-text style="font-size: 1em"} -->
+Consider $A = \begin{bmatrix}3&-2\\1&0\end{bmatrix}, \mathbf{u} = \begin{bmatrix}-1\\1\end{bmatrix}, \mathbf{v}=\begin{bmatrix}2\\1\end{bmatrix}.$
+<!-- ::: -->
+
+<!-- The images of $\mathbf{u}$ and $\mathbf{v}$ under multiplication by $A$ are shown geometrically here. -->
+
+<!-- <br> -->
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Are \(\mathbf{u}\) and \(\mathbf{v}\) in the same direction as \(A \mathbf{u}\) and \(A \mathbf{v}\), respectively?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Eigenvectors
+
+:::{.center-text}
+```{python}
+import numpy as np
+import laUtilities as ut
+
+#
+ax = ut.plotSetup(size=(10,6))
+ut.centerAxes(ax)
+A = np.array([[3,-2],[1,0]])
+u = np.array([-1,1])
+v = np.array([2,1])
+#
+ut.plotArrowVec(ax, v, [0,0], color='Red')
+ut.plotArrowVec(ax, A.dot(v), [0,0], color='Red')
+ax.text(v[0],v[1]+0.2,r'${\bf v}$',size=20)
+ax.text(A.dot(v)[0],A.dot(v)[1]+0.2,r'$A{\bf v}$',size=20)
+#
+ut.plotArrowVec(ax, u, [0,0], color='Blue')
+ut.plotArrowVec(ax, A.dot(u), [0,0], color='Blue')
+ax.text(u[0]-0.5,u[1]+0.1,r'${\bf u}$',size=20)
+ax.text(A.dot(u)[0]-0.7,A.dot(u)[1]+0.3,r'$A{\bf u}$',size=20);
+```
+:::
+
+
+## Eigenvalues and Eigenvectors
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Eigenvector and eigenvalue</span>
+        An <b>eigenvector</b> of an \(n\times n\) matrix \(A\) is a nonzero vector \(\mathbf{x}\) such that \(A\mathbf{x} = \lambda\mathbf{x}\) for some scalar \(\lambda.\) The scalar \(\lambda\) is an <b>eigenvalue</b> of \(A\).
+    
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+<br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Eigenspace</span>
+        The set of all eigenvectors corresponding to a particular eigenvalue \(\lambda\) is called the <b>eigenspace of \(A\) corresponding to \(\lambda\)</b>.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<br>
+
+The eigenvalue $\lambda$ tells whether the eigenvector $\mathbf{x}$ is streched or shrunk or reversed or left unchanged, when it is multiplied by $A.$
+
+We may find $\lambda = 2$ or $\frac{1}{2}$ or $-1$ or $1$. _**The eigenvalue $\lambda$ could be zero!**_
+:::
+
+## Eigenvalues and Eigenvectors
+
+:::{style="font-size: .8em"}
+__Example.__  Let $A = \begin{bmatrix}1&6\\5&2\end{bmatrix}, \mathbf{u} = \begin{bmatrix}6\\-5\end{bmatrix}, \mathbf{v}=\begin{bmatrix}3\\-2\end{bmatrix}.$  
+
+Are $\mathbf{u}$ and $\mathbf{v}$ eigenvectors of $A$?
+
+__Solution.__
+
+$$
+A\mathbf{u} = \begin{bmatrix}1&6\\5&2\end{bmatrix}\begin{bmatrix}6\\-5\end{bmatrix} = \begin{bmatrix}-24\\20\end{bmatrix} = -4\begin{bmatrix}6\\-5\end{bmatrix} = -4\mathbf{u}.
+$$
+
+$$
+A\mathbf{v} = \begin{bmatrix}1&6\\5&2\end{bmatrix}\begin{bmatrix}3\\-2\end{bmatrix} = \begin{bmatrix}-9\\11\end{bmatrix} \neq \lambda\begin{bmatrix}3\\-2\end{bmatrix}.
+$$
+
+So $\mathbf{u}$ is an eigenvector corresponding to the eigenvalue $-4$, but $\mathbf{v}$ is not an eigenvector of $A$.
+:::
+
+## Eigenvalues and Eigenvectors
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Let \(A= \begin{bmatrix}0.8&0.3\\ 0.2&0.7 \end{bmatrix}\). Are \(\mathbf{x}_1=\begin{bmatrix}0.6\\ 0.4 \end{bmatrix}\) and \(\mathbf{x}_2=\begin{bmatrix}1\\ -1 \end{bmatrix}\) eigenvectors of \(A?\) If so, what are the corresponding eigenvalues?<br><br><br><br><br><br><br><br>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+## Eigenvalues and Eigenvectors
+
+:::{style="font-size: .8em"}
+__Example.__   Show that 7 is an eigenvalue of the matrix $A = \begin{bmatrix}1&6\\5&2\end{bmatrix}$, and find the corresponding eigenvectors.
+
+<!-- <br> -->
+
+__Solution.__ For 7 to be an eigenvalue of $A$, it must be the case that 
+
+$$ 
+A\mathbf{x}=7\mathbf{x}
+$$
+has a nontrivial solution.
+
+This is equivalent to:
+
+$$ 
+A\mathbf{x} - 7\mathbf{x} = {\bf 0}
+$$
+
+$$
+A\mathbf{x} - 7I\mathbf{x} = {\bf 0}
+$$
+
+$$
+(A - 7I)\mathbf{x} = {\bf 0}.
+$$
+
+:::
+
+## Eigenvalues and Eigenvectors
+
+:::{style="font-size: .8em"}
+<!-- To solve this homogeneous equation, form the matrix -->
+
+$$
+A - 7I = \begin{bmatrix}1&6\\5&2\end{bmatrix}-\begin{bmatrix}7&0\\0&7\end{bmatrix} = \begin{bmatrix}-6&6\\5&-5\end{bmatrix}.
+$$
+
+$A-7I$ is a square matrix whose columns are linearly dependent, so by the IMT $(A - 7I)\mathbf{x} = {\bf 0}$ has a nontrivial solution. Hence, 7 is an eigenvalue of $A$.
+
+To find the corresponding eigenvectors, we solve $(A - 7I)\mathbf{x} = {\bf 0}$ using row operations:
+
+$$
+\left[\begin{array}{cc|c}-6&6&0\\5&-5&0\end{array}\right]
+\sim\left[\begin{array}{cc|c}1&-1&0\\0&0&0\end{array}\right].
+$$
+
+This says that $x_1 = x_2,$ and $x_2$ is free. So the general solution is $x_2\begin{bmatrix}1\\1\end{bmatrix}.$ Each vector of this form with $x_2 \neq 0$ is an eigenvector corresponding to $\lambda = 7.$
+:::
+
+## Finding the Eigenspace
+
+:::{style="font-size: .8em"}
+From the previous example, we can conclude that $\lambda$ _**is an eigenvalue of an $n\times n$ matrix $A$ if and only if the equation**_
+
+$$
+(A-\lambda I)\mathbf{x} = {\bf 0}
+$$
+
+_**has a nontrivial solution.**_
+
+<br>
+
+As a result, the _**eigenspace**_ (i.e., the set of all eigenvectors) of $A$ corresponding to $\lambda$ is just _**the null space of the matrix**_ $A-\lambda I.$ That is, the eigenvectors of $A$ corresponding to $\lambda$ make up the null space of $A-\lambda I.$
+
+Hence, the eigenspace is a subspace of $\mathbb{R}^n.$ 
+
+<!-- ```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        How many eigenvectors can an \(n \times n\) matrix have? 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+``` -->
+:::
+
+<!-- ## Finding the Eigenspace
+
+:::{style="font-size: .8em"}
+Recall that the dimension of a null space can be anywhere from $0$ to $n$, where $n$ is the number of columns.
+
+<br>
+
+If the dimension of an eigenspace is 0, then $\lambda$ is not an eigenvalue of $A$. If the dimension of an eigenspace is $n$, there are $n$ linearly independent eigenvectors of $A$.
+
+<br>
+
+If $A$ is the identity matrix in $\mathbb{R}^{2 \times 2}$, all vectors in $\mathbb{R}^2$ are its eigenvectors. The only eigenvalue of $I$ is 1. This is unusual. Most $2 \times 2$ matrices have 2 eigenvector directions and 2 eigenvalues.
+
+::: -->
+
+## Finding the Eigenspace
+
+:::{style="font-size: .8em"}
+For matrix $A = \begin{bmatrix}1&6\\5&2\end{bmatrix}$, we found that the general solution for the eigenvector corresponding to $\lambda = 7$ is the expression $x_2\begin{bmatrix}1\\1\end{bmatrix}.$  
+
+<br>
+
+This means that the eigenspace of $A$ corresponding to $\lambda = 7$ consists of all multiples of $\begin{bmatrix}1\\1\end{bmatrix},$ which is the line through $(1,1)$ and the origin but excluding the origin (recall the zero vector cannot be an eigenvector).
+
+<br>
+
+We could also show that the eigenspace corresponding to $\lambda = -4$ is the line through $(-6, 5)$, again excluding the origin.
+:::
+
+## Finding the Eigenspace
+
+:::{style="font-size: .8em"}
+:::{.center-text}
+```{python}
+#
+ax = ut.plotSetup(-10,10,-6,10,size=(10,7))
+ut.centerAxes(ax)
+A = np.array([[1,6],[5,2]])
+u = np.array([1,1])
+v = np.array([3./2,-5./4])
+#
+ax.plot(v[0],v[1],'bo')
+ax.plot(A.dot(v)[0],A.dot(v)[1],'bo')
+ax.text(v[0],v[1]+0.2,r'${\bf v}$',size=20)
+ax.text(A.dot(v)[0]+0.2,A.dot(v)[1]+0.2,r'$A{\bf v}$',size=20)
+ax.plot([-10,10],[5*10/6.0,-5*10/6.0],'b-',lw=2)
+#
+ax.plot(u[0],u[1],'ro')
+ax.plot(A.dot(u)[0],A.dot(u)[1],'ro')
+ax.text(u[0]+0.7,u[1],r'${\bf u}$',size=20)
+ax.text(A.dot(u)[0]+0.7,A.dot(u)[1],r'$A{\bf u}$',size=20)
+ax.plot([-6,10],[-6,10],'r-',lw=2)
+# 
+ax.annotate('', xy=(A.dot(u)[0], A.dot(u)[1]),  xycoords='data',
+                xytext=(u[0], u[1]), textcoords='data',
+                size=18,
+                #bbox=dict(boxstyle="round", fc="0.8"),
+                arrowprops={'arrowstyle': 'simple',
+                                'fc': '0.5', 
+                                'ec': 'none',
+                                'connectionstyle' : 'arc3,rad=0.5'},
+                )
+ax.annotate('', xy=(A.dot(v)[0], A.dot(v)[1]),  xycoords='data',
+                xytext=(v[0], v[1]), textcoords='data',
+                size=18,
+                #bbox=dict(boxstyle="round", fc="0.8"),
+                arrowprops={'arrowstyle': 'simple',
+                                'fc': '0.5', 
+                                'ec': 'none',
+                                'connectionstyle' : 'arc3,rad=-0.5'},
+                )
+ax.text(3,9,r'Eigenspace for $\lambda$ = 7',size=16)
+ax.text(-9.5,8,r'Eigenspace for $\lambda = -4$',size=16);
+```
+:::
+:::
+
+## Finding the Eigenspace
+
+:::{style="font-size: .8em"}
+We can also find the eigenvalues and eigenvectors of $A = \begin{bmatrix}1&6\\5&2\end{bmatrix}$ using `numpy`.
+:::
+
+```{python}
+#| echo: true
+A = np.array([[1, 6],
+              [5, 2]])
+
+# calculate eigenvalues and eigenvectors
+eigvals, eigvecs = np.linalg.eig(A)
+
+# print the results, rounded to 5 decimal places
+for i in range(len(eigvals)):
+    print("A has eigenvalue", np.round(eigvals[i], 5), "with eigenvector", np.round(eigvecs[:,i], 5))
+```
+
+:::{style="font-size: .8em"}
+In general, when we know the eigenvalue $\lambda,$ we find the eigenvector by solving $(A-\lambda I) \mathbf{x} = \mathbf{0}.$
+:::
+
+## Finding the Eigenspace
+
+:::{style="font-size: .75em"}
+__Example.__  Let $A = \begin{bmatrix}4&-1&6\\2&1&6\\2&-1&8\end{bmatrix}.$  An eigenvalue of $A$ is $2.$  Find a basis for the the corresponding eigenspace.
+
+__Solution.__  The eigenspace we are looking for is the nullspace of
+:::
+
+:::{style="font-size: .6em"}
+$$
+A - 2I = \begin{bmatrix}4&-1&6\\2&1&6\\2&-1&8\end{bmatrix}-\begin{bmatrix}2&0&0\\0&2&0\\0&0&2\end{bmatrix} = \begin{bmatrix}2&-1&6\\2&-1&6\\2&-1&6\end{bmatrix}.
+$$
+:::
+
+
+:::{style="font-size: .75em"}
+Let's row reduce the augmented matrix for $(A-2I)\mathbf{x}={\bf 0}$:
+:::
+
+:::{style="font-size: .6em"}
+$$
+\left[\begin{array}{ccc|c}2&-1&6&0\\2&-1&6&0\\2&-1&6&0\end{array}\right]
+\sim
+\left[\begin{array}{ccc|c}1&-1/2&3&0\\0&0&0&0\\0&0&0&0\end{array}\right]
+$$
+:::
+
+:::{style="font-size: .75em"}
+2 is indeed an eigenvalue of $A,$ because $(A-2I)\mathbf{x} = {\bf 0}$ has a non-trivial solution.
+:::
+
+## Finding the Eigenspace
+
+:::{style="font-size: .75em"}
+- All solutions lie on the plane $x_1 = \frac{1}{2}x_2 -3x_3.$
+
+- Expressed as a vector, the general solution is: $\begin{bmatrix}\frac{1}{2}x_2 - 3x_3\\x_2\\x_3\end{bmatrix}.$
+
+- Expressed as a vector sum, this is: $x_2\begin{bmatrix}1/2\\1\\0\end{bmatrix} + x_3\begin{bmatrix}-3\\0\\1\end{bmatrix}$ with $x_2$ and $x_3$ free.
+<br>
+
+So this eigenspace is a two-dimensional subspace of $\mathbb{R}^3,$ and a basis for this subspace is
+
+$$
+\left\{\begin{bmatrix}1/2\\1\\0\end{bmatrix},\begin{bmatrix}-3\\0\\1\end{bmatrix}\right\}.
+$$
+
+:::
+
+## Finding the Eigenvalues
+
+:::{style="font-size: .8em"}
+_**How do we find the eigenvalues?**_
+
+If $(A- \lambda I)\mathbf{x} = {\bf 0}$ has a nonzero solution, $A - \lambda I$ is not invertible. By the IMT, the determinant of $A - \lambda I$ must be zero.
+
+<br>
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        The scalar \(\lambda\) is an eigenvalue of \(A\) if and only if \(A - \lambda I\) is singular (i.e., \(\operatorname{det}(A - \lambda I) = 0\)).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<br>
+
+For any $n \times n$ matrix, $\operatorname{det}(A - \lambda I)$ is a polynomial of degree $n,$ called the __characteristic polynomial__ of $A.$
+
+The equation $\operatorname{det}(A - \lambda I)$ is known as the __characteristic equation.__
+:::
+
+
+## Finding the Eigenvalues
+
+:::{style="font-size: .8em"}
+__Example.__  Find the eigenvalues of $A = \begin{bmatrix}2&3\\3&-6\end{bmatrix}.$
+
+<br>
+
+__Solution.__  We must find all scalars $\lambda$ such that the matrix equation
+
+$$
+(A-\lambda I)\mathbf{x} = {\bf 0}
+$$
+
+has a nontrivial solution. This problem is equivalent to finding all $\lambda$ such that the matrix $A-\lambda I$ is not invertible, or equivalently, $\operatorname{det}(A - \lambda I)=0.$
+
+$$
+A - \lambda I = \begin{bmatrix}2&3\\3&-6\end{bmatrix} - \begin{bmatrix}\lambda&0\\0&\lambda\end{bmatrix} = \begin{bmatrix}2-\lambda&3\\3&-6-\lambda\end{bmatrix}.
+$$
+:::
+
+## Finding the Eigenvalues
+
+:::{style="font-size: .8em"}
+The eigenvalues of $A$ are the solutions of the characteristic equation
+$$
+\begin{eqnarray*}
+0 &=& \det(A-\lambda I) \\
+&=& \det\begin{bmatrix}2-\lambda&3\\3&-6-\lambda\end{bmatrix} \\
+&=& (2-\lambda)(-6-\lambda)-(3)(3) \\
+&=& -12 + 6\lambda -2\lambda + \lambda^2 - 9 \\
+&=& \lambda^2+4\lambda-21 \\
+&=& (\lambda-3)(\lambda + 7)
+\end{eqnarray*}
+$$
+
+If $\det(A-\lambda I) = 0,$ then $\lambda = 3$ or $\lambda = -7.$  So the eigenvalues of $A$ are $3$ and $-7$.
+:::
+
+## Finding the Eigenvalues
+
+:::{style="font-size: .8em"}
+__Example.__  Find the characteristic equation of 
+:::
+
+:::{style="font-size: .6em"}
+$$
+A = \begin{bmatrix}5&-2&6&-1\\0&3&-8&0\\0&0&5&4\\0&0&0&1\end{bmatrix}.
+$$
+:::
+
+:::{style="font-size: .8em"}
+__Solution.__  Form $A - \lambda I$ and note that $\det (A)$ is the product of the entries on the diagonal of $A,$ if $A$ is triangular.
+:::
+
+:::{style="font-size: .6em"}
+$$
+\det(A-\lambda I) = \det\begin{bmatrix}5-\lambda&-2&6&-1\\0&3-\lambda&-8&0\\0&0&5-\lambda&4\\0&0&0&1-\lambda\end{bmatrix}
+=(5-\lambda)(3-\lambda)(5-\lambda)(1-\lambda).
+$$
+:::
+
+:::{style="font-size: .8em"}
+So the characteristic equation is: 
+:::
+:::{style="font-size: .6em"}
+$$(\lambda-5)^2(\lambda-3)(\lambda-1) = \lambda^4 - 14\lambda^3 + 68 \lambda^2 - 130\lambda + 75 = 0.$$
+:::
+
+
+## Finding the Eigenvalues and Eigenvectors{.really-really-smaller-title}
+
+:::{style="font-size: 1.35em"}
+In summary, to find the eigenvalues and eigenvectors of an $n \times n$ matrix $A,$ we follow these steps.
+
+<br>
+
+1. _Compute the determinant of $A - \lambda I$_. With $\lambda$ subtracted along the diagonal, this determinant starts with $\lambda^n$ or $- \lambda^n.$ It is a polynomial in $\lambda$ of degree $n.$
+<br>
+
+2. _Find the roots of this polynomial_ by solving $\operatorname{det}(A - \lambda I)=0.$ The $n$ roots are the $n$ eigenvalues of $A.$ They make $A - \lambda I$ singular.
+<br>
+
+3. For each eigenvalue $\lambda,$ solve $(A - \lambda I)\mathbf{x}=0$ to _find an eigenvector $\mathbf{x}.$_
+:::
+
+
+## Finding the Eigenvalues and Eigenvectors{.really-really-smaller-title}
+
+:::{style="font-size: 1.35em"}
+__Example.__  Let $A = \begin{bmatrix}1&2\\2&4\end{bmatrix}.$ Find its eigenvalues and eigenvectors.
+
+__Solution.__   1. Compute the determinant of $A - \lambda I.$ 
+
+$$
+A - \lambda I = \begin{bmatrix}1- \lambda &2\\2&4 - \lambda \end{bmatrix}.
+$$ 
+
+$$
+\operatorname{det}(A - \lambda I) = (1 - \lambda)(4 - \lambda) - (2)(2) = \lambda^2 - 5 \lambda.
+$$
+
+
+2. Set this determinant to zero:
+
+:::{.center-text}
+$$
+\lambda^2 - 5 \lambda = \lambda(\lambda - 5) = 0.
+$$ 
+:::
+
+Hence, the eigenvalues of $A$ are $\lambda_1=0$ and $\lambda_2=5.$
+:::
+
+
+## Finding the Eigenvalues and Eigenvectors{.really-really-smaller-title}
+
+:::{style="font-size: 1.3em"}
+
+3. It remains to find the eigenvectors. Solve $\operatorname{det}(A - \lambda I) = 0$ separately for $\lambda_1 = 0$ and $\lambda_2=5.$
+
+$$
+\left[ A - 0I \,\middle|\, \mathbf{0} \right] = 
+\left[ \begin{array}{cc|c}
+1 & 2 & 0 \\
+2 & 4 & 0
+\end{array} \right]
+\sim
+\left[ \begin{array}{cc|c}
+1 & 2 & 0 \\
+0 & 0 & 0
+\end{array} \right].
+$$
+
+$x_2$ is free, $x_1=-2x_2.$ Let $x_2=-1$. Then $\begin{bmatrix} 2 \\ -1 \end{bmatrix}$ is an eigenvector for $\lambda_1 = 0.$
+
+$$
+\left[ A - 5I \,\middle|\, \mathbf{0} \right] = 
+\left[ \begin{array}{cc|c}
+-4 & 2 & 0 \\
+2 & -1 & 0
+\end{array} \right]
+\sim
+\left[ \begin{array}{cc|c}
+1 & -\frac{1}{2} & 0 \\
+0 & 0 & 0
+\end{array} \right].
+$$
+
+Hence, $\begin{bmatrix}1 \\ 2 \end{bmatrix}$ is an eigenvector for $\lambda_2$ = 5.
+:::
+
+## Finding the Eigenvalues and Eigenvectors{.really-really-smaller-title}
+
+:::{style="font-size: 1.35em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Let \(A=\begin{bmatrix}2&-1 \\ -1 & 2 \end{bmatrix}\). Find the eigenvalues and eigenvectors of \(A\).
+        </p>
+        <br><br><br>
+        <br><br><br>
+        <br><br><br>
+        <br><br><br>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+<!-- ## Key Ideas
+
+:::{style="font-size: .8em"}
+
+* $A \mathbf{x} = \lambda \mathbf{x}$ says that eigenvectors $\mathbf{x}$ keep the same direction when multiplied by $A.$
+* $A \mathbf{x} = \lambda \mathbf{x}$ also says that $\operatorname{det}(A - \lambda I)=0$. This determines $n$ eigenvalues.
+* The eigenvectors corresponding to an eigenvalue $\lambda$ are found directly from $(A-\lambda I) \mathbf{x} = \mathbf{0}$.
+::: -->
+
+## Learning Objectives
+:::{style="font-size: .8em"}
+
+*  Eigenvalues of triangular matrices
+*  Algebraic and geometric multiplicities of eigenvalues
+*  The connection between eigenvalues and matrix singularity
+*  The connection between eigenvalues and matrix similarity
+*  Important warnings about eigenvalues 
+*  Connection to Markov chains
+:::
+
+
+## Eigenvalues of a Triangular Matrix
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        The eigenvalues of a triangular matrix are the entries on its main diagonal.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+<!-- __Proof.__ See the notes. -->
+
+<br>
+
+__Example.__ Let $A = \begin{bmatrix}3&6&-8\\0&0&6\\0&0&2\end{bmatrix}$ and $B = \begin{bmatrix}4&0&0\\-2&1&0\\5&3&4\end{bmatrix}$. 
+
+Then the eigenvalues of $A$ are 3, 0, and 2.   The eigenvalues of $B$ are 4 and 1.
+:::
+
+## Multiplicity
+
+:::{style="font-size: .8em"}
+Note that one of the eigenvalues of $B$ occurs twice. We say that it is _repeated_. 
+
+<br>
+
+In general, every eigenvalue has a certain __algebraic multiplicity__. Algebraic multiplicity counts the repetitions of $\lambda$ among the eigenvalues.
+
+<br>
+
+The eigenvalue 4 of $B$ has algebraic mulitiplicity of 2, while the eigenvalue 1 has algebraic multiplicity of 1. 
+
+<br>
+
+Next to algebraic multiplicity, there is also the __geometric multiplicity__ of an eigenvalue. The geometric multiplicty counts the linearly independent eigenvectors for $\lambda.$
+
+:::
+
+## Multiplicity
+
+:::{style="font-size: .8em"}
+
+Consider $C = \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix}.$ 
+
+* $C$ has one (repeated) eigenvlaue: 0.
+* There is only one eigenvector describing the eigenspace of $\lambda =0$: $\begin{bmatrix} 1 \\ 0 \end{bmatrix}.$
+* The algebraic multiplicity of $\lambda = 0$ is 2.
+* The geometric multiplicity of $\lambda = 0$ is 1.
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Let \(A = \begin{bmatrix} 7 & 2 \\ -2 & 3 \end{bmatrix}.\)  What are the algebraic and geometric multiplicities of its eigenvalues? <br>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Invertibility
+
+:::{style="font-size: .8em"}
+What happens if a matrix $A$ has 0 as an eigenvalue?
+
+<br> 
+
+This happens if and only if there is a nontrivial solution to the equation
+
+$$\begin{align*}
+A\mathbf{x} &= 0\mathbf{x} \\
+A\mathbf{x} &= {\bf 0}.
+\end{align*}$$
+
+<br>
+
+By the IMT, the homogeneous equation has a nontrivial solution if and only if $A$ is not invertible. Hence, 0 is an eigenvalue of $A$ if and only if $A$ is not invertible.
+:::
+
+
+## Invertibility
+
+:::{style="font-size: .8em"}
+So we have yet another addition to the Invertible Matrix Theorem!
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        Let \(A\) be an \(n\times n\) matrix. Then the following two statements are equivalent:<br>
+        <ol start="1">
+    <li> \(A\) is invertible. <br>
+    <li> The number 0 is not an eigenvalue of \(A\).
+    </ol>
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+<br>
+
+__Example.__ $A = \begin{bmatrix}3&6&-8\\0&0&6\\0&0&2\end{bmatrix}$ with eigenvalues 3, 0, and 2 is not invertible. 
+:::
+
+## Similarity
+
+:::{style="font-size: .8em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Similarity</span>
+        If \(A\) and \(B\) are \(n\times n\) matrices, then \(A\) is <b>similar</b> to \(B\) if there is an invertible matrix \(P\) such that \(P^{-1}AP = B,\) or, equivalently, \(A = PBP^{-1}.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+<br>
+
+ Similarity is a symmetric relationship: if $A$ is similar to $B$, then $B$ is similar to $A$.  Hence we just say that $A$ and $B$ _are similar._
+ 
+<br> 
+Changing $A$ into $B$ is called a __similarity transformation.__
+
+:::
+
+## Similarity
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        If \(n\times n\) matrices \(A\) and \(B\) are similar, then they have the same characteristic polynomial, and hence the same eigenvalues.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+__Proof.__  If $B = P^{-1}AP,$ then
+
+$$\begin{align*}
+B - \lambda I &= P^{-1}AP - \lambda I \\
+&= P^{-1}AP - \lambda P^{-1}P \\
+&= P^{-1}(AP-\lambda P) \\
+&= P^{-1}(A-\lambda I)P.
+\end{align*}$$
+
+:::
+
+## Similarity
+
+:::{style="font-size: .8em"}
+Now let's construct the characteristic polynomial by taking the determinant:
+
+$$\begin{align*}
+\det(B-\lambda I) &= \det[P^{-1}(A-\lambda I)P] \\
+&= \det(P^{-1})\cdot\det(A-\lambda I)\cdot\det(P),
+\end{align*}
+$$
+
+using the fact that the determinant of the product of matrices equals the product of the determinants.
+
+<br>
+
+Finally, since $\det(P^{-1})\cdot\det(P) = \det(P^{-1}P) = \det I = 1,$ we can see that 
+
+$$\det(B-\lambda I) = \det(A - \lambda I).$$
+:::
+
+## Warnings
+
+:::{style="font-size: .8em"}
+1. The eigenvalues of a matrix with real entries might be complex.
+
+__Example.__ Consider the "rotation by 90 degrees" matrix:
+
+$$A = \begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}.$$
+
+It does not have any real-valued eigenvalues.
+
+```{python}
+import numpy as np
+import laUtilities as ut
+```
+
+```{python}
+#| echo: true
+A = np.array([[0, -1],
+              [1,  0]])
+for i in range(len(A)):
+    print("eigenvalue", np.round(np.linalg.eigvals(A)[i]), "with eigenvector", np.round(np.linalg.eig(A)[1][:,i], 5))
+```
+:::
+
+## Warnings
+
+:::{style="font-size: .8em"}
+2. Elimination does not preserve eigenvalues.
+
+If you add a row of a matrix to its other row, or exchange its rows, the eigenvalues usually change.
+
+__Example.__  Consider $A = \begin{bmatrix} 1 & 3 \\ 2 & 6 \end{bmatrix}$.
+
+* Its characteristic equation is $(1-\lambda)(6-\lambda) - 6 = \lambda^2 - 7 \lambda = \lambda (\lambda - 7) = 0.$
+Hence, its eigenvalues are 0 and 7.
+* The reduced echelon form of $A$ is $U = \begin{bmatrix} 1 & 3 \\ 0 & 0 \end{bmatrix}.$ The eigenvalues of $U$ are 0 and 1.
+
+:::
+
+## Back to Markov Chains
+
+:::{style="font-size: .8em"}
+Recall that a _Markov chain_ models systems that change over time. It imposes a fixed rule that tells us how to compute the next state of the system based on the current state of the system (no matter the prior history or which time period we're currently at).
+
+Formally, a Markov chain is represented by:
+
+- An initial probability vector $\mathbf{x_0} \in \mathbb{R}^n$ showing the fraction of people/objects in each state at the beginning of the system, and
+- A stochastic matrix $P \in \mathbb{R}^{n \times n}$ that encodes the state transition rule, in the sense that the next state is calculated as ${\bf x_{k+1}} = P{\bf x_k}$.
+:::
+
+## Back to Markov Chains
+
+:::{style="font-size: .8em"}
+In the long run, it can be shown that every stochastic matrix has at least one __steady-state vector__ ${\bf v}$ such that $P{\bf v} = {\bf v}$. That is, ${\bf v}$ is an eigenvector of $P.$
+
+To find the steady-state vector for a Markov Chain:
+
+* Solve the linear system $(P-I){\bf x} = {\bf 0}.$  
+* The system will have an infinite number of solutions, with one free variable.  Obtain a general solution.
+* Pick any specific solution (choose any value for the free variable), and scale it so the entries add up to 1.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        The largest eigenvalue of a Markov Chain is 1.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+

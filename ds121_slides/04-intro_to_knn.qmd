@@ -1,0 +1,607 @@
+---
+title: "Classification with <br> K-Nearest Neighbors"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+
+---
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib as mp
+import sklearn.datasets as sk_data
+from sklearn.neighbors import KNeighborsClassifier
+import sklearn.metrics as metrics
+```
+## Learning Objectives
+
+::::{style="font-size: .8em"}
+- Types of machine learning algorithms:
+    - Supervised vs unsupervised
+    - Regression vs classification
+- $k$-nearest neighbors ($k$-NN):
+    - The algorithm: "ask your neighbors"
+    - $k$-NN for classification (majority vote)
+    - $k$-NN for regression (average)
+    - Hard vs soft classification
+
+::::
+
+## Types of Machine Learning Algorithms {.smaller}
+
+:::{style="font-size: 1.1em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Shout it out:</b> What machine learning algorithms have you heard of?</p>
+    </div>
+    """
+
+display(HTML(generate_html()))
+```
+:::
+
+:::{.fragment style="font-size: 1.1em"}
+These algorithms share something in common: they all work with **vectors**.
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>For each algorithm mentioned — what might the vector \(\mathbf{x}\) represent? What's being predicted?</p>
+    </div>
+    """
+
+display(HTML(generate_html()))
+```
+:::
+
+:::{.notes}
+Examples to draw out:
+- Image classification: x = pixel values, predict label (cat/dog)
+- Spam filter: x = word counts, predict spam/not spam
+- Recommender systems: x = user preferences, predict ratings
+- Clustering: x = customer data, find groups (no prediction)
+:::
+
+## Supervised vs. Unsupervised Learning {.smaller}
+
+:::{style="font-size: 1.1em"}
+**Supervised**: Data has labels, so we learn to predict labels for new data
+
+**Unsupervised**: No labels, so we discover hidden structure or patterns
+:::
+
+:::{.fragment style="font-size: 1.1em"}
+In both cases, each data item is a vector $\mathbf{x}$.
+
+The entries of $\mathbf{x}$ are called **features**.
+:::
+
+:::{.notes}
+Regression and classification are supervised.
+Clustering is unsupervised.
+:::
+
+
+## Supervised Learning
+
+:::{style="font-size: 0.95em"}
+**The Setup**
+
+- **Given**: Training data $\{(\mathbf{x_i}, y_i)\}$ — vectors paired with labels
+- **Goal**: Predict $y$ for new, unseen $\mathbf{x}$
+- **Assumption**: Labels depend on features (otherwise, why bother?)
+
+**Terminology**:
+
+- $\mathbf{x}$ = **features** (independent variables)
+- $y$ = **target** (dependent variable)
+:::
+
+## Supervised Learning
+
+:::{style="font-size: 0.95em"}
+**Key principles:**
+
+1. There's a set of possible prediction rules. **Learning** means finding the best one.
+
+2. The rule that works on training data should also work on *new* data. This is called **generalization**.
+
+We don't just want to memorize — we want to learn patterns that transfer!
+:::
+
+
+## Regression vs. Classification
+
+::::{style="font-size: 0.8em"}
+**Regression**: $y$ is continuous (a number)
+
+- Example: Predict house price from sq footage, bedrooms, location
+- Success = predictions are *close* to true values
+
+**Classification**: $y$ is discrete (a category)
+
+- Example: Predict "spam" or "not spam" from email text
+- Success = predictions are *correct* most of the time
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Which type is each: predicting tomorrow's temperature? Diagnosing a disease? Estimating ad revenue? Predicting star ratings? Election outcomes?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+::::
+
+
+
+## <span style="font-size: 0.85em;">Recall: Distance Between Vectors</span>
+
+::::{style="font-size: .8em"}
+In the last lecture, we learned how to compute the **distance** between two vectors:
+
+$$\text{dist}(\mathbf{u}, \mathbf{v}) = \|\mathbf{u} - \mathbf{v}\| = \sqrt{(u_1-v_1)^2 + (u_2-v_2)^2 + \cdots + (u_n-v_n)^2}$$
+
+:::{.fragment}
+Today we'll use this to build our first machine learning algorithm!
+
+The key idea: **similar data points should have similar labels.**
+
+If we want to predict the label for a new point, we can look at the labels of _nearby_ points.
+:::
+::::
+
+## K-Nearest Neighbors
+
+::::{style="font-size: .8em"}
+$k$-Nearest Neighbors ($k$-NN) is one of the simplest machine learning algorithms.
+
+The idea: **"Ask your neighbors!"**
+
+- Given a new data point $\mathbf{x}$, find the $k$ closest points in the training data
+- Use their labels to make a prediction
+
+By "closest" we mean smallest Euclidean distance — exactly what we learned last lecture!
+
+:::{.fragment}
+$k$-NN can be used for both **classification** and **regression**:
+
+- **Classification**: predict the majority label among the $k$ neighbors
+- **Regression**: predict the average value among the $k$ neighbors
+:::
+::::
+
+## K-Nearest Neighbors
+
+
+:::{style="font-size: .75em"}
+Here is an example of a training dataset $\{(\mathbf{x_i}, y_i)\,|\,i = 1,\dots,N\}$ where the feature vectors $\mathbf{x_i}$ are each 2-dimensional, and the label $y_i$ is either 'blue' or 'red.'
+:::
+
+:::{.center-text}
+```{python}
+from matplotlib.colors import ListedColormap
+figsize = (8,5)
+cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
+cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
+
+demo_y = [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+demo_X = np.array([[-3,1], [-2, 4], [-2, 2], [-1.5, 1], [-1, 3], [0, 0], [1, 1.5], [2, 0.5], [2, 3], [2, 0], [3, 1], [4, 4], [0, 1]])
+test_X = [-0.3, 0.7]
+#
+plt.figure(figsize=figsize)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+plt.axis('equal')
+plt.axis('off')
+plt.title('Training Points: 2 Classes');
+plt.show()
+```
+:::
+
+:::{.notes}
+N=13
+:::
+
+## K-Nearest Neighbors
+
+:::{.center-text}
+```{python}
+plt.figure(figsize=figsize)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+plt.plot(test_X[0], test_X[1], 'ok')
+plt.annotate('Test Point', test_X, [75, 25], 
+             textcoords = 'offset points', fontsize = 14, 
+             arrowprops = {'arrowstyle': '->'})
+plt.axis('equal')
+plt.axis('off')
+plt.title('Training Points: 2 Classes');
+plt.show()
+```
+:::
+
+## K-Nearest Neighbors
+
+:::{.center-text}
+```{python}
+plt.figure(figsize=figsize)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+plt.plot(test_X[0], test_X[1], 'ok')
+ax=plt.gcf().gca()
+circle = mp.patches.Circle(test_X, 0.5, facecolor = 'red', alpha = 0.2)
+plt.axis('equal')
+plt.axis('off')
+ax.add_artist(circle)
+plt.title('1-Nearest-Neighbor: Classification: Red')
+plt.show()
+```
+:::
+
+## K-Nearest Neighbors
+
+:::{.center-text}
+
+```{python}
+plt.figure(figsize=figsize)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+test_X = [-0.3, 0.7]
+plt.plot(test_X[0], test_X[1], 'ok')
+ax=plt.gcf().gca()
+    #ellipse = mp.patches.Ellipse(gmm.means_[clus], 3 * e[0], 3 * e[1], angle, color = 'r')
+circle = mp.patches.Circle(test_X, 0.9, facecolor = 'gray', alpha = 0.3)
+plt.axis('equal')
+plt.axis('off')
+ax.add_artist(circle)
+plt.title('2-Nearest-Neighbor');
+plt.show()
+```
+:::
+:::{.notes}
+How can we solve the issue with the indeterminate result?
+:::
+
+## K-Nearest Neighbors
+
+:::{.center-text}
+```{python}
+plt.figure(figsize=figsize)
+ax=plt.gcf().gca()
+    #ellipse = mp.patches.Ellipse(gmm.means_[clus], 3 * e[0], 3 * e[1], angle, color = 'r')
+circle = mp.patches.Circle(test_X, 1.4, facecolor = 'blue', alpha = 0.2)
+ax.add_artist(circle)
+plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y, cmap=cmap_bold)
+#plt.scatter(demo_X[:,0], demo_X[:,1], c=demo_y)
+test_X = [-0.3, 0.7]
+plt.plot(test_X[0], test_X[1], 'ok')
+plt.axis('equal')
+plt.axis('off')
+plt.title('3-Nearest-Neighbor: Classification: Blue');
+plt.show()
+```
+:::
+
+## K-Nearest Neighbors
+
+::::{style="font-size: .8em"}
+Note that $k$-Nearest Neighbors can do either _**hard**_ or _**soft**_ classification.
+<br><br>
+As a **hard classifier**, it returns the majority vote of the labels on the $k$ nearest neighbors (which may be indeterminate).
+<br><br>
+As a **soft classifier** it returns:
+
+$$
+p(y = c\,|\,\mathbf{x}, k) = \frac{\text{number of neighbors with label } c}{k}
+$$
+::::
+
+:::{.notes}
+It is also reasonable to weight the votes of neighborhood points according to their distance from $x$.
+
+Return back to the previous slide: Result of soft classification?
+
+P(red) = 1/3
+
+P(blue) = 2/3
+:::
+
+## <span style="font-size: 0.85em;">Practice: Compute k-NN by Hand</span>
+::::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Problem:</b> Given training points with labels:</p>
+        <p>A = (1, 2) → Red, &emsp; B = (3, 1) → Red, &emsp; C = (2, 4) → Blue, &emsp; D = (4, 3) → Blue</p>
+        <p>What does k-NN predict for the new point X = (2, 2)?</p>
+        <ul>
+            <li>Using 1-NN?</li>
+            <li>Using 3-NN?</li>
+        </ul>
+    </div>
+    """
+
+display(HTML(generate_html()))
+```
+
+
+::::
+
+<!--
+## <span style="font-size: 0.85em;">Practice: Compute k-NN by Hand</span>
+::::{style="font-size: .8em"}
+
+**Solution:**
+
+- Distance to A: $\sqrt{(2-1)^2 + (2-2)^2} = 1$
+- Distance to B: $\sqrt{(2-3)^2 + (2-1)^2} = \sqrt{2} \approx 1.41$
+- Distance to C: $\sqrt{(2-2)^2 + (2-4)^2} = 2$
+- Distance to D: $\sqrt{(2-4)^2 + (2-3)^2} = \sqrt{5} \approx 2.24$
+
+**1-NN**: Nearest is A (Red) so predict **Red**
+
+**3-NN**: Three nearest are A, B, C (Red, Red, Blue) so predict **Red** (2-1 majority)
+
+::::
+-->
+
+## K-NN for Regression
+
+::::{style="font-size: .9em"}
+$k$-NN also works for **regression** (predicting continuous values).
+
+Instead of majority vote, take the **average** of neighbors' values.
+
+:::{.fragment}
+**Example: Predicting House Prices**
+
+You want to sell your house. How do you estimate its value?
+
+Look at what *nearby* houses sold for recently!
+:::
+::::
+
+## K-NN for Regression: A Map
+
+::::{style="font-size: .8em"}
+```{python}
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
+fig, ax = plt.subplots(figsize=(7, 5))
+
+# House positions (x, y) and prices
+houses = {
+    'A': (2, 5, '$820K'),
+    'B': (3, 7, '$950K'),
+    'C': (6, 6, '$780K'),
+    'D': (4, 3, '$710K'),
+    'E': (7, 4, '$850K'),
+}
+
+# Plot sold houses
+for name, (x, y, price) in houses.items():
+    ax.scatter(x, y, s=200, c='steelblue', zorder=3)
+    ax.annotate(f'{name}\n{price}', (x, y), textcoords='offset points',
+                xytext=(10, 5), fontsize=11)
+
+# Plot the new house
+ax.scatter(4, 5, s=250, c='coral', marker='s', zorder=3)
+ax.annotate('Your\nhouse', (4, 5), textcoords='offset points',
+            xytext=(10, 5), fontsize=11, fontweight='bold')
+
+ax.set_xlim(0, 9)
+ax.set_ylim(1, 9)
+ax.set_xlabel('← West    East →', fontsize=12)
+ax.set_ylabel('← South    North →', fontsize=12)
+ax.set_title('Recent Sales in Your Neighborhood', fontsize=14)
+ax.set_aspect('equal')
+plt.tight_layout()
+```
+
+Using $k=2$: Nearest are A and B. Predict $\frac{\$820K + \$950K}{2} = \$885K$
+::::
+
+## Beyond Physical Distance
+
+::::{style="font-size: .85em"}
+But wait — should a 1-bedroom condo really be compared to a 5-bedroom mansion just because they're close on the map?
+
+:::{.fragment}
+Real estate agents consider **"comps"** — comparable properties:
+
+| House | Sq. Feet | Beds | Baths | Price |
+|-------|----------|------|-------|-------|
+| A | 1,800 | 3 | 2 | $820K |
+| B | 2,200 | 4 | 2.5 | $950K |
+| C | 1,400 | 2 | 1 | $780K |
+| Yours | 1,900 | 3 | 2 | ??? |
+
+Now each house is a vector: $\mathbf{x} = (\text{sq ft}, \text{beds}, \text{baths}, \ldots)$
+:::
+::::
+
+## Distance in Feature Space
+
+::::{style="font-size: .85em"}
+```{python}
+from IPython.core.display import HTML
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>If houses are vectors of features, what does "distance" mean?</p>
+        <p>How would you find the 2 most similar houses to yours?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+Can we still use Euclidean distance?
+
+$$\text{dist}(\mathbf{x}, \mathbf{y}) = \sqrt{(x_1 - y_1)^2 + (x_2 - y_2)^2 + \cdots}$$
+
+The "nearest neighbors" are houses with similar *features*, not just similar *locations*. (But what about scaling?)
+:::
+
+:::{.fragment}
+This is exactly what Zillow and Redfin do for their price estimates.
+:::
+::::
+
+## The Choice of k Matters
+
+::::{style="font-size: .7em"}
+Imagine we're predicting sports team allegiances based on location. Different values of $k$ give very different decision boundaries:
+
+:::{.center-text}
+```{python}
+# Simulated customer segments based on 2 features
+X, y = sk_data.make_blobs(n_samples=150,
+                          centers=[[-2, 0],[1, 5], [2.5, 1.5]],
+                          cluster_std = [2, 2, 3],
+                          n_features=2,
+                          center_box=(-10.0, 10.0),random_state=0)
+h = .1
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+
+f, axs = plt.subplots(1, 3, figsize=(11, 3))
+for i, k in enumerate([1, 5, 25]):
+    knn = KNeighborsClassifier(n_neighbors = k)
+    knn.fit(X, y)
+    Z = knn.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    axs[i].pcolormesh(xx, yy, Z, shading = 'auto', alpha=0.3)
+    axs[i].scatter(X[:,0], X[:,1], c=y, s=20)
+    axs[i].axis('equal')
+    axs[i].axis('off')
+    axs[i].set_title(f'k = {k}')
+plt.subplots_adjust(top=0.9, bottom=0.05, left=0.02, right=0.98)
+```
+:::
+
+- **Small k** (like 1): Very sensitive to noise, complex decision boundaries
+- **Large k** (like 25): Smoother boundaries, but may miss local patterns
+::::
+
+## <span style="font-size: 0.8em;">Overfitting: When k is Too Small</span>
+
+::::{style="font-size: .8em"}
+When $k=1$, the model **memorizes** every training point perfectly.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p><b>Think:</b> If k=1 gets 100% accuracy on training data, is that good?</p>
+    </div>
+    """
+
+display(HTML(generate_html()))
+```
+
+:::{.fragment}
+**No!** This is called **overfitting**:
+
+- The model fits the training data *too well*
+- It learns the noise, not just the signal
+- It will perform poorly on *new* data
+
+The goal isn't to memorize — it's to **generalize** to data we haven't seen yet.
+:::
+::::
+
+## <span style="font-size: 0.8em;">Underfitting: When k is Too Large</span>
+
+::::{style="font-size: .8em"}
+What if we set $k$ to be almost the number of points (50/60)? 
+
+```{python}
+# Create data with clear structure that large k will miss
+np.random.seed(42)
+n = 60
+X_demo = np.vstack([
+    np.random.randn(25, 2) * 0.5 + [-2, 0],
+    np.random.randn(20, 2) * 0.5 + [2, 0],
+    np.random.randn(15, 2) * 0.5 + [0, 2]
+])
+y_demo = np.array([0]*25 + [1]*20 + [2]*15)
+
+fig, axs = plt.subplots(1, 2, figsize=(10, 3.5))
+
+for idx, k in enumerate([5, 50]):
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_demo, y_demo)
+
+    h = 0.1
+    xx, yy = np.meshgrid(np.arange(-4, 4, h), np.arange(-2, 4, h))
+    Z = knn.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
+
+    axs[idx].pcolormesh(xx, yy, Z, shading='auto', alpha=0.3, vmin=0, vmax=2)
+    axs[idx].scatter(X_demo[:,0], X_demo[:,1], c=y_demo, s=30, vmin=0, vmax=2)
+    axs[idx].set_title(f'k = {k}', fontsize=14)
+    axs[idx].axis('equal')
+    axs[idx].axis('off')
+
+plt.subplots_adjust(top=0.88, bottom=0.05, left=0.02, right=0.98)
+```
+
+With $k=50$, the model is **too simple** - it ignores the real structure in the data. This is **underfitting**.
+::::
+
+## The Goldilocks Problem
+
+::::{style="font-size: .8em"}
+
+We need k that's "just right":
+
+- Too small: Overfitting (memorizes noise)<
+- Too large: Underfitting (misses real patterns)<
+- Just right: Captures signal, ignores noise
+
+But how do we find it? That's next lecture!
+::::
+
+## Wrap-up
+
+::::{style="font-size: .8em"}
+
+**Today we learned:**
+
+- Machine learning: supervised (labeled data) vs unsupervised
+- Classification (discrete labels) vs regression (continuous values)
+- $k$-Nearest Neighbors algorithm: "ask your neighbors"
+  - Classification: majority vote
+  - Regression: average value
+- Distance in feature space vs physical distance
+- The choice of $k$ matters: small $k$ = overfitting, large $k$ = oversmoothing or underfitting
+
+**Next time:** How do we actually evaluate models and choose the best $k$?
+
+::::

@@ -1,0 +1,647 @@
+---
+title: "Least Squares"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+
+- Applying projection (from L23) to overdetermined systems
+- Least-squares problem statement
+- Deriving and solving the normal equations $A^\top A\hat{\mathbf{x}} = A^\top \mathbf{b}$
+- Why QR is preferred over the normal equations in practice
+
+
+:::
+
+
+
+## The Payoff: Fitting a Model to Data{.smaller-title}
+
+:::{style="font-size: .8em"}
+Over L20–L24 we've been building toward a concrete problem. Here it is.
+
+Our housing data matrix (intercept, sqft) gives us the system $X\hat{\boldsymbol{\beta}} = \mathbf{y}$:
+
+$$
+X = \begin{bmatrix}1 & 800\\1 & 1150\\1 & 1500\\1 & 1800\\1 & 2100\\1 & 2450\end{bmatrix}, \quad
+\mathbf{y} = \begin{bmatrix}118\\157\\193\\236\\264\\312\end{bmatrix}.
+$$
+
+This system has **6 equations and 2 unknowns**. As we saw in L20, $\mathbf{y}$ is almost certainly not in $\operatorname{Col} X$. There is no exact solution.
+
+But we can find the $\hat{\boldsymbol{\beta}}$ that makes $X\hat{\boldsymbol{\beta}}$ **as close as possible** to $\mathbf{y}$ by minimizing the total squared prediction error. That's the least-squares problem.
+:::
+
+## Recall: Projection as Best Approximation{.smaller-title}
+
+:::{style="font-size: .85em"}
+Two results from L23 we use directly here:
+
+
+:::{.fragment}
+**Orthogonal Decomposition:** 
+
+Given a subspace $W$, every $\mathbf{y} \in \mathbb{R}^n$ splits uniquely as $\mathbf{y} = \hat{\mathbf{y}} + \mathbf{z}$, where $\hat{\mathbf{y}} \in W$ and $\mathbf{z} \perp W$ ($\mathbf{z}^\top \mathbf{x} = 0$ for all $\mathbf{x} \in W$).
+:::
+
+
+:::{.fragment}
+**Best Approximation:** 
+
+The orthogonal projection $\hat{\mathbf{y}} = \operatorname{proj}_W \mathbf{y}$ is the **closest point in $W$ to $\mathbf{y}$**, closer than any other point in $W$.
+:::
+
+
+:::{.fragment}
+
+<br>
+
+These are the geometric foundations of least squares: we can't solve $A\mathbf{x} = \mathbf{b}$ exactly when $\mathbf{b} \notin \operatorname{Col}A$, but we can find the $\hat{\mathbf{x}}$ that puts $A\hat{\mathbf{x}}$ as close as possible to $\mathbf{b}$ i.e., the projection of $\mathbf{b}$ onto $\operatorname{Col}A$.
+:::
+
+:::
+
+
+
+## The Least-Squares Problem{.smaller-title}
+
+:::{style="font-size: .8em"}
+The __general least-squares problem__ is to find an $\mathbf{x}$ that makes $\Vert A\mathbf{x}-\mathbf{b}\Vert$ as small as possible.
+
+<br>
+
+This is called "least squares" because it is equivalent to finding a $\mathbf{y} = A\mathbf{x}$ to minimize
+
+$$
+\Vert A\mathbf{x}-\mathbf{b}\Vert^2 = \sum_i (y_i-b_i)^2
+$$
+
+Where we interpret $y_i$ as the __estimated value__ and $b_i$ as the __measured value__.
+
+
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Least squares solution</span>
+        If A is \(m\times n\) and \(\mathbf{b}\) is in \(\mathbb{R}^m,\) a <b>least squares solution</b> of \(A\mathbf{x} =\mathbf{b}\) is an \(\mathbf{\hat{x}}\) in \(\mathbb{R}^n\) such that \(\Vert A\mathbf{\hat{x}} - \mathbf{b}\Vert \leq \Vert A\mathbf{x} - \mathbf{b}\Vert\) for all \(\mathbf{x}\) in \(\mathbb{R}^n\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+:::{.fragment}
+So $\mathbf{b}$ is outside $\operatorname{Col}A$, and we are looking for $\hat{\mathbf{x}}$, which specifies the closest point in $\operatorname{Col}A$ to $\mathbf{b}$.
+:::
+
+:::
+
+## The Least-Squares Solution{.smaller-title}
+
+:::{style="font-size: .8em"}
+If $\mathbf{b} \notin \operatorname{Col}A$, we instead find $\hat{\mathbf{x}}$ such that $A\hat{\mathbf{x}} = \hat{\mathbf{b}}$, where $\hat{\mathbf{b}} = \operatorname{proj}_{\operatorname{Col}A}\mathbf{b}$. The residual $\mathbf{b} - A\hat{\mathbf{x}}$ is perpendicular to $\operatorname{Col}A$:
+
+```{python}
+#| echo: false
+import numpy as np
+import plotly.graph_objects as go
+
+a1   = np.array([1.0, -2.0,  3.0])
+a2   = np.array([5.0, -13.0, -3.0])
+y    = np.array([12.0, 8.0, -5.0])
+A    = np.array([a1, a2]).T
+bhat = A @ np.linalg.inv(A.T @ A) @ A.T @ y
+
+# Col A plane: parameterize as s*a1 + t*a2
+s = np.linspace(-5, 5, 40)
+t = np.linspace(-2, 2, 40)
+S, T = np.meshgrid(s, t)
+Xp = S*a1[0] + T*a2[0]
+Yp = S*a1[1] + T*a2[1]
+Zp = S*a1[2] + T*a2[2]
+
+# Right-angle symbol at bhat
+sz = 1.2
+r_dir = (y - bhat) / np.linalg.norm(y - bhat)
+c_dir = a1 / np.linalg.norm(a1)
+sq = [bhat + sz*c_dir, bhat + sz*c_dir + sz*r_dir, bhat + sz*r_dir]
+
+label_pos = -4.5 * a1
+
+fig = go.Figure()
+
+fig.add_trace(go.Surface(x=Xp, y=Yp, z=Zp,
+    colorscale=[[0,'lightgreen'],[1,'lightgreen']],
+    opacity=0.45, showscale=False, hoverinfo='skip'))
+
+fig.add_trace(go.Scatter3d(
+    x=[y[0], bhat[0]], y=[y[1], bhat[1]], z=[y[2], bhat[2]],
+    mode='lines', line=dict(color='steelblue', width=4),
+    hoverinfo='skip', showlegend=False))
+
+fig.add_trace(go.Scatter3d(
+    x=[p[0] for p in sq], y=[p[1] for p in sq], z=[p[2] for p in sq],
+    mode='lines', line=dict(color='steelblue', width=3),
+    hoverinfo='skip', showlegend=False))
+
+fig.add_trace(go.Scatter3d(
+    x=[y[0], bhat[0]], y=[y[1], bhat[1]], z=[y[2], bhat[2]],
+    mode='markers+text',
+    marker=dict(size=5, color='steelblue'),
+    text=['<b>b</b>', '<b>Ax̂ = b̂</b>'],
+    textposition=['top right', 'bottom left'],
+    textfont=dict(size=14), hoverinfo='skip', showlegend=False))
+
+fig.add_trace(go.Scatter3d(
+    x=[label_pos[0]], y=[label_pos[1]], z=[label_pos[2]],
+    mode='text', text=['Col A'],
+    textfont=dict(size=13, color='darkgreen'),
+    hoverinfo='skip', showlegend=False))
+
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(title='x₁', range=[-15, 15]),
+        yaxis=dict(title='x₂', range=[-15, 15]),
+        zaxis=dict(title='x₃', range=[-15, 15]),
+        aspectmode='cube',
+        camera=dict(eye=dict(x=1.2, y=-1.5, z=0.6))),
+    margin=dict(l=0, r=0, t=0, b=0),
+    height=420)
+fig.show()
+```
+
+:::
+
+## Deriving the Normal Equations{.smaller-title}
+
+:::{style="font-size: .78em"}
+So we want $\hat{\mathbf{x}}$ satisfying $A\hat{\mathbf{x}} = \hat{\mathbf{b}}$, i.e., the $\hat{\mathbf{x}}$ whose image under $A$ lands at the closest point in $\operatorname{Col}A$ to $\mathbf{b}$.
+
+From L23, when we decompose $\mathbf{b} = \hat{\mathbf{b}} + \mathbf{z}$, the component $\mathbf{z} = \mathbf{b} - \hat{\mathbf{b}} = \mathbf{b} - A\hat{\mathbf{x}}$ is orthogonal to every vector in $\operatorname{Col}A$. In particular, it is orthogonal to every column $\mathbf{a}_j$ of $A$:
+
+$$\mathbf{a}_j^\top(\mathbf{b} - A\hat{\mathbf{x}}) = 0 \quad \text{for every column } \mathbf{a}_j \text{ of } A.$$
+
+:::
+
+## Orthogonality Conditions in Matrix Form{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+Since this is true for every column  $\mathbf{a}_j$ of $A$, we can collect all these orthogonality conditions into one matrix equation:
+
+$$
+\begin{align*}
+A^\top (A\mathbf{\hat{x}} - \mathbf{b}) &= {\bf 0} \\
+A^\top A\mathbf{\hat{x}} - A^\top\mathbf{b} &= {\bf 0} \\
+A^\top A\mathbf{\hat{x}} &= A^\top \mathbf{b}
+\end{align*}
+$$
+
+$A^\top A$ is a matrix and $A^\top \mathbf{b}$ is a vector, so this is a standard linear system we call the **normal equations**.
+
+
+:::
+
+## Normal Equations Give Least-Squares Solutions{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p><span class="label">Theorem</span>
+        The set of least-squares solutions of \(A\mathbf{x} = \mathbf{b}\) is equal to the (nonempty) set of solutions of the normal equations \(A^\top A\mathbf{x} = A^\top \mathbf{b}.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::
+
+## Solving the Normal Equations: Example{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+Let us find the least squares solution of the inconsistent system $A\mathbf{x} = \mathbf{b}$ for
+:::
+
+:::{style="font-size: .6em"}
+$$
+A = \begin{bmatrix}4&0\\0&2\\1&1\end{bmatrix}, \;\;\; \mathbf{b} = \begin{bmatrix}2\\0\\11\end{bmatrix}.
+$$
+:::
+
+:::{.fragment}
+:::{style="font-size: .8em"}
+We will use the normal equations $A^\top A\hat{\mathbf{x}} = A^\top \mathbf{b}.$
+:::
+
+:::{style="font-size: .6em"}
+$$
+A^\top A = \begin{bmatrix}4&0&1\\0&2&1\end{bmatrix} \begin{bmatrix}4&0\\0&2\\1&1\end{bmatrix} = \begin{bmatrix}17&1\\1&5\end{bmatrix}.
+$$
+
+$$
+A^\top \mathbf{b} =  \begin{bmatrix}4&0&1\\0&2&1\end{bmatrix} \begin{bmatrix}2\\0\\11\end{bmatrix} = \begin{bmatrix}19\\11\end{bmatrix}.
+$$
+:::
+:::
+
+## Computing the Final Least-Squares Solution{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+
+The normal equations are: $\begin{bmatrix}17&1\\1&5\end{bmatrix}\begin{bmatrix}\hat{x}_1\\\hat{x}_2\end{bmatrix} = \begin{bmatrix}19\\11\end{bmatrix}.$
+
+We solve by row-reducing the augmented matrix $[A^\top A \mid A^\top \mathbf{b}]$:
+
+$$
+\left[\begin{array}{cc|c}17&1&19\\1&5&11\end{array}\right]
+\rightarrow
+\left[\begin{array}{cc|c}1&0&1\\0&1&2\end{array}\right]
+$$
+
+So $\hat{x}_1 = 1,\ \hat{x}_2 = 2$, and the least-squares solution is $\mathbf{\hat{x}} = \begin{bmatrix}1\\2\end{bmatrix}.$
+:::
+
+## Visualizing the Example Solution{.smaller-title}
+
+:::{style="font-size: .8em"}
+With $\mathbf{\hat{x}} = \begin{bmatrix}1\\2\end{bmatrix}, A\hat{\mathbf{x}} = \begin{bmatrix}4\\4\\3\end{bmatrix}$ is the closest point in $\operatorname{Col}A$ to $\mathbf{b} = \begin{bmatrix}2\\0\\11\end{bmatrix}$. The residual $\mathbf{b} - A\hat{\mathbf{x}}$ is perpendicular to the plane:
+:::
+
+
+:::{.center-text}
+```{python}
+#| echo: false
+import numpy as np
+import plotly.graph_objects as go
+
+a1   = np.array([4.0, 0.0, 1.0])
+a2   = np.array([0.0, 2.0, 1.0])
+b    = np.array([2.0, 0.0, 11.0])
+bhat = np.array([4.0, 4.0, 3.0])   # A @ [1, 2]
+
+# Col A plane: parameterize as s*a1 + t*a2
+s = np.linspace(-0.5, 3.5, 40)
+t = np.linspace(-0.5, 6.5, 40)
+S, T = np.meshgrid(s, t)
+Xp = S*a1[0] + T*a2[0]
+Yp = S*a1[1] + T*a2[1]
+Zp = S*a1[2] + T*a2[2]
+
+# Right-angle symbol at bhat
+sz = 0.6
+r_dir = (b - bhat) / np.linalg.norm(b - bhat)
+c_dir = a1 / np.linalg.norm(a1)
+sq = [bhat + sz*c_dir, bhat + sz*c_dir + sz*r_dir, bhat + sz*r_dir]
+
+fig = go.Figure()
+
+fig.add_trace(go.Surface(x=Xp, y=Yp, z=Zp,
+    colorscale=[[0,'lightgreen'],[1,'lightgreen']],
+    opacity=0.45, showscale=False, hoverinfo='skip'))
+
+fig.add_trace(go.Scatter3d(
+    x=[b[0], bhat[0]], y=[b[1], bhat[1]], z=[b[2], bhat[2]],
+    mode='lines', line=dict(color='steelblue', dash='dash', width=4),
+    hoverinfo='skip', showlegend=False))
+
+fig.add_trace(go.Scatter3d(
+    x=[p[0] for p in sq], y=[p[1] for p in sq], z=[p[2] for p in sq],
+    mode='lines', line=dict(color='steelblue', width=3),
+    hoverinfo='skip', showlegend=False))
+
+fig.add_trace(go.Scatter3d(
+    x=[b[0], bhat[0]], y=[b[1], bhat[1]], z=[b[2], bhat[2]],
+    mode='markers+text',
+    marker=dict(size=5, color='steelblue'),
+    text=['<b>b</b>', '<b>Ax̂</b>'],
+    textposition=['top right', 'bottom right'],
+    textfont=dict(size=14), hoverinfo='skip', showlegend=False))
+
+fig.add_trace(go.Scatter3d(
+    x=[0.5], y=[2.5], z=[1.0],
+    mode='text', text=['Col A'],
+    textfont=dict(size=13, color='darkgreen'),
+    hoverinfo='skip', showlegend=False))
+
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(title='x₁', range=[-1, 12]),
+        yaxis=dict(title='x₂', range=[-1, 12]),
+        zaxis=dict(title='x₃', range=[-1, 12]),
+        aspectmode='cube',
+        camera=dict(eye=dict(x=1.4, y=-1.6, z=0.8))),
+    margin=dict(l=0, r=0, t=0, b=0),
+    height=420)
+fig.show()
+```
+:::
+
+## When is the Least-Squares Solution Unique?{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+Note that $\hat{\mathbf{b}} = \operatorname{proj}_{\operatorname{Col}A}\mathbf{b}$ is always unique — there is only one closest point in $\operatorname{Col}A$ to $\mathbf{b}$. 
+
+But there can be **multiple $\hat{\mathbf{x}}$** that all satisfy $A\hat{\mathbf{x}} = \hat{\mathbf{b}}$, because when the columns of $A$ are linearly dependent, different coefficient vectors can produce the same point in $\operatorname{Col}A$.
+
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="purple-box">
+    <p><span class="label">Theorem</span>
+    Let \(A\) be an \(m\times n\) matrix. The following are equivalent:
+    <ol>
+        <li>The least-squares solution of \(A\mathbf{x} = \mathbf{b}\) is unique for every \(\mathbf{b}\).</li>
+        <li>The columns of \(A\) are linearly independent.</li>
+        <li>The matrix \(A^\top A\) is invertible.</li>
+    </ol>
+    <br>When these hold, the unique solution is \(\hat{\mathbf{x}} = (A^\top A)^{-1}A^\top \mathbf{b}\).
+    </p>
+</div>
+"""))
+```
+:::
+:::
+
+## Projection onto Any Subspace{.smaller-title}
+
+:::{style="font-size: .8em"}
+When $A^\top A$ is invertible, combining $\hat{\mathbf{x}} = (A^\top A)^{-1}A^\top \mathbf{b}$ with $\hat{\mathbf{b}} = A\hat{\mathbf{x}}$ gives:
+
+$$
+\hat{\mathbf{b}} = A(A^\top A)^{-1}A^\top \mathbf{b}.
+$$
+
+Up until now we have projected onto subspaces only when we had an **orthogonal** basis (using $Q$ columns from QR). This formula does the same thing given **any** basis (the columns of $A$ don't have to be orthogonal).
+
+The matrix $P = A(A^\top A)^{-1}A^\top$ is called the **orthogonal projection matrix** onto $\operatorname{Col}A$.
+
+**FYI** you won't be asked to derive or memorize this formula, but it's worth knowing it exists. It's used everywhere in statistics and data science.
+
+:::
+
+## Housing Data: Solving the Normal Equations{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+Let's apply the normal equations to our housing dataset. With $X$ (intercept + sqft) and $\mathbf{y}$ (price in \$k):
+
+```{python}
+#| echo: true
+import numpy as np
+
+X_house = np.array([[1, 800], [1, 1150], [1, 1500],
+                    [1, 1800], [1, 2100], [1, 2450]], dtype=float)
+y_house = np.array([118, 157, 193, 236, 264, 312], dtype=float)
+
+beta_hat = np.linalg.inv(X_house.T @ X_house) @ X_house.T @ y_house
+print(f"β₀ = {beta_hat[0]:.2f}  (intercept, $k)")
+print(f"β₁ = {beta_hat[1]:.4f}  (per sqft, $k)")
+```
+
+:::{.fragment}
+The fitted model is approximately $\text{price} = \beta_0 + \beta_1 \cdot \text{sqft}$.
+:::
+
+
+:::{.fragment}
+The residuals $\mathbf{r} = \mathbf{y} - X\hat{\boldsymbol{\beta}}$ are orthogonal to $\operatorname{Col} X$, exactly as the normal equations guarantee. We can also verify this with Python:
+
+```{python}
+#| echo: true
+residuals = y_house - X_house @ beta_hat
+print("Residuals:", residuals.round(2))
+print("X^T r ≈ 0:", (X_house.T @ residuals).round(8))
+```
+:::
+:::
+
+## Visualizing Residuals{.smaller-title}
+
+:::{style="font-size: .8em"}
+The **residual** $\mathbf{r} = \mathbf{b} - A\hat{\mathbf{x}}$ measures the error at each data point. Least squares minimizes the total squared length of the residuals.
+:::
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Housing data
+sqft = np.array([800, 1150, 1500, 1800, 2100, 2450], dtype=float)
+price = np.array([118, 157, 193, 236, 264, 312], dtype=float)
+
+# Least-squares fit
+A = np.column_stack([np.ones_like(sqft), sqft])
+xhat = np.linalg.lstsq(A, price, rcond=None)[0]
+fitted = A @ xhat
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.scatter(sqft, price, color='steelblue', s=80, zorder=5, label='Observed')
+xs = np.linspace(600, 2600, 200)
+ax.plot(xs, xhat[0] + xhat[1]*xs, 'k-', lw=2, label=r'$A\hat{\mathbf{x}}$ (fit)')
+for xi, yi, fi in zip(sqft, price, fitted):
+    ax.plot([xi, xi], [fi, yi], 'r-', lw=1.5, alpha=0.7)
+ax.scatter(sqft, fitted, color='black', s=40, zorder=5)
+ax.set_xlabel('Square Footage', fontsize=12)
+ax.set_ylabel('Price ($k)', fontsize=12)
+ax.set_title('Residuals (red) = observed − fitted', fontsize=12)
+ax.legend(fontsize=11)
+ax.set_xlim(600, 2600); ax.set_ylim(80, 340)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+## Practice: Least Squares End-to-End{.really-smaller-title}
+
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Consider the inconsistent system \(A\mathbf{x} = \mathbf{b}\) with
+        \[A = \begin{bmatrix}1 & 0\\ 0 & 1\\ 1 & 1\end{bmatrix}, \quad \mathbf{b} = \begin{bmatrix}2\\ 1\\ 5\end{bmatrix}.\]
+        <ol type="a">
+            <li>Verify that \(\mathbf{b}\) is not in \(\operatorname{Col}A\) (i.e., the system is inconsistent).</li>
+            <li>Set up the normal equations \(A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}\).</li>
+            <li>Solve for \(\hat{\mathbf{x}}\).</li>
+            <li>Compute \(A\hat{\mathbf{x}}\) and the residual \(\mathbf{r} = \mathbf{b} - A\hat{\mathbf{x}}\). Verify that \(\mathbf{r}\) is orthogonal to \(\operatorname{Col}A\).</li>
+        </ol>
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+
+:::{.notes}
+a. Augmented matrix [A|b], row reduce, row [0,0|1] appears, inconsistent.
+b. A^T A = [[2,1],[1,2]], A^T b = [[7],[6]].
+c. Normal equations: [[2,1],[1,2]]x = [7,6]. det = 3. x-hat = (1/3)[[2,-1],[-1,2]][7,6] = (1/3)[[8],[5]] = [8/3, 5/3].
+d. A x-hat = [8/3, 5/3, 13/3]. r = [2-8/3, 1-5/3, 5-13/3] = [-2/3, -2/3, 2/3].
+Check: a1^T r = [1,0,1]·[-2/3,-2/3,2/3] = -2/3+2/3 = 0 ✓. a2^T r = [0,1,1]·[-2/3,-2/3,2/3] = -2/3+2/3 = 0.
+:::
+
+## Midterm 3 Exam (L19–L22){.smaller-title}
+
+:::{style="font-size: .55em"}
+**LU Factorization (L19)**
+
+- Compute $A = LU$ via Gaussian elimination; record multipliers in $L$, pivots form $U$
+- Solve $A\mathbf{x} = \mathbf{b}$ via $L\mathbf{c} = \mathbf{b}$ (forward sub), then $U\mathbf{x} = \mathbf{c}$ (back sub)
+- LU is preferred over $A^{-1}$ when solving many systems with the same $A$
+
+**Vector Spaces & Subspaces (L20–L21)**
+
+- A subspace must: contain $\mathbf{0}$, be closed under addition, be closed under scalar multiplication
+- $\operatorname{Col}A$ = span of columns = span of pivot columns of $A$; $\operatorname{Null}A$ = set of all $\mathbf{x}$ with $A\mathbf{x}=\mathbf{0}$
+- $\dim(\operatorname{Col}A) = \operatorname{rank}(A)$ = number of pivots; $\dim(\operatorname{Null}A) = \operatorname{nullity}(A)$ = number of free variables
+- **Rank-nullity:** $\operatorname{rank}(A) + \operatorname{nullity}(A) = n$ (number of columns)
+- Know $\operatorname{rank}(AB) \leq \min(\operatorname{rank}(A), \operatorname{rank}(B))$ and $\operatorname{rank}(A+B) \leq \operatorname{rank}(A) + \operatorname{rank}(B)$
+
+**Coordinate Systems (L22)**
+
+- A basis $\mathcal{B} = \{\mathbf{b}_1,\ldots,\mathbf{b}_p\}$ for $W$ is linearly independent and spans $W$
+- The coordinate vector $[\mathbf{x}]_\mathcal{B}$ gives the unique weights: $\mathbf{x} = c_1\mathbf{b}_1 + \cdots + c_p\mathbf{b}_p$
+- Find $[\mathbf{x}]_\mathcal{B}$ by row-reducing $[\mathcal{B} \mid \mathbf{x}]$
+:::
+
+
+
+## Midterm 3 Exam (L23-24,python){.smaller-title}
+
+:::{style="font-size: .55em"}
+**Orthogonality & Projection (L23)**
+
+- $\mathbf{u} \perp \mathbf{v}$ iff $\mathbf{u}^\top\mathbf{v} = 0$; an orthogonal set is automatically linearly independent
+- Projection onto a single vector: $\hat{\mathbf{y}} = \frac{\mathbf{y}^\top\mathbf{u}}{\mathbf{u}^\top\mathbf{u}}\mathbf{u}$
+- Projection onto subspace $W$ with orthogonal basis $\{\mathbf{u}_1,\ldots,\mathbf{u}_p\}$: $\hat{\mathbf{y}} = \sum_i \frac{\mathbf{y}^\top\mathbf{u}_i}{\mathbf{u}_i^\top\mathbf{u}_i}\mathbf{u}_i$
+- **Orthogonal decomposition:** $\mathbf{y} = \hat{\mathbf{y}} + \mathbf{z}$ where $\hat{\mathbf{y}} \in W$ and $\mathbf{z} \perp W$ (unique)
+- **Best approximation:** $\hat{\mathbf{y}}$ is the closest point in $W$ to $\mathbf{y}$
+
+**Gram-Schmidt & QR (L24)**
+
+- Gram-Schmidt: subtract projections onto previous $\mathbf{q}_i$ to get orthogonal vectors, then normalize
+- $A = QR$ where $Q$ has orthonormal columns and $R$ is upper triangular with positive diagonal
+- **Key property:** $Q^\top Q = I$, so $\|Q\mathbf{x}\| = \|\mathbf{x}\|$ and $(Q\mathbf{x})^\top(Q\mathbf{y}) = \mathbf{x}^\top\mathbf{y}$ (preserves inner products)
+- $Q^\top Q = I$ becasue it's orthogonal, and if $Q$ is square: $Q^{-1} = Q^\top$
+
+**Python**
+
+- Know `@` for matrix multiplication, `[i,j]` notation for indexing
+- Implement row operations, column normalization, using these
+- You do NOT need syntax of `scipy.linalg.lu`, `np.linalg.qr` etc.
+:::
+
+
+## Practice: Two Ways to Solve Least Squares{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box">
+    <p>Consider the inconsistent system \(A\mathbf{x} = \mathbf{b}\) with
+    \[A = \begin{bmatrix}1&1\\1&0\\0&1\end{bmatrix}, \quad \mathbf{b} = \begin{bmatrix}3\\1\\2\end{bmatrix}.\]
+    <ol type="a">
+        <li><b>Normal equations.</b> Compute \(A^\top A\) and \(A^\top\mathbf{b}\), then solve \(A^\top A\hat{\mathbf{x}} = A^\top\mathbf{b}\) by row reduction.</li>
+        <li><b>QR factorization.</b> Use Gram-Schmidt on the columns of \(A\) to find \(A = QR\), then solve \(R\hat{\mathbf{x}} = Q^\top\mathbf{b}\) by back substitution.</li>
+        <li>Verify both methods give the same \(\hat{\mathbf{x}}\).</li>
+    </ol>
+    </p>
+</div>
+"""))
+```
+:::
+
+:::{.notes}
+A^T A = [[2,1],[1,2]], A^T b = [4,5].
+Normal eqs: [[2,1],[1,2]]x=[4,5]. Row reduce: swap, R2-2R1 → [[1,0,1],[0,1,2]] → x-hat = [1,2].
+
+QR via Gram-Schmidt:
+a1=[1,1,0], ||a1||=sqrt(2), q1=[1,1,0]/sqrt(2).
+a2=[1,0,1]; proj onto q1 = (a2·q1)*q1 = (1/sqrt(2))*(1/sqrt(2))*[1,1,0] = [1/2,1/2,0].
+v2 = a2 - [1/2,1/2,0] = [1/2,-1/2,1]; ||v2|| = sqrt(6)/2; q2 = [1,-1,2]/sqrt(6).
+R = [[sqrt(2), 1/sqrt(2)],[0, sqrt(6)/2]].
+Q^T b = [4/sqrt(2), 6/sqrt(6)] = [2*sqrt(2), sqrt(6)].
+Back sub: (sqrt(6)/2)*x2 = sqrt(6) → x2=2. sqrt(2)*x1 + (1/sqrt(2))*2 = 2*sqrt(2) → sqrt(2)*x1=sqrt(2) → x1=1.
+x-hat = [1,2] 
+:::
+
+## QR vs the Normal Equations{.smaller-title}
+
+:::{style="font-size: .7em"}
+
+We just solved least squares via the normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}$. But computing $(A^\top A)^{-1}$ directly can be **numerically unstable**: when columns of $A$ are nearly collinear, small rounding errors get amplified into wildly wrong answers.
+
+Recall from L24 that QR gives us $R\hat{\mathbf{x}} = Q^\top \mathbf{b}$ instead, no inversion needed.  (`numpy` and `sklearn` (etc.) all use QR (or the related SVD) internally, **not** the normal equations!)
+
+```{python}
+#| echo: true
+import numpy as np
+
+# Hilbert matrix: a classic ill-conditioned matrix
+n = 12
+A = np.array([[1.0/(i+j+1) for j in range(n)] for i in range(n)])
+x_true = np.ones(n)        # true solution: all ones
+b = A @ x_true              # compute b so we know the answer
+
+# Method 1: Normal equations, (A^T A)^{-1} A^T b
+x_normal = np.linalg.solve(A.T @ A, A.T @ b)
+
+# Method 2: QR factorization
+Q, R = np.linalg.qr(A)
+x_qr = np.linalg.solve(R, Q.T @ b)
+
+print(f"True solution: all ones")
+print(f"Normal equations max error: {np.max(np.abs(x_normal - x_true)):.2f}")
+print(f"QR factorization max error: {np.max(np.abs(x_qr - x_true)):.2f}")
+```
+
+:::
+
+
+
+## Looking Ahead: Regression{.smaller-title}
+
+:::{style="font-size: .85em"}
+The least-squares framework we've built applies directly to fitting models to data - this is **linear regression**.
+
+A few things to note before L26:
+
+- The normal equations $A^\top A \hat{\mathbf{x}} = A^\top \mathbf{b}$ **always** have a solution, but the solution is unique only when the columns of $A$ are **linearly independent**. L26 starts by examining what happens when they aren't. 
+
+- **How good is the fit?** L26 introduces $R^2$, residual analysis, and the consequences of using too many (or too few) predictors.
+
+- Like for KNN and K-means, **feature scaling** determines which predictors dominate the fit.
+:::

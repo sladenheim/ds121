@@ -1,0 +1,459 @@
+---
+title: "Computational Complexity"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+
+---
+
+```{python}
+import numpy as np
+```
+
+
+## Learning Objectives
+
+:::{style="font-size:.8em"}
+- Floating-point arithmetic
+    - Floating-point representation
+    - Special values in IEEE-754
+- Computational costs of an algorithm
+    - Flops
+    - Big-O notation
+    - Cost of linear algebra algorithms
+    - Parallelization
+
+
+<!-- :::{.fragment}
+Today we will focus on the computational perspective. In particular, we will discuss how to measure the computational costs of matrix algorithms. We will also examine how computers perform mathematical calculations, why they can be incorrect, and how best to mitigate this problem.
+:::
+
+:::{.fragment}
+An important goal of this course is to get computers to do matrix math with acceptable speed and accuracy.
+::: -->
+
+:::
+
+## Speed and Accuracy
+
+:::{style="font-size: .8em"}
+__Data science is largely about manipulating matrices__ because almost all data can be represented as a matrix: time-series, structured data, images, and text.
+
+There are four main things to keep in mind when choosing or designing an algorithm for vector and matrix computations:
+
+- Speed
+- Memory Use
+- Accuracy/Stability
+- Scalability/Parallelization
+
+Often there will be trade-offs between these categories.
+
+:::
+
+## Speed and Accuracy
+
+:::{style="font-size: .8em"}
+
+__Example:__ Computational speed. Let's create three matrices of different sizes.
+
+```{python}
+#| echo: true
+A = np.random.rand(20000,2)
+B = np.random.rand(2,20000)
+C = np.random.rand(20000,2)
+```
+
+Suppose we want to multiply these matrices together to compute $D = A B C$.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Is it faster to compute \((AB)C\) or \(A(BC)\)? 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+:::
+
+:::{.notes}
+$AB$ is $20000 \times 20000,$ while $BC$ is $2 \times 2.$
+
+:::
+
+## Speed and Accuracy
+
+:::{style="font-size: .8em"}
+
+Let's run both operations in `Python` and time how long they take to compute.
+:::
+
+:::{style="font-size:.9em"}
+
+```{python}
+#| echo: true
+%%time
+Dslow = (A@B) @ C
+```
+
+```{python}
+#| echo: true
+%%time
+Dfast = A @ (B@C)
+assert(np.allclose(Dslow, Dfast)), "Dslow and Dfast are not equal!"
+print("Assertion passed: Dslow and Dfast are nearly equal.")
+```
+<!-- 
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What happened here? 
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+::: -->
+
+:::
+
+:::{.notes}
+The 2nd method is approximately 600 times faster!
+
+$AB$ is $20000 \times 20000,$ while $BC$ is $2 \times 2.$
+
+:::
+
+
+## Speed and Accuracy
+
+:::{style="font-size: .8em"}
+__Example:__ The previous example exposed another issue. The two output matrices $D_{slow}$ and $D_{fast}$ should have been equal, but it turns out they were slightly different.
+
+```{python}
+#|echo: true
+diff = Dslow-Dfast; diff.max()
+```
+
+Sometimes for the same question, the answers we get from a computer are very different from the answers we get mathematically! Even for very basic arithmetic:
+```{python}
+#| echo: true
+1.1 - 1.0
+```
+:::
+
+
+## Floating Points 
+
+:::{style=font-size:.8em}
+What happened?
+
+
+The root of the problem has to do with how numbers are represented and manipulated in a computer.
+
+In a computer we assign _**bit patterns**_ to correspond to certain numbers.   
+
+We say the bit pattern is the number's _**representation.**_
+
+
+For example, the number '3.14' might have the representation '01000000010010001111010111000011'.
+
+In most computers nowadays we use _**64 bits**_ to represent a number.
+
+<!-- For reasons of efficiency, we use a fixed number of bits for these representations.   In most computers nowadays we use _**64 bits**_ to represent a number. -->
+
+
+
+:::
+
+## Floating Points 
+
+:::{style="font-size:.8em"}
+Representing a real number in a computer is very complicated, much more so than representing integers (where computer arithmetic is, mostly, correct). 
+
+In fact, most real numbers cannot be represented exactly in a computer. A __floating point__ is an approximation of some particular real number.
+
+Early computers used many different, incompatible methods for handling real numbers. Eventually (in the 1980s) a widely accepted standard emerged, called the IEEE-754 standard for __floating-point arithmetic__.
+
+
+:::
+
+## Floating Points 
+
+:::{style="font-size: .8em"}
+Conceptually, floating-point arithmetic is similar to "scientific notation", except that it is encoded in binary:
+<!-- Conceptually, floating-point arithmetic is similar to "scientific notation."
+$$
+123456 = \underbrace{1.23456}_{\mbox{significand}}\times {\underbrace{10}_{\mbox{base}}}^{\overbrace{5}^{exponent}}
+$$
+
+Except that it is encoded in binary: -->
+
+$$
+17 = \underbrace{1.0001}_{significand}\times {\underbrace{2}_{base}}^{\overbrace{4}^{exponent}}
+$$
+
+In a double-precision floating point number: the sign, significand, and exponent are all contained within 64 bits (or 8 bytes).
+
+:::{.center-text}
+<img src="/images/vector_matrix_algebra/floating-point-format.png" width = 800/>
+
+:::
+:::
+
+:::{.notes}
+$$
+123456 = \underbrace{1.23456}_{\mbox{significand}}\times {\underbrace{10}_{\mbox{base}}}^{\overbrace{5}^{exponent}}
+$$
+:::
+
+## Special Values
+
+:::{style="font-size:.8em"}
+There are a few special values defined by the IEEE-754 floating point standard:
+
+1.  NaN, which means "Not a Number" 
+2.  Infinity -- both positive and negative
+3.  Zero -- both positive and negative (though as far as we are concerned in this class, those are the same number).
+
+```{python}
+#| echo: true
+np.sqrt(-1)
+```
+
+```{python}
+#| echo: true
+var = np.log(0)
+var
+```
+
+```{python}
+#| echo: true
+1/var
+```
+
+:::
+
+## Cost of an Algorithm 
+:::{style="font-size:.8em"}
+
+How do we measure cost of an algorithm?
+
+
+First, we need to define our _**units**_. In this course, we will measure the cost of an algorithm by counting the number of _**additions, multiplications, divisions, or subtractions.**_
+
+In modern processors, each of these operations requires only a single instruction. _**When performed over real numbers in _floating point representation_, these operations are called**_ __flops__ (floating point operations).
+
+Second, when counting flops we will primarily be concerned with the _**highest-powered term**_ and _**the order**_ of the expression that counts flops. They tell us how the flop count scales for very large inputs.
+:::
+
+
+## Cost of an Algorithm 
+:::{style="font-size:.8em"}
+
+Let's say for a problem with input size $n$, an algorithm has flop count $12n^2 + 3n + 2$.  
+
+Then the __cost__ of the algorithm is $12n^2$.
+
+This is a good approximation because $12n^2$ is asymptotically equivalent to the exact flop count:
+
+$$
+\lim_{n\rightarrow\infty} \frac{12n^2 + 3n + 2}{12n^2} = 1. 
+$$
+
+We will use the symbol $\sim$ to denote this relationship.
+
+So we would say that this algorithm has flop count $\sim 12n^2$.
+:::
+
+## Big-O Notation
+
+:::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  <span class="label">Big-O notation</span>
+        Let \(f\) and \(g\) be real-valued functions. We say that \(f(n)\) is \(O(g(n))\) if there are constants \(c\) and \(k\) so that
+        $$|f(n)| \leq cg(n)$$
+        for all \(n > k.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+__Remark__: We read this as "$f$ is big-O of $g$" or "$g$ assymptotically dominates $f$." The constants $c$ and $k$ are called __witnesses__. Only one pair of witnesses is needed.
+
+__Example__: $f(n) = n^2+3n$ is $O(n^2),$ because for $n>1$, $|n^2+3n| \leq 4 n^2.$
+:::
+
+## Cost of an Algorithm 
+:::{style="font-size:.8em"}
+
+<!-- .9 and not .8 for same reason stated above -->
+
+<!-- :::{style="font-size:1.em"} -->
+Let's calculate the cost of the inner product:
+
+$$\small{
+[x_1\;x_2\;\dots\;x_n] \left[\begin{array}{c}y_1\\y_2\\\vdots\\y_n\end{array}\right] = \sum_{i=1}^n x_i y_i.}
+$$
+
+
+Given two vectors of length $n$, calculating an inner product requires:
+
+- $n$ multiplications
+- $n - 1$ additions
+
+The exact overall flop count is $2n - 1,$ the cost is $2n,$ and, in big-O notation, this is $O(n).$
+<!-- ::: -->
+
+:::
+
+:::{.notes}
+Handclasp
+:::
+
+## Cost of an Algorithm 
+:::{style="font-size:.8em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        What is the exact flop count when multiplying an \(n \times n\) matrix \(A\) with a \(n \times 1\) column vector \( \bf x\)? <br>
+        $$A{\bf x} = \left[\begin{array}{cccc}\begin{array}{c}\vdots\\\vdots\\{\bf a_1}\\\vdots\\\vdots\end{array}&\begin{array}{c}\vdots\\\vdots\\{\bf a_2}\\\vdots\\\vdots\end{array}&\dots&\begin{array}{c}\vdots\\\vdots\\{\bf a_n}\\\vdots\\\vdots\end{array}\\\end{array}\right]\;\left[\begin{array}{c}x_1\\x_2\\\vdots\\x_n\end{array}\right]$$
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+
+```
+:::
+
+:::{.notes}
+$$
+n \cdot (2n-1) = 2n^2-n. 
+$$
+
+OR
+
+$$
+n \cdot 2n = 2n^2.$$
+:::
+
+## Cost of an Algorithm 
+:::{style="font-size:.8em"}
+
+What is the computational cost of matrix multiplication of two $n \times n$ matrices $A$ and $B$?
+
+ -  Matrix-matrix multiplication involves computing $A \mathbf{b}_i$  for each of the $n$  columns in matrix $B.$ 
+-  Matrix-vector multiplication costs $2n^2$ operations.
+- Therefore, matrix-matrix multiplication costs $n \times 2n^2 = 2n^3$ operations.
+- For matrices of size $10{,}000 \times 10{,}000$, this results in $2 \times 10^{12}$ operations (2 teraflops).
+- In Big-O notation, this is $O(n^3),$ which is considered slow.
+- When possible, we should seek faster algorithms with complexity $O(n^2)$ or $O(n).$
+
+:::
+
+## Cost of an Algorithm
+:::{style="font-size:.8em"}
+_**What is the most efficient way to compute $A^2{\bf x}$?**_ I or II?
+
+I. First compute $A^2$, then compute $(A^2){\bf x}$
+
+II. First compute $A{\bf x}$, then compute $A(A{\bf x})$
+
+:::{.fragment}
+I. First compute $A^2$, then compute $(A^2){\bf x}$:
+
+- Cost: $2n^3 + 2n^2$
+- Runtime for $n = 10,000$ rows: about 2 Trillion flops
+
+II. First compute $A{\bf x}$, then compute $A(A{\bf x})$: 
+
+- Cost: $2n^2 + 2n^2 = 4n^2$
+- Runtime for $n = 10,000$ rows: 4 Million flops ${\large \checkmark}$
+:::
+:::
+
+## Parallelization
+
+:::{style="font-size:.8em"}
+Although matrix multiplication is computationally demanding, it is _**highly parallel**_.
+
+
+- Each entry of the product can be computed independently: no entry depends on the computation of others.
+- If multiple processors have access to both matrices, the work can be divided cleanly.
+
+- With $n$ processors, each can compute one column $A\mathbf{b}_i$ independently.
+- No coordination between processors is needed.
+- Parallel execution reduces time from $2n^3$ to $2n^2$.
+
+:::
+
+## Costs of an Algorithm
+:::{style="font-size:.8em"}
+For Gauss-Jordan Elimination:
+
+* The cost of the Elimination stage is $\frac{2}{3} n^3$.
+* The cost of the Backsubstitution stage is $O(n^2)$.
+    
+Thus we say that:
+
+> The cost of Gauss-Jordan Elimination is $\frac{2}{3} n^3$.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>
+        Provide the exact flop count for the computation of \(\mathbf{z}\) when \(\mathbf{z} = (A-B)\mathbf{x}+C\mathbf{y}.\) Here, \(A, B,\) and \(C\) are \(k\times m\) matrices, and \(\mathbf{x}\) and \(\mathbf{y}\) are \(m \times 1\) vectors.
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+:::{.notes}
+    - $km$ flops are needed to find $A-B.$
+    - $k(2m-1)$ flops are needed to compute the product of $A-B$ and $\mathbf{x}$.
+    - $k(2m-1)$ flops are needed for the product of $c$ and $\mathbf{y}$.
+    - $k$ flops are needed for the sum of $(A-B)\mathbf{x}$ and $C\mathbf{y}$.
+    - The total number of flops is equal to $5km-k.$ 
+\end{itemize}
+:::
+

@@ -1,0 +1,861 @@
+---
+title: "Column and Null Spaces"
+author: "CDS DS-121<br>Boston University"
+format: 
+    revealjs:
+        math: true
+        css: 
+        - styles.css
+        html-math-method: mathjax
+        highlight-style: github
+        slide-number: true
+        show-slide-number: all
+        chalkboard: true
+---
+
+## Learning Objectives
+
+:::{style="font-size: .8em"}
+- Review vector spaces and subspaces 
+- Column space: what outputs can $A$ produce?
+- Null space: what inputs does $A$ collapse to zero?
+- Key distinction: Col $A \subseteq \mathbb{R}^m$ vs Nul $A \subseteq \mathbb{R}^n$
+- Motivating question: can we solve $A\mathbf{x} = \mathbf{b}$ for housing prices?
+
+:::
+
+## A Running Example: Housing Prices{.really-smaller-title}
+
+:::{style="font-size: .85em"}
+Over the next several lectures we'll return to one small dataset:
+
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""<br>
+<table style="font-size:.85em; border-collapse:collapse; margin:auto">
+<tr style="background:#e8f4f8"><th style="padding:4px 12px">House</th><th>sqft</th><th>bedrooms</th><th>price ($k)</th></tr>
+<tr><td style="text-align:center">1</td><td style="text-align:center">800</td><td style="text-align:center">1</td><td style="text-align:center">118</td></tr>
+<tr style="background:#f5f5f5"><td style="text-align:center">2</td><td style="text-align:center">1150</td><td style="text-align:center">2</td><td style="text-align:center">157</td></tr>
+<tr><td style="text-align:center">3</td><td style="text-align:center">1500</td><td style="text-align:center">2</td><td style="text-align:center">193</td></tr>
+<tr style="background:#f5f5f5"><td style="text-align:center">4</td><td style="text-align:center">1800</td><td style="text-align:center">3</td><td style="text-align:center">236</td></tr>
+<tr><td style="text-align:center">5</td><td style="text-align:center">2100</td><td style="text-align:center">3</td><td style="text-align:center">264</td></tr>
+<tr style="background:#f5f5f5"><td style="text-align:center">6</td><td style="text-align:center">2450</td><td style="text-align:center">4</td><td style="text-align:center">312</td></tr>
+</table>
+<br>
+"""))
+```
+
+**Goal:** Given sqft and bedrooms, predict price. Can we write this as $A\mathbf{x} = \mathbf{b}$? Will it have a solution? If not, what's the best we can do?
+
+_We'll build the tools to answer these questions across L20–L26._
+:::
+
+## What is a Vector Space?
+
+```{python}
+from IPython.core.display import HTML
+display(HTML(r"""
+<div class="blue-box">
+    <p><b>Definition:</b> What is a vector space? What are the key properties it must satisfy?</p>
+    <p><b>Examples:</b> Can you think of some examples of vector spaces? What about non-examples?</p>
+</div>
+"""))
+```
+
+## Vector Space Example{.smaller-title}
+
+<!-- super special rare .55 em appearance to get text all in one line. -->
+:::{style="font-size: .7em"}
+Example of a vector space:
+$$\mathbb{R}^2 = \left\{ \begin{bmatrix}a_1\\ a_2\end{bmatrix}\text{ such that } a_1, a_2 \in \mathbb{R} \right\}$$
+with usual addition and scalar multiplication.
+
+The above notation tells us that $\mathbb{R}^2$ consists of all vectors with two real components.
+
+$$
+\begin{bmatrix}
+    1 \\ 2
+\end{bmatrix}, \begin{bmatrix}
+    -41 \\ \frac{3}{5}
+\end{bmatrix},
+\begin{bmatrix}
+    \sqrt{2} \\ -\pi
+\end{bmatrix},
+\begin{bmatrix}
+    0 \\ 1
+\end{bmatrix},
+\begin{bmatrix}
+    0 \\ 0
+\end{bmatrix}\in \mathbb{R}^2
+$$
+
+:::
+
+
+## Vector Space Definition{.smaller-title}
+
+:::{style="font-size: .7em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <span class="label">Vector Space</span>
+        <p>
+        A <b>vector space</b> is a set of vectors together with rules for vector addition and scalar multiplication. The set of vectors must be <em>closed</em> under these two operations. And the eight conditions listed below must be satisfied.
+        
+        <ol>
+        <li> \(\mathbf{x} + \mathbf{y} = \mathbf{y} + \mathbf{x}\)</li>
+        <li> \(\mathbf{x} + (\mathbf{y} + \mathbf{z}) = (\mathbf{x}+\mathbf{y})+\mathbf{z}\)</li>
+        <li> There is a unique "zero" vector such that \(\mathbf{x}+\mathbf{0} = \mathbf{x}\) for all \(\mathbf{x}\)</li>
+        <li> For each \(\mathbf{x}\) there is a unique vector \(-\mathbf{x}\) such that \(\mathbf{x}+(-\mathbf{x})=\mathbf{0}\)</li>
+        <li> 1 times \(\mathbf{x}\) equals \(\mathbf{x}\)</li>
+        <li> \((c_1c_2)\mathbf{x} = c_1(c_2\mathbf{x})\)</li>
+        <li> \(c(\mathbf{x}+\mathbf{y}) = c\mathbf{x}+c\mathbf{y}\)</li>
+        <li> \((c_1+c_2)\mathbf{x} = c_1\mathbf{x}+c_2\mathbf{x}\)</li>
+        </ol>
+        </p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+:::
+
+
+## Euclidean Vector Spaces{.smaller-title}
+
+:::{style="font-size: .8em"}
+
+
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <span class="label">Euclidean Space \(\mathbb{R}^n\)</span>
+        <p>The space \(\mathbb{R}^n\) consists of all column vectors \(\mathbf{v}\) with \(n\) components. For Euclidean vector spaces we always assume usual addition and scalar multiplication.</p>
+    </div>
+    """
+
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+In this course, we only consider Euclidean vector spaces.
+:::
+
+
+
+## This is NOT a Vector Space{.smaller-title}
+
+:::{style="font-size: .65em"}
+__Example.__ $\Bigg\{\begin{bmatrix}a_1 \\ a_2\end{bmatrix} \text{ such that } a_1, a_2 \in \mathbb{R}^+\Bigg\}$ with usual addition and scalar multiplication is not a vector space.
+
+:::{.center-text style="margin: -8px 0"}
+<img src="images/spaces/not-vector-1.png" width=340/>
+
+:::
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 8px 20px;">
+        <p>Why is this <em>not</em> a vector space? Which of the required properties does it fail?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::
+
+
+## Definition: Subspaces{.smaller-title}
+
+:::{style="font-size: .7em"}
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <span class="label">Euclidean Subspace</span>
+        <p>
+        A <b>subspace of</b> \(\mathbb{R}^n\) is any set \(H\) of vectors in \(\mathbb{R}^n\) that satisfies three properties:
+        <ol start="1">
+        <li> The zero vector is in \(H\).</li>
+        <li> For each \(\mathbf{u}\) and \(\mathbf{v}\) in \(H\), the sum \(\mathbf{u} + \mathbf{v}\) is in \(H\) (\(H\) is closed under addition).</li>
+        <li>For each \(\mathbf{u}\) in \(H\) and each scalar \(c,\) the vector \(c\mathbf{u}\) is in \(H\) (\(H\) is closed under scalar multiplication).</li>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+:::{.fragment}
+Each subspace is a vector space in its own right.
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Why is it enough to show these three properties?</p>
+    </div><br>
+    """
+display(HTML(generate_html()))
+```
+:::
+
+:::{.fragment}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Is \(\mathbb{R}^2\) a subspace of \(\mathbb{R}^3\)?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+:::
+
+## Every Span Is a Subspace{.smaller-title}
+
+:::{style="font-size:.8em"}
+__Example.__ Take $\mathbf{v}_1$ and $\mathbf{v}_2$ in $\mathbb{R}^n$,  and let $H$ = Span$\{\mathbf{v}_1, \mathbf{v}_2\}.$ 
+Then $H$ is a subspace of $\mathbb{R}^n$.
+
+:::{.center-text}
+```{python}
+import laUtilities as ut
+qr_setting = None
+import numpy as np
+
+fig = ut.three_d_figure((7, 1), fig_desc = 'Span{v1, v2}, a subspace.',
+                        xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10, qr = qr_setting)
+a1 = [-8.0, 8.0, 5.0]
+a2 = [3.0,  2.0, -2.0]
+a3 = 2.5 * np.array(a2)
+fig.text(a1[0]+.5, a1[1]+.5, a1[2]+.5, r'$\bf v_1$', 'v_1', size=20)
+fig.text(a3[0]+.5, a3[1]+.5, a3[2]+.5, r'$\bf v_2$', 'v_2', size=20)
+fig.plotSpan(a1, a2,'Green')
+fig.plotPoint(a1[0], a1[1], a1[2],'r')
+fig.plotPoint(a3[0], a3[1], a3[2],'r')
+# fig.plotPoint(a3[0], a3[1], a3[2],'r')
+#fig.text(a1[0], a1[1], a1[2], r'$\bf v_1$', 'a_1', size=20)
+fig.text(0.1, 0.1, -3, r'$\bf 0$', '0', size=12)
+fig.plotPoint(0, 0, 0, 'b')
+fig.set_title(r'Span{$v_1, v_2$}, a subspace.')
+fig.text(9, -9, -7, r'$\bf H$', 'H', size = 20)
+```
+:::
+Let us see why $H$ satisfies the definition of a subspace.
+:::
+
+## Subspaces Are Closed Under Addition{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+__Example (continued).__
+
+ __Property 1.__ The zero vector is in $H$.
+
+:::{.fragment}
+$$
+{\bf 0} = 0\mathbf{v}_1 + 0\mathbf{v}_2\text{ is in Span}\{\mathbf{v}_1, \mathbf{v}_2\}.
+$$
+:::
+
+:::{.fragment}
+
+
+__Property 2.__ For any two vectors ${\bf u}, {\bf v} \in H$, their sum is also in $H$.
+:::
+
+:::{.fragment}
+If $\mathbf{u} = s_1\mathbf{v}_1 + s_2\mathbf{v}_2,$ and $\mathbf{v} = t_1\mathbf{v}_1 + t_2\mathbf{v}_2,$ then their sum
+$$
+\mathbf{u} + \mathbf{v} = (s_1+t_1)\mathbf{v}_1 + (s_2+t_2)\mathbf{v}_2 \in H.
+$$
+:::
+:::
+
+## Subspaces Are Closed Under Scalar Multiplication{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+
+__Property 3.__ For any vector ${\bf u} \in H$ and scalar $c \in \mathbb{R}$, the vector $c\mathbf{u}$ is in $H$.
+
+:::{.fragment}
+$$
+c\mathbf{u} = c(s_1\mathbf{v}_1 + s_2\mathbf{v}_2) = (cs_1\mathbf{v}_1 + cs_2\mathbf{v}_2) \in H.
+$$
+:::
+
+:::{.fragment}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>We showed every span is a subspace. Is the converse true? Is every subspace a span of some set of vectors?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+:::
+
+## A Line Through the Origin Is a Subspace{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+__Example.__ Here is another subspace - a line:
+
+:::{.center-text}
+```{python}
+fig = ut.three_d_figure((7, 2), fig_desc = 'Span{v1}, another subspace.',
+                        xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10, qr = qr_setting)
+v = [ 4.0, 4.0, 2.0]
+fig.text(v[0]+.5, v[1]+.5, v[2]+.5, r'$\bf v_1$', 'v1', size=20)
+fig.text(-9, -7, -9, r'Span{$\bf v_1$}', 'Span{v1}', size=16)
+fig.text(0.2, 0.2, -4, r'$\bf 0$', '0', size=12)
+# plotting the span of v
+# this is based on the reduced echelon matrix that expresses the system whose solution is v
+fig.plotIntersection([1, 0, -v[0]/v[2], 0], [0, 1, -v[1]/v[2], 0], '-', 'Red')
+fig.plotPoint(v[0], v[1], v[2], 'r')
+fig.plotPoint(0, 0, 0, 'b')
+# plotting the axes
+fig.plotIntersection([0, 0, 1, 0], [0, 1, 0, 0])
+fig.plotIntersection([0, 0, 1, 0], [1, 0, 0, 0])
+fig.plotIntersection([0, 1, 0, 0], [1, 0, 0, 0])
+fig.set_title(r'Span {$v_1$}, another subspace.')
+```
+:::
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 8px 20px;">
+        <p>Is any line a subspace of \(\mathbb{R}^3\)?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+
+:::
+
+## A Line Not Through the Origin Fails{.smaller-title}
+
+:::{style="font-size: .8em"}
+How about this line?
+
+:::{.center-text}
+```{python}
+ax = ut.plotSetup()
+ut.centerAxes(ax)
+ax.plot([-6,6],[4.33,0.33],'b-')
+ax.text(-4,3,'$L$',size=20);
+```
+
+:::
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Which of the three properties does it fail?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+
+## Which Subspace Properties Fail?{.smaller-title}
+
+:::{style="font-size: .8em"}
+
+:::{.columns}
+
+:::{.column width="50%"}
+$L$ is not closed under addition.
+```{python}
+ax = ut.plotSetup()
+ut.centerAxes(ax)
+ax.arrow(0,0,1,2,head_width=0.2, head_length=0.2,length_includes_head = True)
+ax.arrow(0,0,4,1,head_width=0.2, head_length=0.2,length_includes_head = True)
+ax.plot([4,5],[1,3],'--')
+ax.plot([1,5],[2,3],'--')
+ax.plot([-6,6],[4.33,0.33],'b-')
+ax.text(5.25,3.25,r'${\bf u}$+${\bf v}$',size=16)
+ax.text(1.5,2.5,r'${\bf u}$',size=16)
+ax.text(4.75,1,r'${\bf v}$',size=16)
+ax.text(-4,3,'$L$',size=20)
+ut.plotPoint(ax,5,3)
+ax.plot(0,0,'');
+```
+:::
+
+:::{.column width="50%"}
+$L$ is not closed under scalar multiplication.
+
+```{python}
+ax = ut.plotSetup()
+ut.centerAxes(ax)
+line = np.array([[-6,6],[4.33,0.33]])
+w = .3 * line[:,0] + .7 * line[:,1]
+ut.plotPoint(ax,w[0],w[1],'k')
+ax.arrow(0,0,w[0],w[1],head_width=0.2, head_length=0.2,length_includes_head = True)
+w_ext = np.array([w, 1.75*w]).T
+ax.plot(w_ext[0], w_ext[1], '--')
+ax.plot(line[0], line[1],'b-')
+ax.text(w[0],w[1]-0.5,r'${\bf w}$',size=16)
+ax.text(w_ext[0,1], w_ext[1,1]-0.5, r'$\alpha{\bf w}$', size=16)
+ut.plotPoint(ax,w_ext[0,1],w_ext[1,1],'r')
+ax.text(-4,3,'$L$',size=20);
+```
+:::
+
+<br>
+
+However, any line, plane, or hyperplane through the origin is a subspace.
+
+:::
+:::
+
+## Definition: Column Space{.smaller-title}
+
+:::{style="font-size: .8em"}
+Every matrix has associated with it two vector spaces:  _**column space**_ and  _**null space.**_ 
+
+
+```{python}
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p> <span class="label">Column space</span>
+         The <b>column space</b> of a matrix \(A\) is the set \({\operatorname{Col}}\ A\) of all linear combinations of the columns of \(A\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+The column space of an $m\times n$ matrix is a subspace of...
+
+
+:::{.fragment}
+ $\mathbb{R}^m.$  If $A$ = $[\mathbf{a}_1 \;\cdots\; \mathbf{a}_n]$, with columns in $\mathbb{R}^m,$ then ${\operatorname{Col}}\ A$ is the same as $\text{Span}\{\mathbf{a}_1,\dots,\mathbf{a}_n\}$. Hence, ${\operatorname{Col}}\ A$ is a subspace of $\mathbb{R}^m$ and a vector space.
+:::
+
+
+:::{.fragment}
+Note that ${\operatorname{Col}}\ A$ equals $\mathbb{R}^m$ only when the columns of $A$ span $\mathbb{R}^m.$  Otherwise, ${\operatorname{Col}}\ A$ is only part of $\mathbb{R}^m.$
+:::
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>If \(A\) is a \(3\times 4\) matrix, what vector space does \(\operatorname{Col} A\) live in? What are the possible dimensions of \(\operatorname{Col} A\)?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+:::
+
+## Column Space and Linear Transformations{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+_**Algebraic view**_: for a linear system $A\mathbf{x} = \mathbf{b}$, ${\operatorname{Col}}\ A$ is the set of all $\mathbf{b}$ for which the system has a solution. 
+
+<br>
+
+:::{.fragment}
+_**Geometric view**_: for  linear transformation $T: \mathbb{R}^n\rightarrow\mathbb{R}^m$ with standard matrix $A$, ${\operatorname{Col}}\ A$ is the _range_ of $T.$
+
+:::{.center-text}
+```{python}
+fig = ut.three_d_figure((7, 3), fig_desc = 'Column Space of A = [a1, a2, a3].',
+                        xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10, qr = qr_setting)
+a1 = [-8.0, 8.0, 5.0]
+a2 = [3.0,  2.0, -2.0]
+a3 = 2.5 * np.array(a2)
+fig.text(a1[0]+.5, a1[1]+.5, a1[2]+.5, r'$\bf a_1$', 'a_1', size=18)
+fig.text(a3[0]+.5, a3[1]+.5, a3[2]+.5, r'$\bf a_3$', 'a_3', size=18)
+fig.text(a2[0]+.5, a2[1]+.5, a2[2]+.5, r'$\bf a_2$', 'a_2', size=18)
+fig.plotSpan(a1, a2,'Green')
+fig.plotPoint(a1[0], a1[1], a1[2],'r')
+fig.plotPoint(a3[0], a3[1], a3[2],'r')
+fig.plotPoint(a2[0], a2[1], a2[2],'r')
+# fig.plotPoint(a3[0], a3[1], a3[2],'r')
+fig.text(0.1, 0.1, -3, r'$\bf 0$', '0', size=12)
+fig.plotPoint(0, 0, 0, 'b')
+fig.set_title(r'Column Space of $A = [{\bf a}_1, {\bf a}_2, {\bf a}_3]$')
+fig.text(9, -9, -7, r'Col $A$', 'H', size = 16)
+```
+:::
+:::
+:::
+
+## Practice: Column Space{.smaller-title}
+
+:::{style="font-size: .7em"}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>Let \(A = \begin{bmatrix} 1 & 0 & -1 \\ 0 & 1 & 2 \\ 1 & 1 & 1 \end{bmatrix}.\)
+        <ol type="a">
+            <li>Is \(\mathbf{b} = \begin{bmatrix}2\\1\\3\end{bmatrix}\) in \(\operatorname{Col} A\)? </li>
+            <li>Is \(\mathbf{c} = \begin{bmatrix}1\\0\\0\end{bmatrix}\) in \(\operatorname{Col} A\)?</li>
+            <li>What is the geometric shape of \(\operatorname{Col} A\)? A point, line, plane, or all of \(\mathbb{R}^3\)? How do you know?</li>
+        </ol>
+        </p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+
+## Column Space in Data Science{.smaller-title}
+
+:::{style="font-size: .7em"}
+For our housing dataset, $A$ is the $6 \times 3$ design matrix (intercept, sqft, bedrooms) and $\mathbf{b}$ is the price vector:
+
+$$
+A = \begin{bmatrix}1 & 800 & 1\\1 & 1150 & 2\\1 & 1500 & 2\\1 & 1800 & 3\\1 & 2100 & 3\\1 & 2450 & 4\end{bmatrix}, \quad
+\mathbf{b} = \begin{bmatrix}118\\157\\193\\236\\264\\312\end{bmatrix}.
+$$
+
+- **$\operatorname{Col} A$** is the set of all price vectors our model can *possibly* produce (the "reachable outputs").
+- $\mathbf{b} \in \operatorname{Col} A$ only if the data falls *exactly* on a linear surface, which is almost never true with real measurements.
+- When $\mathbf{b} \notin \operatorname{Col} A$ we need a best approximation. That's where least squares comes in (L25).
+:::
+
+## Definition: Null Space{.smaller-title}
+
+:::{style="font-size: .8em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  <span class="label">Null space</span>
+         The <b>null space</b> (or  <b>kernel</b>) of a matrix \(A\) is the set \({\operatorname{Nul}}\ A\) of all solutions of the <i>homogeneous</i> equation \(A \bf{x} = 0\).
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.fragment}
+_**Geometric view**_: the set of all vectors that are mapped to the zero vector by $A$.
+:::
+
+:::{.fragment}
+_**Algebraic view**_: the set of all solutions of $A\mathbf{x} = {\bf 0}$.
+
+
+When $A$ has $n$ columns, a solution of $A\mathbf{x} = {\bf 0}$ is a vector in $\mathbb{R}^n$. Hence, the null space of $A$ is a subset of $\mathbb{R}^n$.
+
+To test whether a vector $\mathbf{v}$ is in ${\operatorname{Nul}}\ A$, simply compute $A\mathbf{v}$ and see if the result is zero.
+:::
+
+:::
+
+## Null Space Is a Subspace of R^n{.smaller-title}
+
+:::{style="font-size: .8em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  <span class="label">Theorem</span>
+         The null space of an \(m\times n\) matrix \(A\) is a subspace of \(\mathbb{R}^n\).   
+
+Equivalently, the set of all solutions of a system \(A\mathbf{x} = {\bf 0}\) of \(m\) homogeneous linear equations in \(n\) unknowns is a subspace of \(\mathbb{R}^n.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+:::{.fragment}
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""<br>
+    <div class="blue-box">
+        <p>If \(\mathbf{v} \in \operatorname{Nul} A\), is \(3\mathbf{v}\) also in \(\operatorname{Nul} A\)? What about \(\mathbf{v} + \mathbf{w}\) if both \(\mathbf{v}, \mathbf{w} \in \operatorname{Nul} A\)?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+
+:::
+
+
+## Null Space Is a Subspace of R^n{.smaller-title}
+
+:::{style="font-size: .8em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="purple-box">
+        <p>  <span class="label">Theorem</span>
+         The null space of an \(m\times n\) matrix \(A\) is a subspace of \(\mathbb{R}^n\).   
+
+Equivalently, the set of all solutions of a system \(A\mathbf{x} = {\bf 0}\) of \(m\) homogeneous linear equations in \(n\) unknowns is a subspace of \(\mathbb{R}^n.\)
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+```
+
+
+__Proof.__ To prove this theorem, we must show that ${\operatorname{Nul}}\ A$ satisfies the 3 properties of a subspace.
+<br><br>
+
+
+:::{.fragment}
+_Property 1._ The zero vector is in ${\operatorname{Nul}}\ A$.
+:::
+
+:::{.fragment}
+&emsp;&emsp;We can calculate the matrix-vector product 
+$$
+A{\bf 0} = 0 \cdot {\bf a_1} + 0 \cdot {\bf a_2} + \cdots + 0 \cdot {\bf a_n} = {\bf 0}.
+$$
+:::
+:::
+
+
+## Proof: Null Space Is a Subspace{.smaller-title}
+
+:::{style="font-size: .8em"}
+_Property 2._ The sum of two vectors in ${\operatorname{Nul}}\ A$ is in ${\operatorname{Nul}}\ A.$
+
+:::{.fragment}
+&emsp;&emsp;Take two vectors $\mathbf{u}$ and $\mathbf{v}$ that are in ${\operatorname{Nul}}\ A.$  
+
+&emsp;&emsp;By definition $A\mathbf{u} = {\bf 0}$ and $A\mathbf{v} = {\bf 0}.$
+
+&emsp;&emsp;Then $\mathbf{u} + \mathbf{v}$ is in ${\operatorname{Nul}}\ A$ because 
+$$
+A(\mathbf{u} + \mathbf{v}) = A\mathbf{u} + A\mathbf{v} = {\bf 0} + {\bf 0} = {\bf 0}.
+$$
+<br>
+:::
+
+:::{.fragment}
+_Property 3._ Any scalar multiple of a vector in ${\operatorname{Nul}}\ A$ is in ${\operatorname{Nul}}\ A.$
+:::
+
+
+:::{.fragment}
+&emsp;&emsp;Take a vector $\mathbf{v}$ that is in ${\operatorname{Nul}}\ A.$  Then $A(c\mathbf{v}) = cA\mathbf{v} = c{\bf 0} = {\bf 0}.$
+:::
+
+
+:::{.fragment}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>If \(A\) is an invertible \(n \times n\) matrix, what is \(\operatorname{Nul} A\)? Why?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+:::
+
+## What do Null Spaces Mean for Data?{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+Suppose bedrooms $=$ sqft$/600$ (a perfectly redundant feature):
+
+```{python}
+import numpy as np, pandas as pd
+
+sqft  = np.array([800., 1150., 1500., 1800., 2100., 2450.])
+beds  = sqft / 600   # perfectly collinear
+price = np.array([118., 157., 193., 236., 264., 312.])
+
+df = pd.DataFrame({'sqft': sqft.astype(int),
+                   'beds (= sqft/600)': beds.round(2),
+                   'price ($k)': price.astype(int)})
+print(df.to_string(index=False))
+```
+
+Now consider two very different models: $\hat{\boldsymbol{\beta}}_1 = [10,\ 0.10,\ 20]$ and $\hat{\boldsymbol{\beta}}_2 = [10,\ 1.10,\ -580]$ (raise the sqft coefficient by 1, drop the bedrooms coefficient by 600).
+
+```{python}
+A = np.column_stack([np.ones(6), sqft, beds])
+
+beta1 = np.array([10.,    0.10,   20.])
+beta2 = np.array([10.,    1.10, -580.])   # beta1 + [0, +1, -600]
+
+print("β₁ predictions:", (A @ beta1).round(1))
+print("β₂ predictions:", (A @ beta2).round(1))
+```
+
+**Identical predictions, so the direction $[0,\ {+1},\ {-600}]$ is in $\operatorname{Nul} A$.** 
+
+The model can shift weight freely between sqft and bedrooms without affecting anything it can measure. That's why collinear features make coefficients meaningless.
+
+_L21 quantifies exactly how many such directions exist. That's the rank._
+:::
+
+## Col A and Nul A Live in Different Spaces{.really-smaller-title}
+
+:::{style="font-size: .8em"}
+Note that the two subspaces ${\operatorname{Col}}\ A$ and ${\operatorname{Nul}}\ A$ live in different "universes."
+
+For an $m\times n$ matrix, 
+
+* the column space is a subset of the codomain $\mathbb{R}^m$,
+* while the null space is a subset of the domain $\mathbb{R}^n$.
+
+```{python}
+from IPython.core.display import HTML
+
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p>For a \(3\times 5\) matrix \(A\), what is the ambient vector space for \(\operatorname{Col} A\)? For \(\operatorname{Nul} A\)? Could a vector belong to both?</p>
+    </div>
+    """
+display(HTML(generate_html()))
+```
+:::
+
+## Col A and Nul A in Their Spaces{.really-smaller-title}
+
+:::{.center-text}
+```{python}
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
+fig, ax = plt.subplots(figsize=(10, 3.5))
+ax.set_xlim(0, 10)
+ax.set_ylim(0, 4)
+ax.axis('off')
+
+# Left box: R^n (domain)
+left_box = mpatches.FancyBboxPatch((0.2, 0.3), 3.6, 3.2,
+    boxstyle="round,pad=0.1", linewidth=2, edgecolor='steelblue', facecolor='#e8f4f8')
+ax.add_patch(left_box)
+ax.text(2.0, 3.25, r'$\mathbb{R}^n$  (domain)', ha='center', fontsize=14,
+        fontweight='bold', color='steelblue')
+
+# Nul A oval
+nul_oval = mpatches.Ellipse((2.0, 1.6), 2.4, 1.8, linewidth=1.5,
+    edgecolor='blue', facecolor='gray', alpha=0.6)
+ax.add_patch(nul_oval)
+ax.text(2.0, 1.6, r'Nul $A$', ha='center', va='center', fontsize=13, color='navy')
+
+# Arrow from left to right
+ax.annotate('', xy=(6.9, 1.7), xytext=(3.9, 1.7),
+    arrowprops=dict(arrowstyle='->', color='black', lw=2.5))
+ax.text(5.0, 2.35, r'$A$', ha='center', fontsize=18, fontstyle='italic')
+
+# Right box: R^m (codomain)
+right_box = mpatches.FancyBboxPatch((6.2, 0.3), 3.6, 3.2,
+    boxstyle="round,pad=0.1", linewidth=2, edgecolor='darkgreen', facecolor='#eef8ee')
+ax.add_patch(right_box)
+ax.text(8.0, 3.25, r'$\mathbb{R}^m$  (codomain)', ha='center', fontsize=14,
+        fontweight='bold', color='darkgreen')
+
+# Col A oval
+col_oval = mpatches.Ellipse((8.0, 1.6), 2.4, 1.8, linewidth=1.5,
+    edgecolor='green', facecolor='lightgreen', alpha=0.6)
+ax.add_patch(col_oval)
+ax.text(8.0, 1.6, r'Col $A$', ha='center', va='center', fontsize=13, color='darkgreen')
+
+plt.tight_layout()
+```
+:::
+
+:::{style="font-size: .8em"}
+For an $m\times n$ matrix: $\operatorname{Nul} A \subset \mathbb{R}^n$ and $\operatorname{Col} A \subset \mathbb{R}^m.$ These live in entirely different spaces.
+:::
+
+## Practice: Col A vs. Nul A{.smaller-title}
+
+:::{style="font-size: .6em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box" style="padding: 8px 20px;">
+        <p> 
+        Consider the following matrix:
+
+$$A = \begin{bmatrix}
+1 & 3 & 0 & -1 & 2 \\
+0 & -2 & 4 & -2 & 0\\
+3 & 11 & -4 & -1 & 6\\
+2 & 5 & 3 & -4 & 0
+\end{bmatrix}.$$
+
+ How could you check if the vector \(\mathbf{v} = \begin{bmatrix} 4 \\ -2 \\ 14 \\ 7 \end{bmatrix}\) is in the column space of \(A\)? How could you check if \(\mathbf{v} = \begin{bmatrix} 1 \\ 2 \\ 0 \\ 1 \\2 \end{bmatrix}\) is in the null space?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+``` 
+:::
+
+## Practice: Constructing a Matrix with Given Col A{.smaller-title}
+
+
+:::{style="font-size: .7em"}
+```{python}
+def generate_html():
+    return r"""
+    <div class="blue-box">
+        <p> 
+        We are given three different vectors \(\bf{b_1, b_2, b_3}\) \(\in \mathbb{R}^2.\)<br><br>Construct a matrix so that the equations \(A \bf{x} = \bf{b_1}\) and \(A \bf{x} = \bf{b_2}\) are solvable, but \(A \bf{x} = \bf{b_3}\) is not solvable.<br><br>How can you decide if this is possible? How could you construct \(A\)?
+        </p>
+    </div>
+    """
+html_content = generate_html()
+display(HTML(html_content))
+``` 
+:::
+
+
+## Looking Ahead{.smaller-title}
+
+:::{style="font-size: .7em"}
+We've introduced two fundamental subspaces of any matrix $A$:
+
+- **$\operatorname{Col} A \subset \mathbb{R}^m$**: the reachable outputs. Whether $\mathbf{b} \in \operatorname{Col} A$ determines if $A\mathbf{x} = \mathbf{b}$ is solvable.
+- **$\operatorname{Nul} A \subset \mathbb{R}^n$**: the invisible inputs. A nontrivial null space signals redundant or collinear features.
+
+In the next lectures we build the tools to characterize these spaces more precisely:
+
+| Lecture | Topic | DS Payoff |
+|------|---------|-----------|
+| L21 | Basis & Dimension | How many truly independent features? |
+| L22 | Coordinate Systems | Representing data in a new basis |
+| L23–24 | Projection & QR | Best approximation when $\mathbf{b} \notin \operatorname{Col} A$ |
+| L25–26 | Least Squares & Regression | Fitting models to noisy data |
+:::

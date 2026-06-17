@@ -87,7 +87,7 @@
   top: -10px;
   left: 10px;
   background-color: #bf66ff; /* changed to fun purple color*/
-  color: white;
+  color: rgb(245, 245, 255);
   padding: 4px 8px;
   border-radius: 4px;
   font-weight: bold;
@@ -129,4 +129,17 @@
 
 .smaller-title {
   font-size: 35px;
+}
+
+.center-y {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+.really-smaller-title {
+  font-size: 30px;
+}
+
+.really-really-smaller-title {
+  font-size: 25px;
 }
